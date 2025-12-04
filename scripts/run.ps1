@@ -1,0 +1,1 @@
+uvicorn insights_service:app --app-dir src --reload --port 9000

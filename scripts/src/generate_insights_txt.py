@@ -3,7 +3,7 @@
 import os
 import sys
 import ollama
-from bs4 import BeautifulSoup  # NEW! used to ensure clean HTML structure
+from bs4 import BeautifulSoup  # used to ensure clean HTML structure
 
 
 # Add parent directory to path to allow importing config
@@ -102,6 +102,22 @@ def sanitize_and_wrap_html(inner_html: str) -> str:
 </html>
 """
     return html_doc
+
+
+# -------------------------------------------------------------------
+# NEW: reusable wrapper so other Python code can call this directly
+# -------------------------------------------------------------------
+def generate_insights_html(markdown_data: str, prompt: str | None = None) -> str:
+    """
+    Takes extracted Markdown text and returns a full HTML document string
+    (with <html>...</html> and CSS).
+    """
+    if prompt is None:
+        prompt = load_text(PROMPT_FILE)
+
+    inner_html_raw = generate_insights(prompt, markdown_data)
+    final_html = sanitize_and_wrap_html(inner_html_raw)
+    return final_html
 
 
 def main():

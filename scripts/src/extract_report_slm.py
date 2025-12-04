@@ -19,9 +19,15 @@ END_MARKER = "[[END_OF_PAGE]]"
 
 
 def load_prompt(path: str) -> str:
+    """
+    Load the system prompt for the VLM.
+
+    Raises FileNotFoundError instead of calling sys.exit so that callers
+    (like the FastAPI worker) can handle the error gracefully.
+    """
     if not os.path.exists(path):
         print(f"[ERROR] Prompt file not found: {path}", file=sys.stderr)
-        sys.exit(1)
+        raise FileNotFoundError(f"Prompt file not found: {path}")
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
@@ -102,12 +108,16 @@ def process_pdf_file(input_path: str, system_prompt: str) -> str:
     return "\n\n".join(md for md in all_pages_md if md)
 
 
-def main():
-    input_path = INPUT_PDF  # generic input file path from config
-
+# -------------------------------------------------------------------
+# Reusable wrapper so other Python code can call this directly
+# -------------------------------------------------------------------
+def extract_markdown_from_file(input_path: str) -> str:
+    """
+    Given a local file path (PDF / JPG / PNG / etc.), run the vision pipeline
+    and return the extracted Markdown string.
+    """
     if not os.path.exists(input_path):
-        print(f"[ERROR] Input file not found: {input_path}", file=sys.stderr)
-        sys.exit(1)
+        raise FileNotFoundError(f"Input file not found: {input_path}")
 
     system_prompt = load_prompt(VISION_PROMPT_FILE)
     ext = os.path.splitext(input_path)[1].lower()
@@ -122,8 +132,19 @@ def main():
     elif ext == ".pdf":
         full_md = process_pdf_file(input_path, system_prompt)
     else:
-        print(f"[ERROR] Unsupported file type for vision model: {ext}", file=sys.stderr)
+        raise ValueError(f"Unsupported file type for vision model: {ext}")
+
+    return full_md
+
+
+def main():
+    input_path = INPUT_PDF  # generic input file path from config
+
+    if not os.path.exists(input_path):
+        print(f"[ERROR] Input file not found: {input_path}", file=sys.stderr)
         sys.exit(1)
+
+    full_md = extract_markdown_from_file(input_path)
 
     # Save final Markdown
     with open(OUTPUT_MD_SLM, "w", encoding="utf-8") as f:
