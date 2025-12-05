@@ -52,7 +52,7 @@ RETURNING id, user_id, original_name, content_type, storage_path, status, upload
 // ListDocumentsByUser lists all documents for a given user (latest first).
 func (s *Store) ListDocumentsByUser(ctx context.Context, userID string) ([]Document, error) {
 	const q = `
-SELECT id, user_id, original_name, content_type, storage_path, extracted_markdown, status, uploaded_at, updated_at
+SELECT id, user_id, original_name, content_type, storage_path, COALESCE(extracted_markdown, ''), status, uploaded_at, updated_at
 FROM documents
 WHERE user_id = $1
 ORDER BY uploaded_at DESC;

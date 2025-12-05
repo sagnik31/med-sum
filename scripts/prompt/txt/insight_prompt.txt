@@ -20,6 +20,7 @@ You MUST follow these rules:
 - If uncertain, write “Not specified in the report”.
 - Do NOT diagnose or recommend treatment beyond what the report explicitly states.
 - Omit all patient identifying details even if present.
+- For trends and abnormal findings, DO NOT reference biological intervals. ONLY REFER TO PATIENT TEST NUMBERS
 
 Output format (HTML only, no Markdown or code fences):
 

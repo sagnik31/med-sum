@@ -40,6 +40,8 @@ def run_vlm_on_image_bytes(image_bytes: bytes, system_prompt: str, label: str) -
     """
     print(f"\n=== 👁️ Processing {label} with vision model ===\n")
 
+    print(f"SYSTEM PROMPT: {system_prompt}")
+
     messages = [
         {"role": "system", "content": system_prompt},
         {

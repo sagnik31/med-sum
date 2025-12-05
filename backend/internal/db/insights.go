@@ -69,7 +69,7 @@ func (s *Store) GetInsightByDocumentID(ctx context.Context, docID string) (*Insi
 		SELECT
 		  document_id,
 		  user_id,
-		  html_insights,
+		  COALESCE(html_insights, ''),
 		  status,
 		  details_json,
 		  generated_at,
