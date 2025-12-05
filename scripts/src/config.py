@@ -38,4 +38,8 @@ OUTPUT_HTML = os.path.join(
 OUTPUT_HTML_SLM = os.path.join(
     PROJECT_ROOT, "data", "output", "insights", "txt", "report_insights_txt_slm.html"
 )
+
+PATIENT_SUMMARY_PROMPT_FILE = os.path.join(
+    SCRIPTS_DIR, "prompt", "txt", "patient_summary_prompt.txt"
+)
 # ----------------------------------

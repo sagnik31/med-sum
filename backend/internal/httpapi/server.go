@@ -34,6 +34,9 @@ func NewServer(store *db.Store, jwtSecret string) *Server {
 	// /documents/{id} and /documents/{id}/insight
 	s.mux.HandleFunc("/documents/", s.withAuth(s.handleDocumentByID))
 
+	// /user/insights
+	s.mux.HandleFunc("/user/insights", s.withAuth(s.handleGetPatientInsights))
+
 	return s
 }
 
@@ -267,9 +270,9 @@ func (s *Server) handleDeleteDocument(w http.ResponseWriter, r *http.Request, do
 
 type insightResponse struct {
 	DocumentID   string  `json:"document_id"`
-	Status       string  `json:"status"`                   // "ready" | "processing" | "failed"
-	InsightsHTML *string `json:"insights_html,omitempty"`  // present when ready
-	ErrorMessage *string `json:"error_message,omitempty"`  // present when failed
+	Status       string  `json:"status"`                  // "ready" | "processing" | "failed"
+	InsightsHTML *string `json:"insights_html,omitempty"` // present when ready
+	ErrorMessage *string `json:"error_message,omitempty"` // present when failed
 }
 
 func (s *Server) handleGetDocumentInsight(w http.ResponseWriter, r *http.Request, docID string) {
@@ -323,6 +326,44 @@ func (s *Server) handleGetDocumentInsight(w http.ResponseWriter, r *http.Request
 		resp.InsightsHTML = &ins.HTMLInsights
 	} else if ins.Status == "failed" && ins.ErrorMessage != nil {
 		resp.ErrorMessage = ins.ErrorMessage
+	}
+
+	writeJSON(w, http.StatusOK, resp)
+}
+
+// ----- Get patient insights: GET /user/insights -----
+
+type patientInsightResponse struct {
+	Status       string  `json:"status"`                  // "completed" | "none"
+	InsightsHTML *string `json:"insights_html,omitempty"` // present when completed
+}
+
+func (s *Server) handleGetPatientInsights(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	userID, ok := userIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	user, err := s.db.GetUserByID(r.Context(), userID)
+	if err != nil {
+		log.Printf("GetUserByID error: %v", err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+
+	resp := patientInsightResponse{
+		Status: "none",
+	}
+
+	if user.PatientInsights != nil && *user.PatientInsights != "" {
+		resp.Status = "completed"
+		resp.InsightsHTML = user.PatientInsights
 	}
 
 	writeJSON(w, http.StatusOK, resp)

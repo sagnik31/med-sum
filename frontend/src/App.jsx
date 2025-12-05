@@ -4,6 +4,7 @@ import { Routes, Route, Navigate, Link } from "react-router-dom";
 import LoginPage from "./pages/LoginPage.jsx";
 import DocumentsPage from "./pages/DocumentsPage.jsx";
 import InsightPage from "./pages/InsightPage.jsx";
+import UserInsightsPage from "./pages/UserInsightsPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/documents" element={<DocumentsPage />} />
+          <Route path="/user-insights" element={<UserInsightsPage />} />
           <Route path="/insights/:id" element={<InsightPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

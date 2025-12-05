@@ -117,8 +117,7 @@ export async function getInsight(documentId) {
       throw new Error("Unauthorized: Please log in to view insights.");
     }
     throw new Error(
-      `Failed to fetch insight ${response.status}: ${
-        text || response.statusText
+      `Failed to fetch insight ${response.status}: ${text || response.statusText
       }`
     );
   }
@@ -163,12 +162,17 @@ export async function triggerInsightGeneration(documentId) {
   if (!response.ok) {
     const text = await response.text().catch(() => "");
     throw new Error(
-      `Failed to trigger insight generation ${response.status}: ${
-        text || response.statusText
+      `Failed to trigger insight generation ${response.status}: ${text || response.statusText
       }`
     );
   }
 
   // We don't really care about the body here; it's fire-and-forget
   return true;
+}
+
+export function fetchUserInsights() {
+  return apiRequest("/user/insights", {
+    method: "GET",
+  });
 }

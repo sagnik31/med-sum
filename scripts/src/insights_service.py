@@ -77,6 +77,10 @@ class GenerateInsightsRequest(BaseModel):
     document_id: str
 
 
+class GenerateUserInsightsRequest(BaseModel):
+    user_id: str
+
+
 # -------------------------------------------------------------------
 # Real worker — calls your VLM + SLM pipeline
 # -------------------------------------------------------------------
@@ -104,13 +108,9 @@ def run_insights_pipeline(document_id: str) -> None:
 
     conn = get_db_connection()
     try:
-        # 1. Get file path, existing markdown, and user_id from DB
-        input_path = None
-        existing_markdown = None
-        user_id = None
-
+        # 0. Check if insights already exist or are being processed
+        #    We do this BEFORE fetching file paths to fail fast.
         with conn.cursor() as cur:
-            # Check if insights already exist
             cur.execute(
                 "SELECT status, html_insights FROM insights WHERE document_id = %s",
                 (document_id,),
@@ -120,22 +120,64 @@ def run_insights_pipeline(document_id: str) -> None:
                 status, html = insight_row
                 if status == "completed" and html:
                     logger.info(
-                        f"[worker] Insights already exist for document_id={document_id}. Skipping generation."
+                        f"[worker] Insights already completed for document_id={document_id}. Skipping."
+                    )
+                    return
+                if status == "processing":
+                    logger.info(
+                        f"[worker] Insights already processing for document_id={document_id}. Skipping."
                     )
                     return
 
+            # If no row exists, insert 'processing' state immediately to lock it
+            import uuid
+
+            new_insight_id = str(uuid.uuid4())
+
+            # We need user_id for the INSERT. Let's fetch it first.
+            cur.execute("SELECT user_id FROM documents WHERE id = %s", (document_id,))
+            user_row = cur.fetchone()
+            if not user_row:
+                logger.error(f"[worker] Document not found in DB: {document_id}")
+                return
+
+            user_id = user_row[0]
+
+            try:
+                cur.execute(
+                    """
+                    INSERT INTO insights (id, document_id, user_id, status, created_at, updated_at)
+                    VALUES (%s, %s, %s, 'processing', NOW(), NOW())
+                    """,
+                    (new_insight_id, document_id, user_id),
+                )
+                conn.commit()
+            except psycopg2.IntegrityError:
+                # Race condition caught by DB constraint
+                conn.rollback()
+                logger.info(
+                    f"[worker] Race condition: Insight row created by another worker for {document_id}. Skipping."
+                )
+                return
+
+        # 1. Get file path and existing markdown
+        input_path = None
+        existing_markdown = None
+
+        with conn.cursor() as cur:
             cur.execute(
-                "SELECT storage_path, extracted_markdown, user_id FROM documents WHERE id = %s",
+                "SELECT storage_path, extracted_markdown FROM documents WHERE id = %s",
                 (document_id,),
             )
             row = cur.fetchone()
             if row:
                 input_path = row[0]
                 existing_markdown = row[1]
-                user_id = row[2]
 
         if not input_path:
-            logger.error(f"[worker] Document not found in DB: {document_id}")
+            logger.error(
+                f"[worker] Document path not found (unexpected): {document_id}"
+            )
             return
 
         # Ensure absolute path if stored relatively
@@ -148,6 +190,7 @@ def run_insights_pipeline(document_id: str) -> None:
 
         if not os.path.exists(input_path):
             logger.error(f"[worker] File not found on disk: {input_path}")
+            # Optional: Update status to 'failed' here
             return
 
         logger.info("[worker] Using input file path: %s", input_path)
@@ -192,27 +235,18 @@ def run_insights_pipeline(document_id: str) -> None:
             len(html),
         )
 
-        # 4. Save to DB (Upsert)
+        # 4. Save to DB (Update)
         try:
             with conn.cursor() as cur:
-                # We need a UUID for the new insight row if we insert
-                import uuid
-
-                new_insight_id = str(uuid.uuid4())
-
-                upsert_query = """
-                    INSERT INTO insights (id, document_id, user_id, html_insights, status, created_at, updated_at)
-                    VALUES (%s, %s, %s, %s, 'completed', NOW(), NOW())
-                    ON CONFLICT (document_id) 
-                    DO UPDATE SET
-                        html_insights = EXCLUDED.html_insights,
-                        status = 'completed',
-                        updated_at = NOW();
+                update_query = """
+                    UPDATE insights 
+                    SET html_insights = %s, status = 'completed', updated_at = NOW()
+                    WHERE document_id = %s
                 """
-                cur.execute(upsert_query, (new_insight_id, document_id, user_id, html))
+                cur.execute(update_query, (html, document_id))
                 conn.commit()
                 logger.info(
-                    f"[worker] DB updated (Upsert) for document_id={document_id!r}"
+                    f"[worker] DB updated (Completed) for document_id={document_id!r}"
                 )
         except Exception as db_err:
             logger.exception(
@@ -284,3 +318,76 @@ async def generate_insights_endpoint(
         status_code=200,
         content={"status": "accepted", "document_id": req.document_id},
     )
+
+
+@app.post("/internal/generate-user-insights")
+async def generate_user_insights_endpoint(req: GenerateUserInsightsRequest):
+    """
+    Generate a cumulative summary for all documents of a user.
+    """
+    logger.info(
+        f"Received POST /internal/generate-user-insights for user_id={req.user_id!r}"
+    )
+
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            # Fetch all documents with extracted markdown for this user
+            cur.execute(
+                """
+                SELECT extracted_markdown, uploaded_at
+                FROM documents
+                WHERE user_id = %s AND extracted_markdown IS NOT NULL AND extracted_markdown != ''
+                ORDER BY uploaded_at ASC
+                """,
+                (req.user_id,),
+            )
+            rows = cur.fetchall()
+
+        if not rows:
+            return JSONResponse(
+                status_code=404,
+                content={
+                    "error": "No documents with extracted markdown found for this user."
+                },
+            )
+
+        # Aggregate markdowns
+        aggregated_markdown = ""
+        for i, (markdown, uploaded_at) in enumerate(rows):
+            date_str = (
+                uploaded_at.strftime("%Y-%m-%d") if uploaded_at else "Unknown Date"
+            )
+            aggregated_markdown += f"\n[REPORT {i + 1} - {date_str}]\n{markdown}\n"
+
+        aggregated_markdown += "\n[END OF REPORTS]\n"
+
+        # Generate insights
+        from config import PATIENT_SUMMARY_PROMPT_FILE
+        from generate_insights_txt import generate_insights_html, load_text
+
+        prompt = load_text(PATIENT_SUMMARY_PROMPT_FILE)
+        html = generate_insights_html(aggregated_markdown, prompt=prompt)
+
+        # Save to DB
+        with conn.cursor() as cur:
+            cur.execute(
+                "UPDATE users SET patient_insights = %s WHERE id = %s",
+                (html, req.user_id),
+            )
+            conn.commit()
+
+        return JSONResponse(
+            status_code=200,
+            content={"status": "completed", "html": html},
+        )
+
+    except Exception as e:
+        logger.exception(f"Error generating user insights: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"error": str(e)},
+        )
+    finally:
+        if conn:
+            conn.close()

@@ -7,11 +7,12 @@ import (
 
 // User maps to the `users` table.
 type User struct {
-	ID          string     `json:"id"`
-	PhoneNumber string     `json:"phone_number"`
-	FullName    *string    `json:"full_name,omitempty"`
-	CreatedAt   time.Time  `json:"created_at"`
-	LastLoginAt *time.Time `json:"last_login_at,omitempty"`
+	ID              string     `json:"id"`
+	PhoneNumber     string     `json:"phone_number"`
+	FullName        *string    `json:"full_name,omitempty"`
+	PatientInsights *string    `json:"patient_insights,omitempty"`
+	CreatedAt       time.Time  `json:"created_at"`
+	LastLoginAt     *time.Time `json:"last_login_at,omitempty"`
 }
 
 // UpsertUserByPhone finds a user by phone_number or creates one.
@@ -23,7 +24,7 @@ VALUES ($1, $2, NOW())
 ON CONFLICT (phone_number)
 DO UPDATE SET
     last_login_at = EXCLUDED.last_login_at
-RETURNING id, phone_number, full_name, created_at, last_login_at;
+RETURNING id, phone_number, full_name, patient_insights, created_at, last_login_at;
 `
 	row := s.pool.QueryRow(ctx, q, phone, fullName)
 
@@ -32,6 +33,7 @@ RETURNING id, phone_number, full_name, created_at, last_login_at;
 		&u.ID,
 		&u.PhoneNumber,
 		&u.FullName,
+		&u.PatientInsights,
 		&u.CreatedAt,
 		&u.LastLoginAt,
 	); err != nil {
@@ -43,7 +45,7 @@ RETURNING id, phone_number, full_name, created_at, last_login_at;
 // GetUserByID fetches a user by id.
 func (s *Store) GetUserByID(ctx context.Context, id string) (*User, error) {
 	const q = `
-SELECT id, phone_number, full_name, created_at, last_login_at
+SELECT id, phone_number, full_name, patient_insights, created_at, last_login_at
 FROM users
 WHERE id = $1;
 `
@@ -54,6 +56,7 @@ WHERE id = $1;
 		&u.ID,
 		&u.PhoneNumber,
 		&u.FullName,
+		&u.PatientInsights,
 		&u.CreatedAt,
 		&u.LastLoginAt,
 	); err != nil {

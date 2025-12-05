@@ -1,5 +1,5 @@
 // src/pages/InsightPage.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   getInsight,
@@ -13,6 +13,9 @@ function InsightPage() {
   const [status, setStatus] = useState("checking");
   const [error, setError] = useState("");
 
+  // Ref to track if we've already triggered generation for this ID
+  const generationTriggeredRef = useRef(null);
+
   useEffect(() => {
     async function loadInsight() {
       if (!id) return;
@@ -21,6 +24,11 @@ function InsightPage() {
       setError("");
       setInsight("");
       setStatus("checking");
+
+      // Reset the trigger ref if the ID has changed
+      if (generationTriggeredRef.current !== id) {
+        generationTriggeredRef.current = null;
+      }
 
       try {
         // 1) Ask Go service if insight exists
@@ -46,7 +54,11 @@ function InsightPage() {
           setStatus("ready");
         } else {
           // No usable insight → trigger Python generation
-          await triggerInsightGeneration(id);
+          // Only trigger if we haven't already done so for this ID
+          if (generationTriggeredRef.current !== id) {
+            generationTriggeredRef.current = id;
+            await triggerInsightGeneration(id);
+          }
           setStatus("generating");
         }
       } catch (err) {

@@ -155,6 +155,15 @@ function DocumentsPage() {
         )}
       </div>
 
+      <div className="mt-8 pt-6 border-t">
+        <Link
+          to="/user-insights"
+          className="block w-full text-center px-4 py-2 bg-indigo-600 text-white rounded-md font-medium hover:bg-indigo-700 transition-colors"
+        >
+          Generate user insights
+        </Link>
+      </div>
+
       <p className="mt-4 text-xs text-slate-400">
         Note: API base URL:{" "}
         <code className="font-mono">
