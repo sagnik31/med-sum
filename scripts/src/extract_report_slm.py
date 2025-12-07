@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 import os
 import sys
 import ollama
@@ -11,7 +12,12 @@ import fitz  # PyMuPDF
 # ------------- CONFIG -------------
 # Add parent directory to path to allow importing config
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from config import OUTPUT_MD_SLM, INPUT_PDF, VISION_PROMPT_FILE  # INPUT_PDF is generic input file
+from config import (
+    OUTPUT_MD_SLM,
+    INPUT_PDF,
+    OPTHAL_POINT_FILE,
+    VISION_PROMPT_FILE
+)  # INPUT_PDF is generic input file
 
 VISION_MODEL = "qwen2.5vl:7b"
 END_MARKER = "[[END_OF_PAGE]]"
@@ -82,7 +88,9 @@ def process_image_file(input_path: str, system_prompt: str) -> str:
     """Read a normal image file and send it to the VLM."""
     with open(input_path, "rb") as f:
         image_bytes = f.read()
-    page_md = run_vlm_on_image_bytes(image_bytes, system_prompt, label=os.path.basename(input_path))
+    page_md = run_vlm_on_image_bytes(
+        image_bytes, system_prompt, label=os.path.basename(input_path)
+    )
     return page_md
 
 
@@ -121,7 +129,7 @@ def extract_markdown_from_file(input_path: str) -> str:
     if not os.path.exists(input_path):
         raise FileNotFoundError(f"Input file not found: {input_path}")
 
-    system_prompt = load_prompt(VISION_PROMPT_FILE)
+    system_prompt = load_prompt(OPTHAL_POINT_FILE)
     ext = os.path.splitext(input_path)[1].lower()
 
     print("\n======================================")

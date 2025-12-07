@@ -64,7 +64,10 @@ def generate_insights(prompt: str, markdown_report: str) -> str:
         {"role": "user", "content": markdown_report},
     ]
 
+    print(f"\n=== 📝 Loading Markdown Report === \n{markdown_report}")
+    print(f"\n=== 📝 Loading Prompt === \n{prompt}")
     print("\n=== 💡 Generating Clinical Insights (streaming) ===\n")
+    print("\n=== Model Name===\n", MODEL_NAME)
 
     streamed = ""
     for chunk in ollama.chat(

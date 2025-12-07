@@ -27,6 +27,7 @@ INPUT_MD_SLM = os.path.join(
 # Prompts are in .../scripts/prompt/txt/
 PROMPT_FILE = os.path.join(SCRIPTS_DIR, "prompt", "txt", "insight_prompt.txt")
 VISION_PROMPT_FILE = os.path.join(SCRIPTS_DIR, "prompt", "img", "extract_report_img.txt")
+OPTHAL_POINT_FILE = os.path.join(SCRIPTS_DIR, "prompt", "img", "opthal_report.txt")
 
 # Text model to use for insights generation
 MODEL_NAME = "qwen3:4b-instruct-2507-q8_0"
