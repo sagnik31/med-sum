@@ -43,8 +43,7 @@ Before running the project, ensure you have the following installed:
 1.  Ensure PostgreSQL is running.
 2.  Create a database named `med_sum`.
 3.  Run the migration script to set up the schema:
-    ```bash
-    psql -U postgres -d med_sum -f db/migrations/0001_init.sql
+    psql -U postgres -d med_sum -f db/migrations/med_sum_schema.sql
     ```
     *Note: The default connection string expects user `postgres` and password `postgres`. Update `backend/run.ps1` and `scripts/src/insights_service.py` if your credentials differ.*
 
@@ -134,3 +133,15 @@ Open three separate terminals:
 -   `scripts/`: Python scripts for LLM/VLM processing and FastAPI service
 -   `db/`: Database migrations
 -   `data/`: Storage for uploaded/generated files
+-   `postman/`: API definition and collection
+
+## 🔌 API Documentation
+
+A Postman collection is available for testing the API endpoints.
+
+1.  **Import Collection**: Import `postman/collections/med-sum.postman_collection.json` into Postman.
+2.  **Environment Variables**: The collection uses `{{backend_url}}` (default: `http://localhost:8080`) and `{{ai_service_url}}` (default: `http://localhost:9000`).
+3.  **Authentication**:
+    *   Execute the **Login** request first.
+    *   Copy the `token` from the response.
+    *   Set it as the `auth_token` variable in your Postman environment or collection variables.

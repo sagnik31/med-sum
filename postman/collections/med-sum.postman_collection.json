@@ -1,0 +1,333 @@
+{
+  "info": {
+    "_postman_id": "650610c2-a169-4c21-af19-9b8a6b800d65",
+    "name": "Med-Sum APIs",
+    "description": "Collection of APIs for the Med-Sum project, including the Go Backend and Python AI Service.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Backend (Go)",
+      "item": [
+        {
+          "name": "Public",
+          "item": [
+            {
+              "name": "Health Check",
+              "id": "469f4a6a-07c3-450b-b237-6a75d92903b4",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{backend_url}}/healthz",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "healthz"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Login",
+              "id": "191039c6-f234-4528-b692-e0b8e305a73c",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"phone_number\": \"+1234567890\",\n    \"full_name\": \"John Doe\"\n}"
+                },
+                "url": {
+                  "raw": "{{backend_url}}/login",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              }
+            }
+          ],
+          "id": "85d6b170-4fb8-4192-abd7-ef65d8e2547e"
+        },
+        {
+          "name": "Documents",
+          "item": [
+            {
+              "name": "Upload Document",
+              "id": "05ae45d2-87a0-4fd2-b8fc-8180a57f5a26",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auth_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{backend_url}}/documents",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "documents"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "List Documents",
+              "id": "9280bbe3-5ec2-45e2-813c-4193e6305d9d",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auth_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "url": {
+                  "raw": "{{backend_url}}/documents",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "documents"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Delete Document",
+              "id": "23e63427-8def-4dfd-865e-55fe4d9d0be4",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auth_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "url": {
+                  "raw": "{{backend_url}}/documents/:id",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "documents",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "Document ID"
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "id": "b3039118-3f4c-42cd-b6c9-31ad13f8b8ba"
+        },
+        {
+          "name": "Insights",
+          "item": [
+            {
+              "name": "Get Document Insight",
+              "id": "c4e77b32-e211-4ed8-bd0d-bed0a765d3af",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auth_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "url": {
+                  "raw": "{{backend_url}}/documents/:id/insight",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "documents",
+                    ":id",
+                    "insight"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "Document ID"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Patient Summaries",
+              "id": "f0c61940-4d09-468c-8a37-67f7b3a3b24e",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auth_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "url": {
+                  "raw": "{{backend_url}}/user/insights",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "insights"
+                  ]
+                }
+              }
+            }
+          ],
+          "id": "b555f06b-3bb6-4848-8154-9fed5adf7abf"
+        }
+      ],
+      "id": "425abae1-67f1-4527-8db6-0bed481efb82"
+    },
+    {
+      "name": "AI Service (Python)",
+      "item": [
+        {
+          "name": "Health Check",
+          "id": "69e29bd8-d045-411b-8ef4-7477f5c71d9f",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{ai_service_url}}/health",
+              "host": [
+                "{{ai_service_url}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Generate Document Insights (Internal)",
+          "id": "e1e2e1cd-836a-4654-91d6-4d4637461580",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"document_id\": \"uuid-string\"\n}"
+            },
+            "url": {
+              "raw": "{{ai_service_url}}/internal/generate-insights",
+              "host": [
+                "{{ai_service_url}}"
+              ],
+              "path": [
+                "internal",
+                "generate-insights"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Generate User Insights (Internal)",
+          "id": "b341ee57-fed9-4e3e-86bd-ede26bd273ad",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"user_id\": \"uuid-string\"\n}"
+            },
+            "url": {
+              "raw": "{{ai_service_url}}/internal/generate-user-insights",
+              "host": [
+                "{{ai_service_url}}"
+              ],
+              "path": [
+                "internal",
+                "generate-user-insights"
+              ]
+            }
+          }
+        }
+      ],
+      "id": "37c90e54-8fbf-4d21-8384-2cd0245eab27"
+    }
+  ],
+  "variable": [
+    {
+      "id": "735dcb0b-8a1d-4ff8-ae89-7ec17b3363f4",
+      "key": "backend_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "id": "ce90f6f7-3a17-46d4-9727-9d4b49e55b02",
+      "key": "ai_service_url",
+      "value": "http://localhost:9000",
+      "type": "string"
+    },
+    {
+      "id": "896c469d-78d0-428f-a714-fe469a8b9514",
+      "key": "auth_token",
+      "value": "",
+      "type": "string",
+      "description": "JWT Token from /login"
+    }
+  ]
+}
