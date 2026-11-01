@@ -108,23 +108,25 @@ def process_pdf_file(input_path: str, system_prompt: str, on_page=None) -> str:
     Concatenate all page markdown outputs.
     `on_page`, if given, is called before each page (progress heartbeat).
     """
-    doc = fitz.open(input_path)
     all_pages_md = []
 
-    num_pages = len(doc)
-    print(f"\n=== 📄 PDF detected: {num_pages} page(s) ===")
+    # Closed even on failure: an open handle keeps the file locked on
+    # Windows, so the backend could not delete it.
+    with fitz.open(input_path) as doc:
+        num_pages = len(doc)
+        print(f"\n=== 📄 PDF detected: {num_pages} page(s) ===")
 
-    for i, page in enumerate(doc, start=1):
-        if on_page:
-            on_page()
-        label = f"{os.path.basename(input_path)} - page {i}/{num_pages}"
-        print(f"\n--- Rendering {label} to image ---")
+        for i, page in enumerate(doc, start=1):
+            if on_page:
+                on_page()
+            label = f"{os.path.basename(input_path)} - page {i}/{num_pages}"
+            print(f"\n--- Rendering {label} to image ---")
 
-        pix = page.get_pixmap(dpi=200)
-        image_bytes = pix.tobytes("png")
+            pix = page.get_pixmap(dpi=200)
+            image_bytes = pix.tobytes("png")
 
-        page_md = run_vlm_on_image_bytes(image_bytes, system_prompt, label=label)
-        all_pages_md.append(page_md)
+            page_md = run_vlm_on_image_bytes(image_bytes, system_prompt, label=label)
+            all_pages_md.append(page_md)
 
     return "\n\n".join(md for md in all_pages_md if md)
 
