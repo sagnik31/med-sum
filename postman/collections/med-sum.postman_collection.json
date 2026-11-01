@@ -259,6 +259,11 @@
                 "key": "Content-Type",
                 "value": "application/json",
                 "type": "text"
+              },
+              {
+                "key": "X-Internal-Token",
+                "value": "{{internal_api_token}}",
+                "type": "text"
               }
             ],
             "body": {
@@ -286,6 +291,11 @@
               {
                 "key": "Content-Type",
                 "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Internal-Token",
+                "value": "{{internal_api_token}}",
                 "type": "text"
               }
             ],
@@ -328,6 +338,12 @@
       "value": "",
       "type": "string",
       "description": "JWT Token from /login"
+    },
+    {
+      "key": "internal_api_token",
+      "value": "dev-internal-token",
+      "type": "string",
+      "description": "Must match INTERNAL_API_TOKEN of the AI service"
     }
   ]
 }

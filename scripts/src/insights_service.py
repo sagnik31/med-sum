@@ -8,15 +8,15 @@ Insights Generation Service (FastAPI)
     POST /internal/generate-insights        (background, per document)
     POST /internal/generate-user-insights   (synchronous, per user)
 
-- CORS enabled for:
-    http://localhost:5173  (frontend)
-    http://localhost:8080  (Go backend)
+- Internal only: /internal/* requires the X-Internal-Token header to match
+  INTERNAL_API_TOKEN. No CORS, so browsers cannot call it; the Go backend
+  checks document ownership and forwards requests here.
 
-- Flow expected from frontend:
-    1) Call Go: GET /documents/{id}/insight
-    2) If no insight -> call this service:
-          POST /internal/generate-insights { "document_id": "<id>" }
-    3) Show "insights are being generated" message
+- Flow:
+    1) Frontend calls Go: GET /documents/{id}/insight
+    2) If no insight -> frontend calls Go: POST /documents/{id}/insight,
+       which calls POST /internal/generate-insights { "document_id": "<id>" }
+    3) Frontend shows "insights are being generated" message
 
 Current behavior of the worker:
     - Looks up the document's storage_path in the DB (an absolute path written by the backend)
@@ -24,11 +24,10 @@ Current behavior of the worker:
     - Generates HTML insights via the text model (qwen3:4b-instruct)
 """
 
+import hmac
 import logging
-from typing import List
 
-from fastapi import FastAPI, BackgroundTasks
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, BackgroundTasks, Depends, Header, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import psycopg2
@@ -46,25 +45,24 @@ logging.basicConfig(
 logger = logging.getLogger("insights_service")
 
 # -------------------------------------------------------------------
-# FastAPI app + CORS
+# FastAPI app + internal auth
 # -------------------------------------------------------------------
 app = FastAPI(title="Insights Generation Service")
 
-# Allowed origins: frontend + Go backend
-origins: List[str] = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:8080",
-    "http://127.0.0.1:8080",
-]
+# Shared with the Go backend (same variable name there).
+INTERNAL_API_TOKEN = os.environ.get("INTERNAL_API_TOKEN", "")
+if not INTERNAL_API_TOKEN:
+    logger.warning("INTERNAL_API_TOKEN is not set; /internal/* will reject all calls.")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],  # IMPORTANT: allows OPTIONS, POST, etc.
-    allow_headers=["*"],
-)
+
+def require_internal_token(x_internal_token: str = Header(default="")) -> None:
+    """Endpoints act on any document/user ID, so only the backend may call them."""
+    if not INTERNAL_API_TOKEN:
+        raise HTTPException(
+            status_code=503, detail="INTERNAL_API_TOKEN is not configured"
+        )
+    if not hmac.compare_digest(x_internal_token.encode(), INTERNAL_API_TOKEN.encode()):
+        raise HTTPException(status_code=401, detail="invalid internal token")
 
 
 # A 'processing' job with no heartbeat for this long is treated as abandoned
@@ -286,7 +284,7 @@ async def health():
     return {"status": "ok"}
 
 
-@app.post("/internal/generate-insights")
+@app.post("/internal/generate-insights", dependencies=[Depends(require_internal_token)])
 async def generate_insights_endpoint(
     req: GenerateInsightsRequest,
     background_tasks: BackgroundTasks,
@@ -294,8 +292,8 @@ async def generate_insights_endpoint(
     """
     Trigger insight generation for a given document_id.
 
-    Called from frontend when Go /documents/{id}/insight
-    has no existing insight.
+    Called by the Go backend (POST /documents/{id}/insight) after it has
+    checked that the document belongs to the requesting user.
 
     Returns quickly; work is done in the background task.
     """
@@ -312,7 +310,9 @@ async def generate_insights_endpoint(
     )
 
 
-@app.post("/internal/generate-user-insights")
+@app.post(
+    "/internal/generate-user-insights", dependencies=[Depends(require_internal_token)]
+)
 def generate_user_insights_endpoint(req: GenerateUserInsightsRequest):
     """
     Generate a cumulative summary for all documents of a user.

@@ -111,7 +111,8 @@ Open three separate terminals:
 1.  **Backend**:
     ```bash
     cd backend
-    # Set env vars: DATABASE_URL, JWT_SECRET, HTTP_ADDRESS, UPLOADS_DIR (optional, default ./uploads)
+    # Set env vars: DATABASE_URL, JWT_SECRET, INTERNAL_API_TOKEN, HTTP_ADDRESS,
+    # UPLOADS_DIR (optional, default ./uploads), INSIGHTS_SERVICE_URL (optional, default http://localhost:9000)
     go run ./cmd/server
     ```
 
@@ -124,6 +125,7 @@ Open three separate terminals:
 3.  **AI Service**:
     ```bash
     cd scripts
+    # Set INTERNAL_API_TOKEN to the same value as the backend's
     uvicorn insights_service:app --app-dir src --reload --port 9000
     ```
 
@@ -146,3 +148,4 @@ A Postman collection is available for testing the API endpoints.
     *   Execute the **Login** request first.
     *   Copy the `token` from the response.
     *   Set it as the `auth_token` variable in your Postman environment or collection variables.
+4.  **AI service (internal)**: Its `/internal/*` endpoints require an `X-Internal-Token` header matching `INTERNAL_API_TOKEN`; the collection sends `{{internal_api_token}}` (default `dev-internal-token`, as in the run scripts). The frontend never calls the AI service directly; it goes through the backend's `POST /documents/{id}/insight`.

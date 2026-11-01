@@ -4,9 +4,6 @@
 export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
-export const INSIGHTS_API_BASE_URL =
-  import.meta.env.VITE_INSIGHTS_API_BASE_URL || "http://localhost:9000";
-
 // Helper to get auth token (stored after login)
 function getAuthToken() {
   return localStorage.getItem("authToken");
@@ -97,37 +94,12 @@ export function getInsight(documentId) {
   });
 }
 
-// 2) Trigger Python FastAPI to generate insights
-export async function triggerInsightGeneration(documentId) {
-  const token = getAuthToken();
-  const headers = new Headers({
-    "Content-Type": "application/json",
+// Ask the backend to start insight generation (it checks ownership and
+// forwards to the AI service). Fire-and-forget: poll getInsight for the result.
+export function triggerInsightGeneration(documentId) {
+  return apiRequest(`/documents/${documentId}/insight`, {
+    method: "POST",
   });
-  if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
-  }
-
-  const response = await fetch(
-    `${INSIGHTS_API_BASE_URL}/internal/generate-insights`,
-    {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        document_id: documentId,
-      }),
-    }
-  );
-
-  if (!response.ok) {
-    const text = await response.text().catch(() => "");
-    throw new Error(
-      `Failed to trigger insight generation ${response.status}: ${text || response.statusText
-      }`
-    );
-  }
-
-  // We don't really care about the body here; it's fire-and-forget
-  return true;
 }
 
 export function fetchUserInsights() {

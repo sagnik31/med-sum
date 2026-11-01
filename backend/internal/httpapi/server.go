@@ -1,6 +1,7 @@
 package httpapi
 
 import (
+	"bytes"
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
@@ -9,23 +10,30 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"backend/internal/db"
 )
 
 type Server struct {
-	db         *db.Store
-	jwtSecret  []byte
-	uploadsDir string // absolute, so the AI service can open stored paths
-	mux        *http.ServeMux
+	db            *db.Store
+	jwtSecret     []byte
+	uploadsDir    string // absolute, so the AI service can open stored paths
+	insightsURL   string // AI service base URL
+	internalToken string // shared secret the AI service requires
+	httpClient    *http.Client
+	mux           *http.ServeMux
 }
 
-func NewServer(store *db.Store, jwtSecret, uploadsDir string) *Server {
+func NewServer(store *db.Store, jwtSecret, uploadsDir, insightsURL, internalToken string) *Server {
 	s := &Server{
-		db:         store,
-		jwtSecret:  []byte(jwtSecret),
-		uploadsDir: uploadsDir,
-		mux:        http.NewServeMux(),
+		db:            store,
+		jwtSecret:     []byte(jwtSecret),
+		uploadsDir:    uploadsDir,
+		insightsURL:   strings.TrimRight(insightsURL, "/"),
+		internalToken: internalToken,
+		httpClient:    &http.Client{Timeout: 10 * time.Second},
+		mux:           http.NewServeMux(),
 	}
 
 	// Public
@@ -35,7 +43,7 @@ func NewServer(store *db.Store, jwtSecret, uploadsDir string) *Server {
 	// Authenticated:
 	// /documents (POST = upload, GET = list)
 	s.mux.HandleFunc("/documents", s.withAuth(s.handleDocuments))
-	// /documents/{id} and /documents/{id}/insight
+	// /documents/{id} and /documents/{id}/insight (GET = fetch, POST = generate)
 	s.mux.HandleFunc("/documents/", s.withAuth(s.handleDocumentByID))
 
 	// /user/insights
@@ -237,11 +245,14 @@ func (s *Server) handleDocumentByID(w http.ResponseWriter, r *http.Request) {
 
 	// /documents/{id}/insight
 	if len(parts) == 2 && parts[1] == "insight" {
-		if r.Method != http.MethodGet {
+		switch r.Method {
+		case http.MethodGet:
+			s.handleGetDocumentInsight(w, r, docID)
+		case http.MethodPost:
+			s.handleGenerateDocumentInsight(w, r, docID)
+		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
-			return
 		}
-		s.handleGetDocumentInsight(w, r, docID)
 		return
 	}
 
@@ -354,6 +365,56 @@ func (s *Server) handleGetDocumentInsight(w http.ResponseWriter, r *http.Request
 	}
 
 	writeJSON(w, http.StatusOK, resp)
+}
+
+// ----- Start insight generation: POST /documents/{id}/insight -----
+
+// The AI service trusts whatever document ID it is given, so the browser
+// never calls it directly: requests come through here, where ownership is
+// checked, and carry the shared internal token.
+func (s *Server) handleGenerateDocumentInsight(w http.ResponseWriter, r *http.Request, docID string) {
+	userID, ok := userIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	doc, err := s.db.GetDocumentByIDAndUser(r.Context(), docID, userID)
+	if err != nil {
+		log.Printf("GetDocumentByIDAndUser error: %v", err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+	if doc == nil {
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+
+	body, _ := json.Marshal(map[string]string{"document_id": docID})
+	req, err := http.NewRequestWithContext(r.Context(), http.MethodPost,
+		s.insightsURL+"/internal/generate-insights", bytes.NewReader(body))
+	if err != nil {
+		log.Printf("build insights request: %v", err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Internal-Token", s.internalToken)
+
+	resp, err := s.httpClient.Do(req)
+	if err != nil {
+		log.Printf("insights service error: %v", err)
+		http.Error(w, "insights service unavailable", http.StatusBadGateway)
+		return
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		log.Printf("insights service returned %s", resp.Status)
+		http.Error(w, "insights service unavailable", http.StatusBadGateway)
+		return
+	}
+
+	writeJSON(w, http.StatusAccepted, map[string]string{"status": "accepted", "document_id": docID})
 }
 
 // ----- Get patient insights: GET /user/insights -----

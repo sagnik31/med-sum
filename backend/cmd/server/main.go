@@ -23,6 +23,12 @@ func main() {
 		log.Fatal("JWT_SECRET is required")
 	}
 
+	// Shared with the AI service, which rejects /internal/* calls without it.
+	internalToken := os.Getenv("INTERNAL_API_TOKEN")
+	if internalToken == "" {
+		log.Fatal("INTERNAL_API_TOKEN is required")
+	}
+
 	ctx := context.Background()
 
 	store, err := appdb.New(ctx, dsn)
@@ -41,7 +47,9 @@ func main() {
 		log.Fatalf("failed to create uploads directory: %v", err)
 	}
 
-	api := httpapi.NewServer(store, jwtSecret, uploadsDir)
+	insightsURL := getEnv("INSIGHTS_SERVICE_URL", "http://localhost:9000")
+
+	api := httpapi.NewServer(store, jwtSecret, uploadsDir, insightsURL, internalToken)
 
 	addr := getEnv("HTTP_ADDRESS", ":8080")
 
