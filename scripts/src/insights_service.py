@@ -67,6 +67,12 @@ app.add_middleware(
 )
 
 
+# A 'processing' job with no heartbeat for this long is treated as abandoned
+# and may be claimed again. Heartbeats happen before each PDF page and before
+# insight generation, each bounded by the token caps in the model modules.
+STALE_PROCESSING_AFTER = "30 minutes"
+
+
 # -------------------------------------------------------------------
 # Models
 # -------------------------------------------------------------------
@@ -93,6 +99,16 @@ def get_db_connection():
         "postgres://postgres:postgres@localhost:5432/med_sum?sslmode=disable",
     )
     return psycopg2.connect(dsn)
+
+
+def touch_insight(conn, document_id: str) -> None:
+    """Heartbeat: bump updated_at so a live job is not mistaken for a stale one."""
+    with conn.cursor() as cur:
+        cur.execute(
+            "UPDATE insights SET updated_at = NOW() WHERE document_id = %s AND status = 'processing'",
+            (document_id,),
+        )
+    conn.commit()
 
 
 def mark_insight_failed(conn, document_id: str, message: str) -> None:
@@ -128,7 +144,8 @@ def run_insights_pipeline(document_id: str) -> None:
     claimed = False
     try:
         # 0. Claim the job: create a 'processing' row, or re-claim a 'failed'
-        #    one so it is retried. Completed/processing rows are left alone.
+        #    one (retry) or a stale 'processing' one (worker died mid-job,
+        #    e.g. a --reload restart). Completed and live jobs are left alone.
         with conn.cursor() as cur:
             cur.execute(
                 """
@@ -137,9 +154,11 @@ def run_insights_pipeline(document_id: str) -> None:
                 ON CONFLICT (document_id) DO UPDATE
                     SET status = 'processing', error_message = NULL, updated_at = NOW()
                     WHERE insights.status = 'failed'
+                       OR (insights.status = 'processing'
+                           AND insights.updated_at < NOW() - %s::interval)
                 RETURNING id
                 """,
-                (document_id,),
+                (document_id, STALE_PROCESSING_AFTER),
             )
             claimed = cur.fetchone() is not None
             conn.commit()
@@ -196,7 +215,9 @@ def run_insights_pipeline(document_id: str) -> None:
             # Run extraction only
             from extract_report_slm import extract_markdown_from_file
 
-            markdown = extract_markdown_from_file(input_path)
+            markdown = extract_markdown_from_file(
+                input_path, on_page=lambda: touch_insight(conn, document_id)
+            )
 
             # Save extracted markdown back to DB
             try:
@@ -217,6 +238,8 @@ def run_insights_pipeline(document_id: str) -> None:
 
         # 3. Generate HTML Insights (SLM)
         from generate_insights_txt import generate_insights_html
+
+        touch_insight(conn, document_id)
 
         html = generate_insights_html(markdown)
 

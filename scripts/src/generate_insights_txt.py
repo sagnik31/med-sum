@@ -10,6 +10,10 @@ from bs4 import BeautifulSoup  # used to ensure clean HTML structure
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from config import INPUT_MD_SLM, OUTPUT_HTML_SLM, MODEL_NAME, PROMPT_FILE
 
+# Hard cap so a model stuck in a repetition loop cannot run forever;
+# real insights and patient summaries need far fewer tokens.
+MAX_TOKENS = 8192
+
 
 # Minimal clean medical CSS styling
 BASE_CSS = """
@@ -78,6 +82,7 @@ def generate_insights(prompt: str, markdown_report: str) -> str:
         model=MODEL_NAME,
         messages=messages,
         stream=True,
+        options={"num_predict": MAX_TOKENS},
     ):
         token = chunk.get("message", {}).get("content", "")
         if not token:

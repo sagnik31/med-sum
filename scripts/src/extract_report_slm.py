@@ -20,6 +20,9 @@ from config import (
 
 VISION_MODEL = "qwen2.5vl:7b"
 END_MARKER = "[[END_OF_PAGE]]"
+# Hard cap so a model stuck in a repetition loop cannot run forever;
+# a real report page needs far fewer tokens.
+MAX_TOKENS_PER_PAGE = 4096
 # ----------------------------------
 
 
@@ -65,6 +68,7 @@ def run_vlm_on_image_bytes(image_bytes: bytes, system_prompt: str, label: str) -
         model=VISION_MODEL,
         messages=messages,
         stream=True,
+        options={"num_predict": MAX_TOKENS_PER_PAGE},
     ):
         token = chunk.get("message", {}).get("content", "")
         if not token:
@@ -93,10 +97,11 @@ def process_image_file(input_path: str, system_prompt: str) -> str:
     return page_md
 
 
-def process_pdf_file(input_path: str, system_prompt: str) -> str:
+def process_pdf_file(input_path: str, system_prompt: str, on_page=None) -> str:
     """
     Render each PDF page to an image in memory and process via VLM.
     Concatenate all page markdown outputs.
+    `on_page`, if given, is called before each page (progress heartbeat).
     """
     doc = fitz.open(input_path)
     all_pages_md = []
@@ -105,6 +110,8 @@ def process_pdf_file(input_path: str, system_prompt: str) -> str:
     print(f"\n=== 📄 PDF detected: {num_pages} page(s) ===")
 
     for i, page in enumerate(doc, start=1):
+        if on_page:
+            on_page()
         label = f"{os.path.basename(input_path)} - page {i}/{num_pages}"
         print(f"\n--- Rendering {label} to image ---")
 
@@ -120,10 +127,11 @@ def process_pdf_file(input_path: str, system_prompt: str) -> str:
 # -------------------------------------------------------------------
 # Reusable wrapper so other Python code can call this directly
 # -------------------------------------------------------------------
-def extract_markdown_from_file(input_path: str) -> str:
+def extract_markdown_from_file(input_path: str, on_page=None) -> str:
     """
     Given a local file path (PDF / JPG / PNG / etc.), run the vision pipeline
     and return the extracted Markdown string.
+    `on_page`, if given, is called before each PDF page (progress heartbeat).
     """
     if not os.path.exists(input_path):
         raise FileNotFoundError(f"Input file not found: {input_path}")
@@ -139,7 +147,7 @@ def extract_markdown_from_file(input_path: str) -> str:
     if ext in [".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff", ".webp"]:
         full_md = process_image_file(input_path, system_prompt)
     elif ext == ".pdf":
-        full_md = process_pdf_file(input_path, system_prompt)
+        full_md = process_pdf_file(input_path, system_prompt, on_page=on_page)
     else:
         raise ValueError(f"Unsupported file type for vision model: {ext}")
 
