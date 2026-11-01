@@ -47,9 +47,9 @@ Formatting rules:
 Completion rule:
 
 * After extracting all content, output the following marker on a separate line:
-  [[END_OF_REPORT]]
-* Do NOT output anything after [[END_OF_REPORT]]
+  [[END_OF_PAGE]]
+* Do NOT output anything after [[END_OF_PAGE]]
 * Do NOT repeat the report content
 
 If the image contains no readable text, only return:
-[[END_OF_REPORT]]
+[[END_OF_PAGE]]

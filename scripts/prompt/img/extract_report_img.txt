@@ -27,7 +27,7 @@ If any part of the text is unclear or unreadable, mark it as: [unreadable]
 Output:
 - Return ONLY the reconstructed report content in Markdown format, exactly once.
 - If the image contains no readable text or if you have finished extracting all text, output the marker line immediately:
-  [[END_OF_REPORT]]
-- Do NOT output anything after [[END_OF_REPORT]].
+  [[END_OF_PAGE]]
+- Do NOT output anything after [[END_OF_PAGE]].
 - Do NOT repeat sections.
 - Do NOT hallucinate data.
