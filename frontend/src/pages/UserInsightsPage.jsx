@@ -52,7 +52,6 @@ function UserInsightsPage() {
                 </div>
             ) : insights ? (
                 <div
-                    className="prose prose-slate max-w-none"
                     dangerouslySetInnerHTML={{ __html: insights }}
                 />
             ) : (
