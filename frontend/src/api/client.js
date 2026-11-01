@@ -91,51 +91,10 @@ export function deleteDocument(id) {
   });
 }
 
-export async function getInsight(documentId) {
-  const token = getAuthToken();
-  const headers = new Headers();
-  if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
-  }
-
-  const response = await fetch(
-    `${API_BASE_URL}/documents/${documentId}/insight`,
-    {
-      method: "GET",
-      headers,
-    }
-  );
-
-  // If Go explicitly says "not found"
-  if (response.status === 404 || response.status === 204) {
-    return { exists: false, data: null };
-  }
-
-  if (!response.ok) {
-    const text = await response.text().catch(() => "");
-    if (response.status === 401) {
-      throw new Error("Unauthorized: Please log in to view insights.");
-    }
-    throw new Error(
-      `Failed to fetch insight ${response.status}: ${text || response.statusText
-      }`
-    );
-  }
-
-  // Try to parse JSON, but handle empty body safely
-  let data = null;
-  try {
-    data = await response.json();
-  } catch {
-    data = null;
-  }
-
-  // If no data at all, treat as "no insight yet"
-  if (!data) {
-    return { exists: false, data: null };
-  }
-
-  return { exists: true, data };
+export function getInsight(documentId) {
+  return apiRequest(`/documents/${documentId}/insight`, {
+    method: "GET",
+  });
 }
 
 // 2) Trigger Python FastAPI to generate insights

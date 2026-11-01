@@ -14,8 +14,7 @@ type Insight struct {
 	UserID       string
 	HTMLInsights string
 	Status       string
-	// Not read yet: insights.error_message exists but is never written.
-	ErrorMessage *string
+	ErrorMessage *string // set by the AI service when status is "failed"
 	DetailsJSON  json.RawMessage
 	GeneratedAt  *time.Time
 	UpdatedAt    *time.Time
@@ -69,6 +68,7 @@ func (s *Store) GetInsightByDocumentID(ctx context.Context, docID string) (*Insi
 		  user_id,
 		  COALESCE(html_insights, ''),
 		  status,
+		  error_message,
 		  details_json,
 		  generated_at,
 		  updated_at
@@ -83,6 +83,7 @@ func (s *Store) GetInsightByDocumentID(ctx context.Context, docID string) (*Insi
 		&ins.UserID,
 		&ins.HTMLInsights,
 		&ins.Status,
+		&ins.ErrorMessage,
 		&ins.DetailsJSON,
 		&ins.GeneratedAt,
 		&ins.UpdatedAt,

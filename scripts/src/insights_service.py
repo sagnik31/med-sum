@@ -92,6 +92,24 @@ def get_db_connection():
     return psycopg2.connect(dsn)
 
 
+def mark_insight_failed(conn, document_id: str, message: str) -> None:
+    """Record a failed run so the UI can show it and a later request can retry."""
+    try:
+        conn.rollback()
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                UPDATE insights
+                SET status = 'failed', error_message = %s, updated_at = NOW()
+                WHERE document_id = %s
+                """,
+                (message, document_id),
+            )
+        conn.commit()
+    except Exception:
+        logger.exception(f"[worker] Could not mark document_id={document_id} as failed")
+
+
 def run_insights_pipeline(document_id: str) -> None:
     """
     Background job that:
@@ -104,58 +122,31 @@ def run_insights_pipeline(document_id: str) -> None:
     logger.info(f"[worker] Starting insight generation for document_id={document_id!r}")
 
     conn = get_db_connection()
+    claimed = False
     try:
-        # 0. Check if insights already exist or are being processed
-        #    We do this BEFORE fetching file paths to fail fast.
+        # 0. Claim the job: create a 'processing' row, or re-claim a 'failed'
+        #    one so it is retried. Completed/processing rows are left alone.
         with conn.cursor() as cur:
             cur.execute(
-                "SELECT status, html_insights FROM insights WHERE document_id = %s",
+                """
+                INSERT INTO insights (document_id, user_id, status)
+                SELECT id, user_id, 'processing' FROM documents WHERE id = %s
+                ON CONFLICT (document_id) DO UPDATE
+                    SET status = 'processing', error_message = NULL, updated_at = NOW()
+                    WHERE insights.status = 'failed'
+                RETURNING id
+                """,
                 (document_id,),
             )
-            insight_row = cur.fetchone()
-            if insight_row:
-                status, html = insight_row
-                if status == "completed" and html:
-                    logger.info(
-                        f"[worker] Insights already completed for document_id={document_id}. Skipping."
-                    )
-                    return
-                if status == "processing":
-                    logger.info(
-                        f"[worker] Insights already processing for document_id={document_id}. Skipping."
-                    )
-                    return
+            claimed = cur.fetchone() is not None
+            conn.commit()
 
-            # If no row exists, insert 'processing' state immediately to lock it
-            import uuid
-
-            new_insight_id = str(uuid.uuid4())
-
-            # We need user_id for the INSERT. Let's fetch it first.
-            cur.execute("SELECT user_id FROM documents WHERE id = %s", (document_id,))
-            user_row = cur.fetchone()
-            if not user_row:
-                logger.error(f"[worker] Document not found in DB: {document_id}")
-                return
-
-            user_id = user_row[0]
-
-            try:
-                cur.execute(
-                    """
-                    INSERT INTO insights (id, document_id, user_id, status, created_at, updated_at)
-                    VALUES (%s, %s, %s, 'processing', NOW(), NOW())
-                    """,
-                    (new_insight_id, document_id, user_id),
-                )
-                conn.commit()
-            except psycopg2.IntegrityError:
-                # Race condition caught by DB constraint
-                conn.rollback()
-                logger.info(
-                    f"[worker] Race condition: Insight row created by another worker for {document_id}. Skipping."
-                )
-                return
+        if not claimed:
+            logger.info(
+                f"[worker] Nothing to do for document_id={document_id}: "
+                "document not found, or insights already completed/processing."
+            )
+            return
 
         # 1. Get file path and existing markdown
         input_path = None
@@ -175,6 +166,7 @@ def run_insights_pipeline(document_id: str) -> None:
             logger.error(
                 f"[worker] Document path not found (unexpected): {document_id}"
             )
+            mark_insight_failed(conn, document_id, "Document has no stored file path.")
             return
 
         # Ensure absolute path if stored relatively
@@ -187,7 +179,7 @@ def run_insights_pipeline(document_id: str) -> None:
 
         if not os.path.exists(input_path):
             logger.error(f"[worker] File not found on disk: {input_path}")
-            # Optional: Update status to 'failed' here
+            mark_insight_failed(conn, document_id, "Uploaded file not found on disk.")
             return
 
         logger.info("[worker] Using input file path: %s", input_path)
@@ -233,23 +225,17 @@ def run_insights_pipeline(document_id: str) -> None:
         )
 
         # 4. Save to DB (Update)
-        try:
-            with conn.cursor() as cur:
-                update_query = """
-                    UPDATE insights 
-                    SET html_insights = %s, status = 'completed', updated_at = NOW()
-                    WHERE document_id = %s
-                """
-                cur.execute(update_query, (html, document_id))
-                conn.commit()
-                logger.info(
-                    f"[worker] DB updated (Completed) for document_id={document_id!r}"
-                )
-        except Exception as db_err:
-            logger.exception(
-                f"[worker] Database error for document_id={document_id}: {db_err}"
+        with conn.cursor() as cur:
+            update_query = """
+                UPDATE insights
+                SET html_insights = %s, status = 'completed', updated_at = NOW()
+                WHERE document_id = %s
+            """
+            cur.execute(update_query, (html, document_id))
+            conn.commit()
+            logger.info(
+                f"[worker] DB updated (Completed) for document_id={document_id!r}"
             )
-            conn.rollback()
 
     except Exception as e:
         logger.exception(
@@ -257,6 +243,8 @@ def run_insights_pipeline(document_id: str) -> None:
             document_id,
             e,
         )
+        if claimed:
+            mark_insight_failed(conn, document_id, str(e) or type(e).__name__)
     finally:
         if conn:
             conn.close()

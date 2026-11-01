@@ -12,6 +12,7 @@ function InsightPage() {
   const [insight, setInsight] = useState("");
   const [status, setStatus] = useState("checking");
   const [error, setError] = useState("");
+  const [failure, setFailure] = useState("");
 
   // Ref to track if we've already triggered generation for this ID
   const generationTriggeredRef = useRef(null);
@@ -22,6 +23,7 @@ function InsightPage() {
 
       setLoading(true);
       setError("");
+      setFailure("");
       setInsight("");
       setStatus("checking");
 
@@ -32,26 +34,16 @@ function InsightPage() {
 
       try {
         // 1) Ask Go service if insight exists
-        const result = await getInsight(id);
+        const data = await getInsight(id);
 
-        let text = "";
-        if (result.exists && result.data) {
-          const data = result.data;
-
-          // Try to extract text field from Go response
-          // We prioritize insights_html as that's what the backend returns now
-          text =
-            data?.insights_html ||
-            data?.insight ||
-            data?.insight_text ||
-            data?.summary ||
-            (typeof data === "string" ? data : "");
-        }
-
-        if (result.exists && text) {
+        if (data?.insights_html) {
           // We have real insight text → show it
-          setInsight(text);
+          setInsight(data.insights_html);
           setStatus("ready");
+        } else if (data?.status === "failed") {
+          // Last run failed → show why and let the user retry
+          setFailure(data.error_message || "Unknown error.");
+          setStatus("failed");
         } else {
           // No usable insight → trigger Python generation
           // Only trigger if we haven't already done so for this ID
@@ -71,6 +63,18 @@ function InsightPage() {
 
     loadInsight();
   }, [id]);
+
+  async function handleRetry() {
+    setError("");
+    try {
+      await triggerInsightGeneration(id);
+      setFailure("");
+      setStatus("generating");
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Failed to retry insight generation.");
+    }
+  }
 
   const isGenerating = status === "generating";
 
@@ -100,6 +104,18 @@ function InsightPage() {
             className="text-sm whitespace-pre-wrap bg-slate-50 border border-slate-200 rounded-md px-3 py-2"
             dangerouslySetInnerHTML={{ __html: insight }}
           />
+        </div>
+      )}
+
+      {!loading && !error && status === "failed" && (
+        <div className="mb-4 text-sm bg-red-50 border border-red-100 rounded-md px-3 py-2 text-red-700">
+          <p>Insight generation failed: {failure}</p>
+          <button
+            onClick={handleRetry}
+            className="mt-1 text-blue-600 hover:underline font-medium"
+          >
+            Retry
+          </button>
         </div>
       )}
 

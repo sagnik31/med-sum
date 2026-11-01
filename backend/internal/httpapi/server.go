@@ -270,8 +270,8 @@ func (s *Server) handleDeleteDocument(w http.ResponseWriter, r *http.Request, do
 
 type insightResponse struct {
 	DocumentID   string  `json:"document_id"`
-	Status       string  `json:"status"`                  // "ready" | "processing" | "failed"
-	InsightsHTML *string `json:"insights_html,omitempty"` // present when ready
+	Status       string  `json:"status"`                  // "completed" | "processing" | "failed"
+	InsightsHTML *string `json:"insights_html,omitempty"` // present when completed
 	ErrorMessage *string `json:"error_message,omitempty"` // present when failed
 }
 
