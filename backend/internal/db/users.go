@@ -16,14 +16,16 @@ type User struct {
 }
 
 // UpsertUserByPhone finds a user by phone_number or creates one.
-// It also updates last_login_at to NOW() on each call.
+// It also updates last_login_at to NOW() on each call, and full_name when
+// one is given.
 func (s *Store) UpsertUserByPhone(ctx context.Context, phone string, fullName *string) (*User, error) {
 	const q = `
 INSERT INTO users (phone_number, full_name, last_login_at)
 VALUES ($1, $2, NOW())
 ON CONFLICT (phone_number)
 DO UPDATE SET
-    last_login_at = EXCLUDED.last_login_at
+    last_login_at = EXCLUDED.last_login_at,
+    full_name = COALESCE(EXCLUDED.full_name, users.full_name)
 RETURNING id, phone_number, full_name, patient_insights, created_at, last_login_at;
 `
 	row := s.pool.QueryRow(ctx, q, phone, fullName)
