@@ -1,6 +1,8 @@
 package httpapi
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -12,16 +14,18 @@ import (
 )
 
 type Server struct {
-	db        *db.Store
-	jwtSecret []byte
-	mux       *http.ServeMux
+	db         *db.Store
+	jwtSecret  []byte
+	uploadsDir string // absolute, so the AI service can open stored paths
+	mux        *http.ServeMux
 }
 
-func NewServer(store *db.Store, jwtSecret string) *Server {
+func NewServer(store *db.Store, jwtSecret, uploadsDir string) *Server {
 	s := &Server{
-		db:        store,
-		jwtSecret: []byte(jwtSecret),
-		mux:       http.NewServeMux(),
+		db:         store,
+		jwtSecret:  []byte(jwtSecret),
+		uploadsDir: uploadsDir,
+		mux:        http.NewServeMux(),
 	}
 
 	// Public
@@ -148,24 +152,26 @@ func (s *Server) handleUploadDocument(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	// Local disk storage for dev
-	uploadsDir := "uploads"
-	if err := os.MkdirAll(uploadsDir, 0755); err != nil {
-		http.Error(w, "failed to create uploads directory", http.StatusInternalServerError)
+	// Store under a random name: original names collide across users, and a
+	// collision would point one patient's document at another's file.
+	storagePath, err := newStoragePath(s.uploadsDir, header.Filename)
+	if err != nil {
+		log.Printf("newStoragePath error: %v", err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
 
-	filename := header.Filename
-	storagePath := filepath.Join(uploadsDir, filename)
-
-	dst, err := os.Create(storagePath)
+	dst, err := os.OpenFile(storagePath, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o644)
 	if err != nil {
 		http.Error(w, "failed to save file", http.StatusInternalServerError)
 		return
 	}
-	defer dst.Close()
-
-	if _, err := dst.ReadFrom(file); err != nil {
+	_, err = dst.ReadFrom(file)
+	if closeErr := dst.Close(); err == nil {
+		err = closeErr
+	}
+	if err != nil {
+		_ = os.Remove(storagePath)
 		http.Error(w, "failed to write file", http.StatusInternalServerError)
 		return
 	}
@@ -178,12 +184,24 @@ func (s *Server) handleUploadDocument(w http.ResponseWriter, r *http.Request) {
 		storagePath,
 	)
 	if err != nil {
+		_ = os.Remove(storagePath)
 		log.Printf("CreateDocument error: %v", err)
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
 
 	writeJSON(w, http.StatusCreated, doc)
+}
+
+// newStoragePath returns a fresh random path in dir. It keeps the upload's
+// extension because the AI service picks image vs PDF handling by it.
+func newStoragePath(dir, originalName string) (string, error) {
+	b := make([]byte, 16)
+	if _, err := rand.Read(b); err != nil {
+		return "", err
+	}
+	name := hex.EncodeToString(b) + strings.ToLower(filepath.Ext(originalName))
+	return filepath.Join(dir, name), nil
 }
 
 // List all documents for the authenticated user.

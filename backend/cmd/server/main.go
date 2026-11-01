@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"time"
 
 	appdb "backend/internal/db"
@@ -30,7 +31,17 @@ func main() {
 	}
 	defer store.Close()
 
-	api := httpapi.NewServer(store, jwtSecret)
+	// Stored as an absolute path so the AI service finds uploads no matter
+	// which directory either process was started from.
+	uploadsDir, err := filepath.Abs(getEnv("UPLOADS_DIR", "uploads"))
+	if err != nil {
+		log.Fatalf("invalid UPLOADS_DIR: %v", err)
+	}
+	if err := os.MkdirAll(uploadsDir, 0o755); err != nil {
+		log.Fatalf("failed to create uploads directory: %v", err)
+	}
+
+	api := httpapi.NewServer(store, jwtSecret, uploadsDir)
 
 	addr := getEnv("HTTP_ADDRESS", ":8080")
 

@@ -19,7 +19,7 @@ Insights Generation Service (FastAPI)
     3) Show "insights are being generated" message
 
 Current behavior of the worker:
-    - Looks up the document's storage_path in the DB (files live in backend/uploads)
+    - Looks up the document's storage_path in the DB (an absolute path written by the backend)
     - Extracts Markdown via the VLM (qwen2.5vl:7b), cached in documents.extracted_markdown
     - Generates HTML insights via the text model (qwen3:4b-instruct)
 """
@@ -191,12 +191,11 @@ def run_insights_pipeline(document_id: str) -> None:
             mark_insight_failed(conn, document_id, "Document has no stored file path.")
             return
 
-        # Ensure absolute path if stored relatively
+        # The backend stores absolute paths. Older rows hold paths like
+        # "uploads/file.jpg", relative to backend/ (where it used to run).
         if not os.path.isabs(input_path):
             from config import PROJECT_ROOT
 
-            # The file is stored in backend/uploads, so we need to point there
-            # If the path from DB is just "uploads/file.jpg", we need to prepend "backend"
             input_path = os.path.join(PROJECT_ROOT, "backend", input_path)
 
         if not os.path.exists(input_path):

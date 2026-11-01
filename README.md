@@ -111,7 +111,7 @@ Open three separate terminals:
 1.  **Backend**:
     ```bash
     cd backend
-    # Set env vars: DATABASE_URL, JWT_SECRET, HTTP_ADDRESS
+    # Set env vars: DATABASE_URL, JWT_SECRET, HTTP_ADDRESS, UPLOADS_DIR (optional, default ./uploads)
     go run ./cmd/server
     ```
 
@@ -133,7 +133,7 @@ Open three separate terminals:
 -   `frontend/`: React frontend (UI)
 -   `scripts/`: Python scripts for LLM/VLM processing and FastAPI service
 -   `db/`: Database migrations
--   `data/`: Sample inputs/outputs for running the extraction and insight scripts standalone (uploaded files are stored in `backend/uploads/`)
+-   `data/`: Sample inputs/outputs for running the extraction and insight scripts standalone (uploaded files are stored in `backend/uploads/`, or `UPLOADS_DIR` if set)
 -   `postman/`: API definition and collection
 
 ## 🔌 API Documentation
