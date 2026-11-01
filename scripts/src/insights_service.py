@@ -85,10 +85,13 @@ class GenerateUserInsightsRequest(BaseModel):
 
 def get_db_connection():
     """
-    Connects to the Postgres database using the connection string.
+    Connects to Postgres using DATABASE_URL (same variable as the Go backend),
+    falling back to the local dev database.
     """
-    # Connection string from backend/run.ps1
-    dsn = "postgres://postgres:postgres@localhost:5432/med_sum?sslmode=disable"
+    dsn = os.environ.get(
+        "DATABASE_URL",
+        "postgres://postgres:postgres@localhost:5432/med_sum?sslmode=disable",
+    )
     return psycopg2.connect(dsn)
 
 

@@ -46,7 +46,7 @@ Before running the project, ensure you have the following installed:
     ```bash
     psql -U postgres -d med_sum -f db/migrations/med_sum_schema.sql
     ```
-    *Note: The default connection string expects user `postgres` and password `postgres`. Update `backend/run.ps1` and `scripts/src/insights_service.py` if your credentials differ.*
+    *Note: The default connection string expects user `postgres` and password `postgres`. Both the backend and the AI service read it from the `DATABASE_URL` environment variable; `backend/run.ps1` sets it, and the AI service falls back to the same default when it is unset. Change it there (or export `DATABASE_URL`) if your credentials differ.*
 
 ### 2. Ollama Setup
 Pull the required models specified in the configuration:
