@@ -267,17 +267,24 @@ func (s *Server) handleDeleteDocument(w http.ResponseWriter, r *http.Request, do
 		return
 	}
 
-	deleted, err := s.db.DeleteDocumentByIDAndUser(r.Context(), docID, userID)
+	storagePath, shared, err := s.db.DeleteDocumentByIDAndUser(r.Context(), docID, userID)
 	if err != nil {
 		log.Printf("DeleteDocumentByIDAndUser error: %v", err)
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
 
-	if !deleted {
+	if storagePath == "" {
 		// Either doc not found, or not owned by this user
 		http.Error(w, "not found", http.StatusNotFound)
 		return
+	}
+
+	// Remove the patient's file too, unless an older document shares it.
+	if !shared {
+		if err := os.Remove(storagePath); err != nil && !os.IsNotExist(err) {
+			log.Printf("failed to remove %s: %v", storagePath, err)
+		}
 	}
 
 	// No body for delete success.

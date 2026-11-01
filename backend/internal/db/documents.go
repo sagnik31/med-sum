@@ -3,6 +3,8 @@ package db
 import (
 	"context"
 	"time"
+
+	"github.com/jackc/pgx/v5"
 )
 
 // Document maps to the `documents` table.
@@ -89,15 +91,29 @@ ORDER BY uploaded_at DESC;
 }
 
 // DeleteDocumentByIDAndUser deletes a document if it belongs to the given user.
-// Returns true if a row was deleted, false if no matching row.
-func (s *Store) DeleteDocumentByIDAndUser(ctx context.Context, docID, userID string) (bool, error) {
+// It returns the deleted row's storage path ("" if no row matched), and
+// whether another document still points at that file (possible for uploads
+// saved before files got unique names).
+func (s *Store) DeleteDocumentByIDAndUser(ctx context.Context, docID, userID string) (string, bool, error) {
+	// The outer SELECT still sees the deleted row, hence d.id <> $1.
 	const q = `
-DELETE FROM documents
-WHERE id = $1 AND user_id = $2;
+WITH deleted AS (
+    DELETE FROM documents
+    WHERE id = $1 AND user_id = $2
+    RETURNING storage_path
+)
+SELECT storage_path,
+       EXISTS (SELECT 1 FROM documents d WHERE d.storage_path = deleted.storage_path AND d.id <> $1)
+FROM deleted;
 `
-	cmdTag, err := s.pool.Exec(ctx, q, docID, userID)
-	if err != nil {
-		return false, err
+	var storagePath string
+	var shared bool
+	err := s.pool.QueryRow(ctx, q, docID, userID).Scan(&storagePath, &shared)
+	if err == pgx.ErrNoRows {
+		return "", false, nil
 	}
-	return cmdTag.RowsAffected() > 0, nil
+	if err != nil {
+		return "", false, err
+	}
+	return storagePath, shared, nil
 }
