@@ -51,9 +51,13 @@ ul {
 
 
 def load_text(path: str) -> str:
+    """
+    Raises FileNotFoundError instead of calling sys.exit so that callers
+    (like the FastAPI worker) can handle the error gracefully.
+    """
     if not os.path.exists(path):
         print(f"[ERROR] File not found: {path}", file=sys.stderr)
-        sys.exit(1)
+        raise FileNotFoundError(f"File not found: {path}")
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
