@@ -5,6 +5,7 @@ import {
   getInsight,
   triggerInsightGeneration,
 } from "../api/client.js";
+import HtmlFrame from "../components/HtmlFrame.jsx";
 
 function InsightPage() {
   const { id } = useParams();
@@ -100,10 +101,9 @@ function InsightPage() {
           <h2 className="text-sm font-semibold text-slate-700 mb-2">
             Insight
           </h2>
-          <div
-            className="text-sm whitespace-pre-wrap bg-slate-50 border border-slate-200 rounded-md px-3 py-2"
-            dangerouslySetInnerHTML={{ __html: insight }}
-          />
+          <div className="bg-slate-50 border border-slate-200 rounded-md">
+            <HtmlFrame html={insight} title="Document insight" />
+          </div>
         </div>
       )}
 

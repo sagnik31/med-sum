@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchUserInsights } from "../api/client";
 import { Link } from "react-router-dom";
+import HtmlFrame from "../components/HtmlFrame.jsx";
 
 function UserInsightsPage() {
     const [insights, setInsights] = useState(null);
@@ -51,9 +52,7 @@ function UserInsightsPage() {
                     {error}
                 </div>
             ) : insights ? (
-                <div
-                    dangerouslySetInnerHTML={{ __html: insights }}
-                />
+                <HtmlFrame html={insights} title="Patient summary" />
             ) : (
                 <div className="text-center py-12 bg-slate-50 rounded-lg border border-dashed border-slate-200">
                     <p className="text-slate-500 mb-4">
