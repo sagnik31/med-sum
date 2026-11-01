@@ -9,14 +9,12 @@ import (
 )
 
 // Insight represents a row in the insights table.
-// Adjust fields if you already have a different definition elsewhere.
 type Insight struct {
 	DocumentID   string
 	UserID       string
 	HTMLInsights string
 	Status       string
-	// Optional error message; we fake it as NULL for now since we don't
-	// have a specific column in the DB.
+	// Not read yet: insights.error_message exists but is never written.
 	ErrorMessage *string
 	DetailsJSON  json.RawMessage
 	GeneratedAt  *time.Time
@@ -95,9 +93,6 @@ func (s *Store) GetInsightByDocumentID(ctx context.Context, docID string) (*Insi
 	if err != nil {
 		return nil, err
 	}
-
-	// We don't have a dedicated error_message column yet, so leave it nil.
-	ins.ErrorMessage = nil
 
 	return &ins, nil
 }

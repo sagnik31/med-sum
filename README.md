@@ -43,6 +43,7 @@ Before running the project, ensure you have the following installed:
 1.  Ensure PostgreSQL is running.
 2.  Create a database named `med_sum`.
 3.  Run the migration script to set up the schema:
+    ```bash
     psql -U postgres -d med_sum -f db/migrations/med_sum_schema.sql
     ```
     *Note: The default connection string expects user `postgres` and password `postgres`. Update `backend/run.ps1` and `scripts/src/insights_service.py` if your credentials differ.*
@@ -73,7 +74,7 @@ npm install
 Navigate to the scripts directory and install Python dependencies:
 ```bash
 cd scripts
-pip install fastapi uvicorn psycopg2-binary ollama pymupdf pydantic
+pip install fastapi uvicorn psycopg2-binary ollama pymupdf pydantic beautifulsoup4
 ```
 
 ## 🏃‍♂️ How to Run
@@ -132,7 +133,7 @@ Open three separate terminals:
 -   `frontend/`: React frontend (UI)
 -   `scripts/`: Python scripts for LLM/VLM processing and FastAPI service
 -   `db/`: Database migrations
--   `data/`: Storage for uploaded/generated files
+-   `data/`: Sample inputs/outputs for running the extraction and insight scripts standalone (uploaded files are stored in `backend/uploads/`)
 -   `postman/`: API definition and collection
 
 ## 🔌 API Documentation
