@@ -14,6 +14,8 @@ import (
 	"time"
 
 	"backend/internal/db"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Server struct {
@@ -254,6 +256,13 @@ func (s *Server) handleDocumentByID(w http.ResponseWriter, r *http.Request) {
 
 	parts := strings.Split(path, "/")
 	docID := parts[0]
+
+	// Reject malformed IDs here; Postgres would fail on the uuid cast (500).
+	var parsed pgtype.UUID
+	if err := parsed.Scan(docID); err != nil {
+		http.Error(w, "invalid document id", http.StatusBadRequest)
+		return
+	}
 
 	// /documents/{id}/insight
 	if len(parts) == 2 && parts[1] == "insight" {
