@@ -5,8 +5,8 @@ Insights Generation Service (FastAPI)
 
 - Exposes:
     GET  /health
-    OPTIONS /internal/generate-insights
-    POST    /internal/generate-insights
+    POST /internal/generate-insights        (background, per document)
+    POST /internal/generate-user-insights   (synchronous, per user)
 
 - CORS enabled for:
     http://localhost:5173  (frontend)
@@ -19,18 +19,15 @@ Insights Generation Service (FastAPI)
     3) Show "insights are being generated" message
 
 Current behavior of the worker:
-    - Uses the shared pipeline in processor_wrapper.process_document(...)
-      to:
-        1) Extract Markdown from the report (via qwen2.5vl:7b VLM)
-        2) Generate HTML insights via your text model (qwen3:4b-instruct)
-    - For now, uses INPUT_PDF from config.py as the input file path.
-      You should later replace that with a lookup based on document_id.
+    - Looks up the document's storage_path in the DB (files live in backend/uploads)
+    - Extracts Markdown via the VLM (qwen2.5vl:7b), cached in documents.extracted_markdown
+    - Generates HTML insights via the text model (qwen3:4b-instruct)
 """
 
 import logging
 from typing import List
 
-from fastapi import FastAPI, BackgroundTasks, Response
+from fastapi import FastAPI, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -274,24 +271,6 @@ def run_insights_pipeline(document_id: str) -> None:
 async def health():
     """Simple health check."""
     return {"status": "ok"}
-
-
-# Catch-all OPTIONS handler so *no* OPTIONS request 405s
-@app.options("/{full_path:path}")
-async def options_catch_all(full_path: str):
-    """
-    Handle any OPTIONS request with 204 so browsers' CORS preflight
-    never see a 405.
-    """
-    logger.info(f"Received CATCH-ALL OPTIONS for path='/{full_path}'")
-    return Response(status_code=204)
-
-
-# Explicit OPTIONS handler for the specific endpoint (optional but clear)
-@app.options("/internal/generate-insights")
-async def options_generate_insights():
-    logger.info("Received OPTIONS for /internal/generate-insights")
-    return Response(status_code=204)
 
 
 @app.post("/internal/generate-insights")

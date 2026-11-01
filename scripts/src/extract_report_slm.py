@@ -16,7 +16,6 @@ from config import (
     OUTPUT_MD_SLM,
     INPUT_PDF,
     OPTHAL_POINT_FILE,
-    VISION_PROMPT_FILE
 )  # INPUT_PDF is generic input file
 
 VISION_MODEL = "qwen2.5vl:7b"
