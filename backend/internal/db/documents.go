@@ -65,7 +65,7 @@ ORDER BY uploaded_at DESC;
 	}
 	defer rows.Close()
 
-	var docs []Document
+	docs := []Document{} // encodes as [] rather than null when empty
 	for rows.Next() {
 		var d Document
 		if err := rows.Scan(
