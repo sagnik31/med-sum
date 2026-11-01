@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -140,6 +141,9 @@ func (s *Server) handleDocuments(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// maxUploadSize caps a whole upload request (the file plus form overhead).
+const maxUploadSize = 20 << 20 // 20 MB
+
 // Upload document for the authenticated user.
 func (s *Server) handleUploadDocument(w http.ResponseWriter, r *http.Request) {
 	userID, ok := userIDFromContext(r.Context())
@@ -148,7 +152,15 @@ func (s *Server) handleUploadDocument(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseMultipartForm(20 << 20); err != nil { // 20 MB
+	// ParseMultipartForm's argument only limits memory and spills the rest
+	// to temp files; MaxBytesReader is what caps the request size.
+	r.Body = http.MaxBytesReader(w, r.Body, maxUploadSize)
+	if err := r.ParseMultipartForm(maxUploadSize); err != nil {
+		var tooLarge *http.MaxBytesError
+		if errors.As(err, &tooLarge) {
+			http.Error(w, "file too large (max 20 MB)", http.StatusRequestEntityTooLarge)
+			return
+		}
 		http.Error(w, "failed to parse form", http.StatusBadRequest)
 		return
 	}

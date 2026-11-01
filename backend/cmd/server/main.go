@@ -56,12 +56,16 @@ func main() {
 	// Wrap the API handler with CORS middleware
 	handler := withCORS(api)
 
+	// Read/WriteTimeout cover the whole request body, so they must allow a
+	// 20 MB upload on a slow connection; slow clients are still cut off by
+	// ReadHeaderTimeout.
 	srv := &http.Server{
-		Addr:         addr,
-		Handler:      handler,
-		ReadTimeout:  15 * time.Second,
-		WriteTimeout: 15 * time.Second,
-		IdleTimeout:  60 * time.Second,
+		Addr:              addr,
+		Handler:           handler,
+		ReadHeaderTimeout: 10 * time.Second,
+		ReadTimeout:       2 * time.Minute,
+		WriteTimeout:      2 * time.Minute,
+		IdleTimeout:       60 * time.Second,
 	}
 
 	log.Printf("server listening on %s", addr)
