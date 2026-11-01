@@ -129,7 +129,7 @@ function DocumentsPage() {
               >
                 <div className="flex flex-col">
                   <span className="font-medium text-slate-800">
-                    {doc.original_filename || doc.filename || `Document ${doc.id}`}
+                    {doc.original_name || `Document ${doc.id}`}
                   </span>
                   <span className="text-xs text-slate-500">
                     ID: {doc.id}
