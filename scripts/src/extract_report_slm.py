@@ -23,6 +23,9 @@ END_MARKER = "[[END_OF_PAGE]]"
 # Hard cap so a model stuck in a repetition loop cannot run forever;
 # a real report page needs far fewer tokens.
 MAX_TOKENS_PER_PAGE = 4096
+# Echo prompts and streamed model output (patient data) to the console.
+# Only the standalone CLI (main) turns this on; the service never does.
+VERBOSE = False
 # ----------------------------------
 
 
@@ -48,7 +51,8 @@ def run_vlm_on_image_bytes(image_bytes: bytes, system_prompt: str, label: str) -
     """
     print(f"\n=== 👁️ Processing {label} with vision model ===\n")
 
-    print(f"SYSTEM PROMPT: {system_prompt}")
+    if VERBOSE:
+        print(f"SYSTEM PROMPT: {system_prompt}")
 
     messages = [
         {"role": "system", "content": system_prompt},
@@ -74,7 +78,8 @@ def run_vlm_on_image_bytes(image_bytes: bytes, system_prompt: str, label: str) -
         if not token:
             continue
         full += token
-        print(token, end="", flush=True)
+        if VERBOSE:
+            print(token, end="", flush=True)
 
         if END_MARKER in full:
             break
@@ -155,6 +160,8 @@ def extract_markdown_from_file(input_path: str, on_page=None) -> str:
 
 
 def main():
+    global VERBOSE
+    VERBOSE = True
     input_path = INPUT_PDF  # generic input file path from config
 
     if not os.path.exists(input_path):

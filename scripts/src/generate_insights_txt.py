@@ -13,6 +13,9 @@ from config import INPUT_MD_SLM, OUTPUT_HTML_SLM, MODEL_NAME, PROMPT_FILE
 # Hard cap so a model stuck in a repetition loop cannot run forever;
 # real insights and patient summaries need far fewer tokens.
 MAX_TOKENS = 8192
+# Echo the report, prompt and streamed model output (patient data) to the
+# console. Only the standalone CLI (main) turns this on; the service never does.
+VERBOSE = False
 
 
 # Minimal clean medical CSS styling
@@ -72,8 +75,9 @@ def generate_insights(prompt: str, markdown_report: str) -> str:
         {"role": "user", "content": markdown_report},
     ]
 
-    print(f"\n=== 📝 Loading Markdown Report === \n{markdown_report}")
-    print(f"\n=== 📝 Loading Prompt === \n{prompt}")
+    if VERBOSE:
+        print(f"\n=== 📝 Loading Markdown Report === \n{markdown_report}")
+        print(f"\n=== 📝 Loading Prompt === \n{prompt}")
     print("\n=== 💡 Generating Clinical Insights (streaming) ===\n")
     print("\n=== Model Name===\n", MODEL_NAME)
 
@@ -88,7 +92,8 @@ def generate_insights(prompt: str, markdown_report: str) -> str:
         if not token:
             continue
         streamed += token
-        print(token, end="", flush=True)
+        if VERBOSE:
+            print(token, end="", flush=True)
 
     print("\n\n=== 🚀 Generation complete ===\n")
     return streamed
@@ -133,6 +138,8 @@ def generate_insights_html(markdown_data: str, prompt: str | None = None) -> str
 
 
 def main():
+    global VERBOSE
+    VERBOSE = True
     prompt = load_text(PROMPT_FILE)
     markdown_data = load_text(INPUT_MD_SLM)
 
