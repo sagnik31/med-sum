@@ -291,9 +291,12 @@ async def generate_insights_endpoint(
 
 
 @app.post("/internal/generate-user-insights")
-async def generate_user_insights_endpoint(req: GenerateUserInsightsRequest):
+def generate_user_insights_endpoint(req: GenerateUserInsightsRequest):
     """
     Generate a cumulative summary for all documents of a user.
+
+    Plain `def` (not `async def`) on purpose: the DB and Ollama calls block,
+    so FastAPI must run this in its threadpool or it freezes the event loop.
     """
     logger.info(
         f"Received POST /internal/generate-user-insights for user_id={req.user_id!r}"
