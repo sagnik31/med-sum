@@ -5,3 +5,4 @@ data/
 **/.vscode
 **/dist
 **/uploads
+**/.venv
