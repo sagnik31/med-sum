@@ -1,151 +1,249 @@
 # Med-Sum
 
-Med-Sum is a medical summary application that leverages Vision-Language Models (VLM) and Small Language Models (SLM) to extract and summarize insights from medical reports (PDFs, Images). It features a Go backend, a React frontend, and a Python-based analysis microservice.
+Med-Sum turns medical documents into readable summaries. A patient uploads prescriptions, lab reports or discharge summaries as PDFs or images. A vision-language model extracts the clinical content page by page, and a smaller text model writes a structured summary for each document. The goal is a cumulative patient summary that a doctor can read before a visit.
 
-## 🚀 Project Overview
+All model inference runs locally through [Ollama](https://ollama.com), so documents never leave the machine.
 
-The system allows users to:
-1.  Upload medical reports/documents.
-2.  Automatically extract text and clinical content from images/PDFs using local AI models (via Ollama).
-3.  Generate medical insights and summaries from the extracted data.
-4.  View and manage these insights through a web interface.
+> **Status:** an early-stage personal project. Authentication is not implemented yet (see [Limitations](#limitations)), so do not use it with real patient data. Generated summaries can be wrong and are not medical advice.
 
-## 🛠️ Prerequisites
+## Contents
 
-Before running the project, ensure you have the following installed:
+- [How it works](#how-it-works)
+- [Tech stack](#tech-stack)
+- [Getting started](#getting-started)
+- [Configuration](#configuration)
+- [API](#api)
+- [Project structure](#project-structure)
+- [Development](#development)
+- [Limitations](#limitations)
+- [Roadmap](#roadmap)
+- [License](#license)
 
-1.  **PostgreSQL**: Database for storing user data, documents, and insights.
-    *   [Download PostgreSQL](https://www.postgresql.org/download/)
-    *   *Windows*: Download the installer for your version.
-    *   *Mac*: Use Postgres.app or Homebrew (`brew install postgresql`).
-    *   *Linux*: Use your package manager (e.g., `sudo apt install postgresql`).
+## How it works
 
-2.  **Go (v1.22+)**: For the backend API.
-    *   [Download Go](https://go.dev/dl/)
-    *   Follow the specific installation instructions for your OS from the download page.
+```mermaid
+flowchart LR
+    UI["React SPA<br/>(Vite, :5173)"] -->|"REST, JWT"| API["Go API<br/>(:8080)"]
+    API -->|"internal token"| AI["Python AI service<br/>(FastAPI, :9000)"]
+    API --> DB[("PostgreSQL")]
+    AI --> DB
+    AI --> OL["Ollama<br/>qwen2.5vl:7b<br/>qwen3:4b-instruct"]
+```
 
-3.  **Node.js (v18+) & npm**: For the React frontend.
-    *   [Download Node.js](https://nodejs.org/en/download/)
-    *   Choose the "LTS" (Long Term Support) version.
+The system has three services that share one PostgreSQL database:
 
-4.  **Python (v3.10+)**: For the AI processing scripts.
-    *   [Download Python](https://www.python.org/downloads/)
-    *   Make sure to check "Add Python to PATH" during installation.
+- **Frontend (React).** Login, document upload and listing, and a viewer for the generated summaries.
+- **Backend (Go).** The public API. It handles login and uploads, checks that a document belongs to the caller, and forwards processing requests to the AI service.
+- **AI service (Python).** Runs the extraction and summarisation pipeline against local Ollama models.
 
-5.  **Ollama**: For running local LLMs and VLMs.
-    *   [Download Ollama](https://ollama.com/download)
-    *   *Windows/Mac*: Download and run the installer.
-    *   *Linux*: Run `curl -fsSL https://ollama.com/install.sh | sh`
+When a user opens a document, the pipeline runs as a background job:
 
-## 📦 Installation & Setup
+1. **Claim the job.** A row in `insights` with status `processing` acts as a lock, so the same document is never processed twice at once.
+2. **Extract.** PDFs are rendered to images with PyMuPDF, and `qwen2.5vl:7b` transcribes each page into Markdown. The result is cached on the document, so retries skip this step.
+3. **Summarise.** `qwen3:4b-instruct` turns the Markdown into an HTML summary, which is saved with status `completed`.
+4. **Record failures.** Any error marks the job `failed` with a message, and the user can retry from the UI.
 
-### 1. Database Setup
-1.  Ensure PostgreSQL is running.
-2.  Create a database named `med_sum`.
-3.  Run the migration script to set up the schema:
-    ```bash
-    psql -U postgres -d med_sum -f db/migrations/med_sum_schema.sql
-    ```
-    *Note: The default connection string expects user `postgres` and password `postgres`. Both the backend and the AI service read it from the `DATABASE_URL` environment variable; `backend/run.ps1` sets it, and the AI service falls back to the same default when it is unset. Change it there (or export `DATABASE_URL`) if your credentials differ.*
+### Design notes
 
-### 2. Ollama Setup
-Pull the required models specified in the configuration:
+- **The AI service is not exposed to the browser.** Only the Go API calls it, after checking that the document belongs to the user, and every call carries a shared secret.
+- **Recovery from crashed workers.** The worker updates a heartbeat before each page. A job with no heartbeat for 30 minutes can be taken over by a new request.
+- **Untrusted model output is isolated.** Generated HTML is shown in a sandboxed iframe with scripts disabled, so its styles cannot leak into the app.
+- **Bounded work.** Uploads are capped at 20 MB and stored under random file names, and model output is capped per page and per summary so a looping model cannot run forever.
+
+## Tech stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React 18, React Router, Vite, Tailwind CSS |
+| Backend | Go (`net/http`), pgx, JWT |
+| AI service | Python, FastAPI, PyMuPDF, Ollama Python client |
+| Models | `qwen2.5vl:7b` (vision extraction), `qwen3:4b-instruct-2507-q8_0` (summaries) |
+| Database | PostgreSQL |
+
+## Getting started
+
+### Prerequisites
+
+| Tool | Version | Notes |
+|---|---|---|
+| [Go](https://go.dev/dl/) | 1.25+ | |
+| [Node.js](https://nodejs.org/) | 18+ | includes npm |
+| [Python](https://www.python.org/downloads/) | 3.10+ | |
+| [PostgreSQL](https://www.postgresql.org/download/) | 17+ | the examples assume user `postgres`, password `postgres` |
+| [Ollama](https://ollama.com/download) | recent | the two models need about 10 GB of disk; a GPU is strongly recommended |
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/sagnik31/med-sum.git
+cd med-sum
+```
+
+### 2. Create the database
+
+```bash
+createdb -U postgres med_sum
+psql -U postgres -d med_sum -f db/migrations/med_sum_schema.sql
+```
+
+If your PostgreSQL credentials differ, adjust `DATABASE_URL` in the next steps (see [Configuration](#configuration)).
+
+### 3. Pull the models
+
 ```bash
 ollama pull qwen2.5vl:7b
 ollama pull qwen3:4b-instruct-2507-q8_0
 ```
-*Note: Check `scripts/src/config.py` and `scripts/src/extract_report_slm.py` if you wish to use different models.*
 
-### 3. Backend (Go)
-Navigate to the backend directory and install dependencies:
+Make sure Ollama is running before you start the AI service.
+
+### 4. Install dependencies
+
 ```bash
+# Backend
 cd backend
-go mod tidy
-```
+go mod download
+cd ..
 
-### 4. Frontend (React)
-Navigate to the frontend directory and install dependencies:
-```bash
+# Frontend
 cd frontend
 npm install
-```
+cd ..
 
-### 5. Scripts (Python)
-Navigate to the scripts directory and install Python dependencies:
-```bash
+# AI service (a virtual environment is recommended)
 cd scripts
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\Activate.ps1
 pip install fastapi uvicorn psycopg2-binary ollama pymupdf pydantic beautifulsoup4
+cd ..
 ```
 
-## 🏃‍♂️ How to Run
+### 5. Start the services
 
-To run the full application, you need to start all three services (Backend, Frontend, Scripts). You can use the provided PowerShell scripts or run the commands manually.
+Each service runs in its own terminal.
 
-**Option 1: Using PowerShell scripts (Windows)**
+**Windows (PowerShell).** Each directory has a `run.ps1` that sets development values for the environment variables:
 
-Open three separate terminals:
+```powershell
+cd backend;  .\run.ps1     # Go API on http://localhost:8080
+cd scripts;  .\run.ps1     # AI service on http://localhost:9000
+cd frontend; .\run.ps1     # Web app on http://localhost:5173
+```
 
-1.  **Backend**:
-    ```powershell
-    cd backend
-    .\run.ps1
-    ```
-    (Runs on `localhost:8080`)
+**macOS / Linux:**
 
-2.  **Frontend**:
-    ```powershell
-    cd frontend
-    .\run.ps1
-    ```
-    (Runs on `localhost:5173`)
+```bash
+# Terminal 1: Go API on http://localhost:8080
+cd backend
+export DATABASE_URL="postgres://postgres:postgres@localhost:5432/med_sum?sslmode=disable"
+export JWT_SECRET="dev-secret"
+export INTERNAL_API_TOKEN="dev-internal-token"
+go run ./cmd/server
+```
 
-3.  **AI Service**:
-    ```powershell
-    cd scripts
-    .\run.ps1
-    ```
-    (Runs on `localhost:9000`)
+```bash
+# Terminal 2: AI service on http://localhost:9000
+cd scripts
+source .venv/bin/activate
+export INTERNAL_API_TOKEN="dev-internal-token"   # must match the backend
+uvicorn insights_service:app --app-dir src --reload --port 9000
+```
 
-**Option 2: Manual Start**
+```bash
+# Terminal 3: web app on http://localhost:5173
+cd frontend
+npm run dev
+```
 
-1.  **Backend**:
-    ```bash
-    cd backend
-    # Set env vars: DATABASE_URL, JWT_SECRET, INTERNAL_API_TOKEN, HTTP_ADDRESS,
-    # UPLOADS_DIR (optional, default ./uploads), INSIGHTS_SERVICE_URL (optional, default http://localhost:9000)
-    go run ./cmd/server
-    ```
+### 6. Try it out
 
-2.  **Frontend**:
-    ```bash
-    cd frontend
-    npm run dev
-    ```
+1. Open http://localhost:5173 and log in with any phone number and any OTP (the OTP is not checked yet).
+2. Upload a PDF or image (JPG, PNG, BMP, TIFF or WebP) of a medical report.
+3. Open the document. Processing starts at that point and can take a few minutes, depending on your hardware and the number of pages. Refresh the page to see the result.
 
-3.  **AI Service**:
-    ```bash
-    cd scripts
-    # Set INTERNAL_API_TOKEN to the same value as the backend's
-    uvicorn insights_service:app --app-dir src --reload --port 9000
-    ```
+## Configuration
 
-## 📂 Project Structure
+| Variable | Used by | Default |
+|---|---|---|
+| `DATABASE_URL` | Backend (required), AI service | AI service falls back to `postgres://postgres:postgres@localhost:5432/med_sum?sslmode=disable` |
+| `JWT_SECRET` | Backend (required) | none |
+| `INTERNAL_API_TOKEN` | Backend (required), AI service | none; must be the same in both services |
+| `HTTP_ADDRESS` | Backend | `:8080` |
+| `UPLOADS_DIR` | Backend | `./uploads` (resolved to an absolute path) |
+| `INSIGHTS_SERVICE_URL` | Backend | `http://localhost:9000` |
+| `VITE_API_BASE_URL` | Frontend | `http://localhost:8080`, set in `frontend/.env.local` |
 
--   `backend/`: Go backend (API handling, DB interactions)
--   `frontend/`: React frontend (UI)
--   `scripts/`: Python scripts for LLM/VLM processing and FastAPI service
--   `db/`: Database migrations
--   `data/`: Sample inputs/outputs for running the extraction and insight scripts standalone (uploaded files are stored in `backend/uploads/`, or `UPLOADS_DIR` if set)
--   `postman/`: API definition and collection
+The backend allows CORS requests from `http://localhost:5173` only.
 
-## 🔌 API Documentation
+## API
 
-A Postman collection is available for testing the API endpoints.
+All backend routes except `/healthz` and `/login` require an `Authorization: Bearer <token>` header.
 
-1.  **Import Collection**: Import `postman/collections/med-sum.postman_collection.json` into Postman.
-2.  **Environment Variables**: The collection uses `{{backend_url}}` (default: `http://localhost:8080`) and `{{ai_service_url}}` (default: `http://localhost:9000`).
-3.  **Authentication**:
-    *   Execute the **Login** request first.
-    *   Copy the `token` from the response.
-    *   Set it as the `auth_token` variable in your Postman environment or collection variables.
-4.  **AI service (internal)**: Its `/internal/*` endpoints require an `X-Internal-Token` header matching `INTERNAL_API_TOKEN`; the collection sends `{{internal_api_token}}` (default `dev-internal-token`, as in the run scripts). The frontend never calls the AI service directly; it goes through the backend's `POST /documents/{id}/insight`.
+| Method | Route | Description |
+|---|---|---|
+| `GET` | `/healthz` | Health check |
+| `POST` | `/login` | Log in with `{phone_number, full_name?}`; returns a JWT and the user |
+| `GET` | `/documents` | List the user's documents, newest first |
+| `POST` | `/documents` | Upload a document (multipart field `file`, max 20 MB) |
+| `DELETE` | `/documents/{id}` | Delete a document and its file |
+| `GET` | `/documents/{id}/insight` | Get the summary and its status (`processing`, `completed`, `failed`) |
+| `POST` | `/documents/{id}/insight` | Start or retry summary generation |
+| `GET` | `/user/insights` | Get the cumulative patient summary |
+
+The AI service exposes `GET /health` and two internal routes, `POST /internal/generate-insights` and `POST /internal/generate-user-insights`. Both require an `X-Internal-Token` header.
+
+A Postman collection is in [`postman/collections/`](postman/collections/med-sum.postman_collection.json). It uses the variables `backend_url`, `ai_service_url`, `auth_token` (from the login response) and `internal_api_token`.
+
+## Project structure
+
+```
+backend/
+  cmd/server/            entry point: configuration, CORS, HTTP server
+  internal/httpapi/      handlers, JWT auth, forwarding to the AI service
+  internal/db/           PostgreSQL data access (pgx)
+db/migrations/           database schema
+frontend/
+  src/api/               API client
+  src/components/        shared components (sandboxed HTML viewer)
+  src/pages/             login, documents, document summary, patient summary
+scripts/
+  src/insights_service.py    FastAPI service and background job handling
+  src/extract_report_slm.py  vision-model extraction
+  src/generate_insights_txt.py  text-model summary generation
+  prompt/                prompts for extraction and summaries
+postman/                 API collection
+```
+
+## Development
+
+Static checks for each part (the Python checks need [Ruff](https://docs.astral.sh/ruff/), installed with `pip install ruff`):
+
+```bash
+(cd backend  && go build ./... && go vet ./...)
+(cd frontend && npm run lint && npm run build)
+(cd scripts  && ruff check src && ruff format --check src)
+```
+
+The extraction and summary steps can also be run on their own, which is useful for tuning prompts. `python scripts/src/extract_report_slm.py` reads a sample report from `data/input/` and writes Markdown to `data/output/`; `python scripts/src/generate_insights_txt.py` turns that Markdown into HTML. The paths are set in `scripts/src/config.py`, and `data/` is not checked in.
+
+## Limitations
+
+- **No real authentication.** Any phone number receives a token, and the OTP field is not verified.
+- **Single specialty prompt.** Extraction currently uses a prompt tuned for ophthalmology reports.
+- **On-demand processing.** Summaries are generated when a document is first opened rather than on upload, and the page does not refresh itself.
+- **Patient summary.** The service can build a cumulative summary across documents, but nothing in the UI triggers it yet.
+- **No automated tests** and no container setup yet.
+
+## Roadmap
+
+The next phase focuses on doctors and hospital groups:
+
+- Real OTP authentication and role-based access for patients, doctors and organisations
+- Patient-controlled sharing of records with doctors
+- Structured clinical data (lab values, medications, diagnoses) instead of HTML only
+- Timelines, trends and flags for abnormal values
+- Choosing the extraction prompt by document type
+
+## License
+
+[MIT](LICENSE)
