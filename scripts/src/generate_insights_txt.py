@@ -87,11 +87,31 @@ def generate_insights(prompt: str, markdown_report: str) -> str:
     return streamed
 
 
+# Elements removed from model output: they run code, load remote content or
+# take input. A summary only needs headings, text, lists and tables.
+UNSAFE_TAGS = [
+    "script", "style", "link", "meta", "base", "img", "picture", "source",
+    "video", "audio", "iframe", "frame", "object", "embed", "form", "input",
+    "svg",
+]  # fmt: skip
+
+
 def sanitize_and_wrap_html(inner_html: str) -> str:
     """
-    The model already outputs HTML body; we wrap + clean using BeautifulSoup.
+    Clean the model's HTML and wrap it in a full document with BASE_CSS.
+
+    The output is untrusted (a document can carry instructions aimed at the
+    model), so elements that load or run anything, event handlers and
+    javascript: links are removed. The frontend also blocks remote loads.
     """
     soup = BeautifulSoup(inner_html, "html.parser")
+    for tag in soup(UNSAFE_TAGS):
+        tag.decompose()
+    for tag in soup.find_all(True):
+        for attr in list(tag.attrs):
+            value = str(tag.attrs[attr]).strip().lower()
+            if attr.lower().startswith("on") or value.startswith("javascript:"):
+                del tag.attrs[attr]
 
     # Ensure valid HTML document structure
     html_doc = f"""
