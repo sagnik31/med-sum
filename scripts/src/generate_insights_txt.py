@@ -2,13 +2,13 @@
 
 import os
 import sys
-import ollama
 from bs4 import BeautifulSoup  # used to ensure clean HTML structure
 
 
 # Add parent directory to path to allow importing config
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from config import INPUT_MD_SLM, OUTPUT_HTML_SLM, MODEL_NAME, PROMPT_FILE
+from config import INPUT_MD_SLM, OUTPUT_HTML_SLM, PRIMARY_MODEL, PROMPT_FILE
+from llm import chat
 
 # Hard cap so a model stuck in a repetition loop cannot run forever;
 # real insights and patient summaries need far fewer tokens.
@@ -79,21 +79,9 @@ def generate_insights(prompt: str, markdown_report: str) -> str:
         print(f"\n=== 📝 Loading Markdown Report === \n{markdown_report}")
         print(f"\n=== 📝 Loading Prompt === \n{prompt}")
     print("\n=== 💡 Generating Clinical Insights (streaming) ===\n")
-    print("\n=== Model Name===\n", MODEL_NAME)
+    print("\n=== Model Name===\n", PRIMARY_MODEL)
 
-    streamed = ""
-    for chunk in ollama.chat(
-        model=MODEL_NAME,
-        messages=messages,
-        stream=True,
-        options={"num_predict": MAX_TOKENS},
-    ):
-        token = chunk.get("message", {}).get("content", "")
-        if not token:
-            continue
-        streamed += token
-        if VERBOSE:
-            print(token, end="", flush=True)
+    streamed = chat(messages, max_tokens=MAX_TOKENS, verbose=VERBOSE)
 
     print("\n\n=== 🚀 Generation complete ===\n")
     return streamed

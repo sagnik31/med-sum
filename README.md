@@ -27,7 +27,7 @@ flowchart LR
     API -->|"internal token"| AI["Python AI service<br/>(FastAPI, :9000)"]
     API --> DB[("PostgreSQL")]
     AI --> DB
-    AI --> OL["Ollama<br/>qwen2.5vl:7b<br/>qwen3:4b-instruct"]
+    AI --> OL["Ollama<br/>qwen3.5:4b (primary)<br/>gemma4:e2b (fallback)"]
 ```
 
 The system has three services that share one PostgreSQL database:
@@ -39,8 +39,8 @@ The system has three services that share one PostgreSQL database:
 When a user opens a document, the pipeline runs as a background job:
 
 1. **Claim the job.** A row in `insights` with status `processing` acts as a lock, so the same document is never processed twice at once.
-2. **Extract.** PDFs are rendered to images with PyMuPDF, and `qwen2.5vl:7b` transcribes each page into Markdown. The result is cached on the document, so retries skip this step.
-3. **Summarise.** `qwen3:4b-instruct` turns the Markdown into an HTML summary, which is saved with status `completed`.
+2. **Extract.** PDFs are rendered to images with PyMuPDF, and `qwen3.5:4b` transcribes each page into Markdown. The result is cached on the document, so retries skip this step.
+3. **Summarise.** The same model turns the Markdown into an HTML summary, which is saved with status `completed`.
 4. **Record failures.** Any error marks the job `failed` with a message, and the user can retry from the UI.
 
 ### Design notes
@@ -49,6 +49,7 @@ When a user opens a document, the pipeline runs as a background job:
 - **Recovery from crashed workers.** The worker updates a heartbeat before each page. A job with no heartbeat for 30 minutes can be taken over by a new request.
 - **Untrusted model output is isolated.** Generated HTML is shown in a sandboxed iframe with scripts disabled, so its styles cannot leak into the app.
 - **Bounded work.** Uploads are capped at 20 MB and stored under random file names, and model output is capped per page and per summary so a looping model cannot run forever.
+- **Fallback model.** Both models read images and text. If `qwen3.5:4b` returns an error or hits the output cap, the same request goes to `gemma4:e2b`. If both fail, the job is marked `failed`, so cut-off output is never saved as a result.
 
 ## Tech stack
 
@@ -57,7 +58,7 @@ When a user opens a document, the pipeline runs as a background job:
 | Frontend | React 18, React Router, Vite, Tailwind CSS |
 | Backend | Go (`net/http`), pgx, JWT |
 | AI service | Python, FastAPI, PyMuPDF, Ollama Python client |
-| Models | `qwen2.5vl:7b` (vision extraction), `qwen3:4b-instruct-2507-q8_0` (summaries) |
+| Models | `qwen3.5:4b` (primary, extraction and summaries), `gemma4:e2b` (fallback) |
 | Database | PostgreSQL |
 
 ## Getting started
@@ -70,7 +71,7 @@ When a user opens a document, the pipeline runs as a background job:
 | [Node.js](https://nodejs.org/) | 18+ | includes npm |
 | [Python](https://www.python.org/downloads/) | 3.10+ | |
 | [PostgreSQL](https://www.postgresql.org/download/) | 17+ | the examples assume user `postgres`, password `postgres` |
-| [Ollama](https://ollama.com/download) | recent | the two models need about 10 GB of disk; a GPU is strongly recommended |
+| [Ollama](https://ollama.com/download) | 0.30.9+ | the two models need about 8 GB of disk; they run on a CPU, but a GPU is much faster |
 
 ### 1. Clone the repository
 
@@ -91,8 +92,8 @@ If your PostgreSQL credentials differ, adjust `DATABASE_URL` in the next steps (
 ### 3. Pull the models
 
 ```bash
-ollama pull qwen2.5vl:7b
-ollama pull qwen3:4b-instruct-2507-q8_0
+ollama pull qwen3.5:4b
+ollama pull gemma4:e2b
 ```
 
 Make sure Ollama is running before you start the AI service.
@@ -171,6 +172,9 @@ npm run dev
 | `HTTP_ADDRESS` | Backend | `:8080` |
 | `UPLOADS_DIR` | Backend | `./uploads` (resolved to an absolute path) |
 | `INSIGHTS_SERVICE_URL` | Backend | `http://localhost:9000` |
+| `MEDSUM_PRIMARY_MODEL` | AI service | `qwen3.5:4b` |
+| `MEDSUM_FALLBACK_MODEL` | AI service | `gemma4:e2b` |
+| `MEDSUM_NUM_CTX` | AI service | `16384` (context window for each model call) |
 | `VITE_API_BASE_URL` | Frontend | `http://localhost:8080`, set in `frontend/.env.local` |
 
 The backend allows CORS requests from `http://localhost:5173` only.
@@ -208,8 +212,9 @@ frontend/
   src/pages/             login, documents, document summary, patient summary
 scripts/
   src/insights_service.py    FastAPI service and background job handling
-  src/extract_report_slm.py  vision-model extraction
-  src/generate_insights_txt.py  text-model summary generation
+  src/extract_report_slm.py  page extraction from images
+  src/generate_insights_txt.py  summary generation
+  src/llm.py                 model calls with the primary and fallback model
   prompt/                prompts for extraction and summaries
 postman/                 API collection
 ```

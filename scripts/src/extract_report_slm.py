@@ -3,7 +3,6 @@
 
 import os
 import sys
-import ollama
 
 # Optional: only needed for PDF → image conversion
 import fitz  # PyMuPDF
@@ -16,9 +15,10 @@ from config import (
     OUTPUT_MD_SLM,
     INPUT_PDF,
     OPTHAL_POINT_FILE,
+    PRIMARY_MODEL,
 )  # INPUT_PDF is generic input file
+from llm import chat
 
-VISION_MODEL = "qwen2.5vl:7b"
 END_MARKER = "[[END_OF_PAGE]]"
 # Hard cap so a model stuck in a repetition loop cannot run forever;
 # a real report page needs far fewer tokens.
@@ -45,9 +45,9 @@ def load_prompt(path: str) -> str:
 
 def run_vlm_on_image_bytes(image_bytes: bytes, system_prompt: str, label: str) -> str:
     """
-    Call qwen2.5vl:7b on a single image (JPG/PNG or PDF-rendered page) as bytes.
-    Streams output to console and stops when END_MARKER is seen.
-    Returns the content WITHOUT the END_MARKER.
+    Transcribe a single image (JPG/PNG or PDF-rendered page) given as bytes,
+    using the primary model with the fallback if needed (see llm.chat).
+    Stops when END_MARKER is seen and returns the content WITHOUT it.
     """
     print(f"\n=== 👁️ Processing {label} with vision model ===\n")
 
@@ -67,29 +67,15 @@ def run_vlm_on_image_bytes(image_bytes: bytes, system_prompt: str, label: str) -
         },
     ]
 
-    full = ""
-    for chunk in ollama.chat(
-        model=VISION_MODEL,
-        messages=messages,
-        stream=True,
-        options={"num_predict": MAX_TOKENS_PER_PAGE},
-    ):
-        token = chunk.get("message", {}).get("content", "")
-        if not token:
-            continue
-        full += token
-        if VERBOSE:
-            print(token, end="", flush=True)
-
-        if END_MARKER in full:
-            break
+    page_md = chat(
+        messages,
+        max_tokens=MAX_TOKENS_PER_PAGE,
+        stop_marker=END_MARKER,
+        verbose=VERBOSE,
+    )
 
     print(f"\n\n=== ✅ Finished {label} ===\n")
-
-    if END_MARKER in full:
-        full = full.split(END_MARKER)[0]
-
-    return full.strip()
+    return page_md
 
 
 def process_image_file(input_path: str, system_prompt: str) -> str:
@@ -148,7 +134,7 @@ def extract_markdown_from_file(input_path: str, on_page=None) -> str:
 
     print("\n======================================")
     print(f" Vision-based extraction for: {input_path}")
-    print(" Using model:", VISION_MODEL)
+    print(" Using model:", PRIMARY_MODEL)
     print("======================================\n")
 
     if ext in [".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff", ".webp"]:

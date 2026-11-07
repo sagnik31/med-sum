@@ -20,11 +20,21 @@ INPUT_MD_SLM = os.path.join(
 # Prompt that defines how to turn markdown → HTML insights
 # Prompts are in .../scripts/prompt/txt/
 PROMPT_FILE = os.path.join(SCRIPTS_DIR, "prompt", "txt", "insight_prompt.txt")
-VISION_PROMPT_FILE = os.path.join(SCRIPTS_DIR, "prompt", "img", "extract_report_img.txt")
+VISION_PROMPT_FILE = os.path.join(
+    SCRIPTS_DIR, "prompt", "img", "extract_report_img.txt"
+)
 OPTHAL_POINT_FILE = os.path.join(SCRIPTS_DIR, "prompt", "img", "opthal_report.txt")
 
-# Text model to use for insights generation
-MODEL_NAME = "qwen3:4b-instruct-2507-q8_0"
+# Local models served by Ollama. Both read images and text. The primary does
+# all the work; the fallback gets the same request when the primary errors or
+# runs out of tokens. Environment variables override them (useful for evals).
+PRIMARY_MODEL = os.environ.get("MEDSUM_PRIMARY_MODEL", "qwen3.5:4b")
+FALLBACK_MODEL = os.environ.get("MEDSUM_FALLBACK_MODEL", "gemma4:e2b")
+
+# Context window per model call. Ollama's default (4096 tokens) is smaller
+# than one 200-DPI page image plus the prompt, and Ollama rejects requests
+# that do not fit.
+NUM_CTX = int(os.environ.get("MEDSUM_NUM_CTX", "16384"))
 
 # Output HTML file
 OUTPUT_HTML_SLM = os.path.join(

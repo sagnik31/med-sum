@@ -20,8 +20,9 @@ Insights Generation Service (FastAPI)
 
 Current behavior of the worker:
     - Looks up the document's storage_path in the DB (an absolute path written by the backend)
-    - Extracts Markdown via the VLM (qwen2.5vl:7b), cached in documents.extracted_markdown
-    - Generates HTML insights via the text model (qwen3:4b-instruct)
+    - Extracts Markdown from page images, cached in documents.extracted_markdown
+    - Generates HTML insights from that Markdown
+    - Both steps use the primary model, with a fallback (see llm.py)
 """
 
 import hmac
