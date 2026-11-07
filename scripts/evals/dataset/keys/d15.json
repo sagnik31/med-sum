@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d15",
+    "type": "prescription",
+    "page_count": 1,
+    "has_text_layer": false,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Sahaj Multispeciality Hospital, Karve Road, Pune"
+        },
+        "text": "Sahaj Multispeciality Hospital"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 1,
+            "last_line": 1,
+            "quote": "# Dr. Anil Deshpande"
+          },
+          "text": "Dr. Anil Deshpande"
+        }
+      ],
+      "report_date": null,
+      "collection_date": null,
+      "prescription_date": null
+    },
+    "derived": {
+      "report_date": null,
+      "collection_date": null,
+      "prescription_date": null,
+      "document_date": null,
+      "date_source": "undated"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Dr. Anil Deshpande",
+        "",
+        "MBBS, MD (General Medicine)",
+        "",
+        "Reg. No.: MMC-2009/04/0001",
+        "",
+        "Sahaj Multispeciality Hospital, Karve Road, Pune",
+        "",
+        "Patient: Arjun Menon",
+        "",
+        "Age / Sex: 66 Y / M",
+        "",
+        "UHID: SH-100234",
+        "",
+        "Medication card (continue as advised)",
+        "",
+        "## Rx",
+        "",
+        "| # | Medicine | Dose | Frequency | Duration | Instructions |",
+        "| --- | --- | --- | --- | --- | --- |",
+        "| 1 | Tab. Rosuvas 10 mg | 1 tab | 0-0-1 | Continue |  |",
+        "| 2 | Tab. Ecosprin 75 mg | 1 tab | 0-1-0 | Continue |  |",
+        "",
+        "Signature: Dr. Anil Deshpande",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Patient: Arjun Menon"
+        },
+        "text": "Arjun Menon"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 11,
+          "last_line": 11,
+          "quote": "Age / Sex: 66 Y / M"
+        },
+        "text": "66 Y"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 11,
+          "last_line": 11,
+          "quote": "Age / Sex: 66 Y / M"
+        },
+        "text": "M"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "UHID: SH-100234"
+        },
+        "text": "SH-100234"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [],
+  "medications": [
+    {
+      "id": "med-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 21,
+          "last_line": 21,
+          "quote": "| 1 | Tab. Rosuvas 10 mg | 1 tab | 0-0-1 | Continue |  |"
+        },
+        "form": "Tab.",
+        "name": "Rosuvas",
+        "strength": "10 mg",
+        "dose": "1 tab",
+        "frequency": "0-0-1",
+        "route": null,
+        "duration": "Continue",
+        "instructions": null
+      },
+      "derived": {
+        "schedule": {
+          "morning": 0.0,
+          "noon": 0.0,
+          "night": 1.0,
+          "times_per_day": 1.0,
+          "as_needed": false
+        },
+        "duration_days": null
+      }
+    },
+    {
+      "id": "med-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 22,
+          "last_line": 22,
+          "quote": "| 2 | Tab. Ecosprin 75 mg | 1 tab | 0-1-0 | Continue |  |"
+        },
+        "form": "Tab.",
+        "name": "Ecosprin",
+        "strength": "75 mg",
+        "dose": "1 tab",
+        "frequency": "0-1-0",
+        "route": null,
+        "duration": "Continue",
+        "instructions": null
+      },
+      "derived": {
+        "schedule": {
+          "morning": 0.0,
+          "noon": 1.0,
+          "night": 0.0,
+          "times_per_day": 1.0,
+          "as_needed": false
+        },
+        "duration_days": null
+      }
+    }
+  ],
+  "conditions": [],
+  "remarks": [],
+  "vitals": [],
+  "allergies": [],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

@@ -1,0 +1,181 @@
+"""
+Write the synthetic dataset to scripts/evals/dataset/: the documents, an
+answer key and expected transcription for each, and a manifest. Run from
+scripts/src:
+
+    python -m dataset.build
+
+The output is committed; a test rebuilds it and fails on any difference.
+"""
+
+import json
+import sys
+from pathlib import Path
+
+from dataset.content import DOCUMENTS, PATIENTS, UPLOAD_ORDER, Doc
+from dataset.keys import build_key, transcription_markdown
+from dataset.render import render
+
+DATASET_DIR = Path(__file__).resolve().parents[2] / "evals" / "dataset"
+CONTENT_TYPES = {"pdf": "application/pdf", "scan_pdf": "application/pdf",
+                 "png": "image/png", "jpg": "image/jpeg"}  # fmt: skip
+
+
+def manifest() -> dict:
+    keys = {doc.id: build_key(doc) for doc in DOCUMENTS}
+    return {
+        "name": "med-sum synthetic v1",
+        "description": "Fictional patients and documents for the extraction pipeline "
+        "and its evals. See README.md.",
+        "patients": [
+            {
+                "key": p.key,
+                "name": p.name,
+                "sex": p.sex,
+                "date_of_birth": p.dob.isoformat(),
+                "mrn": p.mrn,
+                "phone": p.phone,
+            }
+            for p in PATIENTS
+        ],
+        "documents": [_entry(doc, keys[doc.id]) for doc in DOCUMENTS],
+        "upload_order": UPLOAD_ORDER,
+    }
+
+
+def _entry(doc: Doc, key) -> dict:
+    return {
+        "id": doc.id,
+        "patient": doc.patient,
+        "type": doc.type,
+        "file": f"documents/{doc.file_name}",
+        "content_type": CONTENT_TYPES[doc.file_format],
+        "pages": key.document.page_count,
+        "has_text_layer": key.document.has_text_layer,
+        "document_date": _iso(key.document.derived.document_date),
+        "key": f"keys/{doc.id}.json",
+        "transcription": f"transcriptions/{doc.id}.md",
+        "cases": doc.cases,
+        "notes": doc.notes,
+    }
+
+
+def _iso(value):
+    return value.isoformat() if value else None
+
+
+def outputs() -> dict[str, bytes]:
+    """Relative path -> file content, for everything the build writes."""
+    files: dict[str, bytes] = {}
+    for doc in DOCUMENTS:
+        key = build_key(doc)
+        files[f"documents/{doc.file_name}"] = render(doc)
+        files[f"keys/{doc.id}.json"] = _json(key.model_dump(mode="json"))
+        files[f"transcriptions/{doc.id}.md"] = transcription_markdown(doc).encode()
+    data = manifest()
+    files["manifest.json"] = _json(data)
+    files["README.md"] = readme(data).encode()
+    return files
+
+
+README_RULES = """## How the answer keys are labelled
+
+- **Transcription.** One line per printed line; the title as `#`, section headings
+  as `##`, tables as Markdown tables (header, `---` row, one line per row), and a
+  blank line between blocks. Text is copied exactly; several ranges in one cell
+  stay in one cell, separated by `; ` as printed.
+- **Citations** point at lines of the expected transcription (`transcriptions/`,
+  and `pages` in each key). A model's line numbers won't match, so compare
+  citations by their quoted text.
+- **Remarks** (decision 25): directly under a single-test panel, a remark belongs
+  to that test; after a table of several tests, to the panel; under its own
+  heading or elsewhere, to the document.
+- **Conditions:** one item per condition, even when several share a line
+  ("K/C/O: T2DM, HTN" is two).
+- **Header:** an "Age / Sex" line gives two fields; a clinician is recorded with
+  the label printed before the name ("Ref. By: Dr. ...").
+- **Not extracted:** addresses, running headers, method lines, complaints (C/O),
+  signatures, end-of-report lines and the synthetic-data footer. They are in the
+  transcription, so a coverage check should list them as unused.
+- **Derived values** are what code should compute, written out independently of
+  that code: `value_num` only when the printed value is a plain number (Indian
+  digit grouping such as `2,45,000` included); a computed flag only when exactly
+  one range applies; no days for durations in months or "Continue"; no daily
+  schedule for a weekly dose. Unit conversions are left empty until the unit
+  table exists (step 5).
+- **Text layers:** PDFs with a text layer were laid out by PyMuPDF; their text
+  splits table cells over lines and keeps ligatures (`ﬁ`), so compare it with
+  Unicode normalisation (NFKC) and spacing ignored.
+"""
+
+
+def readme(data: dict) -> str:
+    names = {p["key"]: p["name"] for p in data["patients"]}
+    rows = "\n".join(
+        f"| {d['id']} | {names[d['patient']]} | {d['type']} | "
+        f"`{d['file'].split('/')[-1]}` | {d['pages']} | {d['document_date'] or 'undated'} | "
+        f"{', '.join(d['cases'])} |"
+        for d in data["documents"]
+    )
+    patients = "\n".join(
+        f"| {p['name']} | {p['sex']} | {p['date_of_birth']} | {p['mrn']} | {p['phone']} |"
+        for p in data["patients"]
+    )
+    pages = sum(d["pages"] for d in data["documents"])
+    return f"""# Synthetic dataset (v1)
+
+Generated by `scripts/src/dataset` (`python -m dataset.build` from `scripts/src`);
+do not edit these files by hand. Everything is fictional: patients, doctors,
+laboratories and the hospital, and every page says so in its footer.
+
+{len(data["documents"])} documents, {pages} pages, {len(data["patients"])} patients. Each document has the
+uploaded file (`documents/`), an answer key in the stored record format
+(`keys/`, schema `scripts/schemas/document_record.v1.json`) and its expected
+transcription (`transcriptions/`). `manifest.json` lists them, with the cases
+each one exercises and the order the loader uploads them in
+(`python -m dataset.load`), which is deliberately not date order.
+
+## Patients
+
+| Name | Sex | Date of birth | MRN | Login phone |
+| --- | --- | --- | --- | --- |
+{patients}
+
+## Documents
+
+| ID | Patient | Type | File | Pages | Date | Cases |
+| --- | --- | --- | --- | --- | --- | --- |
+{rows}
+
+{README_RULES}"""
+
+
+def _json(data) -> bytes:
+    return (json.dumps(data, indent=2, ensure_ascii=False) + "\n").encode()
+
+
+def write(target: Path = DATASET_DIR) -> list[Path]:
+    """Write every output under `target`, removing stale generated files."""
+    files = outputs()
+    for sub in ("documents", "keys", "transcriptions"):
+        folder = target / sub
+        folder.mkdir(parents=True, exist_ok=True)
+        for old in folder.iterdir():
+            if f"{sub}/{old.name}" not in files:
+                old.unlink()
+    written = []
+    for rel, data in files.items():
+        path = target / rel
+        path.write_bytes(data)
+        written.append(path)
+    return written
+
+
+def main() -> None:
+    target = Path(sys.argv[1]) if len(sys.argv) > 1 else DATASET_DIR
+    for path in write(target):
+        print(f"wrote {path}")
+
+
+if __name__ == "__main__":
+    main()

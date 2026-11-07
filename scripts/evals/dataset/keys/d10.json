@@ -1,0 +1,323 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d10",
+    "type": "prescription",
+    "page_count": 1,
+    "has_text_layer": false,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Sahaj Multispeciality Hospital, Karve Road, Pune"
+        },
+        "text": "Sahaj Multispeciality Hospital"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 1,
+            "last_line": 1,
+            "quote": "# Dr. Kavita Rao"
+          },
+          "text": "Dr. Kavita Rao"
+        }
+      ],
+      "report_date": null,
+      "collection_date": null,
+      "prescription_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Date: 09/09/2024"
+        },
+        "text": "09/09/2024"
+      }
+    },
+    "derived": {
+      "report_date": null,
+      "collection_date": null,
+      "prescription_date": "2024-09-09",
+      "document_date": "2024-09-09",
+      "date_source": "prescription_date"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Dr. Kavita Rao",
+        "",
+        "MBBS, DM (Endocrinology)",
+        "",
+        "Reg. No.: MMC-2012/07/0002",
+        "",
+        "Sahaj Multispeciality Hospital, Karve Road, Pune",
+        "",
+        "Date: 09/09/2024",
+        "",
+        "Patient: Fatima Shaikh",
+        "",
+        "Age / Sex: 31 Y / F",
+        "",
+        "UHID: SH-100233",
+        "",
+        "Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F",
+        "",
+        "Allergies: Penicillin - hives",
+        "",
+        "Diagnosis: Hypothyroidism",
+        "",
+        "## Rx",
+        "",
+        "| # | Medicine | Dose | Frequency | Duration | Instructions |",
+        "| --- | --- | --- | --- | --- | --- |",
+        "| 1 | Tab. Thyronorm 50 mcg | 1 tab | 1-0-0 | 6 weeks | Empty stomach, 30 min before breakfast |",
+        "",
+        "Advice: Repeat TSH after 6 weeks.",
+        "",
+        "Signature: Dr. Kavita Rao",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 11,
+          "last_line": 11,
+          "quote": "Patient: Fatima Shaikh"
+        },
+        "text": "Fatima Shaikh"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "Age / Sex: 31 Y / F"
+        },
+        "text": "31 Y"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "Age / Sex: 31 Y / F"
+        },
+        "text": "F"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "UHID: SH-100233"
+        },
+        "text": "SH-100233"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [],
+  "medications": [
+    {
+      "id": "med-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 27,
+          "last_line": 27,
+          "quote": "| 1 | Tab. Thyronorm 50 mcg | 1 tab | 1-0-0 | 6 weeks | Empty stomach, 30 min before breakfast |"
+        },
+        "form": "Tab.",
+        "name": "Thyronorm",
+        "strength": "50 mcg",
+        "dose": "1 tab",
+        "frequency": "1-0-0",
+        "route": null,
+        "duration": "6 weeks",
+        "instructions": "Empty stomach, 30 min before breakfast"
+      },
+      "derived": {
+        "schedule": {
+          "morning": 1.0,
+          "noon": 0.0,
+          "night": 0.0,
+          "times_per_day": 1.0,
+          "as_needed": false
+        },
+        "duration_days": 42
+      }
+    }
+  ],
+  "conditions": [
+    {
+      "id": "cond-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 21,
+          "last_line": 21,
+          "quote": "Diagnosis: Hypothyroidism"
+        },
+        "text": "Hypothyroidism",
+        "kind": "diagnosis"
+      }
+    }
+  ],
+  "remarks": [
+    {
+      "id": "rem-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 29,
+          "last_line": 29,
+          "quote": "Advice: Repeat TSH after 6 weeks."
+        },
+        "text": "Repeat TSH after 6 weeks.",
+        "kind": "advice",
+        "scope": "document",
+        "test_name": null,
+        "panel": null
+      },
+      "derived": {
+        "observation_id": null
+      }
+    }
+  ],
+  "vitals": [
+    {
+      "id": "vit-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F"
+        },
+        "name": "BP",
+        "value_text": "118/76",
+        "unit": "mmHg"
+      },
+      "derived": {
+        "kind": "blood_pressure",
+        "value_num": null,
+        "systolic": 118.0,
+        "diastolic": 76.0
+      }
+    },
+    {
+      "id": "vit-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F"
+        },
+        "name": "Pulse",
+        "value_text": "72",
+        "unit": "/min"
+      },
+      "derived": {
+        "kind": "pulse",
+        "value_num": 72.0,
+        "systolic": null,
+        "diastolic": null
+      }
+    },
+    {
+      "id": "vit-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F"
+        },
+        "name": "Weight",
+        "value_text": "61",
+        "unit": "kg"
+      },
+      "derived": {
+        "kind": "weight",
+        "value_num": 61.0,
+        "systolic": null,
+        "diastolic": null
+      }
+    },
+    {
+      "id": "vit-4",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F"
+        },
+        "name": "Temp",
+        "value_text": "98.4",
+        "unit": "°F"
+      },
+      "derived": {
+        "kind": "temperature",
+        "value_num": 98.4,
+        "systolic": null,
+        "diastolic": null
+      }
+    }
+  ],
+  "allergies": [
+    {
+      "id": "alg-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 19,
+          "last_line": 19,
+          "quote": "Allergies: Penicillin - hives"
+        },
+        "text": "Penicillin - hives",
+        "substance": "Penicillin",
+        "reaction": "hives"
+      },
+      "derived": {
+        "no_known_allergies": false
+      }
+    }
+  ],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

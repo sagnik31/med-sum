@@ -1,0 +1,524 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d06",
+    "type": "lab_report",
+    "page_count": 2,
+    "has_text_layer": true,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 1,
+          "last_line": 1,
+          "quote": "# Sahaj Multispeciality Hospital - Laboratory Services"
+        },
+        "text": "Sahaj Multispeciality Hospital - Laboratory Services"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 11,
+            "last_line": 11,
+            "quote": "Ordering Physician: Dr. Anil Deshpande"
+          },
+          "text": "Ordering Physician: Dr. Anil Deshpande"
+        },
+        {
+          "citation": {
+            "page": 2,
+            "first_line": 13,
+            "last_line": 13,
+            "quote": "Dr. Neha Joshi, MD (Pathology)"
+          },
+          "text": "Dr. Neha Joshi, MD (Pathology)"
+        }
+      ],
+      "report_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "Report Date: 03/02/2025 01:20 PM"
+        },
+        "text": "03/02/2025 01:20 PM"
+      },
+      "collection_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "Sample Collected: 03/02/2025 09:00 AM"
+        },
+        "text": "03/02/2025 09:00 AM"
+      },
+      "prescription_date": null
+    },
+    "derived": {
+      "report_date": "2025-02-03",
+      "collection_date": "2025-02-03",
+      "prescription_date": null,
+      "document_date": "2025-02-03",
+      "date_source": "report_date"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Sahaj Multispeciality Hospital - Laboratory Services",
+        "",
+        "Karve Road, Pune 411004",
+        "",
+        "Patient Name: Mr. Rohan Kulkarni",
+        "",
+        "Age / Sex: 44 Years / Male",
+        "",
+        "UHID: SH-100232",
+        "",
+        "Ordering Physician: Dr. Anil Deshpande",
+        "",
+        "Sample Collected: 03/02/2025 09:00 AM",
+        "",
+        "Report Date: 03/02/2025 01:20 PM",
+        "",
+        "## KIDNEY FUNCTION TEST",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| Blood Urea | 46 | H | mg/dL | 15 - 40 |",
+        "| Blood Urea Nitrogen (BUN) | 21.5 | H | mg/dL | 7 - 20 |",
+        "| Serum Creatinine | 1.6 | H | mg/dL | 0.7 - 1.3 |",
+        "| eGFR | 54 | L | mL/min/1.73m² | > 60 |",
+        "| Uric Acid | 7.8 | H | mg/dL | 3.5 - 7.2 |",
+        "",
+        "## SERUM ELECTROLYTES",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| Sodium | 138 |  | mmol/L | 135 - 145 |",
+        "| Potassium | 4.6 |  | mmol/L | 3.5 - 5.1 |",
+        "| Chloride | 101 |  | mmol/L | 98 - 107 |",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    },
+    {
+      "page": 2,
+      "lines": [
+        "Patient: Mr. Rohan Kulkarni | UHID: SH-100232 | Page 2 of 2",
+        "",
+        "## GLUCOSE",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| Random Blood Sugar | 112 |  | mg/dL | 70 - 140 |",
+        "",
+        "## REMARKS",
+        "",
+        "Kindly correlate clinically.",
+        "",
+        "Dr. Neha Joshi, MD (Pathology)",
+        "",
+        "*** End of Report ***",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 5,
+          "last_line": 5,
+          "quote": "Patient Name: Mr. Rohan Kulkarni"
+        },
+        "text": "Mr. Rohan Kulkarni"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Age / Sex: 44 Years / Male"
+        },
+        "text": "44 Years"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Age / Sex: 44 Years / Male"
+        },
+        "text": "Male"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "UHID: SH-100232"
+        },
+        "text": "SH-100232"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [
+    {
+      "id": "obs-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 21,
+          "last_line": 21,
+          "quote": "| Blood Urea | 46 | H | mg/dL | 15 - 40 |"
+        },
+        "panel": "KIDNEY FUNCTION TEST",
+        "test_name": "Blood Urea",
+        "value_text": "46",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "15 - 40"
+        ],
+        "flag_printed": "H"
+      },
+      "derived": {
+        "analyte": "urea",
+        "value_num": 46.0,
+        "ranges": [
+          {
+            "text": "15 - 40",
+            "low": 15.0,
+            "high": 40.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "high",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 22,
+          "last_line": 22,
+          "quote": "| Blood Urea Nitrogen (BUN) | 21.5 | H | mg/dL | 7 - 20 |"
+        },
+        "panel": "KIDNEY FUNCTION TEST",
+        "test_name": "Blood Urea Nitrogen (BUN)",
+        "value_text": "21.5",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "7 - 20"
+        ],
+        "flag_printed": "H"
+      },
+      "derived": {
+        "analyte": "bun",
+        "value_num": 21.5,
+        "ranges": [
+          {
+            "text": "7 - 20",
+            "low": 7.0,
+            "high": 20.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "high",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 23,
+          "last_line": 23,
+          "quote": "| Serum Creatinine | 1.6 | H | mg/dL | 0.7 - 1.3 |"
+        },
+        "panel": "KIDNEY FUNCTION TEST",
+        "test_name": "Serum Creatinine",
+        "value_text": "1.6",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "0.7 - 1.3"
+        ],
+        "flag_printed": "H"
+      },
+      "derived": {
+        "analyte": "creatinine",
+        "value_num": 1.6,
+        "ranges": [
+          {
+            "text": "0.7 - 1.3",
+            "low": 0.7,
+            "high": 1.3,
+            "label": null
+          }
+        ],
+        "flag_computed": "high",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-4",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 24,
+          "last_line": 24,
+          "quote": "| eGFR | 54 | L | mL/min/1.73m² | > 60 |"
+        },
+        "panel": "KIDNEY FUNCTION TEST",
+        "test_name": "eGFR",
+        "value_text": "54",
+        "unit": "mL/min/1.73m²",
+        "reference_ranges": [
+          "> 60"
+        ],
+        "flag_printed": "L"
+      },
+      "derived": {
+        "analyte": "egfr",
+        "value_num": 54.0,
+        "ranges": [
+          {
+            "text": "> 60",
+            "low": 60.0,
+            "high": null,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-5",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 25,
+          "last_line": 25,
+          "quote": "| Uric Acid | 7.8 | H | mg/dL | 3.5 - 7.2 |"
+        },
+        "panel": "KIDNEY FUNCTION TEST",
+        "test_name": "Uric Acid",
+        "value_text": "7.8",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "3.5 - 7.2"
+        ],
+        "flag_printed": "H"
+      },
+      "derived": {
+        "analyte": "uric_acid",
+        "value_num": 7.8,
+        "ranges": [
+          {
+            "text": "3.5 - 7.2",
+            "low": 3.5,
+            "high": 7.2,
+            "label": null
+          }
+        ],
+        "flag_computed": "high",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-6",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 31,
+          "last_line": 31,
+          "quote": "| Sodium | 138 |  | mmol/L | 135 - 145 |"
+        },
+        "panel": "SERUM ELECTROLYTES",
+        "test_name": "Sodium",
+        "value_text": "138",
+        "unit": "mmol/L",
+        "reference_ranges": [
+          "135 - 145"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "sodium",
+        "value_num": 138.0,
+        "ranges": [
+          {
+            "text": "135 - 145",
+            "low": 135.0,
+            "high": 145.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-7",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 32,
+          "last_line": 32,
+          "quote": "| Potassium | 4.6 |  | mmol/L | 3.5 - 5.1 |"
+        },
+        "panel": "SERUM ELECTROLYTES",
+        "test_name": "Potassium",
+        "value_text": "4.6",
+        "unit": "mmol/L",
+        "reference_ranges": [
+          "3.5 - 5.1"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "potassium",
+        "value_num": 4.6,
+        "ranges": [
+          {
+            "text": "3.5 - 5.1",
+            "low": 3.5,
+            "high": 5.1,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-8",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 33,
+          "last_line": 33,
+          "quote": "| Chloride | 101 |  | mmol/L | 98 - 107 |"
+        },
+        "panel": "SERUM ELECTROLYTES",
+        "test_name": "Chloride",
+        "value_text": "101",
+        "unit": "mmol/L",
+        "reference_ranges": [
+          "98 - 107"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "chloride",
+        "value_num": 101.0,
+        "ranges": [
+          {
+            "text": "98 - 107",
+            "low": 98.0,
+            "high": 107.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-9",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "| Random Blood Sugar | 112 |  | mg/dL | 70 - 140 |"
+        },
+        "panel": "GLUCOSE",
+        "test_name": "Random Blood Sugar",
+        "value_text": "112",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "70 - 140"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "glucose_random",
+        "value_num": 112.0,
+        "ranges": [
+          {
+            "text": "70 - 140",
+            "low": 70.0,
+            "high": 140.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    }
+  ],
+  "medications": [],
+  "conditions": [],
+  "remarks": [
+    {
+      "id": "rem-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 11,
+          "last_line": 11,
+          "quote": "Kindly correlate clinically."
+        },
+        "text": "Kindly correlate clinically.",
+        "kind": "comment",
+        "scope": "document",
+        "test_name": null,
+        "panel": null
+      },
+      "derived": {
+        "observation_id": null
+      }
+    }
+  ],
+  "vitals": [],
+  "allergies": [],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

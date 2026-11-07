@@ -1,0 +1,444 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d02",
+    "type": "prescription",
+    "page_count": 1,
+    "has_text_layer": false,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Sahaj Multispeciality Hospital, Karve Road, Pune"
+        },
+        "text": "Sahaj Multispeciality Hospital"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 1,
+            "last_line": 1,
+            "quote": "# Dr. Anil Deshpande"
+          },
+          "text": "Dr. Anil Deshpande"
+        }
+      ],
+      "report_date": null,
+      "collection_date": null,
+      "prescription_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Date: 20/06/2024"
+        },
+        "text": "20/06/2024"
+      }
+    },
+    "derived": {
+      "report_date": null,
+      "collection_date": null,
+      "prescription_date": "2024-06-20",
+      "document_date": "2024-06-20",
+      "date_source": "prescription_date"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Dr. Anil Deshpande",
+        "",
+        "MBBS, MD (General Medicine)",
+        "",
+        "Reg. No.: MMC-2009/04/0001",
+        "",
+        "Sahaj Multispeciality Hospital, Karve Road, Pune",
+        "",
+        "Date: 20/06/2024",
+        "",
+        "Patient: Meera Iyer",
+        "",
+        "Age / Sex: 57 Y / F",
+        "",
+        "UHID: SH-100231",
+        "",
+        "Vitals: BP 142/88 mmHg, Pulse 82 /min, Weight 68 kg, SpO2 98 %",
+        "",
+        "Allergies: NKDA",
+        "",
+        "C/O: Fatigue and increased thirst for 2 months",
+        "",
+        "K/C/O: Hypertension",
+        "",
+        "Diagnosis: Type 2 diabetes mellitus, Microcytic anaemia",
+        "",
+        "## Rx",
+        "",
+        "| # | Medicine | Dose | Frequency | Duration | Instructions |",
+        "| --- | --- | --- | --- | --- | --- |",
+        "| 1 | Tab. Glycomet 500 mg | 1 tab | 1-0-1 | 30 days | After food |",
+        "| 2 | Tab. Telma 40 mg | 1 tab | 1-0-0 | 30 days | Before breakfast |",
+        "| 3 | Tab. Livogen | 1 tab | 0-1-0 | 30 days | After lunch |",
+        "",
+        "Advice: Diet control and 30 minutes of brisk walking daily.",
+        "",
+        "Review after 3 months with HbA1c and FBS.",
+        "",
+        "Signature: Dr. Anil Deshpande",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 11,
+          "last_line": 11,
+          "quote": "Patient: Meera Iyer"
+        },
+        "text": "Meera Iyer"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "Age / Sex: 57 Y / F"
+        },
+        "text": "57 Y"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "Age / Sex: 57 Y / F"
+        },
+        "text": "F"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "UHID: SH-100231"
+        },
+        "text": "SH-100231"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [],
+  "medications": [
+    {
+      "id": "med-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 31,
+          "last_line": 31,
+          "quote": "| 1 | Tab. Glycomet 500 mg | 1 tab | 1-0-1 | 30 days | After food |"
+        },
+        "form": "Tab.",
+        "name": "Glycomet",
+        "strength": "500 mg",
+        "dose": "1 tab",
+        "frequency": "1-0-1",
+        "route": null,
+        "duration": "30 days",
+        "instructions": "After food"
+      },
+      "derived": {
+        "schedule": {
+          "morning": 1.0,
+          "noon": 0.0,
+          "night": 1.0,
+          "times_per_day": 2.0,
+          "as_needed": false
+        },
+        "duration_days": 30
+      }
+    },
+    {
+      "id": "med-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 32,
+          "last_line": 32,
+          "quote": "| 2 | Tab. Telma 40 mg | 1 tab | 1-0-0 | 30 days | Before breakfast |"
+        },
+        "form": "Tab.",
+        "name": "Telma",
+        "strength": "40 mg",
+        "dose": "1 tab",
+        "frequency": "1-0-0",
+        "route": null,
+        "duration": "30 days",
+        "instructions": "Before breakfast"
+      },
+      "derived": {
+        "schedule": {
+          "morning": 1.0,
+          "noon": 0.0,
+          "night": 0.0,
+          "times_per_day": 1.0,
+          "as_needed": false
+        },
+        "duration_days": 30
+      }
+    },
+    {
+      "id": "med-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 33,
+          "last_line": 33,
+          "quote": "| 3 | Tab. Livogen | 1 tab | 0-1-0 | 30 days | After lunch |"
+        },
+        "form": "Tab.",
+        "name": "Livogen",
+        "strength": null,
+        "dose": "1 tab",
+        "frequency": "0-1-0",
+        "route": null,
+        "duration": "30 days",
+        "instructions": "After lunch"
+      },
+      "derived": {
+        "schedule": {
+          "morning": 0.0,
+          "noon": 1.0,
+          "night": 0.0,
+          "times_per_day": 1.0,
+          "as_needed": false
+        },
+        "duration_days": 30
+      }
+    }
+  ],
+  "conditions": [
+    {
+      "id": "cond-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 23,
+          "last_line": 23,
+          "quote": "K/C/O: Hypertension"
+        },
+        "text": "Hypertension",
+        "kind": "history"
+      }
+    },
+    {
+      "id": "cond-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 25,
+          "last_line": 25,
+          "quote": "Diagnosis: Type 2 diabetes mellitus, Microcytic anaemia"
+        },
+        "text": "Type 2 diabetes mellitus",
+        "kind": "diagnosis"
+      }
+    },
+    {
+      "id": "cond-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 25,
+          "last_line": 25,
+          "quote": "Diagnosis: Type 2 diabetes mellitus, Microcytic anaemia"
+        },
+        "text": "Microcytic anaemia",
+        "kind": "diagnosis"
+      }
+    }
+  ],
+  "remarks": [
+    {
+      "id": "rem-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 35,
+          "last_line": 35,
+          "quote": "Advice: Diet control and 30 minutes of brisk walking daily."
+        },
+        "text": "Diet control and 30 minutes of brisk walking daily.",
+        "kind": "advice",
+        "scope": "document",
+        "test_name": null,
+        "panel": null
+      },
+      "derived": {
+        "observation_id": null
+      }
+    },
+    {
+      "id": "rem-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 37,
+          "last_line": 37,
+          "quote": "Review after 3 months with HbA1c and FBS."
+        },
+        "text": "Review after 3 months with HbA1c and FBS.",
+        "kind": "advice",
+        "scope": "document",
+        "test_name": null,
+        "panel": null
+      },
+      "derived": {
+        "observation_id": null
+      }
+    }
+  ],
+  "vitals": [
+    {
+      "id": "vit-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "Vitals: BP 142/88 mmHg, Pulse 82 /min, Weight 68 kg, SpO2 98 %"
+        },
+        "name": "BP",
+        "value_text": "142/88",
+        "unit": "mmHg"
+      },
+      "derived": {
+        "kind": "blood_pressure",
+        "value_num": null,
+        "systolic": 142.0,
+        "diastolic": 88.0
+      }
+    },
+    {
+      "id": "vit-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "Vitals: BP 142/88 mmHg, Pulse 82 /min, Weight 68 kg, SpO2 98 %"
+        },
+        "name": "Pulse",
+        "value_text": "82",
+        "unit": "/min"
+      },
+      "derived": {
+        "kind": "pulse",
+        "value_num": 82.0,
+        "systolic": null,
+        "diastolic": null
+      }
+    },
+    {
+      "id": "vit-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "Vitals: BP 142/88 mmHg, Pulse 82 /min, Weight 68 kg, SpO2 98 %"
+        },
+        "name": "Weight",
+        "value_text": "68",
+        "unit": "kg"
+      },
+      "derived": {
+        "kind": "weight",
+        "value_num": 68.0,
+        "systolic": null,
+        "diastolic": null
+      }
+    },
+    {
+      "id": "vit-4",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "Vitals: BP 142/88 mmHg, Pulse 82 /min, Weight 68 kg, SpO2 98 %"
+        },
+        "name": "SpO2",
+        "value_text": "98",
+        "unit": "%"
+      },
+      "derived": {
+        "kind": "spo2",
+        "value_num": 98.0,
+        "systolic": null,
+        "diastolic": null
+      }
+    }
+  ],
+  "allergies": [
+    {
+      "id": "alg-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 19,
+          "last_line": 19,
+          "quote": "Allergies: NKDA"
+        },
+        "text": "NKDA",
+        "substance": null,
+        "reaction": null
+      },
+      "derived": {
+        "no_known_allergies": true
+      }
+    }
+  ],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

@@ -1,0 +1,253 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d16",
+    "type": "lab_report",
+    "page_count": 1,
+    "has_text_layer": false,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 1,
+          "last_line": 1,
+          "quote": "# Kaveri Clinical Laboratory"
+        },
+        "text": "Kaveri Clinical Laboratory"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 11,
+            "last_line": 11,
+            "quote": "Referred By: Dr. S. Kulkarni"
+          },
+          "text": "Referred By: Dr. S. Kulkarni"
+        },
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 23,
+            "last_line": 23,
+            "quote": "Dr. Prakash Nair, MD (Pathology)"
+          },
+          "text": "Dr. Prakash Nair, MD (Pathology)"
+        }
+      ],
+      "report_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "Reported: 02-Apr-2025 10:05 AM"
+        },
+        "text": "02-Apr-2025 10:05 AM"
+      },
+      "collection_date": null,
+      "prescription_date": null
+    },
+    "derived": {
+      "report_date": "2025-04-02",
+      "collection_date": null,
+      "prescription_date": null,
+      "document_date": "2025-04-02",
+      "date_source": "report_date"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Kaveri Clinical Laboratory",
+        "",
+        "Kothrud, Pune 411038",
+        "",
+        "Name: Arjun Mehta",
+        "",
+        "Age/Gender: 41 Y/M",
+        "",
+        "Patient ID: KCL-120377",
+        "",
+        "Referred By: Dr. S. Kulkarni",
+        "",
+        "Reported: 02-Apr-2025 10:05 AM",
+        "",
+        "## HAEMATOLOGY",
+        "",
+        "| Test | Result | Unit | Reference Range |",
+        "| --- | --- | --- | --- |",
+        "| Haemoglobin | 14.8 | g/dL | 13.0 - 17.0 |",
+        "| Total Leucocyte Count | 7.9 | 10³/µL | 4.0 - 10.0 |",
+        "| Platelets | 2.65 | lakh/cumm | 1.50 - 4.10 |",
+        "",
+        "Dr. Prakash Nair, MD (Pathology)",
+        "",
+        "*** End of Report ***",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 5,
+          "last_line": 5,
+          "quote": "Name: Arjun Mehta"
+        },
+        "text": "Arjun Mehta"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Age/Gender: 41 Y/M"
+        },
+        "text": "41 Y"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Age/Gender: 41 Y/M"
+        },
+        "text": "M"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Patient ID: KCL-120377"
+        },
+        "text": "KCL-120377"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [
+    {
+      "id": "obs-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 19,
+          "last_line": 19,
+          "quote": "| Haemoglobin | 14.8 | g/dL | 13.0 - 17.0 |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "Haemoglobin",
+        "value_text": "14.8",
+        "unit": "g/dL",
+        "reference_ranges": [
+          "13.0 - 17.0"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "haemoglobin",
+        "value_num": 14.8,
+        "ranges": [
+          {
+            "text": "13.0 - 17.0",
+            "low": 13.0,
+            "high": 17.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 20,
+          "last_line": 20,
+          "quote": "| Total Leucocyte Count | 7.9 | 10³/µL | 4.0 - 10.0 |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "Total Leucocyte Count",
+        "value_text": "7.9",
+        "unit": "10³/µL",
+        "reference_ranges": [
+          "4.0 - 10.0"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "wbc_count",
+        "value_num": 7.9,
+        "ranges": [
+          {
+            "text": "4.0 - 10.0",
+            "low": 4.0,
+            "high": 10.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 21,
+          "last_line": 21,
+          "quote": "| Platelets | 2.65 | lakh/cumm | 1.50 - 4.10 |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "Platelets",
+        "value_text": "2.65",
+        "unit": "lakh/cumm",
+        "reference_ranges": [
+          "1.50 - 4.10"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "platelet_count",
+        "value_num": 2.65,
+        "ranges": [
+          {
+            "text": "1.50 - 4.10",
+            "low": 1.5,
+            "high": 4.1,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    }
+  ],
+  "medications": [],
+  "conditions": [],
+  "remarks": [],
+  "vitals": [],
+  "allergies": [],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

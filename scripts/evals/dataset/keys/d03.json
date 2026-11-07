@@ -1,0 +1,443 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d03",
+    "type": "lab_report",
+    "page_count": 2,
+    "has_text_layer": false,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 1,
+          "last_line": 1,
+          "quote": "# Kaveri Clinical Laboratory"
+        },
+        "text": "Kaveri Clinical Laboratory"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 11,
+            "last_line": 11,
+            "quote": "Referred By: Dr. Anil Deshpande"
+          },
+          "text": "Referred By: Dr. Anil Deshpande"
+        },
+        {
+          "citation": {
+            "page": 2,
+            "first_line": 21,
+            "last_line": 21,
+            "quote": "Dr. Prakash Nair, MD (Pathology)"
+          },
+          "text": "Dr. Prakash Nair, MD (Pathology)"
+        }
+      ],
+      "report_date": null,
+      "collection_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "Sample Collected: 16-Dec-2024"
+        },
+        "text": "16-Dec-2024"
+      },
+      "prescription_date": null
+    },
+    "derived": {
+      "report_date": null,
+      "collection_date": "2024-12-16",
+      "prescription_date": null,
+      "document_date": "2024-12-16",
+      "date_source": "collection_date"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Kaveri Clinical Laboratory",
+        "",
+        "Kothrud, Pune 411038",
+        "",
+        "Name: Meera Iyer",
+        "",
+        "Age/Gender: 57 Y/F",
+        "",
+        "Patient ID: KCL-118842",
+        "",
+        "Referred By: Dr. Anil Deshpande",
+        "",
+        "Sample Collected: 16-Dec-2024",
+        "",
+        "## HAEMATOLOGY",
+        "",
+        "| Test | Result | Unit | Reference Range |",
+        "| --- | --- | --- | --- |",
+        "| Haemoglobin | 11.2 L | g/dL | 12.0 - 15.0 |",
+        "| Total Leucocyte Count | 6.8 | 10³/µL | 4.0 - 10.0 |",
+        "| Platelets | 2.31 | lakh/cumm | 1.50 - 4.10 |",
+        "| MCV | 79 L | fL | 83 - 101 |",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    },
+    {
+      "page": 2,
+      "lines": [
+        "Patient: Meera Iyer | Lab ID: KCL-118842 | Page 2 of 2",
+        "",
+        "## GLYCATED HAEMOGLOBIN",
+        "",
+        "| Test | Result | Unit | Reference Range |",
+        "| --- | --- | --- | --- |",
+        "| HbA1c | 7.4 H | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |",
+        "",
+        "Interpretation: Reflects average glycaemia over the preceding 8-12 weeks.",
+        "",
+        "## GLUCOSE",
+        "",
+        "| Test | Result | Unit | Reference Range |",
+        "| --- | --- | --- | --- |",
+        "| Fasting Plasma Glucose | 132 H | mg/dL | 70 - 100 |",
+        "",
+        "## PATHOLOGIST'S REMARKS",
+        "",
+        "Suggest iron studies to evaluate microcytosis.",
+        "",
+        "Dr. Prakash Nair, MD (Pathology)",
+        "",
+        "*** End of Report ***",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 5,
+          "last_line": 5,
+          "quote": "Name: Meera Iyer"
+        },
+        "text": "Meera Iyer"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Age/Gender: 57 Y/F"
+        },
+        "text": "57 Y"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Age/Gender: 57 Y/F"
+        },
+        "text": "F"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Patient ID: KCL-118842"
+        },
+        "text": "KCL-118842"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [
+    {
+      "id": "obs-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 19,
+          "last_line": 19,
+          "quote": "| Haemoglobin | 11.2 L | g/dL | 12.0 - 15.0 |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "Haemoglobin",
+        "value_text": "11.2",
+        "unit": "g/dL",
+        "reference_ranges": [
+          "12.0 - 15.0"
+        ],
+        "flag_printed": "L"
+      },
+      "derived": {
+        "analyte": "haemoglobin",
+        "value_num": 11.2,
+        "ranges": [
+          {
+            "text": "12.0 - 15.0",
+            "low": 12.0,
+            "high": 15.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 20,
+          "last_line": 20,
+          "quote": "| Total Leucocyte Count | 6.8 | 10³/µL | 4.0 - 10.0 |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "Total Leucocyte Count",
+        "value_text": "6.8",
+        "unit": "10³/µL",
+        "reference_ranges": [
+          "4.0 - 10.0"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "wbc_count",
+        "value_num": 6.8,
+        "ranges": [
+          {
+            "text": "4.0 - 10.0",
+            "low": 4.0,
+            "high": 10.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 21,
+          "last_line": 21,
+          "quote": "| Platelets | 2.31 | lakh/cumm | 1.50 - 4.10 |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "Platelets",
+        "value_text": "2.31",
+        "unit": "lakh/cumm",
+        "reference_ranges": [
+          "1.50 - 4.10"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "platelet_count",
+        "value_num": 2.31,
+        "ranges": [
+          {
+            "text": "1.50 - 4.10",
+            "low": 1.5,
+            "high": 4.1,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-4",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 22,
+          "last_line": 22,
+          "quote": "| MCV | 79 L | fL | 83 - 101 |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "MCV",
+        "value_text": "79",
+        "unit": "fL",
+        "reference_ranges": [
+          "83 - 101"
+        ],
+        "flag_printed": "L"
+      },
+      "derived": {
+        "analyte": "mcv",
+        "value_num": 79.0,
+        "ranges": [
+          {
+            "text": "83 - 101",
+            "low": 83.0,
+            "high": 101.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-5",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "| HbA1c | 7.4 H | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |"
+        },
+        "panel": "GLYCATED HAEMOGLOBIN",
+        "test_name": "HbA1c",
+        "value_text": "7.4",
+        "unit": "%",
+        "reference_ranges": [
+          "Normal: < 5.7",
+          "Prediabetes: 5.7 - 6.4",
+          "Diabetes: >= 6.5"
+        ],
+        "flag_printed": "H"
+      },
+      "derived": {
+        "analyte": "hba1c",
+        "value_num": 7.4,
+        "ranges": [
+          {
+            "text": "Normal: < 5.7",
+            "low": null,
+            "high": 5.7,
+            "label": "Normal"
+          },
+          {
+            "text": "Prediabetes: 5.7 - 6.4",
+            "low": 5.7,
+            "high": 6.4,
+            "label": "Prediabetes"
+          },
+          {
+            "text": "Diabetes: >= 6.5",
+            "low": 6.5,
+            "high": null,
+            "label": "Diabetes"
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-6",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "| Fasting Plasma Glucose | 132 H | mg/dL | 70 - 100 |"
+        },
+        "panel": "GLUCOSE",
+        "test_name": "Fasting Plasma Glucose",
+        "value_text": "132",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "70 - 100"
+        ],
+        "flag_printed": "H"
+      },
+      "derived": {
+        "analyte": "glucose_fasting",
+        "value_num": 132.0,
+        "ranges": [
+          {
+            "text": "70 - 100",
+            "low": 70.0,
+            "high": 100.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "high",
+        "converted": null
+      }
+    }
+  ],
+  "medications": [],
+  "conditions": [],
+  "remarks": [
+    {
+      "id": "rem-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Interpretation: Reflects average glycaemia over the preceding 8-12 weeks."
+        },
+        "text": "Reflects average glycaemia over the preceding 8-12 weeks.",
+        "kind": "comment",
+        "scope": "test",
+        "test_name": "HbA1c",
+        "panel": "GLYCATED HAEMOGLOBIN"
+      },
+      "derived": {
+        "observation_id": "obs-5"
+      }
+    },
+    {
+      "id": "rem-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 19,
+          "last_line": 19,
+          "quote": "Suggest iron studies to evaluate microcytosis."
+        },
+        "text": "Suggest iron studies to evaluate microcytosis.",
+        "kind": "advice",
+        "scope": "document",
+        "test_name": null,
+        "panel": null
+      },
+      "derived": {
+        "observation_id": null
+      }
+    }
+  ],
+  "vitals": [],
+  "allergies": [],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

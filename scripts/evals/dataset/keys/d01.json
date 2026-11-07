@@ -1,0 +1,1214 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d01",
+    "type": "lab_report",
+    "page_count": 3,
+    "has_text_layer": true,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 1,
+          "last_line": 1,
+          "quote": "# Sunrise Diagnostics"
+        },
+        "text": "Sunrise Diagnostics"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 11,
+            "last_line": 11,
+            "quote": "Ref. By: Dr. Anil Deshpande"
+          },
+          "text": "Ref. By: Dr. Anil Deshpande"
+        },
+        {
+          "citation": {
+            "page": 3,
+            "first_line": 23,
+            "last_line": 23,
+            "quote": "Dr. Neha Joshi, MD (Pathology)"
+          },
+          "text": "Dr. Neha Joshi, MD (Pathology)"
+        }
+      ],
+      "report_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "Reported On: 14/06/2024 02:45 PM"
+        },
+        "text": "14/06/2024 02:45 PM"
+      },
+      "collection_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "Collected On: 14/06/2024 08:10 AM"
+        },
+        "text": "14/06/2024 08:10 AM"
+      },
+      "prescription_date": null
+    },
+    "derived": {
+      "report_date": "2024-06-14",
+      "collection_date": "2024-06-14",
+      "prescription_date": null,
+      "document_date": "2024-06-14",
+      "date_source": "report_date"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Sunrise Diagnostics",
+        "",
+        "Plot 12, Baner Road, Pune 411045",
+        "",
+        "Patient Name: Mrs. Meera Iyer",
+        "",
+        "Age / Sex: 57 Years / Female",
+        "",
+        "Lab ID: SD-24-061407",
+        "",
+        "Ref. By: Dr. Anil Deshpande",
+        "",
+        "Collected On: 14/06/2024 08:10 AM",
+        "",
+        "Reported On: 14/06/2024 02:45 PM",
+        "",
+        "## COMPLETE BLOOD COUNT",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| Haemoglobin | 10.4 | L | g/dL | 12.0 - 15.0 |",
+        "| RBC Count | 4.1 |  | mill/cumm | 3.8 - 4.8 |",
+        "| PCV | 33.2 | L | % | 36.0 - 46.0 |",
+        "| MCV | 76 | L | fL | 83 - 101 |",
+        "| MCH | 25.4 | L | pg | 27.0 - 32.0 |",
+        "| MCHC | 31.3 | L | g/dL | 31.5 - 34.5 |",
+        "| RDW-CV | 16.2 | H | % | 11.6 - 14.0 |",
+        "| Platelet Count | 2,45,000 |  | /cumm | 1,50,000 - 4,10,000 |",
+        "| Total WBC Count | 7,200 |  | /cumm | 4,000 - 10,000 |",
+        "",
+        "Comment: Microcytic hypochromic anaemia.",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    },
+    {
+      "page": 2,
+      "lines": [
+        "Patient: Mrs. Meera Iyer | Lab ID: SD-24-061407 | Page 2 of 3",
+        "",
+        "## GLYCATED HAEMOGLOBIN",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| HbA1c | 8.1 | H | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |",
+        "",
+        "Interpretation: HbA1c reflects average blood glucose over the past 2-3 months.",
+        "",
+        "## GLUCOSE",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| Fasting Blood Sugar | 148 | H | mg/dL | 70 - 100 |",
+        "",
+        "Method: Hexokinase",
+        "",
+        "## LIPID PROFILE",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| Total Cholesterol | 182 |  | mg/dL | Desirable: < 200; Borderline: 200 - 239; High: >= 240 |",
+        "| Triglycerides | 168 | H | mg/dL | < 150 |",
+        "| HDL Cholesterol | 44 | L | mg/dL | > 50 |",
+        "| LDL Cholesterol | 104 |  | mg/dL | Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160 |",
+        "| VLDL Cholesterol | 33.6 | H | mg/dL | < 30 |",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    },
+    {
+      "page": 3,
+      "lines": [
+        "Patient: Mrs. Meera Iyer | Lab ID: SD-24-061407 | Page 3 of 3",
+        "",
+        "## KIDNEY FUNCTION TEST",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| Blood Urea | 28 |  | mg/dL | 15 - 40 |",
+        "| Blood Urea Nitrogen (BUN) | 13.1 |  | mg/dL | 7 - 20 |",
+        "| Serum Creatinine | 0.9 |  | mg/dL | 0.6 - 1.1 |",
+        "| Uric Acid | 5.2 |  | mg/dL | 2.6 - 6.0 |",
+        "",
+        "## URINE ROUTINE",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| Colour | Pale yellow |  |  |  |",
+        "| Appearance | Clear |  |  |  |",
+        "| Specific Gravity | 1.020 |  |  | 1.005 - 1.030 |",
+        "| Protein | Nil |  |  | Nil |",
+        "| Glucose | Trace | * |  | Nil |",
+        "| Pus Cells | 2-4 |  | /hpf | 0 - 5 |",
+        "",
+        "Dr. Neha Joshi, MD (Pathology)",
+        "",
+        "*** End of Report ***",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 5,
+          "last_line": 5,
+          "quote": "Patient Name: Mrs. Meera Iyer"
+        },
+        "text": "Mrs. Meera Iyer"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Age / Sex: 57 Years / Female"
+        },
+        "text": "57 Years"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Age / Sex: 57 Years / Female"
+        },
+        "text": "Female"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Lab ID: SD-24-061407"
+        },
+        "text": "SD-24-061407"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [
+    {
+      "id": "obs-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 21,
+          "last_line": 21,
+          "quote": "| Haemoglobin | 10.4 | L | g/dL | 12.0 - 15.0 |"
+        },
+        "panel": "COMPLETE BLOOD COUNT",
+        "test_name": "Haemoglobin",
+        "value_text": "10.4",
+        "unit": "g/dL",
+        "reference_ranges": [
+          "12.0 - 15.0"
+        ],
+        "flag_printed": "L"
+      },
+      "derived": {
+        "analyte": "haemoglobin",
+        "value_num": 10.4,
+        "ranges": [
+          {
+            "text": "12.0 - 15.0",
+            "low": 12.0,
+            "high": 15.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 22,
+          "last_line": 22,
+          "quote": "| RBC Count | 4.1 |  | mill/cumm | 3.8 - 4.8 |"
+        },
+        "panel": "COMPLETE BLOOD COUNT",
+        "test_name": "RBC Count",
+        "value_text": "4.1",
+        "unit": "mill/cumm",
+        "reference_ranges": [
+          "3.8 - 4.8"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "rbc_count",
+        "value_num": 4.1,
+        "ranges": [
+          {
+            "text": "3.8 - 4.8",
+            "low": 3.8,
+            "high": 4.8,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 23,
+          "last_line": 23,
+          "quote": "| PCV | 33.2 | L | % | 36.0 - 46.0 |"
+        },
+        "panel": "COMPLETE BLOOD COUNT",
+        "test_name": "PCV",
+        "value_text": "33.2",
+        "unit": "%",
+        "reference_ranges": [
+          "36.0 - 46.0"
+        ],
+        "flag_printed": "L"
+      },
+      "derived": {
+        "analyte": "pcv",
+        "value_num": 33.2,
+        "ranges": [
+          {
+            "text": "36.0 - 46.0",
+            "low": 36.0,
+            "high": 46.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-4",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 24,
+          "last_line": 24,
+          "quote": "| MCV | 76 | L | fL | 83 - 101 |"
+        },
+        "panel": "COMPLETE BLOOD COUNT",
+        "test_name": "MCV",
+        "value_text": "76",
+        "unit": "fL",
+        "reference_ranges": [
+          "83 - 101"
+        ],
+        "flag_printed": "L"
+      },
+      "derived": {
+        "analyte": "mcv",
+        "value_num": 76.0,
+        "ranges": [
+          {
+            "text": "83 - 101",
+            "low": 83.0,
+            "high": 101.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-5",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 25,
+          "last_line": 25,
+          "quote": "| MCH | 25.4 | L | pg | 27.0 - 32.0 |"
+        },
+        "panel": "COMPLETE BLOOD COUNT",
+        "test_name": "MCH",
+        "value_text": "25.4",
+        "unit": "pg",
+        "reference_ranges": [
+          "27.0 - 32.0"
+        ],
+        "flag_printed": "L"
+      },
+      "derived": {
+        "analyte": "mch",
+        "value_num": 25.4,
+        "ranges": [
+          {
+            "text": "27.0 - 32.0",
+            "low": 27.0,
+            "high": 32.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-6",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 26,
+          "last_line": 26,
+          "quote": "| MCHC | 31.3 | L | g/dL | 31.5 - 34.5 |"
+        },
+        "panel": "COMPLETE BLOOD COUNT",
+        "test_name": "MCHC",
+        "value_text": "31.3",
+        "unit": "g/dL",
+        "reference_ranges": [
+          "31.5 - 34.5"
+        ],
+        "flag_printed": "L"
+      },
+      "derived": {
+        "analyte": "mchc",
+        "value_num": 31.3,
+        "ranges": [
+          {
+            "text": "31.5 - 34.5",
+            "low": 31.5,
+            "high": 34.5,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-7",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 27,
+          "last_line": 27,
+          "quote": "| RDW-CV | 16.2 | H | % | 11.6 - 14.0 |"
+        },
+        "panel": "COMPLETE BLOOD COUNT",
+        "test_name": "RDW-CV",
+        "value_text": "16.2",
+        "unit": "%",
+        "reference_ranges": [
+          "11.6 - 14.0"
+        ],
+        "flag_printed": "H"
+      },
+      "derived": {
+        "analyte": "rdw_cv",
+        "value_num": 16.2,
+        "ranges": [
+          {
+            "text": "11.6 - 14.0",
+            "low": 11.6,
+            "high": 14.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "high",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-8",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 28,
+          "last_line": 28,
+          "quote": "| Platelet Count | 2,45,000 |  | /cumm | 1,50,000 - 4,10,000 |"
+        },
+        "panel": "COMPLETE BLOOD COUNT",
+        "test_name": "Platelet Count",
+        "value_text": "2,45,000",
+        "unit": "/cumm",
+        "reference_ranges": [
+          "1,50,000 - 4,10,000"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "platelet_count",
+        "value_num": 245000.0,
+        "ranges": [
+          {
+            "text": "1,50,000 - 4,10,000",
+            "low": 150000.0,
+            "high": 410000.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-9",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 29,
+          "last_line": 29,
+          "quote": "| Total WBC Count | 7,200 |  | /cumm | 4,000 - 10,000 |"
+        },
+        "panel": "COMPLETE BLOOD COUNT",
+        "test_name": "Total WBC Count",
+        "value_text": "7,200",
+        "unit": "/cumm",
+        "reference_ranges": [
+          "4,000 - 10,000"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "wbc_count",
+        "value_num": 7200.0,
+        "ranges": [
+          {
+            "text": "4,000 - 10,000",
+            "low": 4000.0,
+            "high": 10000.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-10",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "| HbA1c | 8.1 | H | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |"
+        },
+        "panel": "GLYCATED HAEMOGLOBIN",
+        "test_name": "HbA1c",
+        "value_text": "8.1",
+        "unit": "%",
+        "reference_ranges": [
+          "Normal: < 5.7",
+          "Prediabetes: 5.7 - 6.4",
+          "Diabetes: >= 6.5"
+        ],
+        "flag_printed": "H"
+      },
+      "derived": {
+        "analyte": "hba1c",
+        "value_num": 8.1,
+        "ranges": [
+          {
+            "text": "Normal: < 5.7",
+            "low": null,
+            "high": 5.7,
+            "label": "Normal"
+          },
+          {
+            "text": "Prediabetes: 5.7 - 6.4",
+            "low": 5.7,
+            "high": 6.4,
+            "label": "Prediabetes"
+          },
+          {
+            "text": "Diabetes: >= 6.5",
+            "low": 6.5,
+            "high": null,
+            "label": "Diabetes"
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-11",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "| Fasting Blood Sugar | 148 | H | mg/dL | 70 - 100 |"
+        },
+        "panel": "GLUCOSE",
+        "test_name": "Fasting Blood Sugar",
+        "value_text": "148",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "70 - 100"
+        ],
+        "flag_printed": "H"
+      },
+      "derived": {
+        "analyte": "glucose_fasting",
+        "value_num": 148.0,
+        "ranges": [
+          {
+            "text": "70 - 100",
+            "low": 70.0,
+            "high": 100.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "high",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-12",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 23,
+          "last_line": 23,
+          "quote": "| Total Cholesterol | 182 |  | mg/dL | Desirable: < 200; Borderline: 200 - 239; High: >= 240 |"
+        },
+        "panel": "LIPID PROFILE",
+        "test_name": "Total Cholesterol",
+        "value_text": "182",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "Desirable: < 200",
+          "Borderline: 200 - 239",
+          "High: >= 240"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "cholesterol_total",
+        "value_num": 182.0,
+        "ranges": [
+          {
+            "text": "Desirable: < 200",
+            "low": null,
+            "high": 200.0,
+            "label": "Desirable"
+          },
+          {
+            "text": "Borderline: 200 - 239",
+            "low": 200.0,
+            "high": 239.0,
+            "label": "Borderline"
+          },
+          {
+            "text": "High: >= 240",
+            "low": 240.0,
+            "high": null,
+            "label": "High"
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-13",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 24,
+          "last_line": 24,
+          "quote": "| Triglycerides | 168 | H | mg/dL | < 150 |"
+        },
+        "panel": "LIPID PROFILE",
+        "test_name": "Triglycerides",
+        "value_text": "168",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "< 150"
+        ],
+        "flag_printed": "H"
+      },
+      "derived": {
+        "analyte": "triglycerides",
+        "value_num": 168.0,
+        "ranges": [
+          {
+            "text": "< 150",
+            "low": null,
+            "high": 150.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "high",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-14",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 25,
+          "last_line": 25,
+          "quote": "| HDL Cholesterol | 44 | L | mg/dL | > 50 |"
+        },
+        "panel": "LIPID PROFILE",
+        "test_name": "HDL Cholesterol",
+        "value_text": "44",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "> 50"
+        ],
+        "flag_printed": "L"
+      },
+      "derived": {
+        "analyte": "hdl_cholesterol",
+        "value_num": 44.0,
+        "ranges": [
+          {
+            "text": "> 50",
+            "low": 50.0,
+            "high": null,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-15",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 26,
+          "last_line": 26,
+          "quote": "| LDL Cholesterol | 104 |  | mg/dL | Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160 |"
+        },
+        "panel": "LIPID PROFILE",
+        "test_name": "LDL Cholesterol",
+        "value_text": "104",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "Optimal: < 100",
+          "Near optimal: 100 - 129",
+          "Borderline high: 130 - 159",
+          "High: >= 160"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "ldl_cholesterol",
+        "value_num": 104.0,
+        "ranges": [
+          {
+            "text": "Optimal: < 100",
+            "low": null,
+            "high": 100.0,
+            "label": "Optimal"
+          },
+          {
+            "text": "Near optimal: 100 - 129",
+            "low": 100.0,
+            "high": 129.0,
+            "label": "Near optimal"
+          },
+          {
+            "text": "Borderline high: 130 - 159",
+            "low": 130.0,
+            "high": 159.0,
+            "label": "Borderline high"
+          },
+          {
+            "text": "High: >= 160",
+            "low": 160.0,
+            "high": null,
+            "label": "High"
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-16",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 27,
+          "last_line": 27,
+          "quote": "| VLDL Cholesterol | 33.6 | H | mg/dL | < 30 |"
+        },
+        "panel": "LIPID PROFILE",
+        "test_name": "VLDL Cholesterol",
+        "value_text": "33.6",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "< 30"
+        ],
+        "flag_printed": "H"
+      },
+      "derived": {
+        "analyte": "vldl_cholesterol",
+        "value_num": 33.6,
+        "ranges": [
+          {
+            "text": "< 30",
+            "low": null,
+            "high": 30.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "high",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-17",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 3,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "| Blood Urea | 28 |  | mg/dL | 15 - 40 |"
+        },
+        "panel": "KIDNEY FUNCTION TEST",
+        "test_name": "Blood Urea",
+        "value_text": "28",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "15 - 40"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "urea",
+        "value_num": 28.0,
+        "ranges": [
+          {
+            "text": "15 - 40",
+            "low": 15.0,
+            "high": 40.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-18",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 3,
+          "first_line": 8,
+          "last_line": 8,
+          "quote": "| Blood Urea Nitrogen (BUN) | 13.1 |  | mg/dL | 7 - 20 |"
+        },
+        "panel": "KIDNEY FUNCTION TEST",
+        "test_name": "Blood Urea Nitrogen (BUN)",
+        "value_text": "13.1",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "7 - 20"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "bun",
+        "value_num": 13.1,
+        "ranges": [
+          {
+            "text": "7 - 20",
+            "low": 7.0,
+            "high": 20.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-19",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 3,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "| Serum Creatinine | 0.9 |  | mg/dL | 0.6 - 1.1 |"
+        },
+        "panel": "KIDNEY FUNCTION TEST",
+        "test_name": "Serum Creatinine",
+        "value_text": "0.9",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "0.6 - 1.1"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "creatinine",
+        "value_num": 0.9,
+        "ranges": [
+          {
+            "text": "0.6 - 1.1",
+            "low": 0.6,
+            "high": 1.1,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-20",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 3,
+          "first_line": 10,
+          "last_line": 10,
+          "quote": "| Uric Acid | 5.2 |  | mg/dL | 2.6 - 6.0 |"
+        },
+        "panel": "KIDNEY FUNCTION TEST",
+        "test_name": "Uric Acid",
+        "value_text": "5.2",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "2.6 - 6.0"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "uric_acid",
+        "value_num": 5.2,
+        "ranges": [
+          {
+            "text": "2.6 - 6.0",
+            "low": 2.6,
+            "high": 6.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-21",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 3,
+          "first_line": 16,
+          "last_line": 16,
+          "quote": "| Colour | Pale yellow |  |  |  |"
+        },
+        "panel": "URINE ROUTINE",
+        "test_name": "Colour",
+        "value_text": "Pale yellow",
+        "unit": null,
+        "reference_ranges": [],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": null,
+        "ranges": [],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-22",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 3,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "| Appearance | Clear |  |  |  |"
+        },
+        "panel": "URINE ROUTINE",
+        "test_name": "Appearance",
+        "value_text": "Clear",
+        "unit": null,
+        "reference_ranges": [],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": null,
+        "ranges": [],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-23",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 3,
+          "first_line": 18,
+          "last_line": 18,
+          "quote": "| Specific Gravity | 1.020 |  |  | 1.005 - 1.030 |"
+        },
+        "panel": "URINE ROUTINE",
+        "test_name": "Specific Gravity",
+        "value_text": "1.020",
+        "unit": null,
+        "reference_ranges": [
+          "1.005 - 1.030"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": 1.02,
+        "ranges": [
+          {
+            "text": "1.005 - 1.030",
+            "low": 1.005,
+            "high": 1.03,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-24",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 3,
+          "first_line": 19,
+          "last_line": 19,
+          "quote": "| Protein | Nil |  |  | Nil |"
+        },
+        "panel": "URINE ROUTINE",
+        "test_name": "Protein",
+        "value_text": "Nil",
+        "unit": null,
+        "reference_ranges": [
+          "Nil"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": null,
+        "ranges": [
+          {
+            "text": "Nil",
+            "low": null,
+            "high": null,
+            "label": null
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-25",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 3,
+          "first_line": 20,
+          "last_line": 20,
+          "quote": "| Glucose | Trace | * |  | Nil |"
+        },
+        "panel": "URINE ROUTINE",
+        "test_name": "Glucose",
+        "value_text": "Trace",
+        "unit": null,
+        "reference_ranges": [
+          "Nil"
+        ],
+        "flag_printed": "*"
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": null,
+        "ranges": [
+          {
+            "text": "Nil",
+            "low": null,
+            "high": null,
+            "label": null
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-26",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 3,
+          "first_line": 21,
+          "last_line": 21,
+          "quote": "| Pus Cells | 2-4 |  | /hpf | 0 - 5 |"
+        },
+        "panel": "URINE ROUTINE",
+        "test_name": "Pus Cells",
+        "value_text": "2-4",
+        "unit": "/hpf",
+        "reference_ranges": [
+          "0 - 5"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": null,
+        "ranges": [
+          {
+            "text": "0 - 5",
+            "low": 0.0,
+            "high": 5.0,
+            "label": null
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    }
+  ],
+  "medications": [],
+  "conditions": [],
+  "remarks": [
+    {
+      "id": "rem-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 31,
+          "last_line": 31,
+          "quote": "Comment: Microcytic hypochromic anaemia."
+        },
+        "text": "Microcytic hypochromic anaemia.",
+        "kind": "comment",
+        "scope": "panel",
+        "test_name": null,
+        "panel": "COMPLETE BLOOD COUNT"
+      },
+      "derived": {
+        "observation_id": null
+      }
+    },
+    {
+      "id": "rem-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Interpretation: HbA1c reflects average blood glucose over the past 2-3 months."
+        },
+        "text": "HbA1c reflects average blood glucose over the past 2-3 months.",
+        "kind": "comment",
+        "scope": "test",
+        "test_name": "HbA1c",
+        "panel": "GLYCATED HAEMOGLOBIN"
+      },
+      "derived": {
+        "observation_id": "obs-10"
+      }
+    }
+  ],
+  "vitals": [],
+  "allergies": [],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

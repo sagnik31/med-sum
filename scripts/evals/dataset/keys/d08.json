@@ -1,0 +1,479 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d08",
+    "type": "lab_report",
+    "page_count": 1,
+    "has_text_layer": false,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 1,
+          "last_line": 1,
+          "quote": "# Kaveri Clinical Laboratory"
+        },
+        "text": "Kaveri Clinical Laboratory"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 11,
+            "last_line": 11,
+            "quote": "Referred By: Dr. Anil Deshpande"
+          },
+          "text": "Referred By: Dr. Anil Deshpande"
+        },
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 39,
+            "last_line": 39,
+            "quote": "Dr. Prakash Nair, MD (Pathology)"
+          },
+          "text": "Dr. Prakash Nair, MD (Pathology)"
+        }
+      ],
+      "report_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "Reported: 20-May-2025 11:30 AM"
+        },
+        "text": "20-May-2025 11:30 AM"
+      },
+      "collection_date": null,
+      "prescription_date": null
+    },
+    "derived": {
+      "report_date": "2025-05-20",
+      "collection_date": null,
+      "prescription_date": null,
+      "document_date": "2025-05-20",
+      "date_source": "report_date"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Kaveri Clinical Laboratory",
+        "",
+        "Kothrud, Pune 411038",
+        "",
+        "Name: Rohan Kulkarni",
+        "",
+        "Age/Gender: 44 Y/M",
+        "",
+        "Patient ID: KCL-120051",
+        "",
+        "Referred By: Dr. Anil Deshpande",
+        "",
+        "Reported: 20-May-2025 11:30 AM",
+        "",
+        "## LIVER FUNCTION TEST",
+        "",
+        "| Test | Result | Unit | Reference Range |",
+        "| --- | --- | --- | --- |",
+        "| Total Bilirubin | 0.8 | mg/dL | 0.2 - 1.2 |",
+        "| Direct Bilirubin | 0.2 | mg/dL | 0.0 - 0.3 |",
+        "| SGOT (AST) | 32 | U/L | 5 - 40 |",
+        "| SGPT (ALT) | 48 H | U/L | 7 - 45 |",
+        "| Alkaline Phosphatase | 96 | U/L | 40 - 129 |",
+        "| Total Protein | 7.1 | g/dL | 6.4 - 8.3 |",
+        "| Albumin | 4.2 | g/dL | 3.5 - 5.2 |",
+        "",
+        "## THYROID",
+        "",
+        "| Test | Result | Unit | Reference Range |",
+        "| --- | --- | --- | --- |",
+        "| TSH | 2.4 | µIU/mL | 0.27 - 4.20 |",
+        "",
+        "## INFLAMMATORY MARKERS",
+        "",
+        "| Test | Result | Unit | Reference Range |",
+        "| --- | --- | --- | --- |",
+        "| CRP | < 0.5 | mg/L | < 5.0 |",
+        "",
+        "Dr. Prakash Nair, MD (Pathology)",
+        "",
+        "*** End of Report ***",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 5,
+          "last_line": 5,
+          "quote": "Name: Rohan Kulkarni"
+        },
+        "text": "Rohan Kulkarni"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Age/Gender: 44 Y/M"
+        },
+        "text": "44 Y"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Age/Gender: 44 Y/M"
+        },
+        "text": "M"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Patient ID: KCL-120051"
+        },
+        "text": "KCL-120051"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [
+    {
+      "id": "obs-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 19,
+          "last_line": 19,
+          "quote": "| Total Bilirubin | 0.8 | mg/dL | 0.2 - 1.2 |"
+        },
+        "panel": "LIVER FUNCTION TEST",
+        "test_name": "Total Bilirubin",
+        "value_text": "0.8",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "0.2 - 1.2"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "bilirubin_total",
+        "value_num": 0.8,
+        "ranges": [
+          {
+            "text": "0.2 - 1.2",
+            "low": 0.2,
+            "high": 1.2,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 20,
+          "last_line": 20,
+          "quote": "| Direct Bilirubin | 0.2 | mg/dL | 0.0 - 0.3 |"
+        },
+        "panel": "LIVER FUNCTION TEST",
+        "test_name": "Direct Bilirubin",
+        "value_text": "0.2",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "0.0 - 0.3"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "bilirubin_direct",
+        "value_num": 0.2,
+        "ranges": [
+          {
+            "text": "0.0 - 0.3",
+            "low": 0.0,
+            "high": 0.3,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 21,
+          "last_line": 21,
+          "quote": "| SGOT (AST) | 32 | U/L | 5 - 40 |"
+        },
+        "panel": "LIVER FUNCTION TEST",
+        "test_name": "SGOT (AST)",
+        "value_text": "32",
+        "unit": "U/L",
+        "reference_ranges": [
+          "5 - 40"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "ast",
+        "value_num": 32.0,
+        "ranges": [
+          {
+            "text": "5 - 40",
+            "low": 5.0,
+            "high": 40.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-4",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 22,
+          "last_line": 22,
+          "quote": "| SGPT (ALT) | 48 H | U/L | 7 - 45 |"
+        },
+        "panel": "LIVER FUNCTION TEST",
+        "test_name": "SGPT (ALT)",
+        "value_text": "48",
+        "unit": "U/L",
+        "reference_ranges": [
+          "7 - 45"
+        ],
+        "flag_printed": "H"
+      },
+      "derived": {
+        "analyte": "alt",
+        "value_num": 48.0,
+        "ranges": [
+          {
+            "text": "7 - 45",
+            "low": 7.0,
+            "high": 45.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "high",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-5",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 23,
+          "last_line": 23,
+          "quote": "| Alkaline Phosphatase | 96 | U/L | 40 - 129 |"
+        },
+        "panel": "LIVER FUNCTION TEST",
+        "test_name": "Alkaline Phosphatase",
+        "value_text": "96",
+        "unit": "U/L",
+        "reference_ranges": [
+          "40 - 129"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "alp",
+        "value_num": 96.0,
+        "ranges": [
+          {
+            "text": "40 - 129",
+            "low": 40.0,
+            "high": 129.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-6",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 24,
+          "last_line": 24,
+          "quote": "| Total Protein | 7.1 | g/dL | 6.4 - 8.3 |"
+        },
+        "panel": "LIVER FUNCTION TEST",
+        "test_name": "Total Protein",
+        "value_text": "7.1",
+        "unit": "g/dL",
+        "reference_ranges": [
+          "6.4 - 8.3"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "protein_total",
+        "value_num": 7.1,
+        "ranges": [
+          {
+            "text": "6.4 - 8.3",
+            "low": 6.4,
+            "high": 8.3,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-7",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 25,
+          "last_line": 25,
+          "quote": "| Albumin | 4.2 | g/dL | 3.5 - 5.2 |"
+        },
+        "panel": "LIVER FUNCTION TEST",
+        "test_name": "Albumin",
+        "value_text": "4.2",
+        "unit": "g/dL",
+        "reference_ranges": [
+          "3.5 - 5.2"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "albumin",
+        "value_num": 4.2,
+        "ranges": [
+          {
+            "text": "3.5 - 5.2",
+            "low": 3.5,
+            "high": 5.2,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-8",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 31,
+          "last_line": 31,
+          "quote": "| TSH | 2.4 | µIU/mL | 0.27 - 4.20 |"
+        },
+        "panel": "THYROID",
+        "test_name": "TSH",
+        "value_text": "2.4",
+        "unit": "µIU/mL",
+        "reference_ranges": [
+          "0.27 - 4.20"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "tsh",
+        "value_num": 2.4,
+        "ranges": [
+          {
+            "text": "0.27 - 4.20",
+            "low": 0.27,
+            "high": 4.2,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-9",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 37,
+          "last_line": 37,
+          "quote": "| CRP | < 0.5 | mg/L | < 5.0 |"
+        },
+        "panel": "INFLAMMATORY MARKERS",
+        "test_name": "CRP",
+        "value_text": "< 0.5",
+        "unit": "mg/L",
+        "reference_ranges": [
+          "< 5.0"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "crp",
+        "value_num": null,
+        "ranges": [
+          {
+            "text": "< 5.0",
+            "low": null,
+            "high": 5.0,
+            "label": null
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    }
+  ],
+  "medications": [],
+  "conditions": [],
+  "remarks": [],
+  "vitals": [],
+  "allergies": [],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

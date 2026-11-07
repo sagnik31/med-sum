@@ -1,0 +1,400 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d09",
+    "type": "lab_report",
+    "page_count": 1,
+    "has_text_layer": true,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 1,
+          "last_line": 1,
+          "quote": "# Sunrise Diagnostics"
+        },
+        "text": "Sunrise Diagnostics"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 11,
+            "last_line": 11,
+            "quote": "Ref. By: Dr. Kavita Rao"
+          },
+          "text": "Ref. By: Dr. Kavita Rao"
+        },
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 35,
+            "last_line": 35,
+            "quote": "Dr. Neha Joshi, MD (Pathology)"
+          },
+          "text": "Dr. Neha Joshi, MD (Pathology)"
+        }
+      ],
+      "report_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "Reported On: 05/09/2024 04:00 PM"
+        },
+        "text": "05/09/2024 04:00 PM"
+      },
+      "collection_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "Collected On: 05/09/2024 08:30 AM"
+        },
+        "text": "05/09/2024 08:30 AM"
+      },
+      "prescription_date": null
+    },
+    "derived": {
+      "report_date": "2024-09-05",
+      "collection_date": "2024-09-05",
+      "prescription_date": null,
+      "document_date": "2024-09-05",
+      "date_source": "report_date"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Sunrise Diagnostics",
+        "",
+        "Plot 12, Baner Road, Pune 411045",
+        "",
+        "Patient Name: Ms. Fatima Shaikh",
+        "",
+        "Age / Sex: 31 Years / Female",
+        "",
+        "Lab ID: SD-24-090512",
+        "",
+        "Ref. By: Dr. Kavita Rao",
+        "",
+        "Collected On: 05/09/2024 08:30 AM",
+        "",
+        "Reported On: 05/09/2024 04:00 PM",
+        "",
+        "## THYROID PROFILE",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| T3 (Total) | 1.1 |  | ng/mL | 0.8 - 2.0 |",
+        "| T4 (Total) | 6.2 |  | µg/dL | 5.1 - 14.1 |",
+        "| TSH | 8.9 | H | µIU/mL | 0.27 - 4.20 |",
+        "",
+        "Note: TSH values may vary with the time of sample collection.",
+        "",
+        "## HAEMOGRAM",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| Haemoglobin | 12.6 |  | g/dL | 12.0 - 15.0 |",
+        "| Total WBC Count | 6,400 |  | /cumm | 4,000 - 10,000 |",
+        "| Platelet Count | 2,80,000 |  | /cumm | 1,50,000 - 4,10,000 |",
+        "",
+        "Dr. Neha Joshi, MD (Pathology)",
+        "",
+        "*** End of Report ***",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 5,
+          "last_line": 5,
+          "quote": "Patient Name: Ms. Fatima Shaikh"
+        },
+        "text": "Ms. Fatima Shaikh"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Age / Sex: 31 Years / Female"
+        },
+        "text": "31 Years"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Age / Sex: 31 Years / Female"
+        },
+        "text": "Female"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Lab ID: SD-24-090512"
+        },
+        "text": "SD-24-090512"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [
+    {
+      "id": "obs-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 21,
+          "last_line": 21,
+          "quote": "| T3 (Total) | 1.1 |  | ng/mL | 0.8 - 2.0 |"
+        },
+        "panel": "THYROID PROFILE",
+        "test_name": "T3 (Total)",
+        "value_text": "1.1",
+        "unit": "ng/mL",
+        "reference_ranges": [
+          "0.8 - 2.0"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "t3_total",
+        "value_num": 1.1,
+        "ranges": [
+          {
+            "text": "0.8 - 2.0",
+            "low": 0.8,
+            "high": 2.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 22,
+          "last_line": 22,
+          "quote": "| T4 (Total) | 6.2 |  | µg/dL | 5.1 - 14.1 |"
+        },
+        "panel": "THYROID PROFILE",
+        "test_name": "T4 (Total)",
+        "value_text": "6.2",
+        "unit": "µg/dL",
+        "reference_ranges": [
+          "5.1 - 14.1"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "t4_total",
+        "value_num": 6.2,
+        "ranges": [
+          {
+            "text": "5.1 - 14.1",
+            "low": 5.1,
+            "high": 14.1,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 23,
+          "last_line": 23,
+          "quote": "| TSH | 8.9 | H | µIU/mL | 0.27 - 4.20 |"
+        },
+        "panel": "THYROID PROFILE",
+        "test_name": "TSH",
+        "value_text": "8.9",
+        "unit": "µIU/mL",
+        "reference_ranges": [
+          "0.27 - 4.20"
+        ],
+        "flag_printed": "H"
+      },
+      "derived": {
+        "analyte": "tsh",
+        "value_num": 8.9,
+        "ranges": [
+          {
+            "text": "0.27 - 4.20",
+            "low": 0.27,
+            "high": 4.2,
+            "label": null
+          }
+        ],
+        "flag_computed": "high",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-4",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 31,
+          "last_line": 31,
+          "quote": "| Haemoglobin | 12.6 |  | g/dL | 12.0 - 15.0 |"
+        },
+        "panel": "HAEMOGRAM",
+        "test_name": "Haemoglobin",
+        "value_text": "12.6",
+        "unit": "g/dL",
+        "reference_ranges": [
+          "12.0 - 15.0"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "haemoglobin",
+        "value_num": 12.6,
+        "ranges": [
+          {
+            "text": "12.0 - 15.0",
+            "low": 12.0,
+            "high": 15.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-5",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 32,
+          "last_line": 32,
+          "quote": "| Total WBC Count | 6,400 |  | /cumm | 4,000 - 10,000 |"
+        },
+        "panel": "HAEMOGRAM",
+        "test_name": "Total WBC Count",
+        "value_text": "6,400",
+        "unit": "/cumm",
+        "reference_ranges": [
+          "4,000 - 10,000"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "wbc_count",
+        "value_num": 6400.0,
+        "ranges": [
+          {
+            "text": "4,000 - 10,000",
+            "low": 4000.0,
+            "high": 10000.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-6",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 33,
+          "last_line": 33,
+          "quote": "| Platelet Count | 2,80,000 |  | /cumm | 1,50,000 - 4,10,000 |"
+        },
+        "panel": "HAEMOGRAM",
+        "test_name": "Platelet Count",
+        "value_text": "2,80,000",
+        "unit": "/cumm",
+        "reference_ranges": [
+          "1,50,000 - 4,10,000"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "platelet_count",
+        "value_num": 280000.0,
+        "ranges": [
+          {
+            "text": "1,50,000 - 4,10,000",
+            "low": 150000.0,
+            "high": 410000.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    }
+  ],
+  "medications": [],
+  "conditions": [],
+  "remarks": [
+    {
+      "id": "rem-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 25,
+          "last_line": 25,
+          "quote": "Note: TSH values may vary with the time of sample collection."
+        },
+        "text": "TSH values may vary with the time of sample collection.",
+        "kind": "comment",
+        "scope": "panel",
+        "test_name": null,
+        "panel": "THYROID PROFILE"
+      },
+      "derived": {
+        "observation_id": null
+      }
+    }
+  ],
+  "vitals": [],
+  "allergies": [],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

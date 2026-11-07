@@ -1,0 +1,552 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d13",
+    "type": "lab_report",
+    "page_count": 2,
+    "has_text_layer": true,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 1,
+          "last_line": 1,
+          "quote": "# Sahaj Multispeciality Hospital - Laboratory Services"
+        },
+        "text": "Sahaj Multispeciality Hospital - Laboratory Services"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 11,
+            "last_line": 11,
+            "quote": "Ordering Physician: Dr. Anil Deshpande"
+          },
+          "text": "Ordering Physician: Dr. Anil Deshpande"
+        },
+        {
+          "citation": {
+            "page": 2,
+            "first_line": 17,
+            "last_line": 17,
+            "quote": "Dr. Neha Joshi, MD (Pathology)"
+          },
+          "text": "Dr. Neha Joshi, MD (Pathology)"
+        }
+      ],
+      "report_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "Report Date: 04/03/2025 03:30 PM"
+        },
+        "text": "04/03/2025 03:30 PM"
+      },
+      "collection_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "Sample Collected: 04/03/2025 08:45 AM"
+        },
+        "text": "04/03/2025 08:45 AM"
+      },
+      "prescription_date": null
+    },
+    "derived": {
+      "report_date": "2025-03-04",
+      "collection_date": "2025-03-04",
+      "prescription_date": null,
+      "document_date": "2025-03-04",
+      "date_source": "report_date"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Sahaj Multispeciality Hospital - Laboratory Services",
+        "",
+        "Karve Road, Pune 411004",
+        "",
+        "Patient Name: Mr. Arjun Menon",
+        "",
+        "Age / Sex: 66 Years / Male",
+        "",
+        "UHID: SH-100234",
+        "",
+        "Ordering Physician: Dr. Anil Deshpande",
+        "",
+        "Sample Collected: 04/03/2025 08:45 AM",
+        "",
+        "Report Date: 04/03/2025 03:30 PM",
+        "",
+        "## LIPID PROFILE",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| Total Cholesterol | 236 | H | mg/dL | Desirable: < 200; Borderline: 200 - 239; High: >= 240 |",
+        "| Triglycerides | 210 | H | mg/dL | < 150 |",
+        "| HDL Cholesterol | 38 | L | mg/dL | > 40 |",
+        "| LDL Cholesterol | 156 | H | mg/dL | Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160 |",
+        "",
+        "## GLYCATED HAEMOGLOBIN",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| HbA1c | 6.2 |  | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    },
+    {
+      "page": 2,
+      "lines": [
+        "Patient: Mr. Arjun Menon | UHID: SH-100234 | Page 2 of 2",
+        "",
+        "## URINE ROUTINE",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| Urine Sugar | Absent |  |  | Absent |",
+        "| Urine Protein | Trace | * |  | Absent |",
+        "| Pus Cells | 4-6 | H | /hpf | 0 - 5 |",
+        "",
+        "## SERUM PSA",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| Total PSA | 3.1 |  | ng/mL | < 4.0 |",
+        "",
+        "Dr. Neha Joshi, MD (Pathology)",
+        "",
+        "*** End of Report ***",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 5,
+          "last_line": 5,
+          "quote": "Patient Name: Mr. Arjun Menon"
+        },
+        "text": "Mr. Arjun Menon"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Age / Sex: 66 Years / Male"
+        },
+        "text": "66 Years"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Age / Sex: 66 Years / Male"
+        },
+        "text": "Male"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "UHID: SH-100234"
+        },
+        "text": "SH-100234"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [
+    {
+      "id": "obs-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 21,
+          "last_line": 21,
+          "quote": "| Total Cholesterol | 236 | H | mg/dL | Desirable: < 200; Borderline: 200 - 239; High: >= 240 |"
+        },
+        "panel": "LIPID PROFILE",
+        "test_name": "Total Cholesterol",
+        "value_text": "236",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "Desirable: < 200",
+          "Borderline: 200 - 239",
+          "High: >= 240"
+        ],
+        "flag_printed": "H"
+      },
+      "derived": {
+        "analyte": "cholesterol_total",
+        "value_num": 236.0,
+        "ranges": [
+          {
+            "text": "Desirable: < 200",
+            "low": null,
+            "high": 200.0,
+            "label": "Desirable"
+          },
+          {
+            "text": "Borderline: 200 - 239",
+            "low": 200.0,
+            "high": 239.0,
+            "label": "Borderline"
+          },
+          {
+            "text": "High: >= 240",
+            "low": 240.0,
+            "high": null,
+            "label": "High"
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 22,
+          "last_line": 22,
+          "quote": "| Triglycerides | 210 | H | mg/dL | < 150 |"
+        },
+        "panel": "LIPID PROFILE",
+        "test_name": "Triglycerides",
+        "value_text": "210",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "< 150"
+        ],
+        "flag_printed": "H"
+      },
+      "derived": {
+        "analyte": "triglycerides",
+        "value_num": 210.0,
+        "ranges": [
+          {
+            "text": "< 150",
+            "low": null,
+            "high": 150.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "high",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 23,
+          "last_line": 23,
+          "quote": "| HDL Cholesterol | 38 | L | mg/dL | > 40 |"
+        },
+        "panel": "LIPID PROFILE",
+        "test_name": "HDL Cholesterol",
+        "value_text": "38",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "> 40"
+        ],
+        "flag_printed": "L"
+      },
+      "derived": {
+        "analyte": "hdl_cholesterol",
+        "value_num": 38.0,
+        "ranges": [
+          {
+            "text": "> 40",
+            "low": 40.0,
+            "high": null,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-4",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 24,
+          "last_line": 24,
+          "quote": "| LDL Cholesterol | 156 | H | mg/dL | Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160 |"
+        },
+        "panel": "LIPID PROFILE",
+        "test_name": "LDL Cholesterol",
+        "value_text": "156",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "Optimal: < 100",
+          "Near optimal: 100 - 129",
+          "Borderline high: 130 - 159",
+          "High: >= 160"
+        ],
+        "flag_printed": "H"
+      },
+      "derived": {
+        "analyte": "ldl_cholesterol",
+        "value_num": 156.0,
+        "ranges": [
+          {
+            "text": "Optimal: < 100",
+            "low": null,
+            "high": 100.0,
+            "label": "Optimal"
+          },
+          {
+            "text": "Near optimal: 100 - 129",
+            "low": 100.0,
+            "high": 129.0,
+            "label": "Near optimal"
+          },
+          {
+            "text": "Borderline high: 130 - 159",
+            "low": 130.0,
+            "high": 159.0,
+            "label": "Borderline high"
+          },
+          {
+            "text": "High: >= 160",
+            "low": 160.0,
+            "high": null,
+            "label": "High"
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-5",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 30,
+          "last_line": 30,
+          "quote": "| HbA1c | 6.2 |  | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |"
+        },
+        "panel": "GLYCATED HAEMOGLOBIN",
+        "test_name": "HbA1c",
+        "value_text": "6.2",
+        "unit": "%",
+        "reference_ranges": [
+          "Normal: < 5.7",
+          "Prediabetes: 5.7 - 6.4",
+          "Diabetes: >= 6.5"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "hba1c",
+        "value_num": 6.2,
+        "ranges": [
+          {
+            "text": "Normal: < 5.7",
+            "low": null,
+            "high": 5.7,
+            "label": "Normal"
+          },
+          {
+            "text": "Prediabetes: 5.7 - 6.4",
+            "low": 5.7,
+            "high": 6.4,
+            "label": "Prediabetes"
+          },
+          {
+            "text": "Diabetes: >= 6.5",
+            "low": 6.5,
+            "high": null,
+            "label": "Diabetes"
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-6",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "| Urine Sugar | Absent |  |  | Absent |"
+        },
+        "panel": "URINE ROUTINE",
+        "test_name": "Urine Sugar",
+        "value_text": "Absent",
+        "unit": null,
+        "reference_ranges": [
+          "Absent"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": null,
+        "ranges": [
+          {
+            "text": "Absent",
+            "low": null,
+            "high": null,
+            "label": null
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-7",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 8,
+          "last_line": 8,
+          "quote": "| Urine Protein | Trace | * |  | Absent |"
+        },
+        "panel": "URINE ROUTINE",
+        "test_name": "Urine Protein",
+        "value_text": "Trace",
+        "unit": null,
+        "reference_ranges": [
+          "Absent"
+        ],
+        "flag_printed": "*"
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": null,
+        "ranges": [
+          {
+            "text": "Absent",
+            "low": null,
+            "high": null,
+            "label": null
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-8",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "| Pus Cells | 4-6 | H | /hpf | 0 - 5 |"
+        },
+        "panel": "URINE ROUTINE",
+        "test_name": "Pus Cells",
+        "value_text": "4-6",
+        "unit": "/hpf",
+        "reference_ranges": [
+          "0 - 5"
+        ],
+        "flag_printed": "H"
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": null,
+        "ranges": [
+          {
+            "text": "0 - 5",
+            "low": 0.0,
+            "high": 5.0,
+            "label": null
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-9",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "| Total PSA | 3.1 |  | ng/mL | < 4.0 |"
+        },
+        "panel": "SERUM PSA",
+        "test_name": "Total PSA",
+        "value_text": "3.1",
+        "unit": "ng/mL",
+        "reference_ranges": [
+          "< 4.0"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "psa_total",
+        "value_num": 3.1,
+        "ranges": [
+          {
+            "text": "< 4.0",
+            "low": null,
+            "high": 4.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    }
+  ],
+  "medications": [],
+  "conditions": [],
+  "remarks": [],
+  "vitals": [],
+  "allergies": [],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

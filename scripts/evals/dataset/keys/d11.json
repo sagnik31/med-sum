@@ -1,0 +1,246 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d11",
+    "type": "lab_report",
+    "page_count": 1,
+    "has_text_layer": true,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 1,
+          "last_line": 1,
+          "quote": "# Sunrise Diagnostics"
+        },
+        "text": "Sunrise Diagnostics"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 11,
+            "last_line": 11,
+            "quote": "Ref. By: Dr. Kavita Rao"
+          },
+          "text": "Ref. By: Dr. Kavita Rao"
+        },
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 29,
+            "last_line": 29,
+            "quote": "Dr. Neha Joshi, MD (Pathology)"
+          },
+          "text": "Dr. Neha Joshi, MD (Pathology)"
+        }
+      ],
+      "report_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "Reported On: 08/01/2025 06:15 PM"
+        },
+        "text": "08/01/2025 06:15 PM"
+      },
+      "collection_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "Collected On: 08/01/2025 08:20 AM"
+        },
+        "text": "08/01/2025 08:20 AM"
+      },
+      "prescription_date": null
+    },
+    "derived": {
+      "report_date": "2025-01-08",
+      "collection_date": "2025-01-08",
+      "prescription_date": null,
+      "document_date": "2025-01-08",
+      "date_source": "report_date"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Sunrise Diagnostics",
+        "",
+        "Plot 12, Baner Road, Pune 411045",
+        "",
+        "Patient Name: Ms. Fatima Shaikh",
+        "",
+        "Age / Sex: 31 Years / Female",
+        "",
+        "Lab ID: SD-25-010733",
+        "",
+        "Ref. By: Dr. Kavita Rao",
+        "",
+        "Collected On: 08/01/2025 08:20 AM",
+        "",
+        "Reported On: 08/01/2025 06:15 PM",
+        "",
+        "## THYROID PROFILE",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| TSH | 3.1 |  | µIU/mL | 0.27 - 4.20 |",
+        "",
+        "## VITAMINS",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| Vitamin D (25-OH) | 18.4 | L | ng/mL | Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100 |",
+        "",
+        "Dr. Neha Joshi, MD (Pathology)",
+        "",
+        "*** End of Report ***",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 5,
+          "last_line": 5,
+          "quote": "Patient Name: Ms. Fatima Shaikh"
+        },
+        "text": "Ms. Fatima Shaikh"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Age / Sex: 31 Years / Female"
+        },
+        "text": "31 Years"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Age / Sex: 31 Years / Female"
+        },
+        "text": "Female"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Lab ID: SD-25-010733"
+        },
+        "text": "SD-25-010733"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [
+    {
+      "id": "obs-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 21,
+          "last_line": 21,
+          "quote": "| TSH | 3.1 |  | µIU/mL | 0.27 - 4.20 |"
+        },
+        "panel": "THYROID PROFILE",
+        "test_name": "TSH",
+        "value_text": "3.1",
+        "unit": "µIU/mL",
+        "reference_ranges": [
+          "0.27 - 4.20"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "tsh",
+        "value_num": 3.1,
+        "ranges": [
+          {
+            "text": "0.27 - 4.20",
+            "low": 0.27,
+            "high": 4.2,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 27,
+          "last_line": 27,
+          "quote": "| Vitamin D (25-OH) | 18.4 | L | ng/mL | Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100 |"
+        },
+        "panel": "VITAMINS",
+        "test_name": "Vitamin D (25-OH)",
+        "value_text": "18.4",
+        "unit": "ng/mL",
+        "reference_ranges": [
+          "Deficiency: < 20",
+          "Insufficiency: 20 - 30",
+          "Sufficiency: 30 - 100"
+        ],
+        "flag_printed": "L"
+      },
+      "derived": {
+        "analyte": "vitamin_d_25oh",
+        "value_num": 18.4,
+        "ranges": [
+          {
+            "text": "Deficiency: < 20",
+            "low": null,
+            "high": 20.0,
+            "label": "Deficiency"
+          },
+          {
+            "text": "Insufficiency: 20 - 30",
+            "low": 20.0,
+            "high": 30.0,
+            "label": "Insufficiency"
+          },
+          {
+            "text": "Sufficiency: 30 - 100",
+            "low": 30.0,
+            "high": 100.0,
+            "label": "Sufficiency"
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    }
+  ],
+  "medications": [],
+  "conditions": [],
+  "remarks": [],
+  "vitals": [],
+  "allergies": [],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

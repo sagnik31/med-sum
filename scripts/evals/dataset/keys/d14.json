@@ -1,0 +1,405 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d14",
+    "type": "prescription",
+    "page_count": 1,
+    "has_text_layer": false,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Sahaj Multispeciality Hospital, Karve Road, Pune"
+        },
+        "text": "Sahaj Multispeciality Hospital"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 1,
+            "last_line": 1,
+            "quote": "# Dr. Anil Deshpande"
+          },
+          "text": "Dr. Anil Deshpande"
+        }
+      ],
+      "report_date": null,
+      "collection_date": null,
+      "prescription_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Date: 11/03/2025"
+        },
+        "text": "11/03/2025"
+      }
+    },
+    "derived": {
+      "report_date": null,
+      "collection_date": null,
+      "prescription_date": "2025-03-11",
+      "document_date": "2025-03-11",
+      "date_source": "prescription_date"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Dr. Anil Deshpande",
+        "",
+        "MBBS, MD (General Medicine)",
+        "",
+        "Reg. No.: MMC-2009/04/0001",
+        "",
+        "Sahaj Multispeciality Hospital, Karve Road, Pune",
+        "",
+        "Date: 11/03/2025",
+        "",
+        "Patient: Arjun Menon",
+        "",
+        "Age / Sex: 66 Y / M",
+        "",
+        "UHID: SH-100234",
+        "",
+        "Vitals: BP 130/80 mmHg, Pulse 70 /min, SpO2 97 %",
+        "",
+        "Allergies: NKDA",
+        "",
+        "K/C/O: CAD, post PTCA (2019)",
+        "",
+        "Diagnosis: Dyslipidaemia",
+        "",
+        "## Rx",
+        "",
+        "| # | Medicine | Dose | Frequency | Duration | Instructions |",
+        "| --- | --- | --- | --- | --- | --- |",
+        "| 1 | Tab. Rosuvas 10 mg | 1 tab | 0-0-1 | 3 months | At bedtime |",
+        "| 2 | Tab. Ecosprin 75 mg | 1 tab | 0-1-0 | 3 months | After lunch |",
+        "| 3 | Tab. Metformin 500 mg | 1 tab | OD | 3 months | With dinner |",
+        "",
+        "Advice: Low fat diet; avoid fried food.",
+        "",
+        "Repeat lipid profile after 3 months.",
+        "",
+        "Signature: Dr. Anil Deshpande",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 11,
+          "last_line": 11,
+          "quote": "Patient: Arjun Menon"
+        },
+        "text": "Arjun Menon"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "Age / Sex: 66 Y / M"
+        },
+        "text": "66 Y"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "Age / Sex: 66 Y / M"
+        },
+        "text": "M"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "UHID: SH-100234"
+        },
+        "text": "SH-100234"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [],
+  "medications": [
+    {
+      "id": "med-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 29,
+          "last_line": 29,
+          "quote": "| 1 | Tab. Rosuvas 10 mg | 1 tab | 0-0-1 | 3 months | At bedtime |"
+        },
+        "form": "Tab.",
+        "name": "Rosuvas",
+        "strength": "10 mg",
+        "dose": "1 tab",
+        "frequency": "0-0-1",
+        "route": null,
+        "duration": "3 months",
+        "instructions": "At bedtime"
+      },
+      "derived": {
+        "schedule": {
+          "morning": 0.0,
+          "noon": 0.0,
+          "night": 1.0,
+          "times_per_day": 1.0,
+          "as_needed": false
+        },
+        "duration_days": null
+      }
+    },
+    {
+      "id": "med-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 30,
+          "last_line": 30,
+          "quote": "| 2 | Tab. Ecosprin 75 mg | 1 tab | 0-1-0 | 3 months | After lunch |"
+        },
+        "form": "Tab.",
+        "name": "Ecosprin",
+        "strength": "75 mg",
+        "dose": "1 tab",
+        "frequency": "0-1-0",
+        "route": null,
+        "duration": "3 months",
+        "instructions": "After lunch"
+      },
+      "derived": {
+        "schedule": {
+          "morning": 0.0,
+          "noon": 1.0,
+          "night": 0.0,
+          "times_per_day": 1.0,
+          "as_needed": false
+        },
+        "duration_days": null
+      }
+    },
+    {
+      "id": "med-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 31,
+          "last_line": 31,
+          "quote": "| 3 | Tab. Metformin 500 mg | 1 tab | OD | 3 months | With dinner |"
+        },
+        "form": "Tab.",
+        "name": "Metformin",
+        "strength": "500 mg",
+        "dose": "1 tab",
+        "frequency": "OD",
+        "route": null,
+        "duration": "3 months",
+        "instructions": "With dinner"
+      },
+      "derived": {
+        "schedule": {
+          "morning": null,
+          "noon": null,
+          "night": null,
+          "times_per_day": 1.0,
+          "as_needed": false
+        },
+        "duration_days": null
+      }
+    }
+  ],
+  "conditions": [
+    {
+      "id": "cond-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 21,
+          "last_line": 21,
+          "quote": "K/C/O: CAD, post PTCA (2019)"
+        },
+        "text": "CAD, post PTCA (2019)",
+        "kind": "history"
+      }
+    },
+    {
+      "id": "cond-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 23,
+          "last_line": 23,
+          "quote": "Diagnosis: Dyslipidaemia"
+        },
+        "text": "Dyslipidaemia",
+        "kind": "diagnosis"
+      }
+    }
+  ],
+  "remarks": [
+    {
+      "id": "rem-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 33,
+          "last_line": 33,
+          "quote": "Advice: Low fat diet; avoid fried food."
+        },
+        "text": "Low fat diet; avoid fried food.",
+        "kind": "advice",
+        "scope": "document",
+        "test_name": null,
+        "panel": null
+      },
+      "derived": {
+        "observation_id": null
+      }
+    },
+    {
+      "id": "rem-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 35,
+          "last_line": 35,
+          "quote": "Repeat lipid profile after 3 months."
+        },
+        "text": "Repeat lipid profile after 3 months.",
+        "kind": "advice",
+        "scope": "document",
+        "test_name": null,
+        "panel": null
+      },
+      "derived": {
+        "observation_id": null
+      }
+    }
+  ],
+  "vitals": [
+    {
+      "id": "vit-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "Vitals: BP 130/80 mmHg, Pulse 70 /min, SpO2 97 %"
+        },
+        "name": "BP",
+        "value_text": "130/80",
+        "unit": "mmHg"
+      },
+      "derived": {
+        "kind": "blood_pressure",
+        "value_num": null,
+        "systolic": 130.0,
+        "diastolic": 80.0
+      }
+    },
+    {
+      "id": "vit-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "Vitals: BP 130/80 mmHg, Pulse 70 /min, SpO2 97 %"
+        },
+        "name": "Pulse",
+        "value_text": "70",
+        "unit": "/min"
+      },
+      "derived": {
+        "kind": "pulse",
+        "value_num": 70.0,
+        "systolic": null,
+        "diastolic": null
+      }
+    },
+    {
+      "id": "vit-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "Vitals: BP 130/80 mmHg, Pulse 70 /min, SpO2 97 %"
+        },
+        "name": "SpO2",
+        "value_text": "97",
+        "unit": "%"
+      },
+      "derived": {
+        "kind": "spo2",
+        "value_num": 97.0,
+        "systolic": null,
+        "diastolic": null
+      }
+    }
+  ],
+  "allergies": [
+    {
+      "id": "alg-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 19,
+          "last_line": 19,
+          "quote": "Allergies: NKDA"
+        },
+        "text": "NKDA",
+        "substance": null,
+        "reaction": null
+      },
+      "derived": {
+        "no_known_allergies": true
+      }
+    }
+  ],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

@@ -1,0 +1,541 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d05",
+    "type": "lab_report",
+    "page_count": 2,
+    "has_text_layer": true,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 1,
+          "last_line": 1,
+          "quote": "# Sunrise Diagnostics"
+        },
+        "text": "Sunrise Diagnostics"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 11,
+            "last_line": 11,
+            "quote": "Ref. By: Dr. Kavita Rao"
+          },
+          "text": "Ref. By: Dr. Kavita Rao"
+        },
+        {
+          "citation": {
+            "page": 2,
+            "first_line": 15,
+            "last_line": 15,
+            "quote": "Dr. Neha Joshi, MD (Pathology)"
+          },
+          "text": "Dr. Neha Joshi, MD (Pathology)"
+        }
+      ],
+      "report_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "Reported On: 12/04/2025 01:10 PM"
+        },
+        "text": "12/04/2025 01:10 PM"
+      },
+      "collection_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "Collected On: 12/04/2025 07:55 AM"
+        },
+        "text": "12/04/2025 07:55 AM"
+      },
+      "prescription_date": null
+    },
+    "derived": {
+      "report_date": "2025-04-12",
+      "collection_date": "2025-04-12",
+      "prescription_date": null,
+      "document_date": "2025-04-12",
+      "date_source": "report_date"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Sunrise Diagnostics",
+        "",
+        "Plot 12, Baner Road, Pune 411045",
+        "",
+        "Patient Name: Mrs. Meera Iyer",
+        "",
+        "Age / Sex: 58 Years / Female",
+        "",
+        "Lab ID: SD-25-041288",
+        "",
+        "Ref. By: Dr. Kavita Rao",
+        "",
+        "Collected On: 12/04/2025 07:55 AM",
+        "",
+        "Reported On: 12/04/2025 01:10 PM",
+        "",
+        "## COMPLETE BLOOD COUNT",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| Haemoglobin | 11.9 | L | g/dL | 12.0 - 15.0 |",
+        "| MCV | 81 | L | fL | 83 - 101 |",
+        "| Platelet Count | 2,62,000 |  | /cumm | 1,50,000 - 4,10,000 |",
+        "",
+        "## IRON STUDIES",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| Serum Iron | 48 | L | µg/dL | 50 - 170 |",
+        "| TIBC | 412 | H | µg/dL | 250 - 400 |",
+        "| Transferrin Saturation | 11.7 | L | % | 20 - 50 |",
+        "| Serum Ferritin | 9.8 | L | ng/mL | 13 - 150 |",
+        "",
+        "Comment: Iron deficiency picture.",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    },
+    {
+      "page": 2,
+      "lines": [
+        "Patient: Mrs. Meera Iyer | Lab ID: SD-25-041288 | Page 2 of 2",
+        "",
+        "## GLYCATED HAEMOGLOBIN",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| HbA1c | 7.0 | H | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |",
+        "",
+        "## KIDNEY FUNCTION TEST",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| Serum Creatinine | 0.9 |  | mg/dL | 0.6 - 1.1 |",
+        "",
+        "Dr. Neha Joshi, MD (Pathology)",
+        "",
+        "*** End of Report ***",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 5,
+          "last_line": 5,
+          "quote": "Patient Name: Mrs. Meera Iyer"
+        },
+        "text": "Mrs. Meera Iyer"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Age / Sex: 58 Years / Female"
+        },
+        "text": "58 Years"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Age / Sex: 58 Years / Female"
+        },
+        "text": "Female"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Lab ID: SD-25-041288"
+        },
+        "text": "SD-25-041288"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [
+    {
+      "id": "obs-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 21,
+          "last_line": 21,
+          "quote": "| Haemoglobin | 11.9 | L | g/dL | 12.0 - 15.0 |"
+        },
+        "panel": "COMPLETE BLOOD COUNT",
+        "test_name": "Haemoglobin",
+        "value_text": "11.9",
+        "unit": "g/dL",
+        "reference_ranges": [
+          "12.0 - 15.0"
+        ],
+        "flag_printed": "L"
+      },
+      "derived": {
+        "analyte": "haemoglobin",
+        "value_num": 11.9,
+        "ranges": [
+          {
+            "text": "12.0 - 15.0",
+            "low": 12.0,
+            "high": 15.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 22,
+          "last_line": 22,
+          "quote": "| MCV | 81 | L | fL | 83 - 101 |"
+        },
+        "panel": "COMPLETE BLOOD COUNT",
+        "test_name": "MCV",
+        "value_text": "81",
+        "unit": "fL",
+        "reference_ranges": [
+          "83 - 101"
+        ],
+        "flag_printed": "L"
+      },
+      "derived": {
+        "analyte": "mcv",
+        "value_num": 81.0,
+        "ranges": [
+          {
+            "text": "83 - 101",
+            "low": 83.0,
+            "high": 101.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 23,
+          "last_line": 23,
+          "quote": "| Platelet Count | 2,62,000 |  | /cumm | 1,50,000 - 4,10,000 |"
+        },
+        "panel": "COMPLETE BLOOD COUNT",
+        "test_name": "Platelet Count",
+        "value_text": "2,62,000",
+        "unit": "/cumm",
+        "reference_ranges": [
+          "1,50,000 - 4,10,000"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "platelet_count",
+        "value_num": 262000.0,
+        "ranges": [
+          {
+            "text": "1,50,000 - 4,10,000",
+            "low": 150000.0,
+            "high": 410000.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-4",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 29,
+          "last_line": 29,
+          "quote": "| Serum Iron | 48 | L | µg/dL | 50 - 170 |"
+        },
+        "panel": "IRON STUDIES",
+        "test_name": "Serum Iron",
+        "value_text": "48",
+        "unit": "µg/dL",
+        "reference_ranges": [
+          "50 - 170"
+        ],
+        "flag_printed": "L"
+      },
+      "derived": {
+        "analyte": "iron",
+        "value_num": 48.0,
+        "ranges": [
+          {
+            "text": "50 - 170",
+            "low": 50.0,
+            "high": 170.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-5",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 30,
+          "last_line": 30,
+          "quote": "| TIBC | 412 | H | µg/dL | 250 - 400 |"
+        },
+        "panel": "IRON STUDIES",
+        "test_name": "TIBC",
+        "value_text": "412",
+        "unit": "µg/dL",
+        "reference_ranges": [
+          "250 - 400"
+        ],
+        "flag_printed": "H"
+      },
+      "derived": {
+        "analyte": "tibc",
+        "value_num": 412.0,
+        "ranges": [
+          {
+            "text": "250 - 400",
+            "low": 250.0,
+            "high": 400.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "high",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-6",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 31,
+          "last_line": 31,
+          "quote": "| Transferrin Saturation | 11.7 | L | % | 20 - 50 |"
+        },
+        "panel": "IRON STUDIES",
+        "test_name": "Transferrin Saturation",
+        "value_text": "11.7",
+        "unit": "%",
+        "reference_ranges": [
+          "20 - 50"
+        ],
+        "flag_printed": "L"
+      },
+      "derived": {
+        "analyte": "transferrin_saturation",
+        "value_num": 11.7,
+        "ranges": [
+          {
+            "text": "20 - 50",
+            "low": 20.0,
+            "high": 50.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-7",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 32,
+          "last_line": 32,
+          "quote": "| Serum Ferritin | 9.8 | L | ng/mL | 13 - 150 |"
+        },
+        "panel": "IRON STUDIES",
+        "test_name": "Serum Ferritin",
+        "value_text": "9.8",
+        "unit": "ng/mL",
+        "reference_ranges": [
+          "13 - 150"
+        ],
+        "flag_printed": "L"
+      },
+      "derived": {
+        "analyte": "ferritin",
+        "value_num": 9.8,
+        "ranges": [
+          {
+            "text": "13 - 150",
+            "low": 13.0,
+            "high": 150.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-8",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "| HbA1c | 7.0 | H | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |"
+        },
+        "panel": "GLYCATED HAEMOGLOBIN",
+        "test_name": "HbA1c",
+        "value_text": "7.0",
+        "unit": "%",
+        "reference_ranges": [
+          "Normal: < 5.7",
+          "Prediabetes: 5.7 - 6.4",
+          "Diabetes: >= 6.5"
+        ],
+        "flag_printed": "H"
+      },
+      "derived": {
+        "analyte": "hba1c",
+        "value_num": 7.0,
+        "ranges": [
+          {
+            "text": "Normal: < 5.7",
+            "low": null,
+            "high": 5.7,
+            "label": "Normal"
+          },
+          {
+            "text": "Prediabetes: 5.7 - 6.4",
+            "low": 5.7,
+            "high": 6.4,
+            "label": "Prediabetes"
+          },
+          {
+            "text": "Diabetes: >= 6.5",
+            "low": 6.5,
+            "high": null,
+            "label": "Diabetes"
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-9",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "| Serum Creatinine | 0.9 |  | mg/dL | 0.6 - 1.1 |"
+        },
+        "panel": "KIDNEY FUNCTION TEST",
+        "test_name": "Serum Creatinine",
+        "value_text": "0.9",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "0.6 - 1.1"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "creatinine",
+        "value_num": 0.9,
+        "ranges": [
+          {
+            "text": "0.6 - 1.1",
+            "low": 0.6,
+            "high": 1.1,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    }
+  ],
+  "medications": [],
+  "conditions": [],
+  "remarks": [
+    {
+      "id": "rem-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 34,
+          "last_line": 34,
+          "quote": "Comment: Iron deficiency picture."
+        },
+        "text": "Iron deficiency picture.",
+        "kind": "comment",
+        "scope": "panel",
+        "test_name": null,
+        "panel": "IRON STUDIES"
+      },
+      "derived": {
+        "observation_id": null
+      }
+    }
+  ],
+  "vitals": [],
+  "allergies": [],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

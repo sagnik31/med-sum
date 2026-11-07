@@ -1,0 +1,320 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d12",
+    "type": "prescription",
+    "page_count": 1,
+    "has_text_layer": false,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Sahaj Multispeciality Hospital, Karve Road, Pune"
+        },
+        "text": "Sahaj Multispeciality Hospital"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 1,
+            "last_line": 1,
+            "quote": "# Dr. Kavita Rao"
+          },
+          "text": "Dr. Kavita Rao"
+        }
+      ],
+      "report_date": null,
+      "collection_date": null,
+      "prescription_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Date: 15/03/2025"
+        },
+        "text": "15/03/2025"
+      }
+    },
+    "derived": {
+      "report_date": null,
+      "collection_date": null,
+      "prescription_date": "2025-03-15",
+      "document_date": "2025-03-15",
+      "date_source": "prescription_date"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Dr. Kavita Rao",
+        "",
+        "MBBS, DM (Endocrinology)",
+        "",
+        "Reg. No.: MMC-2012/07/0002",
+        "",
+        "Sahaj Multispeciality Hospital, Karve Road, Pune",
+        "",
+        "Date: 15/03/2025",
+        "",
+        "Patient: Fatima Shaikh",
+        "",
+        "Age / Sex: 32 Y / F",
+        "",
+        "UHID: SH-100233",
+        "",
+        "Vitals: BP 116/74 mmHg, Weight 60 kg",
+        "",
+        "Allergies: Penicillin - hives",
+        "",
+        "Diagnosis: Hypothyroidism, Vitamin D deficiency",
+        "",
+        "## Rx",
+        "",
+        "| # | Medicine | Dose | Frequency | Duration | Instructions |",
+        "| --- | --- | --- | --- | --- | --- |",
+        "| 1 | Tab. Thyronorm 50 mcg | 1 tab | 1-0-0 | 3 months | Empty stomach |",
+        "| 2 | Cap. Uprise-D3 60K | 1 cap | Once a week | 8 weeks | After food |",
+        "",
+        "Advice: Repeat TSH and vitamin D after 3 months.",
+        "",
+        "Signature: Dr. Kavita Rao",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 11,
+          "last_line": 11,
+          "quote": "Patient: Fatima Shaikh"
+        },
+        "text": "Fatima Shaikh"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "Age / Sex: 32 Y / F"
+        },
+        "text": "32 Y"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "Age / Sex: 32 Y / F"
+        },
+        "text": "F"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "UHID: SH-100233"
+        },
+        "text": "SH-100233"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [],
+  "medications": [
+    {
+      "id": "med-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 27,
+          "last_line": 27,
+          "quote": "| 1 | Tab. Thyronorm 50 mcg | 1 tab | 1-0-0 | 3 months | Empty stomach |"
+        },
+        "form": "Tab.",
+        "name": "Thyronorm",
+        "strength": "50 mcg",
+        "dose": "1 tab",
+        "frequency": "1-0-0",
+        "route": null,
+        "duration": "3 months",
+        "instructions": "Empty stomach"
+      },
+      "derived": {
+        "schedule": {
+          "morning": 1.0,
+          "noon": 0.0,
+          "night": 0.0,
+          "times_per_day": 1.0,
+          "as_needed": false
+        },
+        "duration_days": null
+      }
+    },
+    {
+      "id": "med-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 28,
+          "last_line": 28,
+          "quote": "| 2 | Cap. Uprise-D3 60K | 1 cap | Once a week | 8 weeks | After food |"
+        },
+        "form": "Cap.",
+        "name": "Uprise-D3",
+        "strength": "60K",
+        "dose": "1 cap",
+        "frequency": "Once a week",
+        "route": null,
+        "duration": "8 weeks",
+        "instructions": "After food"
+      },
+      "derived": {
+        "schedule": null,
+        "duration_days": 56
+      }
+    }
+  ],
+  "conditions": [
+    {
+      "id": "cond-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 21,
+          "last_line": 21,
+          "quote": "Diagnosis: Hypothyroidism, Vitamin D deficiency"
+        },
+        "text": "Hypothyroidism",
+        "kind": "diagnosis"
+      }
+    },
+    {
+      "id": "cond-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 21,
+          "last_line": 21,
+          "quote": "Diagnosis: Hypothyroidism, Vitamin D deficiency"
+        },
+        "text": "Vitamin D deficiency",
+        "kind": "diagnosis"
+      }
+    }
+  ],
+  "remarks": [
+    {
+      "id": "rem-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 30,
+          "last_line": 30,
+          "quote": "Advice: Repeat TSH and vitamin D after 3 months."
+        },
+        "text": "Repeat TSH and vitamin D after 3 months.",
+        "kind": "advice",
+        "scope": "document",
+        "test_name": null,
+        "panel": null
+      },
+      "derived": {
+        "observation_id": null
+      }
+    }
+  ],
+  "vitals": [
+    {
+      "id": "vit-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "Vitals: BP 116/74 mmHg, Weight 60 kg"
+        },
+        "name": "BP",
+        "value_text": "116/74",
+        "unit": "mmHg"
+      },
+      "derived": {
+        "kind": "blood_pressure",
+        "value_num": null,
+        "systolic": 116.0,
+        "diastolic": 74.0
+      }
+    },
+    {
+      "id": "vit-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "Vitals: BP 116/74 mmHg, Weight 60 kg"
+        },
+        "name": "Weight",
+        "value_text": "60",
+        "unit": "kg"
+      },
+      "derived": {
+        "kind": "weight",
+        "value_num": 60.0,
+        "systolic": null,
+        "diastolic": null
+      }
+    }
+  ],
+  "allergies": [
+    {
+      "id": "alg-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 19,
+          "last_line": 19,
+          "quote": "Allergies: Penicillin - hives"
+        },
+        "text": "Penicillin - hives",
+        "substance": "Penicillin",
+        "reaction": "hives"
+      },
+      "derived": {
+        "no_known_allergies": false
+      }
+    }
+  ],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

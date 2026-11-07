@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d17",
+    "type": "other",
+    "page_count": 1,
+    "has_text_layer": true,
+    "uploaded_by": null,
+    "printed": {
+      "facility": null,
+      "clinicians": [],
+      "report_date": null,
+      "collection_date": null,
+      "prescription_date": null
+    },
+    "derived": {
+      "report_date": null,
+      "collection_date": null,
+      "prescription_date": null,
+      "document_date": null,
+      "date_source": "undated"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Sahaj Multispeciality Hospital - Department of Radiology",
+        "",
+        "Karve Road, Pune 411004",
+        "",
+        "Patient Name: Mr. Arjun Menon",
+        "",
+        "Age / Sex: 66 Years / Male",
+        "",
+        "UHID: SH-100234",
+        "",
+        "Date: 20/04/2025",
+        "",
+        "## X-RAY CHEST PA VIEW",
+        "",
+        "Findings: Both lung fields are clear. Cardiac silhouette is within normal limits.",
+        "",
+        "Costophrenic angles are clear. Bony thorax appears normal.",
+        "",
+        "Impression: No active lung lesion.",
+        "",
+        "Dr. R. Pillai, MD (Radiodiagnosis)",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": null,
+  "observations": [],
+  "medications": [],
+  "conditions": [],
+  "remarks": [],
+  "vitals": [],
+  "allergies": [],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

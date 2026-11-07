@@ -1,0 +1,451 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d07",
+    "type": "prescription",
+    "page_count": 1,
+    "has_text_layer": false,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Sahaj Multispeciality Hospital, Karve Road, Pune"
+        },
+        "text": "Sahaj Multispeciality Hospital"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 1,
+            "last_line": 1,
+            "quote": "# Dr. Anil Deshpande"
+          },
+          "text": "Dr. Anil Deshpande"
+        }
+      ],
+      "report_date": null,
+      "collection_date": null,
+      "prescription_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Date: 10/02/2025"
+        },
+        "text": "10/02/2025"
+      }
+    },
+    "derived": {
+      "report_date": null,
+      "collection_date": null,
+      "prescription_date": "2025-02-10",
+      "document_date": "2025-02-10",
+      "date_source": "prescription_date"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Dr. Anil Deshpande",
+        "",
+        "MBBS, MD (General Medicine)",
+        "",
+        "Reg. No.: MMC-2009/04/0001",
+        "",
+        "Sahaj Multispeciality Hospital, Karve Road, Pune",
+        "",
+        "Date: 10/02/2025",
+        "",
+        "Patient: Rohan Kulkarni",
+        "",
+        "Age / Sex: 44 Y / M",
+        "",
+        "UHID: SH-100232",
+        "",
+        "Vitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²",
+        "",
+        "Drug Allergy: Sulfa drugs (rash)",
+        "",
+        "C/O: Occasional headache",
+        "",
+        "Diagnosis: Hypertension",
+        "",
+        "Provisional Diagnosis: Chronic kidney disease, to be evaluated",
+        "",
+        "## Rx",
+        "",
+        "| # | Medicine | Dose | Frequency | Duration | Instructions |",
+        "| --- | --- | --- | --- | --- | --- |",
+        "| 1 | Tab. Amlong 5 mg | 1 tab | 1-0-0 | 1 month |  |",
+        "| 2 | Tab. Atorva 20 mg | 1 tab | 0-0-1 | 1 month | At bedtime |",
+        "| 3 | Tab. Pantocid 40 mg | 1 tab | 1-0-0 | 14 days | Before breakfast |",
+        "",
+        "Advice: Low salt diet.",
+        "",
+        "Repeat KFT after 4 weeks.",
+        "",
+        "Signature: Dr. Anil Deshpande",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 11,
+          "last_line": 11,
+          "quote": "Patient: Rohan Kulkarni"
+        },
+        "text": "Rohan Kulkarni"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "Age / Sex: 44 Y / M"
+        },
+        "text": "44 Y"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "Age / Sex: 44 Y / M"
+        },
+        "text": "M"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "UHID: SH-100232"
+        },
+        "text": "SH-100232"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [],
+  "medications": [
+    {
+      "id": "med-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 31,
+          "last_line": 31,
+          "quote": "| 1 | Tab. Amlong 5 mg | 1 tab | 1-0-0 | 1 month |  |"
+        },
+        "form": "Tab.",
+        "name": "Amlong",
+        "strength": "5 mg",
+        "dose": "1 tab",
+        "frequency": "1-0-0",
+        "route": null,
+        "duration": "1 month",
+        "instructions": null
+      },
+      "derived": {
+        "schedule": {
+          "morning": 1.0,
+          "noon": 0.0,
+          "night": 0.0,
+          "times_per_day": 1.0,
+          "as_needed": false
+        },
+        "duration_days": null
+      }
+    },
+    {
+      "id": "med-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 32,
+          "last_line": 32,
+          "quote": "| 2 | Tab. Atorva 20 mg | 1 tab | 0-0-1 | 1 month | At bedtime |"
+        },
+        "form": "Tab.",
+        "name": "Atorva",
+        "strength": "20 mg",
+        "dose": "1 tab",
+        "frequency": "0-0-1",
+        "route": null,
+        "duration": "1 month",
+        "instructions": "At bedtime"
+      },
+      "derived": {
+        "schedule": {
+          "morning": 0.0,
+          "noon": 0.0,
+          "night": 1.0,
+          "times_per_day": 1.0,
+          "as_needed": false
+        },
+        "duration_days": null
+      }
+    },
+    {
+      "id": "med-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 33,
+          "last_line": 33,
+          "quote": "| 3 | Tab. Pantocid 40 mg | 1 tab | 1-0-0 | 14 days | Before breakfast |"
+        },
+        "form": "Tab.",
+        "name": "Pantocid",
+        "strength": "40 mg",
+        "dose": "1 tab",
+        "frequency": "1-0-0",
+        "route": null,
+        "duration": "14 days",
+        "instructions": "Before breakfast"
+      },
+      "derived": {
+        "schedule": {
+          "morning": 1.0,
+          "noon": 0.0,
+          "night": 0.0,
+          "times_per_day": 1.0,
+          "as_needed": false
+        },
+        "duration_days": 14
+      }
+    }
+  ],
+  "conditions": [
+    {
+      "id": "cond-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 23,
+          "last_line": 23,
+          "quote": "Diagnosis: Hypertension"
+        },
+        "text": "Hypertension",
+        "kind": "diagnosis"
+      }
+    },
+    {
+      "id": "cond-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 25,
+          "last_line": 25,
+          "quote": "Provisional Diagnosis: Chronic kidney disease, to be evaluated"
+        },
+        "text": "Chronic kidney disease, to be evaluated",
+        "kind": "provisional_diagnosis"
+      }
+    }
+  ],
+  "remarks": [
+    {
+      "id": "rem-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 35,
+          "last_line": 35,
+          "quote": "Advice: Low salt diet."
+        },
+        "text": "Low salt diet.",
+        "kind": "advice",
+        "scope": "document",
+        "test_name": null,
+        "panel": null
+      },
+      "derived": {
+        "observation_id": null
+      }
+    },
+    {
+      "id": "rem-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 37,
+          "last_line": 37,
+          "quote": "Repeat KFT after 4 weeks."
+        },
+        "text": "Repeat KFT after 4 weeks.",
+        "kind": "advice",
+        "scope": "document",
+        "test_name": null,
+        "panel": null
+      },
+      "derived": {
+        "observation_id": null
+      }
+    }
+  ],
+  "vitals": [
+    {
+      "id": "vit-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "Vitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²"
+        },
+        "name": "BP",
+        "value_text": "148/94",
+        "unit": "mmHg"
+      },
+      "derived": {
+        "kind": "blood_pressure",
+        "value_num": null,
+        "systolic": 148.0,
+        "diastolic": 94.0
+      }
+    },
+    {
+      "id": "vit-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "Vitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²"
+        },
+        "name": "Pulse",
+        "value_text": "88",
+        "unit": "/min"
+      },
+      "derived": {
+        "kind": "pulse",
+        "value_num": 88.0,
+        "systolic": null,
+        "diastolic": null
+      }
+    },
+    {
+      "id": "vit-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "Vitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²"
+        },
+        "name": "Weight",
+        "value_text": "84",
+        "unit": "kg"
+      },
+      "derived": {
+        "kind": "weight",
+        "value_num": 84.0,
+        "systolic": null,
+        "diastolic": null
+      }
+    },
+    {
+      "id": "vit-4",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "Vitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²"
+        },
+        "name": "Height",
+        "value_text": "172",
+        "unit": "cm"
+      },
+      "derived": {
+        "kind": "height",
+        "value_num": 172.0,
+        "systolic": null,
+        "diastolic": null
+      }
+    },
+    {
+      "id": "vit-5",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "Vitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²"
+        },
+        "name": "BMI",
+        "value_text": "28.4",
+        "unit": "kg/m²"
+      },
+      "derived": {
+        "kind": "bmi",
+        "value_num": 28.4,
+        "systolic": null,
+        "diastolic": null
+      }
+    }
+  ],
+  "allergies": [
+    {
+      "id": "alg-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 19,
+          "last_line": 19,
+          "quote": "Drug Allergy: Sulfa drugs (rash)"
+        },
+        "text": "Sulfa drugs (rash)",
+        "substance": "Sulfa drugs",
+        "reaction": "rash"
+      },
+      "derived": {
+        "no_known_allergies": false
+      }
+    }
+  ],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}
