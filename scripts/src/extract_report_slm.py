@@ -5,7 +5,7 @@ import os
 import sys
 
 # Optional: only needed for PDF → image conversion
-import fitz  # PyMuPDF
+import pymupdf
 
 
 # ------------- CONFIG -------------
@@ -98,7 +98,7 @@ def process_pdf_file(input_path: str, system_prompt: str, on_page=None) -> str:
 
     # Closed even on failure: an open handle keeps the file locked on
     # Windows, so the backend could not delete it.
-    with fitz.open(input_path) as doc:
+    with pymupdf.open(input_path) as doc:
         num_pages = len(doc)
         print(f"\n=== 📄 PDF detected: {num_pages} page(s) ===")
 

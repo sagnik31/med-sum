@@ -111,11 +111,11 @@ cd frontend
 npm install
 cd ..
 
-# AI service (a virtual environment is recommended)
+# AI service (pinned versions, in a virtual environment)
 cd scripts
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\Activate.ps1
-pip install fastapi uvicorn psycopg2-binary ollama pymupdf pydantic beautifulsoup4
+pip install -r requirements.txt
 cd ..
 ```
 
@@ -216,6 +216,7 @@ scripts/
   src/generate_insights_txt.py  summary generation
   src/llm.py                 model calls with the primary and fallback model
   prompt/                prompts for extraction and summaries
+  requirements.in        direct dependencies; requirements.txt pins every package
 postman/                 API collection
 ```
 
