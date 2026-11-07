@@ -20,10 +20,8 @@ INPUT_MD_SLM = os.path.join(
 # Prompt that defines how to turn markdown → HTML insights
 # Prompts are in .../scripts/prompt/txt/
 PROMPT_FILE = os.path.join(SCRIPTS_DIR, "prompt", "txt", "insight_prompt.txt")
-VISION_PROMPT_FILE = os.path.join(
-    SCRIPTS_DIR, "prompt", "img", "extract_report_img.txt"
-)
-OPTHAL_POINT_FILE = os.path.join(SCRIPTS_DIR, "prompt", "img", "opthal_report.txt")
+# Page transcription prompt, for lab reports and prescriptions
+EXTRACTION_PROMPT_FILE = os.path.join(SCRIPTS_DIR, "prompt", "img", "extract_page.txt")
 
 # Local models served by Ollama. Both read images and text. The primary does
 # all the work; the fallback gets the same request when the primary errors or

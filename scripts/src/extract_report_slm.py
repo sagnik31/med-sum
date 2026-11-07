@@ -14,7 +14,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from config import (
     OUTPUT_MD_SLM,
     INPUT_PDF,
-    OPTHAL_POINT_FILE,
+    EXTRACTION_PROMPT_FILE,
     PRIMARY_MODEL,
 )  # INPUT_PDF is generic input file
 from llm import chat
@@ -59,9 +59,8 @@ def run_vlm_on_image_bytes(image_bytes: bytes, system_prompt: str, label: str) -
         {
             "role": "user",
             "content": (
-                "Extract ONLY the essential clinical content from this report page as per your instructions: "
-                "lab/test tables and clinician remarks, in Markdown. "
-                "At the very end, output [[END_OF_PAGE]] on its own line, then stop."
+                "Transcribe this page following your instructions. "
+                f"At the very end, output {END_MARKER} on its own line, then stop."
             ),
             "images": [image_bytes],
         },
@@ -129,7 +128,7 @@ def extract_markdown_from_file(input_path: str, on_page=None) -> str:
     if not os.path.exists(input_path):
         raise FileNotFoundError(f"Input file not found: {input_path}")
 
-    system_prompt = load_prompt(OPTHAL_POINT_FILE)
+    system_prompt = load_prompt(EXTRACTION_PROMPT_FILE)
     ext = os.path.splitext(input_path)[1].lower()
 
     print("\n======================================")
