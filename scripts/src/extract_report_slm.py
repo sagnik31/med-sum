@@ -23,6 +23,8 @@ END_MARKER = "[[END_OF_PAGE]]"
 # Hard cap so a model stuck in a repetition loop cannot run forever;
 # a real report page needs far fewer tokens.
 MAX_TOKENS_PER_PAGE = 4096
+# Longest PDF accepted. Each page is a model call that takes minutes on a CPU.
+MAX_PDF_PAGES = 20
 # Echo prompts and streamed model output (patient data) to the console.
 # Only the standalone CLI (main) turns this on; the service never does.
 VERBOSE = False
@@ -99,6 +101,10 @@ def process_pdf_file(input_path: str, system_prompt: str, on_page=None) -> str:
     # Windows, so the backend could not delete it.
     with pymupdf.open(input_path) as doc:
         num_pages = len(doc)
+        if num_pages > MAX_PDF_PAGES:
+            raise ValueError(
+                f"The PDF has {num_pages} pages; the limit is {MAX_PDF_PAGES}."
+            )
         print(f"\n=== 📄 PDF detected: {num_pages} page(s) ===")
 
         for i, page in enumerate(doc, start=1):
@@ -121,7 +127,7 @@ def process_pdf_file(input_path: str, system_prompt: str, on_page=None) -> str:
 # -------------------------------------------------------------------
 def extract_markdown_from_file(input_path: str, on_page=None) -> str:
     """
-    Given a local file path (PDF / JPG / PNG / etc.), run the vision pipeline
+    Given a local file path (PDF, JPG or PNG), run the vision pipeline
     and return the extracted Markdown string.
     `on_page`, if given, is called before each PDF page (progress heartbeat).
     """
@@ -136,7 +142,8 @@ def extract_markdown_from_file(input_path: str, on_page=None) -> str:
     print(" Using model:", PRIMARY_MODEL)
     print("======================================\n")
 
-    if ext in [".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff", ".webp"]:
+    # Same types the backend accepts for upload.
+    if ext in [".jpg", ".jpeg", ".png"]:
         full_md = process_image_file(input_path, system_prompt)
     elif ext == ".pdf":
         full_md = process_pdf_file(input_path, system_prompt, on_page=on_page)

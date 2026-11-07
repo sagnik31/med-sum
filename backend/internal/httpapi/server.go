@@ -6,7 +6,9 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"io"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -174,6 +176,11 @@ func (s *Server) handleUploadDocument(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
+	if err := checkFileType(file, header.Filename); err != nil {
+		http.Error(w, err.Error(), http.StatusUnsupportedMediaType)
+		return
+	}
+
 	// Store under a random name: original names collide across users, and a
 	// collision would point one patient's document at another's file.
 	storagePath, err := newStoragePath(s.uploadsDir, header.Filename)
@@ -213,6 +220,36 @@ func (s *Server) handleUploadDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusCreated, doc)
+}
+
+// allowedTypes maps the upload extensions the AI service can read to the
+// content type their first bytes must have.
+var allowedTypes = map[string]string{
+	".pdf":  "application/pdf",
+	".jpg":  "image/jpeg",
+	".jpeg": "image/jpeg",
+	".png":  "image/png",
+}
+
+// checkFileType accepts PDF, JPEG and PNG files whose content matches their
+// extension, then rewinds the file for saving.
+func checkFileType(file multipart.File, name string) error {
+	want, ok := allowedTypes[strings.ToLower(filepath.Ext(name))]
+	if !ok {
+		return errors.New("unsupported file type: upload a PDF, JPG or PNG")
+	}
+	head := make([]byte, 512)
+	n, err := io.ReadFull(file, head)
+	if err != nil && !errors.Is(err, io.ErrUnexpectedEOF) {
+		return errors.New("could not read the uploaded file")
+	}
+	if http.DetectContentType(head[:n]) != want {
+		return errors.New("file content does not match its extension")
+	}
+	if _, err := file.Seek(0, io.SeekStart); err != nil {
+		return errors.New("could not read the uploaded file")
+	}
+	return nil
 }
 
 // newStoragePath returns a fresh random path in dir. It keeps the upload's

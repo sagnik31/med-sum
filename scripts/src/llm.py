@@ -9,11 +9,18 @@ instead of saving a cut-off result.
 
 import logging
 
+import httpx
 import ollama
 
 from config import FALLBACK_MODEL, NUM_CTX, PRIMARY_MODEL
 
 logger = logging.getLogger("llm")
+
+# Longest wait for Ollama to send anything (connect, or the next chunk of a
+# streamed reply). Generous because on a CPU a page image can take minutes
+# before the first token; it stops a stalled server from hanging a job.
+MODEL_TIMEOUT_SECONDS = 600
+_client = ollama.Client(timeout=MODEL_TIMEOUT_SECONDS)
 
 # Deterministic output: these calls copy and condense clinical text, so there
 # is nothing to gain from sampling. presence_penalty is reset because Qwen's
@@ -44,7 +51,7 @@ def chat(
     for model in (PRIMARY_MODEL, FALLBACK_MODEL):
         try:
             text, complete = _stream(model, messages, max_tokens, stop_marker, verbose)
-        except (ollama.ResponseError, ConnectionError) as e:
+        except (ollama.ResponseError, ConnectionError, httpx.TimeoutException) as e:
             failures.append(f"{model}: {e}")
             logger.warning("Model %s failed: %s", model, e)
             continue
@@ -67,7 +74,7 @@ def _stream(
     """Return (text, complete); complete is False when the token cap was hit."""
     text = ""
     done_reason = None
-    for chunk in ollama.chat(
+    for chunk in _client.chat(
         model=model,
         messages=messages,
         stream=True,
