@@ -36,19 +36,21 @@ The system has three services that share one PostgreSQL database:
 - **Backend (Go).** The public API. It handles login and uploads, checks that a document belongs to the caller, and forwards processing requests to the AI service.
 - **AI service (Python).** Runs the extraction and summarisation pipeline against local Ollama models.
 
-When a user opens a document, the pipeline runs as a background job:
+When a document is uploaded, the pipeline runs as a background job. The document list and summary pages update themselves while it runs:
 
 1. **Claim the job.** A row in `insights` with status `processing` acts as a lock, so the same document is never processed twice at once.
 2. **Extract.** PDFs are rendered to images with PyMuPDF, and `qwen3.5:4b` transcribes each page into Markdown. The result is cached on the document, so retries skip this step.
 3. **Summarise.** The same model turns the Markdown into an HTML summary, which is saved with status `completed`.
 4. **Record failures.** Any error marks the job `failed` with a message, and the user can retry from the UI.
 
+The cumulative patient summary is a separate background job, started from the Patient summary page. It combines the extracted Markdown of every processed document.
+
 ### Design notes
 
 - **The AI service is not exposed to the browser.** Only the Go API calls it, after checking that the document belongs to the user, and every call carries a shared secret.
 - **Recovery from crashed workers.** The worker updates a heartbeat before each page. A job with no heartbeat for 30 minutes can be taken over by a new request.
-- **Untrusted model output is isolated.** Generated HTML is shown in a sandboxed iframe with scripts disabled, so its styles cannot leak into the app.
-- **Bounded work.** Uploads are capped at 20 MB and stored under random file names, and model output is capped per page and per summary so a looping model cannot run forever.
+- **Untrusted model output is contained.** A document can carry text aimed at the model, so its output is treated as untrusted. The AI service strips scripts, styles, images, embeds, forms, event handlers and `javascript:` links from generated HTML. The UI shows it in a sandboxed iframe with scripts disabled and a content security policy that blocks every remote load, so the HTML cannot send data to another server.
+- **Bounded work.** Uploads must be PDF, JPG or PNG files whose content matches the extension, are capped at 20 MB and 20 PDF pages, and are stored under random file names. Model output is capped per page and per summary so a looping model cannot run forever, and a model call that sends nothing for 10 minutes is abandoned.
 - **Fallback model.** Both models read images and text. If `qwen3.5:4b` returns an error or hits the output cap, the same request goes to `gemma4:e2b`. If both fail, the job is marked `failed`, so cut-off output is never saved as a result.
 
 ## Tech stack
@@ -85,6 +87,7 @@ cd med-sum
 ```bash
 createdb -U postgres med_sum
 psql -U postgres -d med_sum -f db/migrations/med_sum_schema.sql
+psql -U postgres -d med_sum -f db/migrations/002_patient_summary_status.sql
 ```
 
 If your PostgreSQL credentials differ, adjust `DATABASE_URL` in the next steps (see [Configuration](#configuration)).
@@ -159,8 +162,9 @@ npm run dev
 ### 6. Try it out
 
 1. Open http://localhost:5173 and log in with any phone number and any OTP (the OTP is not checked yet).
-2. Upload a PDF or image (JPG, PNG, BMP, TIFF or WebP) of a medical report.
-3. Open the document. Processing starts at that point and can take a few minutes, depending on your hardware and the number of pages. Refresh the page to see the result.
+2. Upload a lab report or prescription as a PDF, JPG or PNG. Processing starts straight away; the document list shows its status and updates itself. On a CPU each page takes a few minutes.
+3. Open the document to read its summary once it shows **Ready**.
+4. Open **Patient summary** and choose **Generate summary** to combine every processed document.
 
 ## Configuration
 
@@ -187,12 +191,13 @@ All backend routes except `/healthz` and `/login` require an `Authorization: Bea
 |---|---|---|
 | `GET` | `/healthz` | Health check |
 | `POST` | `/login` | Log in with `{phone_number, full_name?}`; returns a JWT and the user |
-| `GET` | `/documents` | List the user's documents, newest first |
-| `POST` | `/documents` | Upload a document (multipart field `file`, max 20 MB) |
+| `GET` | `/documents` | List the user's documents, newest first, each with its `insight_status` |
+| `POST` | `/documents` | Upload a PDF, JPG or PNG (multipart field `file`, max 20 MB) and start processing it |
 | `DELETE` | `/documents/{id}` | Delete a document and its file |
-| `GET` | `/documents/{id}/insight` | Get the summary and its status (`processing`, `completed`, `failed`) |
+| `GET` | `/documents/{id}/insight` | Get the summary and its status (`not_started`, `processing`, `completed`, `failed`) |
 | `POST` | `/documents/{id}/insight` | Start or retry summary generation |
-| `GET` | `/user/insights` | Get the cumulative patient summary |
+| `GET` | `/user/insights` | Get the cumulative patient summary and its status (`none`, `processing`, `completed`, `failed`) |
+| `POST` | `/user/insights` | Start generating the cumulative patient summary |
 
 The AI service exposes `GET /health` and two internal routes, `POST /internal/generate-insights` and `POST /internal/generate-user-insights`. Both require an `X-Internal-Token` header.
 
@@ -235,9 +240,9 @@ The extraction and summary steps can also be run on their own, which is useful f
 ## Limitations
 
 - **No real authentication.** Any phone number receives a token, and the OTP field is not verified.
-- **Single specialty prompt.** Extraction currently uses a prompt tuned for ophthalmology reports.
-- **On-demand processing.** Summaries are generated when a document is first opened rather than on upload, and the page does not refresh itself.
-- **Patient summary.** The service can build a cumulative summary across documents, but nothing in the UI triggers it yet.
+- **One extraction prompt.** Lab reports and prescriptions share one prompt; the document type is not detected yet.
+- **Patient summary ordering.** Reports are ordered by upload date, not by the date printed on them, and the summary is only regenerated on request.
+- **Summaries are model-written HTML.** Values are not yet stored as structured data or checked against the source document.
 - **No automated tests** and no container setup yet.
 
 ## Roadmap
