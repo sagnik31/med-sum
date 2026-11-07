@@ -2,10 +2,12 @@ package httpapi
 
 import (
 	"bytes"
+	"context"
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"mime/multipart"
@@ -219,6 +221,13 @@ func (s *Server) handleUploadDocument(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Start processing now instead of when the document is first opened. The
+	// upload still succeeds if the AI service is down: opening the document
+	// requests processing again.
+	if err := s.requestInsight(r.Context(), doc.ID); err != nil {
+		log.Printf("could not start processing for document %s: %v", doc.ID, err)
+	}
+
 	writeJSON(w, http.StatusCreated, doc)
 }
 
@@ -364,7 +373,7 @@ func (s *Server) handleDeleteDocument(w http.ResponseWriter, r *http.Request, do
 
 type insightResponse struct {
 	DocumentID   string  `json:"document_id"`
-	Status       string  `json:"status"`                  // "completed" | "processing" | "failed"
+	Status       string  `json:"status"`                  // "not_started" | "processing" | "completed" | "failed"
 	InsightsHTML *string `json:"insights_html,omitempty"` // present when completed
 	ErrorMessage *string `json:"error_message,omitempty"` // present when failed
 }
@@ -398,11 +407,13 @@ func (s *Server) handleGetDocumentInsight(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// No insight row yet → still processing
+	// No insight row: no job has claimed this document yet. The client
+	// requests processing (POST); a request that races a queued job is
+	// harmless because the AI service claims each document once.
 	if ins == nil {
 		resp := insightResponse{
 			DocumentID: docID,
-			Status:     "processing",
+			Status:     "not_started",
 		}
 		writeJSON(w, http.StatusOK, resp)
 		return
@@ -448,31 +459,44 @@ func (s *Server) handleGenerateDocumentInsight(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	body, _ := json.Marshal(map[string]string{"document_id": docID})
-	req, err := http.NewRequestWithContext(r.Context(), http.MethodPost,
-		s.insightsURL+"/internal/generate-insights", bytes.NewReader(body))
-	if err != nil {
-		log.Printf("build insights request: %v", err)
-		http.Error(w, "internal error", http.StatusInternalServerError)
+	if err := s.requestInsight(r.Context(), docID); err != nil {
+		log.Printf("insights service error: %v", err)
+		http.Error(w, "insights service unavailable", http.StatusBadGateway)
 		return
+	}
+
+	writeJSON(w, http.StatusAccepted, map[string]string{"status": "accepted", "document_id": docID})
+}
+
+// requestInsight asks the AI service to process a document. The AI service
+// acts on any document ID it is given, so callers must check ownership first.
+func (s *Server) requestInsight(ctx context.Context, docID string) error {
+	return s.callInsightsService(ctx, "/internal/generate-insights", map[string]string{"document_id": docID})
+}
+
+// callInsightsService POSTs payload as JSON to an internal AI service route,
+// with the shared token. The AI service queues the work and replies at once.
+func (s *Server) callInsightsService(ctx context.Context, path string, payload any) error {
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, s.insightsURL+path, bytes.NewReader(body))
+	if err != nil {
+		return err
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Internal-Token", s.internalToken)
 
 	resp, err := s.httpClient.Do(req)
 	if err != nil {
-		log.Printf("insights service error: %v", err)
-		http.Error(w, "insights service unavailable", http.StatusBadGateway)
-		return
+		return err
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		log.Printf("insights service returned %s", resp.Status)
-		http.Error(w, "insights service unavailable", http.StatusBadGateway)
-		return
+		return fmt.Errorf("insights service returned %s", resp.Status)
 	}
-
-	writeJSON(w, http.StatusAccepted, map[string]string{"status": "accepted", "document_id": docID})
+	return nil
 }
 
 // ----- Get patient insights: GET /user/insights -----

@@ -1,11 +1,11 @@
 // src/pages/InsightPage.jsx
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import {
-  getInsight,
-  triggerInsightGeneration,
-} from "../api/client.js";
+import { getInsight, triggerInsightGeneration } from "../api/client.js";
 import HtmlFrame from "../components/HtmlFrame.jsx";
+
+// How often to check a document that is still being processed.
+const POLL_MS = 5000;
 
 function InsightPage() {
   const { id } = useParams();
@@ -14,70 +14,68 @@ function InsightPage() {
   const [status, setStatus] = useState("checking");
   const [error, setError] = useState("");
   const [failure, setFailure] = useState("");
-
-  // Ref to track if we've already triggered generation for this ID
-  const generationTriggeredRef = useRef(null);
+  // Bumped by Retry to restart the polling loop.
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
-    async function loadInsight() {
-      if (!id) return;
+    if (!id) return;
+    let cancelled = false;
+    let timer;
 
-      setLoading(true);
-      setError("");
-      setFailure("");
-      setInsight("");
-      setStatus("checking");
+    setLoading(true);
+    setError("");
+    setFailure("");
+    setInsight("");
+    setStatus("checking");
 
-      // Reset the trigger ref if the ID has changed
-      if (generationTriggeredRef.current !== id) {
-        generationTriggeredRef.current = null;
-      }
-
+    async function check(isFirstCheck) {
       try {
-        // 1) Ask Go service if insight exists
         const data = await getInsight(id);
+        if (cancelled) return;
 
-        if (data?.insights_html) {
-          // We have real insight text → show it
+        if (data?.status === "completed" && data.insights_html) {
           setInsight(data.insights_html);
           setStatus("ready");
         } else if (data?.status === "failed") {
-          // Last run failed → show why and let the user retry
           setFailure(data.error_message || "Unknown error.");
           setStatus("failed");
         } else {
-          // No usable insight → trigger Python generation
-          // Only trigger if we haven't already done so for this ID
-          if (generationTriggeredRef.current !== id) {
-            generationTriggeredRef.current = id;
+          // Processing normally starts at upload. If no job exists (for
+          // example, the AI service was down then), request one once.
+          if (data?.status === "not_started" && isFirstCheck) {
             await triggerInsightGeneration(id);
           }
+          if (cancelled) return;
           setStatus("generating");
+          timer = setTimeout(() => check(false), POLL_MS);
         }
       } catch (err) {
         console.error(err);
-        setError(err.message || "Failed to fetch or generate insight.");
+        if (!cancelled) {
+          setError(err.message || "Failed to fetch or generate insight.");
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
 
-    loadInsight();
-  }, [id]);
+    check(true);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [id, attempt]);
 
   async function handleRetry() {
     setError("");
     try {
       await triggerInsightGeneration(id);
-      setFailure("");
-      setStatus("generating");
+      setAttempt((n) => n + 1);
     } catch (err) {
       console.error(err);
       setError(err.message || "Failed to retry insight generation.");
     }
   }
-
-  const isGenerating = status === "generating";
 
   return (
     <div className="bg-white rounded-xl shadow p-6">
@@ -96,7 +94,7 @@ function InsightPage() {
         </div>
       )}
 
-      {!loading && !error && insight && !isGenerating && (
+      {!loading && !error && status === "ready" && (
         <div className="mb-4">
           <h2 className="text-sm font-semibold text-slate-700 mb-2">
             Insight
@@ -119,26 +117,20 @@ function InsightPage() {
         </div>
       )}
 
-      {!loading && !error && !insight && isGenerating && (
+      {!loading && !error && status === "generating" && (
         <div className="mb-4 text-sm bg-yellow-50 border border-yellow-100 rounded-md px-3 py-2 text-yellow-800">
-          Insights are being generated for this document. Please check again in
-          some time.
+          This document is being processed. The page updates by itself when the
+          insight is ready; on a CPU this can take a few minutes per page.
         </div>
       )}
 
-      <div className="mt-4 flex items-center justify-between">
+      <div className="mt-4">
         <Link
           to="/documents"
           className="text-blue-600 hover:underline text-sm font-medium"
         >
           ← Back to Documents
         </Link>
-        <button
-          onClick={() => window.location.reload()}
-          className="text-xs text-slate-600 hover:underline"
-        >
-          Refresh
-        </button>
       </div>
     </div>
   );

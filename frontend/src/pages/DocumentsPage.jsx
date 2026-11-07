@@ -3,6 +3,20 @@ import React, { useEffect, useState } from "react";
 import { fetchDocuments, uploadDocument, deleteDocument } from "../api/client.js";
 import { Link } from "react-router-dom";
 
+// How often to refresh the list while a document is still being processed.
+const POLL_MS = 5000;
+
+const STATUS_BADGES = {
+  not_started: { label: "Not started", className: "bg-slate-100 text-slate-600" },
+  processing: { label: "Processing", className: "bg-yellow-100 text-yellow-800" },
+  completed: { label: "Ready", className: "bg-emerald-100 text-emerald-800" },
+  failed: { label: "Failed", className: "bg-red-100 text-red-700" },
+};
+
+// Processing starts at upload, so a new document may briefly have no job yet.
+const isPending = (doc) =>
+  doc.insight_status === "processing" || doc.insight_status === "not_started";
+
 function DocumentsPage() {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -15,18 +29,26 @@ function DocumentsPage() {
     loadDocuments();
   }, []);
 
-  async function loadDocuments() {
-    setLoading(true);
-    setError("");
+  // Refresh quietly while any document is still being processed.
+  useEffect(() => {
+    if (!documents.some(isPending)) return;
+    const timer = setTimeout(() => loadDocuments({ quiet: true }), POLL_MS);
+    return () => clearTimeout(timer);
+  }, [documents]);
+
+  async function loadDocuments({ quiet = false } = {}) {
+    if (!quiet) {
+      setLoading(true);
+      setError("");
+    }
     try {
       const data = await fetchDocuments();
-      // Expecting `data` to be an array; if backend wraps it, adjust here
-      setDocuments(Array.isArray(data) ? data : data?.documents || []);
+      setDocuments(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error(err);
       setError(err.message || "Failed to load documents.");
     } finally {
-      setLoading(false);
+      if (!quiet) setLoading(false);
     }
   }
 
@@ -123,35 +145,42 @@ function DocumentsPage() {
           </p>
         ) : (
           <ul className="space-y-2">
-            {documents.map((doc) => (
-              <li
-                key={doc.id}
-                className="flex items-center justify-between text-sm border rounded-md px-3 py-2"
-              >
-                <div className="flex flex-col">
-                  <span className="font-medium text-slate-800">
-                    {doc.original_name || `Document ${doc.id}`}
-                  </span>
-                  <span className="text-xs text-slate-500">
-                    ID: {doc.id}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Link
-                    to={`/insights/${doc.id}`}
-                    className="text-blue-600 hover:underline text-xs font-medium"
-                  >
-                    Get insight
-                  </Link>
-                  <button
-                    onClick={() => handleDelete(doc.id)}
-                    className="text-red-600 hover:underline text-xs font-medium"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </li>
-            ))}
+            {documents.map((doc) => {
+              const badge =
+                STATUS_BADGES[doc.insight_status] || STATUS_BADGES.not_started;
+              return (
+                <li
+                  key={doc.id}
+                  className="flex items-center justify-between text-sm border rounded-md px-3 py-2"
+                >
+                  <div className="flex flex-col">
+                    <span className="font-medium text-slate-800">
+                      {doc.original_name || `Document ${doc.id}`}
+                    </span>
+                    <span className="text-xs text-slate-500">ID: {doc.id}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`text-xs font-medium px-2 py-0.5 rounded ${badge.className}`}
+                    >
+                      {badge.label}
+                    </span>
+                    <Link
+                      to={`/insights/${doc.id}`}
+                      className="text-blue-600 hover:underline text-xs font-medium"
+                    >
+                      View insight
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(doc.id)}
+                      className="text-red-600 hover:underline text-xs font-medium"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>

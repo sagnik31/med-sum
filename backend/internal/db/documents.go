@@ -18,6 +18,9 @@ type Document struct {
 	Status       string    `json:"status"`
 	UploadedAt   time.Time `json:"uploaded_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
+	// Status of the document's insight job ("not_started" when there is
+	// none). Only set by ListDocumentsByUser.
+	InsightStatus string `json:"insight_status,omitempty"`
 }
 
 // CreateDocument inserts a new row when a user uploads a file.
@@ -51,13 +54,16 @@ RETURNING id, user_id, original_name, content_type, storage_path, status, upload
 	return &d, nil
 }
 
-// ListDocumentsByUser lists all documents for a given user (latest first).
+// ListDocumentsByUser lists all documents for a given user (latest first),
+// with the status of each document's insight job.
 func (s *Store) ListDocumentsByUser(ctx context.Context, userID string) ([]Document, error) {
 	const q = `
-SELECT id, user_id, original_name, content_type, storage_path, status, uploaded_at, updated_at
-FROM documents
-WHERE user_id = $1
-ORDER BY uploaded_at DESC;
+SELECT d.id, d.user_id, d.original_name, d.content_type, d.storage_path, d.status,
+       d.uploaded_at, d.updated_at, COALESCE(i.status, 'not_started')
+FROM documents d
+LEFT JOIN insights i ON i.document_id = d.id
+WHERE d.user_id = $1
+ORDER BY d.uploaded_at DESC;
 `
 	rows, err := s.pool.Query(ctx, q, userID)
 	if err != nil {
@@ -77,6 +83,7 @@ ORDER BY uploaded_at DESC;
 			&d.Status,
 			&d.UploadedAt,
 			&d.UpdatedAt,
+			&d.InsightStatus,
 		); err != nil {
 			return nil, err
 		}
