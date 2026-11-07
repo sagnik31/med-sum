@@ -1,0 +1,16 @@
+# Tool settings for the AI service. Dependencies live in requirements*.in.
+
+# Stated explicitly so a newer Ruff (whose defaults change) checks the same way.
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra --strict-markers"
+markers = [
+    "db: needs a throwaway Postgres database; skipped when Postgres or psql is unavailable (set MEDSUM_REQUIRE_DB=1 to fail instead)",
+]

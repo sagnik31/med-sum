@@ -22,8 +22,20 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+// Store is the data access the handlers use. *db.Store implements it; tests
+// use an in-memory fake.
+type Store interface {
+	UpsertUserByPhone(ctx context.Context, phone string, fullName *string) (*db.User, error)
+	GetPatientSummary(ctx context.Context, userID string) (*db.PatientSummary, error)
+	CreateDocument(ctx context.Context, userID, originalName, contentType, storagePath string) (*db.Document, error)
+	ListDocumentsByUser(ctx context.Context, userID string) ([]db.Document, error)
+	GetDocumentByIDAndUser(ctx context.Context, docID, userID string) (*db.Document, error)
+	DeleteDocumentByIDAndUser(ctx context.Context, docID, userID string) (storagePath string, shared bool, err error)
+	GetInsightByDocumentID(ctx context.Context, docID string) (*db.Insight, error)
+}
+
 type Server struct {
-	db            *db.Store
+	db            Store
 	jwtSecret     []byte
 	uploadsDir    string // absolute, so the AI service can open stored paths
 	insightsURL   string // AI service base URL
@@ -32,7 +44,7 @@ type Server struct {
 	mux           *http.ServeMux
 }
 
-func NewServer(store *db.Store, jwtSecret, uploadsDir, insightsURL, internalToken string) *Server {
+func NewServer(store Store, jwtSecret, uploadsDir, insightsURL, internalToken string) *Server {
 	s := &Server{
 		db:            store,
 		jwtSecret:     []byte(jwtSecret),

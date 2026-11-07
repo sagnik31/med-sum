@@ -221,19 +221,29 @@ scripts/
   src/generate_insights_txt.py  summary generation
   src/llm.py                 model calls with the primary and fallback model
   prompt/                prompts for extraction and summaries
+  tests/                 pytest suite (fixtures in conftest.py)
   requirements.in        direct dependencies; requirements.txt pins every package
+  requirements-dev.in    test tools; requirements-dev.txt pins them
 postman/                 API collection
 ```
 
 ## Development
 
-Static checks for each part (the Python checks need [Ruff](https://docs.astral.sh/ruff/), installed with `pip install ruff`):
+Install the Python test tools (pytest and [Ruff](https://docs.astral.sh/ruff/)) into the AI service's virtual environment:
 
 ```bash
-(cd backend  && go build ./... && go vet ./...)
-(cd frontend && npm run lint && npm run build)
-(cd scripts  && ruff check src && ruff format --check src)
+cd scripts && pip install -r requirements.txt -r requirements-dev.txt
 ```
+
+Checks and tests for each part:
+
+```bash
+(cd backend  && go build ./... && go vet ./... && go test ./...)
+(cd scripts  && ruff check src tests && ruff format --check src tests && pytest)
+(cd frontend && npm run lint && npm run build)
+```
+
+The tests never call a model: model calls are replaced with fakes, so Ollama need not be running. The database tests create a throwaway database (`med_sum_test_go` for Go, `med_sum_test_py` for Python) from the files in `db/migrations/`, and drop it afterwards; your `med_sum` database is not touched. They need `psql` on the `PATH` and connect as `postgres:postgres@localhost:5432` unless `MEDSUM_TEST_ADMIN_URL` says otherwise. When Postgres can't be reached they are skipped; set `MEDSUM_REQUIRE_DB=1` to make that a failure. `pytest -m "not db"` runs only the tests that need no database.
 
 The extraction and summary steps can also be run on their own, which is useful for tuning prompts. `python scripts/src/extract_report_slm.py` reads a sample report from `data/input/` and writes Markdown to `data/output/`; `python scripts/src/generate_insights_txt.py` turns that Markdown into HTML. The paths are set in `scripts/src/config.py`, and `data/` is not checked in.
 
@@ -243,7 +253,7 @@ The extraction and summary steps can also be run on their own, which is useful f
 - **One extraction prompt.** Lab reports and prescriptions share one prompt; the document type is not detected yet.
 - **Patient summary ordering.** Reports are ordered by upload date, not by the date printed on them, and the summary is only regenerated on request.
 - **Summaries are model-written HTML.** Values are not yet stored as structured data or checked against the source document.
-- **No automated tests** and no container setup yet.
+- **No container setup** yet, and no CI.
 
 ## Roadmap
 
