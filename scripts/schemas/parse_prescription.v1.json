@@ -1,0 +1,1043 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "patient": {
+      "additionalProperties": false,
+      "description": "The patient as printed on the document (used by the patient-match check).",
+      "properties": {
+        "name": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "description": "One printed value, such as a name or a date, with where it is printed.",
+              "properties": {
+                "citation": {
+                  "additionalProperties": false,
+                  "description": "Where an item is printed: lines of one page's numbered transcription.",
+                  "properties": {
+                    "page": {
+                      "description": "Page number, starting at 1.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "first_line": {
+                      "description": "First line number of the item.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "last_line": {
+                      "description": "Last line number; the same as first_line for one line.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "quote": {
+                      "description": "The text of those lines, copied exactly, without line numbers.",
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "page",
+                    "first_line",
+                    "last_line",
+                    "quote"
+                  ],
+                  "type": "object"
+                },
+                "text": {
+                  "description": "The value exactly as printed.",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "citation",
+                "text"
+              ],
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "age": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "description": "One printed value, such as a name or a date, with where it is printed.",
+              "properties": {
+                "citation": {
+                  "additionalProperties": false,
+                  "description": "Where an item is printed: lines of one page's numbered transcription.",
+                  "properties": {
+                    "page": {
+                      "description": "Page number, starting at 1.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "first_line": {
+                      "description": "First line number of the item.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "last_line": {
+                      "description": "Last line number; the same as first_line for one line.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "quote": {
+                      "description": "The text of those lines, copied exactly, without line numbers.",
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "page",
+                    "first_line",
+                    "last_line",
+                    "quote"
+                  ],
+                  "type": "object"
+                },
+                "text": {
+                  "description": "The value exactly as printed.",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "citation",
+                "text"
+              ],
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sex": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "description": "One printed value, such as a name or a date, with where it is printed.",
+              "properties": {
+                "citation": {
+                  "additionalProperties": false,
+                  "description": "Where an item is printed: lines of one page's numbered transcription.",
+                  "properties": {
+                    "page": {
+                      "description": "Page number, starting at 1.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "first_line": {
+                      "description": "First line number of the item.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "last_line": {
+                      "description": "Last line number; the same as first_line for one line.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "quote": {
+                      "description": "The text of those lines, copied exactly, without line numbers.",
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "page",
+                    "first_line",
+                    "last_line",
+                    "quote"
+                  ],
+                  "type": "object"
+                },
+                "text": {
+                  "description": "The value exactly as printed.",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "citation",
+                "text"
+              ],
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "date_of_birth": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "description": "One printed value, such as a name or a date, with where it is printed.",
+              "properties": {
+                "citation": {
+                  "additionalProperties": false,
+                  "description": "Where an item is printed: lines of one page's numbered transcription.",
+                  "properties": {
+                    "page": {
+                      "description": "Page number, starting at 1.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "first_line": {
+                      "description": "First line number of the item.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "last_line": {
+                      "description": "Last line number; the same as first_line for one line.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "quote": {
+                      "description": "The text of those lines, copied exactly, without line numbers.",
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "page",
+                    "first_line",
+                    "last_line",
+                    "quote"
+                  ],
+                  "type": "object"
+                },
+                "text": {
+                  "description": "The value exactly as printed.",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "citation",
+                "text"
+              ],
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "patient_id": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "description": "One printed value, such as a name or a date, with where it is printed.",
+              "properties": {
+                "citation": {
+                  "additionalProperties": false,
+                  "description": "Where an item is printed: lines of one page's numbered transcription.",
+                  "properties": {
+                    "page": {
+                      "description": "Page number, starting at 1.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "first_line": {
+                      "description": "First line number of the item.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "last_line": {
+                      "description": "Last line number; the same as first_line for one line.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "quote": {
+                      "description": "The text of those lines, copied exactly, without line numbers.",
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "page",
+                    "first_line",
+                    "last_line",
+                    "quote"
+                  ],
+                  "type": "object"
+                },
+                "text": {
+                  "description": "The value exactly as printed.",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "citation",
+                "text"
+              ],
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Patient ID, UHID, MRN or lab ID, as printed."
+        }
+      },
+      "required": [
+        "name",
+        "age",
+        "sex",
+        "date_of_birth",
+        "patient_id"
+      ],
+      "type": "object"
+    },
+    "details": {
+      "additionalProperties": false,
+      "properties": {
+        "facility": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "description": "One printed value, such as a name or a date, with where it is printed.",
+              "properties": {
+                "citation": {
+                  "additionalProperties": false,
+                  "description": "Where an item is printed: lines of one page's numbered transcription.",
+                  "properties": {
+                    "page": {
+                      "description": "Page number, starting at 1.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "first_line": {
+                      "description": "First line number of the item.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "last_line": {
+                      "description": "Last line number; the same as first_line for one line.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "quote": {
+                      "description": "The text of those lines, copied exactly, without line numbers.",
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "page",
+                    "first_line",
+                    "last_line",
+                    "quote"
+                  ],
+                  "type": "object"
+                },
+                "text": {
+                  "description": "The value exactly as printed.",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "citation",
+                "text"
+              ],
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Laboratory, hospital or clinic name."
+        },
+        "clinicians": {
+          "description": "Each doctor named, with their label, e.g. 'Ref. by: Dr. ...'.",
+          "items": {
+            "additionalProperties": false,
+            "description": "One printed value, such as a name or a date, with where it is printed.",
+            "properties": {
+              "citation": {
+                "additionalProperties": false,
+                "description": "Where an item is printed: lines of one page's numbered transcription.",
+                "properties": {
+                  "page": {
+                    "description": "Page number, starting at 1.",
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "first_line": {
+                    "description": "First line number of the item.",
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "last_line": {
+                    "description": "Last line number; the same as first_line for one line.",
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "quote": {
+                    "description": "The text of those lines, copied exactly, without line numbers.",
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "page",
+                  "first_line",
+                  "last_line",
+                  "quote"
+                ],
+                "type": "object"
+              },
+              "text": {
+                "description": "The value exactly as printed.",
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "citation",
+              "text"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "report_date": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "description": "One printed value, such as a name or a date, with where it is printed.",
+              "properties": {
+                "citation": {
+                  "additionalProperties": false,
+                  "description": "Where an item is printed: lines of one page's numbered transcription.",
+                  "properties": {
+                    "page": {
+                      "description": "Page number, starting at 1.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "first_line": {
+                      "description": "First line number of the item.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "last_line": {
+                      "description": "Last line number; the same as first_line for one line.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "quote": {
+                      "description": "The text of those lines, copied exactly, without line numbers.",
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "page",
+                    "first_line",
+                    "last_line",
+                    "quote"
+                  ],
+                  "type": "object"
+                },
+                "text": {
+                  "description": "The value exactly as printed.",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "citation",
+                "text"
+              ],
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "When the report was generated or reported."
+        },
+        "collection_date": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "description": "One printed value, such as a name or a date, with where it is printed.",
+              "properties": {
+                "citation": {
+                  "additionalProperties": false,
+                  "description": "Where an item is printed: lines of one page's numbered transcription.",
+                  "properties": {
+                    "page": {
+                      "description": "Page number, starting at 1.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "first_line": {
+                      "description": "First line number of the item.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "last_line": {
+                      "description": "Last line number; the same as first_line for one line.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "quote": {
+                      "description": "The text of those lines, copied exactly, without line numbers.",
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "page",
+                    "first_line",
+                    "last_line",
+                    "quote"
+                  ],
+                  "type": "object"
+                },
+                "text": {
+                  "description": "The value exactly as printed.",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "citation",
+                "text"
+              ],
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "When the sample was collected."
+        },
+        "prescription_date": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "description": "One printed value, such as a name or a date, with where it is printed.",
+              "properties": {
+                "citation": {
+                  "additionalProperties": false,
+                  "description": "Where an item is printed: lines of one page's numbered transcription.",
+                  "properties": {
+                    "page": {
+                      "description": "Page number, starting at 1.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "first_line": {
+                      "description": "First line number of the item.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "last_line": {
+                      "description": "Last line number; the same as first_line for one line.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "quote": {
+                      "description": "The text of those lines, copied exactly, without line numbers.",
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "page",
+                    "first_line",
+                    "last_line",
+                    "quote"
+                  ],
+                  "type": "object"
+                },
+                "text": {
+                  "description": "The value exactly as printed.",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "citation",
+                "text"
+              ],
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "facility",
+        "clinicians",
+        "report_date",
+        "collection_date",
+        "prescription_date"
+      ],
+      "type": "object"
+    },
+    "medicines": {
+      "items": {
+        "additionalProperties": false,
+        "description": "One prescribed medicine, exactly as written.",
+        "properties": {
+          "citation": {
+            "additionalProperties": false,
+            "description": "Where an item is printed: lines of one page's numbered transcription.",
+            "properties": {
+              "page": {
+                "description": "Page number, starting at 1.",
+                "minimum": 1,
+                "type": "integer"
+              },
+              "first_line": {
+                "description": "First line number of the item.",
+                "minimum": 1,
+                "type": "integer"
+              },
+              "last_line": {
+                "description": "Last line number; the same as first_line for one line.",
+                "minimum": 1,
+                "type": "integer"
+              },
+              "quote": {
+                "description": "The text of those lines, copied exactly, without line numbers.",
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "page",
+              "first_line",
+              "last_line",
+              "quote"
+            ],
+            "type": "object"
+          },
+          "form": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "e.g. Tab, Cap, Syp, Inj."
+          },
+          "name": {
+            "description": "The name as written; brand names stay brands.",
+            "minLength": 1,
+            "type": "string"
+          },
+          "strength": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "e.g. 500 mg."
+          },
+          "dose": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Amount per dose, e.g. 1 tab, 5 ml."
+          },
+          "frequency": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "e.g. 1-0-1, BD, TDS, SOS."
+          },
+          "route": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "duration": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "e.g. x 5 days."
+          },
+          "instructions": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "e.g. after food."
+          }
+        },
+        "required": [
+          "citation",
+          "form",
+          "name",
+          "strength",
+          "dose",
+          "frequency",
+          "route",
+          "duration",
+          "instructions"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "conditions": {
+      "items": {
+        "additionalProperties": false,
+        "description": "A diagnosis, impression or history exactly as printed. Never inferred.",
+        "properties": {
+          "citation": {
+            "additionalProperties": false,
+            "description": "Where an item is printed: lines of one page's numbered transcription.",
+            "properties": {
+              "page": {
+                "description": "Page number, starting at 1.",
+                "minimum": 1,
+                "type": "integer"
+              },
+              "first_line": {
+                "description": "First line number of the item.",
+                "minimum": 1,
+                "type": "integer"
+              },
+              "last_line": {
+                "description": "Last line number; the same as first_line for one line.",
+                "minimum": 1,
+                "type": "integer"
+              },
+              "quote": {
+                "description": "The text of those lines, copied exactly, without line numbers.",
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "page",
+              "first_line",
+              "last_line",
+              "quote"
+            ],
+            "type": "object"
+          },
+          "text": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "diagnosis",
+              "provisional_diagnosis",
+              "impression",
+              "history"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "citation",
+          "text",
+          "kind"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "remarks": {
+      "items": {
+        "additionalProperties": false,
+        "description": "A remark, note or piece of advice. It belongs to a test only when it is\nprinted on that test's row or directly under it; otherwise to the panel\nor the whole document (decision 25).",
+        "properties": {
+          "citation": {
+            "additionalProperties": false,
+            "description": "Where an item is printed: lines of one page's numbered transcription.",
+            "properties": {
+              "page": {
+                "description": "Page number, starting at 1.",
+                "minimum": 1,
+                "type": "integer"
+              },
+              "first_line": {
+                "description": "First line number of the item.",
+                "minimum": 1,
+                "type": "integer"
+              },
+              "last_line": {
+                "description": "Last line number; the same as first_line for one line.",
+                "minimum": 1,
+                "type": "integer"
+              },
+              "quote": {
+                "description": "The text of those lines, copied exactly, without line numbers.",
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "page",
+              "first_line",
+              "last_line",
+              "quote"
+            ],
+            "type": "object"
+          },
+          "text": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "advice",
+              "comment"
+            ],
+            "type": "string"
+          },
+          "scope": {
+            "enum": [
+              "test",
+              "panel",
+              "document"
+            ],
+            "type": "string"
+          },
+          "test_name": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "When scope is test: the test's name exactly as printed."
+          },
+          "panel": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "When scope is panel (or the test is in one): the panel heading."
+          }
+        },
+        "required": [
+          "citation",
+          "text",
+          "kind",
+          "scope",
+          "test_name",
+          "panel"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "vitals": {
+      "items": {
+        "additionalProperties": false,
+        "description": "BP, pulse, temperature, SpO2, weight, height, BMI and the like.",
+        "properties": {
+          "citation": {
+            "additionalProperties": false,
+            "description": "Where an item is printed: lines of one page's numbered transcription.",
+            "properties": {
+              "page": {
+                "description": "Page number, starting at 1.",
+                "minimum": 1,
+                "type": "integer"
+              },
+              "first_line": {
+                "description": "First line number of the item.",
+                "minimum": 1,
+                "type": "integer"
+              },
+              "last_line": {
+                "description": "Last line number; the same as first_line for one line.",
+                "minimum": 1,
+                "type": "integer"
+              },
+              "quote": {
+                "description": "The text of those lines, copied exactly, without line numbers.",
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "page",
+              "first_line",
+              "last_line",
+              "quote"
+            ],
+            "type": "object"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "value_text": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "citation",
+          "name",
+          "value_text",
+          "unit"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "allergies": {
+      "items": {
+        "additionalProperties": false,
+        "description": "An allergy statement, including a printed 'NKDA' or 'No known allergies'.",
+        "properties": {
+          "citation": {
+            "additionalProperties": false,
+            "description": "Where an item is printed: lines of one page's numbered transcription.",
+            "properties": {
+              "page": {
+                "description": "Page number, starting at 1.",
+                "minimum": 1,
+                "type": "integer"
+              },
+              "first_line": {
+                "description": "First line number of the item.",
+                "minimum": 1,
+                "type": "integer"
+              },
+              "last_line": {
+                "description": "Last line number; the same as first_line for one line.",
+                "minimum": 1,
+                "type": "integer"
+              },
+              "quote": {
+                "description": "The text of those lines, copied exactly, without line numbers.",
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "page",
+              "first_line",
+              "last_line",
+              "quote"
+            ],
+            "type": "object"
+          },
+          "text": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "substance": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reaction": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "citation",
+          "text",
+          "substance",
+          "reaction"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "patient",
+    "details",
+    "medicines",
+    "conditions",
+    "remarks",
+    "vitals",
+    "allergies"
+  ],
+  "type": "object"
+}

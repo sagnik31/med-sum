@@ -220,6 +220,8 @@ scripts/
   src/extract_report_slm.py  page extraction from images
   src/generate_insights_txt.py  summary generation
   src/llm.py                 model calls with the primary and fallback model
+  src/record/                the structured record of a document and the schemas the model fills in
+  schemas/                   those schemas exported as JSON (regenerate: `python -m record.schemas` in src/)
   prompt/                prompts for extraction and summaries
   tests/                 pytest suite (fixtures in conftest.py)
   requirements.in        direct dependencies; requirements.txt pins every package

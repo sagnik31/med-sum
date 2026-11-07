@@ -1,0 +1,17 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "document_type": {
+      "enum": [
+        "lab_report",
+        "prescription",
+        "other"
+      ],
+      "type": "string"
+    }
+  },
+  "required": [
+    "document_type"
+  ],
+  "type": "object"
+}

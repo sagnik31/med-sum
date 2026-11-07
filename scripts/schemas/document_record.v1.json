@@ -1,0 +1,1907 @@
+{
+  "$defs": {
+    "Allergy": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "corrections": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Correction"
+          },
+          "title": "Corrections",
+          "type": "array"
+        },
+        "printed": {
+          "$ref": "#/$defs/PrintedAllergy"
+        },
+        "derived": {
+          "$ref": "#/$defs/AllergyDerived"
+        }
+      },
+      "required": [
+        "id",
+        "printed"
+      ],
+      "title": "Allergy",
+      "type": "object"
+    },
+    "AllergyDerived": {
+      "additionalProperties": false,
+      "properties": {
+        "no_known_allergies": {
+          "default": false,
+          "title": "No Known Allergies",
+          "type": "boolean"
+        }
+      },
+      "title": "AllergyDerived",
+      "type": "object"
+    },
+    "Citation": {
+      "additionalProperties": false,
+      "description": "Where an item is printed: lines of one page's numbered transcription.",
+      "properties": {
+        "page": {
+          "description": "Page number, starting at 1.",
+          "minimum": 1,
+          "title": "Page",
+          "type": "integer"
+        },
+        "first_line": {
+          "description": "First line number of the item.",
+          "minimum": 1,
+          "title": "First Line",
+          "type": "integer"
+        },
+        "last_line": {
+          "description": "Last line number; the same as first_line for one line.",
+          "minimum": 1,
+          "title": "Last Line",
+          "type": "integer"
+        },
+        "quote": {
+          "description": "The text of those lines, copied exactly, without line numbers.",
+          "minLength": 1,
+          "title": "Quote",
+          "type": "string"
+        }
+      },
+      "required": [
+        "page",
+        "first_line",
+        "last_line",
+        "quote"
+      ],
+      "title": "Citation",
+      "type": "object"
+    },
+    "ComputedFlag": {
+      "enum": [
+        "low",
+        "normal",
+        "high"
+      ],
+      "title": "ComputedFlag",
+      "type": "string"
+    },
+    "ConditionKind": {
+      "enum": [
+        "diagnosis",
+        "provisional_diagnosis",
+        "impression",
+        "history"
+      ],
+      "title": "ConditionKind",
+      "type": "string"
+    },
+    "ConvertedValue": {
+      "additionalProperties": false,
+      "description": "A value converted from a fixed table in code; the printed value stays.",
+      "properties": {
+        "value": {
+          "title": "Value",
+          "type": "number"
+        },
+        "unit": {
+          "title": "Unit",
+          "type": "string"
+        },
+        "from_unit": {
+          "title": "From Unit",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value",
+        "unit",
+        "from_unit"
+      ],
+      "title": "ConvertedValue",
+      "type": "object"
+    },
+    "Correction": {
+      "additionalProperties": false,
+      "description": "A value a clinician entered. It sits next to the original extraction,\nwhich is never overwritten.",
+      "properties": {
+        "field": {
+          "description": "Field of the printed item, e.g. value_text.",
+          "title": "Field",
+          "type": "string"
+        },
+        "original": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Original"
+        },
+        "corrected": {
+          "title": "Corrected",
+          "type": "string"
+        },
+        "clinician": {
+          "title": "Clinician",
+          "type": "string"
+        },
+        "at": {
+          "format": "date-time",
+          "title": "At",
+          "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        }
+      },
+      "required": [
+        "field",
+        "original",
+        "corrected",
+        "clinician",
+        "at"
+      ],
+      "title": "Correction",
+      "type": "object"
+    },
+    "DateSource": {
+      "description": "Which rule chose the document date (decision 13).",
+      "enum": [
+        "report_date",
+        "collection_date",
+        "prescription_date",
+        "undated"
+      ],
+      "title": "DateSource",
+      "type": "string"
+    },
+    "DocumentDates": {
+      "additionalProperties": false,
+      "properties": {
+        "report_date": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Report Date"
+        },
+        "collection_date": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Collection Date"
+        },
+        "prescription_date": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Prescription Date"
+        },
+        "document_date": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Document Date"
+        },
+        "date_source": {
+          "$ref": "#/$defs/DateSource",
+          "default": "undated"
+        }
+      },
+      "title": "DocumentDates",
+      "type": "object"
+    },
+    "DocumentType": {
+      "enum": [
+        "lab_report",
+        "prescription",
+        "other",
+        "discharge_summary",
+        "imaging_report"
+      ],
+      "title": "DocumentType",
+      "type": "string"
+    },
+    "DoseSchedule": {
+      "additionalProperties": false,
+      "description": "A parsed frequency: 1-0-1 is morning 1, noon 0, night 1; BD is twice a day.",
+      "properties": {
+        "morning": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Morning"
+        },
+        "noon": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Noon"
+        },
+        "night": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Night"
+        },
+        "times_per_day": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Times Per Day"
+        },
+        "as_needed": {
+          "default": false,
+          "title": "As Needed",
+          "type": "boolean"
+        }
+      },
+      "title": "DoseSchedule",
+      "type": "object"
+    },
+    "Encounter": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "corrections": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Correction"
+          },
+          "title": "Corrections",
+          "type": "array"
+        },
+        "printed": {
+          "$ref": "#/$defs/PrintedEncounter"
+        }
+      },
+      "required": [
+        "id",
+        "printed"
+      ],
+      "title": "Encounter",
+      "type": "object"
+    },
+    "ImagingFinding": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "corrections": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Correction"
+          },
+          "title": "Corrections",
+          "type": "array"
+        },
+        "printed": {
+          "$ref": "#/$defs/PrintedImagingFinding"
+        }
+      },
+      "required": [
+        "id",
+        "printed"
+      ],
+      "title": "ImagingFinding",
+      "type": "object"
+    },
+    "ItemStatus": {
+      "enum": [
+        "extracted",
+        "validated",
+        "low_confidence",
+        "clinician_confirmed",
+        "clinician_corrected"
+      ],
+      "title": "ItemStatus",
+      "type": "string"
+    },
+    "MedicationDerived": {
+      "additionalProperties": false,
+      "properties": {
+        "schedule": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DoseSchedule"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "duration_days": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Duration Days"
+        }
+      },
+      "title": "MedicationDerived",
+      "type": "object"
+    },
+    "MedicationRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "corrections": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Correction"
+          },
+          "title": "Corrections",
+          "type": "array"
+        },
+        "printed": {
+          "$ref": "#/$defs/PrintedMedicine"
+        },
+        "derived": {
+          "$ref": "#/$defs/MedicationDerived"
+        }
+      },
+      "required": [
+        "id",
+        "printed"
+      ],
+      "title": "MedicationRequest",
+      "type": "object"
+    },
+    "Observation": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "corrections": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Correction"
+          },
+          "title": "Corrections",
+          "type": "array"
+        },
+        "printed": {
+          "$ref": "#/$defs/PrintedLabResult"
+        },
+        "derived": {
+          "$ref": "#/$defs/ObservationDerived"
+        }
+      },
+      "required": [
+        "id",
+        "printed"
+      ],
+      "title": "Observation",
+      "type": "object"
+    },
+    "ObservationDerived": {
+      "additionalProperties": false,
+      "properties": {
+        "analyte": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Key in the unit table; same test across documents.",
+          "title": "Analyte"
+        },
+        "value_num": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Only when the printed value parses without guessing.",
+          "title": "Value Num"
+        },
+        "ranges": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ReferenceRange"
+          },
+          "title": "Ranges",
+          "type": "array"
+        },
+        "flag_computed": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ComputedFlag"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Only when exactly one range clearly applies."
+        },
+        "converted": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ConvertedValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "ObservationDerived",
+      "type": "object"
+    },
+    "PageTranscription": {
+      "additionalProperties": false,
+      "description": "One page as transcribed by the vision model, split into lines. Line n\nis lines[n - 1]; every citation points into these lines.",
+      "properties": {
+        "page": {
+          "minimum": 1,
+          "title": "Page",
+          "type": "integer"
+        },
+        "lines": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Lines",
+          "type": "array"
+        },
+        "text_layer": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The PDF's own text for this page, when it has one.",
+          "title": "Text Layer"
+        }
+      },
+      "required": [
+        "page",
+        "lines"
+      ],
+      "title": "PageTranscription",
+      "type": "object"
+    },
+    "PatientDetails": {
+      "additionalProperties": false,
+      "properties": {
+        "printed": {
+          "$ref": "#/$defs/PrintedPatientDetails"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "corrections": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Correction"
+          },
+          "title": "Corrections",
+          "type": "array"
+        }
+      },
+      "required": [
+        "printed"
+      ],
+      "title": "PatientDetails",
+      "type": "object"
+    },
+    "PrintedAllergy": {
+      "additionalProperties": false,
+      "description": "An allergy statement, including a printed 'NKDA' or 'No known allergies'.",
+      "properties": {
+        "citation": {
+          "$ref": "#/$defs/Citation"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "substance": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Substance"
+        },
+        "reaction": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reaction"
+        }
+      },
+      "required": [
+        "citation",
+        "text",
+        "substance",
+        "reaction"
+      ],
+      "title": "PrintedAllergy",
+      "type": "object"
+    },
+    "PrintedCondition": {
+      "additionalProperties": false,
+      "description": "A diagnosis, impression or history exactly as printed. Never inferred.",
+      "properties": {
+        "citation": {
+          "$ref": "#/$defs/Citation"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/ConditionKind"
+        }
+      },
+      "required": [
+        "citation",
+        "text",
+        "kind"
+      ],
+      "title": "PrintedCondition",
+      "type": "object"
+    },
+    "PrintedDocumentDetails": {
+      "additionalProperties": false,
+      "properties": {
+        "facility": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PrintedText"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Laboratory, hospital or clinic name."
+        },
+        "clinicians": {
+          "description": "Each doctor named, with their label, e.g. 'Ref. by: Dr. ...'.",
+          "items": {
+            "$ref": "#/$defs/PrintedText"
+          },
+          "title": "Clinicians",
+          "type": "array"
+        },
+        "report_date": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PrintedText"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "When the report was generated or reported."
+        },
+        "collection_date": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PrintedText"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "When the sample was collected."
+        },
+        "prescription_date": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PrintedText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "facility",
+        "clinicians",
+        "report_date",
+        "collection_date",
+        "prescription_date"
+      ],
+      "title": "PrintedDocumentDetails",
+      "type": "object"
+    },
+    "PrintedEncounter": {
+      "additionalProperties": false,
+      "properties": {
+        "citation": {
+          "$ref": "#/$defs/Citation"
+        },
+        "kind": {
+          "description": "e.g. admission, OPD visit.",
+          "minLength": 1,
+          "title": "Kind",
+          "type": "string"
+        },
+        "date": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PrintedText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "facility": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PrintedText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "citation",
+        "kind",
+        "date",
+        "facility"
+      ],
+      "title": "PrintedEncounter",
+      "type": "object"
+    },
+    "PrintedImagingFinding": {
+      "additionalProperties": false,
+      "properties": {
+        "citation": {
+          "$ref": "#/$defs/Citation"
+        },
+        "modality": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Modality"
+        },
+        "body_site": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Body Site"
+        },
+        "finding": {
+          "minLength": 1,
+          "title": "Finding",
+          "type": "string"
+        },
+        "impression": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Impression"
+        }
+      },
+      "required": [
+        "citation",
+        "modality",
+        "body_site",
+        "finding",
+        "impression"
+      ],
+      "title": "PrintedImagingFinding",
+      "type": "object"
+    },
+    "PrintedLabResult": {
+      "additionalProperties": false,
+      "description": "One row of a lab report.",
+      "properties": {
+        "citation": {
+          "$ref": "#/$defs/Citation"
+        },
+        "panel": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The section heading the test is under, e.g. 'COMPLETE BLOOD COUNT'.",
+          "title": "Panel"
+        },
+        "test_name": {
+          "minLength": 1,
+          "title": "Test Name",
+          "type": "string"
+        },
+        "value_text": {
+          "description": "The result exactly as printed.",
+          "minLength": 1,
+          "title": "Value Text",
+          "type": "string"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Unit"
+        },
+        "reference_ranges": {
+          "description": "Every printed reference range or interval, each exactly as printed.",
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Reference Ranges",
+          "type": "array"
+        },
+        "flag_printed": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "A flag printed next to the result, e.g. H, L, * or CRITICAL.",
+          "title": "Flag Printed"
+        }
+      },
+      "required": [
+        "citation",
+        "panel",
+        "test_name",
+        "value_text",
+        "unit",
+        "reference_ranges",
+        "flag_printed"
+      ],
+      "title": "PrintedLabResult",
+      "type": "object"
+    },
+    "PrintedMedicine": {
+      "additionalProperties": false,
+      "description": "One prescribed medicine, exactly as written.",
+      "properties": {
+        "citation": {
+          "$ref": "#/$defs/Citation"
+        },
+        "form": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "e.g. Tab, Cap, Syp, Inj.",
+          "title": "Form"
+        },
+        "name": {
+          "description": "The name as written; brand names stay brands.",
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "strength": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "e.g. 500 mg.",
+          "title": "Strength"
+        },
+        "dose": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Amount per dose, e.g. 1 tab, 5 ml.",
+          "title": "Dose"
+        },
+        "frequency": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "e.g. 1-0-1, BD, TDS, SOS.",
+          "title": "Frequency"
+        },
+        "route": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Route"
+        },
+        "duration": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "e.g. x 5 days.",
+          "title": "Duration"
+        },
+        "instructions": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "e.g. after food.",
+          "title": "Instructions"
+        }
+      },
+      "required": [
+        "citation",
+        "form",
+        "name",
+        "strength",
+        "dose",
+        "frequency",
+        "route",
+        "duration",
+        "instructions"
+      ],
+      "title": "PrintedMedicine",
+      "type": "object"
+    },
+    "PrintedPatientDetails": {
+      "additionalProperties": false,
+      "description": "The patient as printed on the document (used by the patient-match check).",
+      "properties": {
+        "name": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PrintedText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "age": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PrintedText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sex": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PrintedText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "date_of_birth": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PrintedText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "patient_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PrintedText"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Patient ID, UHID, MRN or lab ID, as printed."
+        }
+      },
+      "required": [
+        "name",
+        "age",
+        "sex",
+        "date_of_birth",
+        "patient_id"
+      ],
+      "title": "PrintedPatientDetails",
+      "type": "object"
+    },
+    "PrintedProcedure": {
+      "additionalProperties": false,
+      "properties": {
+        "citation": {
+          "$ref": "#/$defs/Citation"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "date": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PrintedText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "citation",
+        "name",
+        "date"
+      ],
+      "title": "PrintedProcedure",
+      "type": "object"
+    },
+    "PrintedRemark": {
+      "additionalProperties": false,
+      "description": "A remark, note or piece of advice. It belongs to a test only when it is\nprinted on that test's row or directly under it; otherwise to the panel\nor the whole document (decision 25).",
+      "properties": {
+        "citation": {
+          "$ref": "#/$defs/Citation"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/RemarkKind"
+        },
+        "scope": {
+          "$ref": "#/$defs/RemarkScope"
+        },
+        "test_name": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "When scope is test: the test's name exactly as printed.",
+          "title": "Test Name"
+        },
+        "panel": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "When scope is panel (or the test is in one): the panel heading.",
+          "title": "Panel"
+        }
+      },
+      "required": [
+        "citation",
+        "text",
+        "kind",
+        "scope",
+        "test_name",
+        "panel"
+      ],
+      "title": "PrintedRemark",
+      "type": "object"
+    },
+    "PrintedText": {
+      "additionalProperties": false,
+      "description": "One printed value, such as a name or a date, with where it is printed.",
+      "properties": {
+        "citation": {
+          "$ref": "#/$defs/Citation"
+        },
+        "text": {
+          "description": "The value exactly as printed.",
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "citation",
+        "text"
+      ],
+      "title": "PrintedText",
+      "type": "object"
+    },
+    "PrintedVital": {
+      "additionalProperties": false,
+      "description": "BP, pulse, temperature, SpO2, weight, height, BMI and the like.",
+      "properties": {
+        "citation": {
+          "$ref": "#/$defs/Citation"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "value_text": {
+          "minLength": 1,
+          "title": "Value Text",
+          "type": "string"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Unit"
+        }
+      },
+      "required": [
+        "citation",
+        "name",
+        "value_text",
+        "unit"
+      ],
+      "title": "PrintedVital",
+      "type": "object"
+    },
+    "Procedure": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "corrections": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Correction"
+          },
+          "title": "Corrections",
+          "type": "array"
+        },
+        "printed": {
+          "$ref": "#/$defs/PrintedProcedure"
+        }
+      },
+      "required": [
+        "id",
+        "printed"
+      ],
+      "title": "Procedure",
+      "type": "object"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "What produced an item, and where it stands in review.",
+      "properties": {
+        "run_id": {
+          "title": "Run Id",
+          "type": "string"
+        },
+        "node": {
+          "description": "Pipeline node, e.g. parse or repair.",
+          "title": "Node",
+          "type": "string"
+        },
+        "step_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The pipeline step (span) that produced the item.",
+          "title": "Step Id"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model"
+        },
+        "prompt_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Prompt Name"
+        },
+        "prompt_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Prompt Hash"
+        },
+        "status": {
+          "$ref": "#/$defs/ItemStatus",
+          "default": "extracted"
+        },
+        "low_confidence_reasons": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Low Confidence Reasons",
+          "type": "array"
+        },
+        "reviewed_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reviewed By"
+        },
+        "reviewed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reviewed At"
+        }
+      },
+      "required": [
+        "run_id",
+        "node"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "ReferenceRange": {
+      "additionalProperties": false,
+      "description": "One range parsed from a printed range text; a text can hold several.",
+      "properties": {
+        "text": {
+          "description": "The printed range it was parsed from.",
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "low": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Low"
+        },
+        "high": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "High"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Who it applies to when printed, e.g. Male, Adult.",
+          "title": "Label"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "ReferenceRange",
+      "type": "object"
+    },
+    "Remark": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "corrections": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Correction"
+          },
+          "title": "Corrections",
+          "type": "array"
+        },
+        "printed": {
+          "$ref": "#/$defs/PrintedRemark"
+        },
+        "derived": {
+          "$ref": "#/$defs/RemarkDerived"
+        }
+      },
+      "required": [
+        "id",
+        "printed"
+      ],
+      "title": "Remark",
+      "type": "object"
+    },
+    "RemarkDerived": {
+      "additionalProperties": false,
+      "properties": {
+        "observation_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The observation a test remark belongs to.",
+          "title": "Observation Id"
+        }
+      },
+      "title": "RemarkDerived",
+      "type": "object"
+    },
+    "RemarkKind": {
+      "enum": [
+        "advice",
+        "comment"
+      ],
+      "title": "RemarkKind",
+      "type": "string"
+    },
+    "RemarkScope": {
+      "enum": [
+        "test",
+        "panel",
+        "document"
+      ],
+      "title": "RemarkScope",
+      "type": "string"
+    },
+    "SourceDocument": {
+      "additionalProperties": false,
+      "properties": {
+        "document_id": {
+          "title": "Document Id",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/DocumentType"
+        },
+        "page_count": {
+          "minimum": 1,
+          "title": "Page Count",
+          "type": "integer"
+        },
+        "has_text_layer": {
+          "title": "Has Text Layer",
+          "type": "boolean"
+        },
+        "uploaded_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uploaded By"
+        },
+        "printed": {
+          "$ref": "#/$defs/PrintedDocumentDetails"
+        },
+        "derived": {
+          "$ref": "#/$defs/DocumentDates"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "document_id",
+        "type",
+        "page_count",
+        "has_text_layer",
+        "printed"
+      ],
+      "title": "SourceDocument",
+      "type": "object"
+    },
+    "StatedCondition": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "corrections": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Correction"
+          },
+          "title": "Corrections",
+          "type": "array"
+        },
+        "printed": {
+          "$ref": "#/$defs/PrintedCondition"
+        }
+      },
+      "required": [
+        "id",
+        "printed"
+      ],
+      "title": "StatedCondition",
+      "type": "object"
+    },
+    "Vital": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "corrections": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Correction"
+          },
+          "title": "Corrections",
+          "type": "array"
+        },
+        "printed": {
+          "$ref": "#/$defs/PrintedVital"
+        },
+        "derived": {
+          "$ref": "#/$defs/VitalDerived"
+        }
+      },
+      "required": [
+        "id",
+        "printed"
+      ],
+      "title": "Vital",
+      "type": "object"
+    },
+    "VitalDerived": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VitalKind"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "value_num": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value Num"
+        },
+        "systolic": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Systolic"
+        },
+        "diastolic": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Diastolic"
+        }
+      },
+      "title": "VitalDerived",
+      "type": "object"
+    },
+    "VitalKind": {
+      "enum": [
+        "blood_pressure",
+        "pulse",
+        "temperature",
+        "spo2",
+        "respiratory_rate",
+        "weight",
+        "height",
+        "bmi"
+      ],
+      "title": "VitalKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "document": {
+      "$ref": "#/$defs/SourceDocument"
+    },
+    "pages": {
+      "items": {
+        "$ref": "#/$defs/PageTranscription"
+      },
+      "title": "Pages",
+      "type": "array"
+    },
+    "patient": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PatientDetails"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "observations": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Observation"
+      },
+      "title": "Observations",
+      "type": "array"
+    },
+    "medications": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/MedicationRequest"
+      },
+      "title": "Medications",
+      "type": "array"
+    },
+    "conditions": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/StatedCondition"
+      },
+      "title": "Conditions",
+      "type": "array"
+    },
+    "remarks": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Remark"
+      },
+      "title": "Remarks",
+      "type": "array"
+    },
+    "vitals": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Vital"
+      },
+      "title": "Vitals",
+      "type": "array"
+    },
+    "allergies": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Allergy"
+      },
+      "title": "Allergies",
+      "type": "array"
+    },
+    "procedures": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Procedure"
+      },
+      "title": "Procedures",
+      "type": "array"
+    },
+    "encounters": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Encounter"
+      },
+      "title": "Encounters",
+      "type": "array"
+    },
+    "imaging_findings": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/ImagingFinding"
+      },
+      "title": "Imaging Findings",
+      "type": "array"
+    }
+  },
+  "required": [
+    "document",
+    "pages"
+  ],
+  "title": "DocumentRecord",
+  "type": "object"
+}
