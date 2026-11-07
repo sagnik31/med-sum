@@ -190,7 +190,7 @@ function DocumentsPage() {
           to="/user-insights"
           className="block w-full text-center px-4 py-2 bg-indigo-600 text-white rounded-md font-medium hover:bg-indigo-700 transition-colors"
         >
-          Generate user insights
+          Patient summary
         </Link>
       </div>
 

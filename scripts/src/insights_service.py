@@ -6,7 +6,7 @@ Insights Generation Service (FastAPI)
 - Exposes:
     GET  /health
     POST /internal/generate-insights        (background, per document)
-    POST /internal/generate-user-insights   (synchronous, per user)
+    POST /internal/generate-user-insights   (background, per user)
 
 - Internal only: /internal/* requires the X-Internal-Token header to match
   INTERNAL_API_TOKEN. No CORS, so browsers cannot call it; the Go backend
@@ -314,21 +314,55 @@ async def generate_insights_endpoint(
 @app.post(
     "/internal/generate-user-insights", dependencies=[Depends(require_internal_token)]
 )
-def generate_user_insights_endpoint(req: GenerateUserInsightsRequest):
+def generate_user_insights_endpoint(
+    req: GenerateUserInsightsRequest,
+    background_tasks: BackgroundTasks,
+):
     """
-    Generate a cumulative summary for all documents of a user.
+    Queue the cumulative summary across all of a user's processed documents.
 
-    Plain `def` (not `async def`) on purpose: the DB and Ollama calls block,
-    so FastAPI must run this in its threadpool or it freezes the event loop.
+    Called by the Go backend (POST /user/insights) for the logged-in user.
+    Plain `def` (not `async def`) on purpose: the DB call blocks, so FastAPI
+    must run this in its threadpool or it freezes the event loop.
     """
     logger.info(
         f"Received POST /internal/generate-user-insights for user_id={req.user_id!r}"
     )
 
+    # Claim the job the same way as document insights: skip it while a live
+    # run is in progress, but take over one that has gone stale.
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
-            # Fetch all documents with extracted markdown for this user
+            cur.execute(
+                """
+                UPDATE users
+                SET patient_insights_status = 'processing',
+                    patient_insights_error = NULL,
+                    patient_insights_updated_at = NOW()
+                WHERE id = %s
+                  AND (patient_insights_status IS DISTINCT FROM 'processing'
+                       OR patient_insights_updated_at < NOW() - %s::interval)
+                RETURNING id
+                """,
+                (req.user_id, STALE_PROCESSING_AFTER),
+            )
+            claimed = cur.fetchone() is not None
+        conn.commit()
+    finally:
+        conn.close()
+
+    if claimed:
+        background_tasks.add_task(run_patient_summary, req.user_id)
+    return {"status": "accepted" if claimed else "already_processing"}
+
+
+def run_patient_summary(user_id: str) -> None:
+    """Background job: summarise every processed document of one user."""
+    logger.info(f"[summary] Starting patient summary for user_id={user_id!r}")
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
             cur.execute(
                 """
                 SELECT extracted_markdown, uploaded_at
@@ -336,54 +370,62 @@ def generate_user_insights_endpoint(req: GenerateUserInsightsRequest):
                 WHERE user_id = %s AND extracted_markdown IS NOT NULL AND extracted_markdown != ''
                 ORDER BY uploaded_at ASC
                 """,
-                (req.user_id,),
+                (user_id,),
             )
             rows = cur.fetchall()
 
         if not rows:
-            return JSONResponse(
-                status_code=404,
-                content={
-                    "error": "No documents with extracted markdown found for this user."
-                },
+            raise ValueError(
+                "No processed documents yet. Wait until at least one document is ready."
             )
 
-        # Aggregate markdowns
         aggregated_markdown = ""
         for i, (markdown, uploaded_at) in enumerate(rows):
             date_str = (
                 uploaded_at.strftime("%Y-%m-%d") if uploaded_at else "Unknown Date"
             )
             aggregated_markdown += f"\n[REPORT {i + 1} - {date_str}]\n{markdown}\n"
-
         aggregated_markdown += "\n[END OF REPORTS]\n"
 
-        # Generate insights
         from config import PATIENT_SUMMARY_PROMPT_FILE
         from generate_insights_txt import generate_insights_html, load_text
 
         prompt = load_text(PATIENT_SUMMARY_PROMPT_FILE)
         html = generate_insights_html(aggregated_markdown, prompt=prompt)
 
-        # Save to DB
         with conn.cursor() as cur:
             cur.execute(
-                "UPDATE users SET patient_insights = %s WHERE id = %s",
-                (html, req.user_id),
+                """
+                UPDATE users
+                SET patient_insights = %s,
+                    patient_insights_status = 'completed',
+                    patient_insights_updated_at = NOW()
+                WHERE id = %s
+                """,
+                (html, user_id),
             )
-            conn.commit()
-
-        return JSONResponse(
-            status_code=200,
-            content={"status": "completed", "html": html},
+        conn.commit()
+        logger.info(
+            f"[summary] Completed for user_id={user_id!r} ({len(rows)} documents)"
         )
 
     except Exception as e:
-        logger.exception(f"Error generating user insights: {e}")
-        return JSONResponse(
-            status_code=500,
-            content={"error": str(e)},
-        )
+        logger.exception(f"[summary] Failed for user_id={user_id!r}")
+        try:
+            conn.rollback()
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    UPDATE users
+                    SET patient_insights_status = 'failed',
+                        patient_insights_error = %s,
+                        patient_insights_updated_at = NOW()
+                    WHERE id = %s
+                    """,
+                    (str(e) or type(e).__name__, user_id),
+                )
+            conn.commit()
+        except Exception:
+            logger.exception(f"[summary] Could not record failure for {user_id!r}")
     finally:
-        if conn:
-            conn.close()
+        conn.close()

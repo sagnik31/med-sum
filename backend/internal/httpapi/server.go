@@ -53,8 +53,8 @@ func NewServer(store *db.Store, jwtSecret, uploadsDir, insightsURL, internalToke
 	// /documents/{id} and /documents/{id}/insight (GET = fetch, POST = generate)
 	s.mux.HandleFunc("/documents/", s.withAuth(s.handleDocumentByID))
 
-	// /user/insights
-	s.mux.HandleFunc("/user/insights", s.withAuth(s.handleGetPatientInsights))
+	// /user/insights (GET = fetch the patient summary, POST = generate it)
+	s.mux.HandleFunc("/user/insights", s.withAuth(s.handlePatientInsights))
 
 	return s
 }
@@ -499,39 +499,58 @@ func (s *Server) callInsightsService(ctx context.Context, path string, payload a
 	return nil
 }
 
-// ----- Get patient insights: GET /user/insights -----
+// ----- Patient summary: GET and POST /user/insights -----
 
 type patientInsightResponse struct {
-	Status       string  `json:"status"`                  // "completed" | "none"
-	InsightsHTML *string `json:"insights_html,omitempty"` // present when completed
+	Status       string     `json:"status"`                  // "none" | "processing" | "completed" | "failed"
+	InsightsHTML *string    `json:"insights_html,omitempty"` // the latest summary, kept while a new one is generated
+	ErrorMessage *string    `json:"error_message,omitempty"` // present when failed
+	UpdatedAt    *time.Time `json:"updated_at,omitempty"`
 }
 
-func (s *Server) handleGetPatientInsights(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
-
+func (s *Server) handlePatientInsights(w http.ResponseWriter, r *http.Request) {
 	userID, ok := userIDFromContext(r.Context())
 	if !ok {
 		http.Error(w, "unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	user, err := s.db.GetUserByID(r.Context(), userID)
+	switch r.Method {
+	case http.MethodGet:
+		s.handleGetPatientInsights(w, r, userID)
+	case http.MethodPost:
+		// The summary only ever covers the caller's own documents.
+		err := s.callInsightsService(r.Context(), "/internal/generate-user-insights",
+			map[string]string{"user_id": userID})
+		if err != nil {
+			log.Printf("insights service error: %v", err)
+			http.Error(w, "insights service unavailable", http.StatusBadGateway)
+			return
+		}
+		writeJSON(w, http.StatusAccepted, map[string]string{"status": "accepted"})
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
+}
+
+func (s *Server) handleGetPatientInsights(w http.ResponseWriter, r *http.Request, userID string) {
+	summary, err := s.db.GetPatientSummary(r.Context(), userID)
 	if err != nil {
-		log.Printf("GetUserByID error: %v", err)
+		log.Printf("GetPatientSummary error: %v", err)
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
 
-	resp := patientInsightResponse{
-		Status: "none",
-	}
-
-	if user.PatientInsights != nil && *user.PatientInsights != "" {
+	resp := patientInsightResponse{Status: "none", UpdatedAt: summary.UpdatedAt}
+	if summary.HTML != nil && *summary.HTML != "" {
 		resp.Status = "completed"
-		resp.InsightsHTML = user.PatientInsights
+		resp.InsightsHTML = summary.HTML
+	}
+	if summary.Status != nil {
+		resp.Status = *summary.Status
+	}
+	if resp.Status == "failed" {
+		resp.ErrorMessage = summary.Error
 	}
 
 	writeJSON(w, http.StatusOK, resp)

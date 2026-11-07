@@ -107,3 +107,11 @@ export function fetchUserInsights() {
     method: "GET",
   });
 }
+
+// Start (re)generating the patient summary in the background; poll
+// fetchUserInsights for the result.
+export function triggerUserInsights() {
+  return apiRequest("/user/insights", {
+    method: "POST",
+  });
+}

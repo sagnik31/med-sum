@@ -44,25 +44,24 @@ RETURNING id, phone_number, full_name, patient_insights, created_at, last_login_
 	return &u, nil
 }
 
-// GetUserByID fetches a user by id.
-func (s *Store) GetUserByID(ctx context.Context, id string) (*User, error) {
+// PatientSummary is the cumulative summary stored on a user's row.
+type PatientSummary struct {
+	HTML      *string
+	Status    *string // "processing", "completed" or "failed"; nil if never requested
+	Error     *string // set when Status is "failed"
+	UpdatedAt *time.Time
+}
+
+// GetPatientSummary returns the user's patient summary and its job status.
+func (s *Store) GetPatientSummary(ctx context.Context, userID string) (*PatientSummary, error) {
 	const q = `
-SELECT id, phone_number, full_name, patient_insights, created_at, last_login_at
+SELECT patient_insights, patient_insights_status, patient_insights_error, patient_insights_updated_at
 FROM users
 WHERE id = $1;
 `
-	row := s.pool.QueryRow(ctx, q, id)
-
-	var u User
-	if err := row.Scan(
-		&u.ID,
-		&u.PhoneNumber,
-		&u.FullName,
-		&u.PatientInsights,
-		&u.CreatedAt,
-		&u.LastLoginAt,
-	); err != nil {
+	var p PatientSummary
+	if err := s.pool.QueryRow(ctx, q, userID).Scan(&p.HTML, &p.Status, &p.Error, &p.UpdatedAt); err != nil {
 		return nil, err
 	}
-	return &u, nil
+	return &p, nil
 }
