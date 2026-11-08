@@ -105,7 +105,7 @@ func store(t *testing.T) *Store {
 	if unavailable != "" {
 		t.Skip("database tests skipped: " + unavailable)
 	}
-	if _, err := testStore.pool.Exec(context.Background(), "TRUNCATE users, documents, insights CASCADE"); err != nil {
+	if _, err := testStore.pool.Exec(context.Background(), "TRUNCATE organizations, users, documents, insights CASCADE"); err != nil {
 		t.Fatal(err)
 	}
 	return testStore
@@ -113,9 +113,31 @@ func store(t *testing.T) *Store {
 
 func strPtr(s string) *string { return &s }
 
-func mustUser(t *testing.T, s *Store, phone string) *User {
+// mustOrg returns the test organisation, creating it on first use.
+func mustOrg(t *testing.T, s *Store) string {
 	t.Helper()
-	u, err := s.UpsertUserByPhone(context.Background(), phone, nil)
+	orgs, err := s.ListOrganizations(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, o := range orgs {
+		if o.Name == "Test Hospital" {
+			return o.ID
+		}
+	}
+	o, err := s.CreateOrganization(context.Background(), "Test Hospital")
+	if err != nil {
+		t.Fatal(err)
+	}
+	return o.ID
+}
+
+// mustUser creates an invited clinician account.
+func mustUser(t *testing.T, s *Store, email string) *User {
+	t.Helper()
+	u, err := s.CreateUser(context.Background(), NewUser{
+		OrgID: mustOrg(t, s), Email: email, FullName: "Dr " + email, Roles: []string{RoleClinician},
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -143,39 +165,9 @@ SELECT id, user_id, $2, $3 FROM documents WHERE id = $1`, docID, status, errMsg)
 
 // ----- Users -----
 
-func TestUpsertUserByPhoneCreatesThenUpdates(t *testing.T) {
-	s := store(t)
-	ctx := context.Background()
-
-	first, err := s.UpsertUserByPhone(ctx, "+910000000001", strPtr("Asha Rao"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	if first.FullName == nil || *first.FullName != "Asha Rao" || first.LastLoginAt == nil {
-		t.Fatalf("created user = %+v", first)
-	}
-
-	// Logging in again without a name keeps the stored one.
-	again, err := s.UpsertUserByPhone(ctx, "+910000000001", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if again.ID != first.ID || again.FullName == nil || *again.FullName != "Asha Rao" {
-		t.Errorf("second login = %+v, want the same user and name", again)
-	}
-	if again.LastLoginAt.Before(*first.LastLoginAt) {
-		t.Error("last_login_at went backwards")
-	}
-
-	renamed, _ := s.UpsertUserByPhone(ctx, "+910000000001", strPtr("Asha R."))
-	if *renamed.FullName != "Asha R." {
-		t.Errorf("full_name = %q, want the new name", *renamed.FullName)
-	}
-}
-
 func TestGetPatientSummaryOfANewUserIsEmpty(t *testing.T) {
 	s := store(t)
-	u := mustUser(t, s, "+910000000001")
+	u := mustUser(t, s, "me@hospital.test")
 
 	p, err := s.GetPatientSummary(context.Background(), u.ID)
 	if err != nil {
@@ -190,7 +182,7 @@ func TestGetPatientSummaryOfANewUserIsEmpty(t *testing.T) {
 
 func TestCreateDocument(t *testing.T) {
 	s := store(t)
-	u := mustUser(t, s, "+910000000001")
+	u := mustUser(t, s, "me@hospital.test")
 
 	d := mustDocument(t, s, u.ID, `D:\uploads\abc.pdf`)
 
@@ -205,8 +197,8 @@ func TestCreateDocument(t *testing.T) {
 func TestListDocumentsByUser(t *testing.T) {
 	s := store(t)
 	ctx := context.Background()
-	me := mustUser(t, s, "+910000000001")
-	other := mustUser(t, s, "+910000000002")
+	me := mustUser(t, s, "me@hospital.test")
+	other := mustUser(t, s, "other@hospital.test")
 
 	empty, err := s.ListDocumentsByUser(ctx, me.ID)
 	if err != nil {
@@ -245,8 +237,8 @@ func ids(docs []Document) []string {
 func TestGetDocumentByIDAndUserChecksOwnership(t *testing.T) {
 	s := store(t)
 	ctx := context.Background()
-	me := mustUser(t, s, "+910000000001")
-	other := mustUser(t, s, "+910000000002")
+	me := mustUser(t, s, "me@hospital.test")
+	other := mustUser(t, s, "other@hospital.test")
 	d := mustDocument(t, s, me.ID, "a.pdf")
 
 	got, err := s.GetDocumentByIDAndUser(ctx, d.ID, me.ID)
@@ -262,8 +254,8 @@ func TestGetDocumentByIDAndUserChecksOwnership(t *testing.T) {
 func TestDeleteDocumentByIDAndUser(t *testing.T) {
 	s := store(t)
 	ctx := context.Background()
-	me := mustUser(t, s, "+910000000001")
-	other := mustUser(t, s, "+910000000002")
+	me := mustUser(t, s, "me@hospital.test")
+	other := mustUser(t, s, "other@hospital.test")
 	alone := mustDocument(t, s, me.ID, "alone.pdf")
 	sharedA := mustDocument(t, s, me.ID, "shared.pdf")
 	mustDocument(t, s, me.ID, "shared.pdf")
@@ -298,7 +290,7 @@ func TestDeleteDocumentByIDAndUser(t *testing.T) {
 func TestGetInsightByDocumentID(t *testing.T) {
 	s := store(t)
 	ctx := context.Background()
-	me := mustUser(t, s, "+910000000001")
+	me := mustUser(t, s, "me@hospital.test")
 	d := mustDocument(t, s, me.ID, "a.pdf")
 
 	ins, err := s.GetInsightByDocumentID(ctx, d.ID)

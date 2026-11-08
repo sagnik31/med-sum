@@ -9,20 +9,78 @@
 -- Needs PostgreSQL 13+ (gen_random_uuid() is built in).
 
 -- -------------------------------------------------------------------
--- Users: until Phase B, each user is also the patient whose documents
--- they upload. The cumulative patient summary lives on this row.
+-- Organisations and staff accounts (docs/auth-plan.md, stage 1).
+-- One organisation in the MVP; every account belongs to one.
 -- -------------------------------------------------------------------
+CREATE TABLE organizations (
+    id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    name       text NOT NULL UNIQUE CHECK (name <> ''),
+    created_at timestamptz NOT NULL DEFAULT now()
+);
+
+-- Staff accounts: clinicians and admins, created by an admin (or by
+-- medsumctl), never by sign-up. An account sets its own password through
+-- a one-time setup link. Until patients become records of their own
+-- (stage 3), each account is also the patient whose documents it uploads,
+-- and the cumulative patient summary lives on this row.
 CREATE TABLE users (
     id                          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    phone_number                text NOT NULL UNIQUE,
-    full_name                   text,
+    org_id                      uuid NOT NULL REFERENCES organizations (id),
+    email                       text NOT NULL UNIQUE
+                                CHECK (email = lower(email) AND email LIKE '_%@_%'),
+    full_name                   text NOT NULL CHECK (full_name <> ''),
+    registration_no             text,          -- licence number as entered; not verified
+    roles                       text[] NOT NULL DEFAULT '{clinician}'
+                                CHECK (cardinality(roles) >= 1
+                                       AND roles <@ ARRAY['clinician', 'admin']),
+    status                      text NOT NULL DEFAULT 'invited'
+                                CHECK (status IN ('invited', 'active', 'disabled')),
+    password_hash               text,          -- argon2id, PHC format; null until setup
+    password_changed_at         timestamptz,
+    failed_logins               integer NOT NULL DEFAULT 0 CHECK (failed_logins >= 0),
+    locked_until                timestamptz,
+    created_by                  uuid REFERENCES users (id) ON DELETE SET NULL,
     created_at                  timestamptz NOT NULL DEFAULT now(),
     last_login_at               timestamptz,
     patient_insights            text,          -- the summary's HTML
     patient_insights_status     text,          -- processing / completed / failed
     patient_insights_error      text,
-    patient_insights_updated_at timestamptz
+    patient_insights_updated_at timestamptz,
+    CHECK (status <> 'active' OR password_hash IS NOT NULL)
 );
+CREATE INDEX users_org_id_idx ON users (org_id);
+
+-- Login sessions. The cookie holds 32 random bytes; only their SHA-256 is
+-- stored, so these rows can't be used to log in. A session ends after 30
+-- minutes without a request or at expires_at (12 hours after login),
+-- whichever comes first; the API enforces both.
+CREATE TABLE sessions (
+    token_hash   bytea PRIMARY KEY CHECK (octet_length(token_hash) = 32),
+    user_id      uuid NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    created_at   timestamptz NOT NULL,
+    last_seen_at timestamptz NOT NULL,
+    expires_at   timestamptz NOT NULL,
+    ip           text,
+    user_agent   text,
+    CHECK (expires_at > created_at),
+    CHECK (last_seen_at >= created_at)
+);
+CREATE INDEX sessions_user_id_idx ON sessions (user_id);
+CREATE INDEX sessions_expires_at_idx ON sessions (expires_at);
+
+-- Setup and reset links: single use, stored hashed like sessions. Issuing
+-- a new link for an account removes its unused ones.
+CREATE TABLE one_time_tokens (
+    token_hash bytea PRIMARY KEY CHECK (octet_length(token_hash) = 32),
+    user_id    uuid NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    purpose    text NOT NULL CHECK (purpose IN ('setup', 'reset')),
+    created_at timestamptz NOT NULL,
+    expires_at timestamptz NOT NULL,
+    used_at    timestamptz,
+    created_by uuid REFERENCES users (id) ON DELETE SET NULL,
+    CHECK (expires_at > created_at)
+);
+CREATE INDEX one_time_tokens_user_id_idx ON one_time_tokens (user_id);
 
 -- -------------------------------------------------------------------
 -- Documents and their processing

@@ -6,6 +6,7 @@ only on this machine, and leaves a database built from db/schema.sql.
 import pytest
 
 import reset_db
+from db_rows import add_account
 
 
 def tables(db) -> set[str]:
@@ -34,10 +35,7 @@ def uploads(tmp_path):
 @pytest.fixture
 def filled(db):
     with db.cursor() as cur:
-        cur.execute(
-            "INSERT INTO users (phone_number) VALUES ('+910000000001') RETURNING id"
-        )
-        (user,) = cur.fetchone()
+        user = add_account(db)
         cur.execute("INSERT INTO documents (user_id, original_name, content_type, "
                     "storage_path) VALUES (%s, 'a.pdf', 'application/pdf', '/x')",
                     (user,))  # fmt: skip
@@ -45,8 +43,8 @@ def filled(db):
 
 
 EXPECTED_TABLES = {
-    "users", "documents", "insights", "pipeline_runs", "pipeline_steps",
-    "document_records",
+    "organizations", "users", "sessions", "one_time_tokens", "documents",
+    "insights", "pipeline_runs", "pipeline_steps", "document_records",
 }  # fmt: skip
 
 

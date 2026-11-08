@@ -10,7 +10,7 @@
       "name": "Backend (Go)",
       "item": [
         {
-          "name": "Public",
+          "name": "Auth",
           "item": [
             {
               "name": "Health Check",
@@ -29,28 +29,73 @@
               }
             },
             {
-              "name": "Login",
-              "id": "191039c6-f234-4528-b692-e0b8e305a73c",
+              "name": "Login (sets the session cookie)",
               "request": {
                 "method": "POST",
                 "header": [
+                  {
+                    "key": "X-Requested-With",
+                    "value": "med-sum",
+                    "type": "text"
+                  },
                   {
                     "key": "Content-Type",
                     "value": "application/json",
                     "type": "text"
                   }
                 ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"phone_number\": \"+1234567890\",\n    \"full_name\": \"John Doe\"\n}"
-                },
                 "url": {
-                  "raw": "{{backend_url}}/login",
+                  "raw": "{{backend_url}}/auth/login",
                   "host": [
                     "{{backend_url}}"
                   ],
                   "path": [
+                    "auth",
                     "login"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\"\n}"
+                }
+              }
+            },
+            {
+              "name": "Me",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{backend_url}}/auth/me",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "me"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Logout",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Requested-With",
+                    "value": "med-sum",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{backend_url}}/auth/logout",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "logout"
                   ]
                 }
               }
@@ -65,16 +110,6 @@
               "name": "Upload Document",
               "id": "05ae45d2-87a0-4fd2-b8fc-8180a57f5a26",
               "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{auth_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
                 "method": "POST",
                 "body": {
                   "mode": "formdata",
@@ -93,23 +128,20 @@
                   "path": [
                     "documents"
                   ]
-                }
+                },
+                "header": [
+                  {
+                    "key": "X-Requested-With",
+                    "value": "med-sum",
+                    "type": "text"
+                  }
+                ]
               }
             },
             {
               "name": "List Documents",
               "id": "9280bbe3-5ec2-45e2-813c-4193e6305d9d",
               "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{auth_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
                 "method": "GET",
                 "url": {
                   "raw": "{{backend_url}}/documents",
@@ -126,16 +158,6 @@
               "name": "Delete Document",
               "id": "23e63427-8def-4dfd-865e-55fe4d9d0be4",
               "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{auth_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
                 "method": "DELETE",
                 "url": {
                   "raw": "{{backend_url}}/documents/:id",
@@ -153,7 +175,14 @@
                       "description": "Document ID"
                     }
                   ]
-                }
+                },
+                "header": [
+                  {
+                    "key": "X-Requested-With",
+                    "value": "med-sum",
+                    "type": "text"
+                  }
+                ]
               }
             }
           ],
@@ -166,16 +195,6 @@
               "name": "Get Document Insight",
               "id": "c4e77b32-e211-4ed8-bd0d-bed0a765d3af",
               "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{auth_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
                 "method": "GET",
                 "url": {
                   "raw": "{{backend_url}}/documents/:id/insight",
@@ -201,16 +220,6 @@
               "name": "Get Patient Summaries",
               "id": "f0c61940-4d09-468c-8a37-67f7b3a3b24e",
               "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{auth_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
                 "method": "GET",
                 "url": {
                   "raw": "{{backend_url}}/user/insights",
@@ -333,11 +342,16 @@
       "type": "string"
     },
     {
-      "id": "896c469d-78d0-428f-a714-fe469a8b9514",
-      "key": "auth_token",
+      "key": "email",
+      "value": "dev-clinician@med-sum.test",
+      "type": "string",
+      "description": "A staff account (medsumctl seed-dev creates this one)"
+    },
+    {
+      "key": "password",
       "value": "",
       "type": "string",
-      "description": "JWT Token from /login"
+      "description": "Its password (MEDSUM_DEV_PASSWORD for the dev accounts)"
     },
     {
       "key": "internal_api_token",

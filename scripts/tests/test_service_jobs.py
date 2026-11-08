@@ -10,6 +10,7 @@ import extract_report_slm
 from config import PATIENT_SUMMARY_PROMPT_FILE
 import generate_insights_txt
 import insights_service as service
+from db_rows import add_account
 
 TOKEN = "test-internal-token"
 
@@ -17,12 +18,8 @@ TOKEN = "test-internal-token"
 # -------------------------------------------------------------------
 # Helpers
 # -------------------------------------------------------------------
-def add_user(db, phone="+910000000001") -> str:
-    with db.cursor() as cur:
-        cur.execute(
-            "INSERT INTO users (phone_number) VALUES (%s) RETURNING id", (phone,)
-        )
-        return str(cur.fetchone()[0])
+def add_user(db, email="clinician@hospital.test") -> str:
+    return add_account(db, email)
 
 
 def add_document(db, user_id, path, markdown=None, uploaded_at=None) -> str:
@@ -304,7 +301,7 @@ def test_a_stale_summary_job_is_taken_over(db, client, summary_jobs):
 
 def test_the_summary_covers_processed_documents_oldest_first(db, upload, stages):
     user = add_user(db)
-    other = add_user(db, phone="+910000000002")
+    other = add_user(db, email="other@hospital.test")
     add_document(db, user, upload, "newer report", "2025-03-05 10:00+05:30")
     add_document(db, user, upload, "older report", "2024-11-20 10:00+05:30")
     add_document(db, user, upload, None)  # not processed yet

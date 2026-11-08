@@ -141,6 +141,6 @@ def db(database_url, monkeypatch):
     conn = psycopg2.connect(database_url)
     conn.autocommit = True
     with conn.cursor() as cur:
-        cur.execute("TRUNCATE users, documents, insights CASCADE")
+        cur.execute("TRUNCATE organizations, users, documents, insights CASCADE")
     yield conn
     conn.close()

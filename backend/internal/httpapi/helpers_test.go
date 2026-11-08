@@ -15,13 +15,24 @@ import (
 	"testing"
 	"time"
 
+	"backend/internal/auth"
 	"backend/internal/db"
 )
 
 const (
-	testJWTSecret     = "test-jwt-secret"
 	testInternalToken = "test-internal-token"
+	testOrigin        = "http://localhost:5173"
+	testPassword      = "a long test password"
 )
+
+// testHasher uses tiny argon2 parameters so the tests stay fast.
+var testHasher = func() *auth.Hasher {
+	h, err := auth.NewHasher(auth.Params{Memory: 64, Time: 1, Threads: 1, SaltLen: 16, KeyLen: 32})
+	if err != nil {
+		panic(err)
+	}
+	return h
+}()
 
 // TestMain hides the handlers' error logs, which the tests trigger on
 // purpose, unless the tests run with -v.
@@ -33,21 +44,31 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-// fakeStore is an in-memory Store. Documents are keyed by ID; insights by
-// document ID; patient summaries by user ID.
+// fakeStore is an in-memory Store. Users and documents are keyed by ID;
+// sessions and one-time tokens by their hash; insights by document ID;
+// patient summaries by user ID.
 type fakeStore struct {
 	mu        sync.Mutex
 	nextID    int
-	users     map[string]*db.User // by phone number
+	users     map[string]*db.User
+	sessions  map[string]*db.Session
+	tokens    map[string]*fakeToken
 	documents map[string]*db.Document
 	insights  map[string]*db.Insight
 	summaries map[string]*db.PatientSummary
 	failWith  error // returned by every method when set
 }
 
+type fakeToken struct {
+	db.OneTimeToken
+	UsedAt *time.Time
+}
+
 func newFakeStore() *fakeStore {
 	return &fakeStore{
 		users:     map[string]*db.User{},
+		sessions:  map[string]*db.Session{},
+		tokens:    map[string]*fakeToken{},
 		documents: map[string]*db.Document{},
 		insights:  map[string]*db.Insight{},
 		summaries: map[string]*db.PatientSummary{},
@@ -69,25 +90,258 @@ func leftPad(n int) string {
 	return string(s)
 }
 
-func (f *fakeStore) UpsertUserByPhone(_ context.Context, phone string, fullName *string) (*db.User, error) {
+// ----- accounts -----
+
+// addUser stores an account directly. An active account gets testPassword.
+func (f *fakeStore) addUser(email, status string, roles ...string) *db.User {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if len(roles) == 0 {
+		roles = []string{db.RoleClinician}
+	}
+	u := &db.User{ID: f.newID(), OrgID: "org-1", OrgName: "Test Hospital", Email: email,
+		FullName: "Dr " + email, Roles: roles, Status: status, CreatedAt: time.Now()}
+	if status != db.StatusInvited {
+		hash, err := testHasher.Hash(testPassword)
+		if err != nil {
+			panic(err)
+		}
+		u.PasswordHash = &hash
+	}
+	f.users[u.ID] = u
+	copied := *u
+	return &copied
+}
+
+func (f *fakeStore) user(id string) *db.User {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	copied := *f.users[id]
+	return &copied
+}
+
+func (f *fakeStore) GetUserByEmail(_ context.Context, email string) (*db.User, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
 		return nil, f.failWith
 	}
-	u, ok := f.users[phone]
+	for _, u := range f.users {
+		if u.Email == email {
+			copied := *u
+			return &copied, nil
+		}
+	}
+	return nil, nil
+}
+
+func (f *fakeStore) GetUserByID(_ context.Context, id string) (*db.User, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return nil, f.failWith
+	}
+	u, ok := f.users[id]
 	if !ok {
-		u = &db.User{ID: f.newID(), PhoneNumber: phone, CreatedAt: time.Now()}
-		f.users[phone] = u
+		return nil, nil
 	}
-	if fullName != nil {
-		u.FullName = fullName
-	}
-	now := time.Now()
-	u.LastLoginAt = &now
 	copied := *u
 	return &copied, nil
 }
+
+func (f *fakeStore) RecordLoginFailure(_ context.Context, userID string, maxFailures int, lockUntil time.Time) (*time.Time, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return nil, f.failWith
+	}
+	u := f.users[userID]
+	u.FailedLogins++
+	if u.FailedLogins >= maxFailures {
+		u.FailedLogins = 0
+		u.LockedUntil = &lockUntil
+	}
+	return u.LockedUntil, nil
+}
+
+func (f *fakeStore) RecordLoginSuccess(_ context.Context, userID string, now time.Time) error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return f.failWith
+	}
+	u := f.users[userID]
+	u.FailedLogins, u.LockedUntil, u.LastLoginAt = 0, nil, &now
+	return nil
+}
+
+func (f *fakeStore) SetPasswordHash(_ context.Context, userID, hash string, _ time.Time) error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return f.failWith
+	}
+	f.users[userID].PasswordHash = &hash
+	return nil
+}
+
+// ----- sessions -----
+
+func (f *fakeStore) CreateSession(_ context.Context, sess db.Session) error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return f.failWith
+	}
+	copied := sess
+	f.sessions[string(sess.TokenHash)] = &copied
+	return nil
+}
+
+func (f *fakeStore) GetSession(_ context.Context, tokenHash []byte) (*db.SessionWithUser, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return nil, f.failWith
+	}
+	sess, ok := f.sessions[string(tokenHash)]
+	if !ok {
+		return nil, nil
+	}
+	return &db.SessionWithUser{Session: *sess, User: *f.users[sess.UserID]}, nil
+}
+
+func (f *fakeStore) TouchSession(_ context.Context, tokenHash []byte, now time.Time) error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return f.failWith
+	}
+	if sess, ok := f.sessions[string(tokenHash)]; ok {
+		sess.LastSeenAt = now
+	}
+	return nil
+}
+
+func (f *fakeStore) DeleteSession(_ context.Context, tokenHash []byte) error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return f.failWith
+	}
+	delete(f.sessions, string(tokenHash))
+	return nil
+}
+
+func (f *fakeStore) DeleteUserSessions(_ context.Context, userID string, keep []byte) error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return f.failWith
+	}
+	for k, sess := range f.sessions {
+		if sess.UserID == userID && (keep == nil || k != string(keep)) {
+			delete(f.sessions, k)
+		}
+	}
+	return nil
+}
+
+func (f *fakeStore) DeleteExpiredSessions(_ context.Context, now time.Time, idle time.Duration) (int64, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return 0, f.failWith
+	}
+	var n int64
+	for k, sess := range f.sessions {
+		if !now.Before(sess.ExpiresAt) || !sess.LastSeenAt.After(now.Add(-idle)) {
+			delete(f.sessions, k)
+			n++
+		}
+	}
+	return n, nil
+}
+
+func (f *fakeStore) sessionsOf(userID string) int {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	n := 0
+	for _, sess := range f.sessions {
+		if sess.UserID == userID {
+			n++
+		}
+	}
+	return n
+}
+
+// ----- one-time tokens -----
+
+// addToken stores a setup or reset token for the account and returns the
+// token a link would carry.
+func (f *fakeStore) addToken(userID, purpose string, expiresAt time.Time) string {
+	token, hash, err := auth.NewToken()
+	if err != nil {
+		panic(err)
+	}
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	f.tokens[string(hash)] = &fakeToken{OneTimeToken: db.OneTimeToken{
+		TokenHash: hash, UserID: userID, Purpose: purpose, CreatedAt: time.Now(), ExpiresAt: expiresAt}}
+	return token
+}
+
+func (f *fakeStore) usable(tokenHash []byte, now time.Time) (*fakeToken, *db.User) {
+	t, ok := f.tokens[string(tokenHash)]
+	if !ok || t.UsedAt != nil || !now.Before(t.ExpiresAt) {
+		return nil, nil
+	}
+	u := f.users[t.UserID]
+	if u.Status == db.StatusDisabled {
+		return nil, nil
+	}
+	return t, u
+}
+
+func (f *fakeStore) GetUsableToken(_ context.Context, tokenHash []byte, now time.Time) (*db.User, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return nil, f.failWith
+	}
+	_, u := f.usable(tokenHash, now)
+	if u == nil {
+		return nil, nil
+	}
+	copied := *u
+	return &copied, nil
+}
+
+func (f *fakeStore) CompletePasswordSetup(_ context.Context, tokenHash []byte, passwordHash string, now time.Time) (string, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return "", f.failWith
+	}
+	t, u := f.usable(tokenHash, now)
+	if u == nil {
+		return "", db.ErrTokenUnusable
+	}
+	t.UsedAt = &now
+	u.PasswordHash = &passwordHash
+	if u.Status == db.StatusInvited {
+		u.Status = db.StatusActive
+	}
+	u.FailedLogins, u.LockedUntil = 0, nil
+	for k, sess := range f.sessions {
+		if sess.UserID == u.ID {
+			delete(f.sessions, k)
+		}
+	}
+	return u.ID, nil
+}
+
+// ----- documents and summaries -----
 
 func (f *fakeStore) GetPatientSummary(_ context.Context, userID string) (*db.PatientSummary, error) {
 	f.mu.Lock()
@@ -233,14 +487,17 @@ func (ai *fakeAI) received() []aiCall {
 	return append([]aiCall(nil), ai.calls...)
 }
 
-// testEnv is a Server wired to a fake store, a fake AI service and a
-// temporary uploads directory.
+// testEnv is a Server wired to a fake store, a fake AI service, a
+// temporary uploads directory and a clock the test moves.
 type testEnv struct {
 	t       *testing.T
 	server  *Server
 	store   *fakeStore
 	ai      *fakeAI
 	uploads string
+
+	mu    sync.Mutex
+	clock time.Time
 }
 
 func newTestEnv(t *testing.T) *testEnv {
@@ -248,43 +505,94 @@ func newTestEnv(t *testing.T) *testEnv {
 	store := newFakeStore()
 	ai := newFakeAI(t)
 	uploads := t.TempDir()
-	return &testEnv{
-		t:       t,
-		server:  NewServer(store, testJWTSecret, uploads, ai.srv.URL+"/", testInternalToken),
-		store:   store,
-		ai:      ai,
-		uploads: uploads,
-	}
+	e := &testEnv{t: t, store: store, ai: ai, uploads: uploads,
+		clock: time.Date(2026, 11, 8, 9, 0, 0, 0, time.UTC)}
+	e.server = NewServer(store, Config{
+		UploadsDir:     uploads,
+		InsightsURL:    ai.srv.URL + "/",
+		InternalToken:  testInternalToken,
+		AllowedOrigins: []string{testOrigin},
+		CookieSecure:   true,
+		Hasher:         testHasher,
+		Now:            e.now,
+	})
+	return e
 }
 
-// login creates a user through the fake store and returns its ID and an
-// Authorization header value.
-func (e *testEnv) login(phone string) (userID, auth string) {
+func (e *testEnv) now() time.Time {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	return e.clock
+}
+
+func (e *testEnv) advance(d time.Duration) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	e.clock = e.clock.Add(d)
+}
+
+// login creates an active account with testPassword, logs it in through
+// POST /auth/login and returns its ID and session cookie value.
+func (e *testEnv) login(email string) (userID, session string) {
 	e.t.Helper()
-	u, err := e.store.UpsertUserByPhone(context.Background(), phone, nil)
-	if err != nil {
-		e.t.Fatal(err)
-	}
-	token, err := e.server.generateToken(u.ID)
-	if err != nil {
-		e.t.Fatal(err)
-	}
-	return u.ID, "Bearer " + token
+	u := e.store.addUser(email, db.StatusActive)
+	return u.ID, e.loginAs(email, testPassword)
 }
 
-// do sends a request through the server and returns the recorded response.
-func (e *testEnv) do(method, path, auth string, body io.Reader, contentType string) *httptest.ResponseRecorder {
+// loginAs logs in through the API and returns the session cookie value.
+func (e *testEnv) loginAs(email, password string) string {
+	e.t.Helper()
+	body, _ := json.Marshal(map[string]string{"email": email, "password": password})
+	rec := e.do(http.MethodPost, "/auth/login", "", bytes.NewReader(body), "application/json")
+	if rec.Code != http.StatusOK {
+		e.t.Fatalf("login as %s: status %d: %s", email, rec.Code, rec.Body.String())
+	}
+	c := sessionCookieFrom(e.t, rec)
+	if c == nil {
+		e.t.Fatal("login set no session cookie")
+	}
+	return c.Value
+}
+
+// sessionCookieFrom returns the session cookie a response set, or nil.
+func sessionCookieFrom(t *testing.T, rec *httptest.ResponseRecorder) *http.Cookie {
+	t.Helper()
+	for _, c := range rec.Result().Cookies() {
+		if c.Name == sessionCookie {
+			return c
+		}
+	}
+	return nil
+}
+
+// do sends a request through the server, as the frontend would: with the
+// session cookie when session is set, and the CSRF header on requests that
+// change something.
+func (e *testEnv) do(method, path, session string, body io.Reader, contentType string) *httptest.ResponseRecorder {
 	e.t.Helper()
 	req := httptest.NewRequest(method, path, body)
-	if auth != "" {
-		req.Header.Set("Authorization", auth)
+	if session != "" {
+		req.AddCookie(&http.Cookie{Name: sessionCookie, Value: session})
 	}
 	if contentType != "" {
 		req.Header.Set("Content-Type", contentType)
 	}
+	if !safeMethod(method) {
+		req.Header.Set(csrfHeader, csrfValue)
+	}
 	rec := httptest.NewRecorder()
 	e.server.ServeHTTP(rec, req)
 	return rec
+}
+
+// postJSON sends a JSON body with do.
+func (e *testEnv) postJSON(path, session string, v any) *httptest.ResponseRecorder {
+	e.t.Helper()
+	body, err := json.Marshal(v)
+	if err != nil {
+		e.t.Fatal(err)
+	}
+	return e.do(http.MethodPost, path, session, bytes.NewReader(body), "application/json")
 }
 
 // multipartFile builds an upload body with one file field.

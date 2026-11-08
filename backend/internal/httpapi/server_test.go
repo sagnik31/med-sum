@@ -14,52 +14,7 @@ const unknownID = "00000000-0000-4000-8000-999999999999"
 
 func strPtr(s string) *string { return &s }
 
-// ----- Login and health -----
-
-func TestLoginReturnsAWorkingToken(t *testing.T) {
-	e := newTestEnv(t)
-
-	rec := e.do(http.MethodPost, "/login", "",
-		strings.NewReader(`{"phone_number": "+910000000001", "full_name": "Asha Rao"}`), "application/json")
-
-	if rec.Code != http.StatusOK {
-		t.Fatalf("status = %d, want 200: %s", rec.Code, rec.Body)
-	}
-	resp := decodeJSON[loginResponse](t, rec)
-	if resp.User.PhoneNumber != "+910000000001" || resp.User.FullName == nil || *resp.User.FullName != "Asha Rao" {
-		t.Errorf("user = %+v", resp.User)
-	}
-	list := e.do(http.MethodGet, "/documents", "Bearer "+resp.Token, nil, "")
-	if list.Code != http.StatusOK {
-		t.Errorf("the issued token was refused: %d", list.Code)
-	}
-}
-
-func TestLoginRejectsBadRequests(t *testing.T) {
-	tests := []struct {
-		name, method, body string
-		wantCode           int
-	}{
-		{"not JSON", http.MethodPost, "phone=1", http.StatusBadRequest},
-		{"no phone number", http.MethodPost, `{}`, http.StatusBadRequest},
-		{"blank phone number", http.MethodPost, `{"phone_number": "   "}`, http.StatusBadRequest},
-		{"GET", http.MethodGet, "", http.StatusMethodNotAllowed},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			e := newTestEnv(t)
-
-			rec := e.do(tt.method, "/login", "", strings.NewReader(tt.body), "application/json")
-
-			if rec.Code != tt.wantCode {
-				t.Errorf("status = %d, want %d", rec.Code, tt.wantCode)
-			}
-			if len(e.store.users) != 0 {
-				t.Error("a user was created")
-			}
-		})
-	}
-}
+// ----- Health -----
 
 func TestHealth(t *testing.T) {
 	e := newTestEnv(t)
@@ -74,9 +29,11 @@ func TestHealth(t *testing.T) {
 
 // ----- Routing -----
 
-func TestProtectedRoutesNeedAToken(t *testing.T) {
+func TestProtectedRoutesNeedASession(t *testing.T) {
 	e := newTestEnv(t)
 	routes := []struct{ method, path string }{
+		{http.MethodGet, "/auth/me"},
+		{http.MethodPost, "/auth/password"},
 		{http.MethodGet, "/documents"},
 		{http.MethodPost, "/documents"},
 		{http.MethodDelete, "/documents/" + unknownID},
@@ -97,7 +54,7 @@ func TestProtectedRoutesNeedAToken(t *testing.T) {
 
 func TestDocumentRouting(t *testing.T) {
 	e := newTestEnv(t)
-	_, auth := e.login("+910000000001")
+	_, auth := e.login("me@hospital.test")
 
 	tests := []struct {
 		method, path string
@@ -124,8 +81,8 @@ func TestDocumentRouting(t *testing.T) {
 
 func TestListShowsOnlyTheCallersDocuments(t *testing.T) {
 	e := newTestEnv(t)
-	me, auth := e.login("+910000000001")
-	other, _ := e.login("+910000000002")
+	me, auth := e.login("me@hospital.test")
+	other, _ := e.login("other@hospital.test")
 	mine := e.store.addDocument(me, "a.pdf")
 	e.store.addDocument(other, "b.pdf")
 	e.store.insights[mine] = &db.Insight{DocumentID: mine, Status: "completed"}
@@ -146,7 +103,7 @@ func TestListShowsOnlyTheCallersDocuments(t *testing.T) {
 
 func TestAnEmptyListIsAnEmptyArray(t *testing.T) {
 	e := newTestEnv(t)
-	_, auth := e.login("+910000000001")
+	_, auth := e.login("me@hospital.test")
 
 	rec := e.do(http.MethodGet, "/documents", auth, nil, "")
 
@@ -157,7 +114,7 @@ func TestAnEmptyListIsAnEmptyArray(t *testing.T) {
 
 func TestDeleteRemovesTheDocumentAndItsFile(t *testing.T) {
 	e := newTestEnv(t)
-	me, auth := e.login("+910000000001")
+	me, auth := e.login("me@hospital.test")
 	path := filepath.Join(e.uploads, "a.pdf")
 	if err := os.WriteFile(path, pdfBytes, 0o644); err != nil {
 		t.Fatal(err)
@@ -179,7 +136,7 @@ func TestDeleteRemovesTheDocumentAndItsFile(t *testing.T) {
 
 func TestDeleteKeepsAFileAnotherDocumentShares(t *testing.T) {
 	e := newTestEnv(t)
-	me, auth := e.login("+910000000001")
+	me, auth := e.login("me@hospital.test")
 	path := filepath.Join(e.uploads, "shared.pdf")
 	if err := os.WriteFile(path, pdfBytes, 0o644); err != nil {
 		t.Fatal(err)
@@ -197,8 +154,8 @@ func TestDeleteKeepsAFileAnotherDocumentShares(t *testing.T) {
 
 func TestDeleteOfAnotherUsersDocumentIsNotFound(t *testing.T) {
 	e := newTestEnv(t)
-	_, auth := e.login("+910000000001")
-	other, _ := e.login("+910000000002")
+	_, auth := e.login("me@hospital.test")
+	other, _ := e.login("other@hospital.test")
 	path := filepath.Join(e.uploads, "theirs.pdf")
 	if err := os.WriteFile(path, pdfBytes, 0o644); err != nil {
 		t.Fatal(err)
@@ -234,7 +191,7 @@ func TestGetInsightReportsTheJobStatus(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			e := newTestEnv(t)
-			me, auth := e.login("+910000000001")
+			me, auth := e.login("me@hospital.test")
 			doc := e.store.addDocument(me, "a.pdf")
 			if tt.insight != nil {
 				tt.insight.DocumentID = doc
@@ -259,8 +216,8 @@ func TestGetInsightReportsTheJobStatus(t *testing.T) {
 
 func TestInsightRoutesHideOtherUsersDocuments(t *testing.T) {
 	e := newTestEnv(t)
-	_, auth := e.login("+910000000001")
-	other, _ := e.login("+910000000002")
+	_, auth := e.login("me@hospital.test")
+	other, _ := e.login("other@hospital.test")
 	theirs := e.store.addDocument(other, "b.pdf")
 	e.store.insights[theirs] = &db.Insight{DocumentID: theirs, Status: "completed", HTMLInsights: "<p>private</p>"}
 
@@ -280,7 +237,7 @@ func TestInsightRoutesHideOtherUsersDocuments(t *testing.T) {
 
 func TestGenerateInsightForwardsToTheAIService(t *testing.T) {
 	e := newTestEnv(t)
-	me, auth := e.login("+910000000001")
+	me, auth := e.login("me@hospital.test")
 	doc := e.store.addDocument(me, "a.pdf")
 
 	rec := e.do(http.MethodPost, "/documents/"+doc+"/insight", auth, nil, "")
@@ -302,7 +259,7 @@ func TestGenerateInsightReportsAnUnavailableAIService(t *testing.T) {
 	} {
 		t.Run(name, func(t *testing.T) {
 			e := newTestEnv(t)
-			me, auth := e.login("+910000000001")
+			me, auth := e.login("me@hospital.test")
 			doc := e.store.addDocument(me, "a.pdf")
 			breakAI(e.ai)
 
@@ -334,7 +291,7 @@ func TestGetPatientSummaryReportsItsStatus(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			e := newTestEnv(t)
-			me, auth := e.login("+910000000001")
+			me, auth := e.login("me@hospital.test")
 			if tt.summary != nil {
 				e.store.summaries[me] = tt.summary
 			}
@@ -363,7 +320,7 @@ func deref(s *string) string {
 
 func TestPatientSummaryIsRequestedForTheCallerOnly(t *testing.T) {
 	e := newTestEnv(t)
-	me, auth := e.login("+910000000001")
+	me, auth := e.login("me@hospital.test")
 
 	// A user_id in the body must not change whose summary is generated.
 	rec := e.do(http.MethodPost, "/user/insights", auth,
@@ -381,7 +338,7 @@ func TestPatientSummaryIsRequestedForTheCallerOnly(t *testing.T) {
 
 func TestPatientSummaryReportsAnUnavailableAIService(t *testing.T) {
 	e := newTestEnv(t)
-	_, auth := e.login("+910000000001")
+	_, auth := e.login("me@hospital.test")
 	e.ai.status = http.StatusServiceUnavailable
 
 	if rec := e.do(http.MethodPost, "/user/insights", auth, nil, ""); rec.Code != http.StatusBadGateway {
@@ -391,7 +348,7 @@ func TestPatientSummaryReportsAnUnavailableAIService(t *testing.T) {
 
 func TestDatabaseErrorsAreInternalErrorsWithoutDetails(t *testing.T) {
 	e := newTestEnv(t)
-	me, auth := e.login("+910000000001")
+	me, auth := e.login("me@hospital.test")
 	doc := e.store.addDocument(me, "a.pdf")
 	e.store.failWith = os.ErrPermission
 

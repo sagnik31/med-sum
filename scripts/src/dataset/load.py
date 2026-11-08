@@ -1,25 +1,40 @@
 """
 Upload the synthetic dataset through the backend's normal routes: log in
-as each patient (the development login), then upload their documents in
-the manifest's upload order. Run from scripts/src:
+as each patient's development account, then upload their documents in the
+manifest's upload order. Run from scripts/src:
 
     python -m dataset.load            # show what would be uploaded
     python -m dataset.load --yes      # upload
 
 Uploading starts processing on the AI service at once, so --yes means
 live model runs (minutes per page on a CPU) and writes to whatever
-database the backend uses. Until Phase B each synthetic patient logs in
-with its own phone number.
+database the backend uses.
+
+The accounts come from `medsumctl seed-dev` (backend/cmd/medsumctl), with
+the password in MEDSUM_DEV_PASSWORD. Until patients are records of their
+own (stage 3 of docs/auth-plan.md), each synthetic patient's documents are
+uploaded by an account of its own, patient-<key>@med-sum.test.
 """
 
 import argparse
 import json
+import os
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
 import httpx
 
 from dataset.build import DATASET_DIR
+
+SESSION_COOKIE = "medsum_session"
+# The backend refuses state-changing requests without it (CSRF check).
+CSRF_HEADERS = {"X-Requested-With": "med-sum"}
+
+
+def account_email(patient_key: str) -> str:
+    """The development account of a synthetic patient (see medsumctl seed-dev)."""
+    return f"patient-{patient_key}@med-sum.test"
 
 
 @dataclass
@@ -46,23 +61,41 @@ def plan(dataset_dir: Path = DATASET_DIR) -> tuple[dict, list[Upload]]:
     return patients, uploads
 
 
-def load(client: httpx.Client, dataset_dir: Path = DATASET_DIR) -> dict[str, str]:
+def log_in(client: httpx.Client, email: str, password: str) -> str:
+    """Log in and return the session cookie's value."""
+    response = client.post(
+        "/auth/login",
+        json={"email": email, "password": password},
+        headers=CSRF_HEADERS,
+    )
+    response.raise_for_status()
+    session = response.cookies.get(SESSION_COOKIE)
+    if not session:
+        raise RuntimeError(f"logging in as {email} set no session cookie")
+    # Sessions are sent explicitly per request, so the client's own cookie
+    # jar must not carry one patient's session into another's upload.
+    client.cookies.clear()
+    return session
+
+
+def load(
+    client: httpx.Client, password: str, dataset_dir: Path = DATASET_DIR
+) -> dict[str, str]:
     """Upload everything; returns dataset id -> the backend's document id."""
-    patients, uploads = plan(dataset_dir)
-    tokens: dict[str, str] = {}
+    _, uploads = plan(dataset_dir)
+    sessions: dict[str, str] = {}
     created: dict[str, str] = {}
     for upload in uploads:
-        if upload.patient not in tokens:
-            patient = patients[upload.patient]
-            response = client.post(
-                "/login",
-                json={"phone_number": patient["phone"], "full_name": patient["name"]},
+        if upload.patient not in sessions:
+            sessions[upload.patient] = log_in(
+                client, account_email(upload.patient), password
             )
-            response.raise_for_status()
-            tokens[upload.patient] = response.json()["token"]
         response = client.post(
             "/documents",
-            headers={"Authorization": f"Bearer {tokens[upload.patient]}"},
+            headers={
+                **CSRF_HEADERS,
+                "Cookie": f"{SESSION_COOKIE}={sessions[upload.patient]}",
+            },
             files={
                 "file": (
                     upload.file.name,
@@ -92,8 +125,13 @@ def main(argv: list[str] | None = None) -> None:
             "and writes to the backend's database; pass --yes to go ahead."
         )
         return
+    password = os.environ.get("MEDSUM_DEV_PASSWORD")
+    if not password:
+        sys.exit(
+            "MEDSUM_DEV_PASSWORD is not set (the password medsumctl seed-dev used)"
+        )
     with httpx.Client(base_url=args.base_url, timeout=60) as client:
-        for doc_id, backend_id in load(client).items():
+        for doc_id, backend_id in load(client, password).items():
             print(f"uploaded {doc_id} as {backend_id}")
 
 

@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"backend/internal/auth"
 	appdb "backend/internal/db"
 	"backend/internal/httpapi"
 )
@@ -16,11 +17,6 @@ func main() {
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
 		log.Fatal("DATABASE_URL is required")
-	}
-
-	jwtSecret := os.Getenv("JWT_SECRET")
-	if jwtSecret == "" {
-		log.Fatal("JWT_SECRET is required")
 	}
 
 	// Shared with the AI service, which rejects /internal/* calls without it.
@@ -49,19 +45,51 @@ func main() {
 
 	insightsURL := getEnv("INSIGHTS_SERVICE_URL", "http://localhost:9000")
 
-	api := httpapi.NewServer(store, jwtSecret, uploadsDir, insightsURL, internalToken)
+	// Browser origins allowed to call the API with the session cookie. The
+	// Vite dev server proxies /api to this server and forwards its origin.
+	origins := httpapi.ParseOrigins(getEnv("ALLOWED_ORIGINS", "http://localhost:5173"))
+	for _, o := range origins {
+		if o == "*" {
+			log.Fatal("ALLOWED_ORIGINS must list origins; * can't be used with cookies")
+		}
+	}
+
+	// Secure cookies are only sent over HTTPS. Plain-HTTP local development
+	// (and the dataset loader) needs COOKIE_SECURE=false.
+	cookieSecure := getEnv("COOKIE_SECURE", "true") != "false"
+	if !cookieSecure {
+		log.Print("COOKIE_SECURE=false: session cookies are sent over plain HTTP (local development only)")
+	}
+
+	hasher, err := auth.NewHasher(auth.DefaultParams)
+	if err != nil {
+		log.Fatalf("password hasher: %v", err)
+	}
+
+	api := httpapi.NewServer(store, httpapi.Config{
+		UploadsDir:     uploadsDir,
+		InsightsURL:    insightsURL,
+		InternalToken:  internalToken,
+		AllowedOrigins: origins,
+		CookieSecure:   cookieSecure,
+		Hasher:         hasher,
+	})
+
+	api.PurgeExpiredSessions(ctx)
+	go func() {
+		for range time.Tick(time.Hour) {
+			api.PurgeExpiredSessions(ctx)
+		}
+	}()
 
 	addr := getEnv("HTTP_ADDRESS", ":8080")
-
-	// Wrap the API handler with CORS middleware
-	handler := withCORS(api)
 
 	// Read/WriteTimeout cover the whole request body, so they must allow a
 	// 20 MB upload on a slow connection; slow clients are still cut off by
 	// ReadHeaderTimeout.
 	srv := &http.Server{
 		Addr:              addr,
-		Handler:           handler,
+		Handler:           api,
 		ReadHeaderTimeout: 10 * time.Second,
 		ReadTimeout:       2 * time.Minute,
 		WriteTimeout:      2 * time.Minute,
@@ -79,24 +107,4 @@ func getEnv(key, def string) string {
 		return v
 	}
 	return def
-}
-
-// CORS middleware: wrap your main handler with this.
-func withCORS(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Allow your frontend origin during local dev
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
-
-		// Handle preflight (OPTIONS) request
-		if r.Method == http.MethodOptions {
-			w.WriteHeader(http.StatusNoContent)
-			return
-		}
-
-		// For normal requests, go to the next handler
-		next.ServeHTTP(w, r)
-	})
 }

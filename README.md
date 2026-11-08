@@ -4,7 +4,7 @@ Med-Sum turns medical documents into readable summaries. A patient uploads presc
 
 All model inference runs locally through [Ollama](https://ollama.com), so documents never leave the machine.
 
-> **Status:** an early-stage personal project. Authentication is not implemented yet (see [Limitations](#limitations)), so do not use it with real patient data. Generated summaries can be wrong and are not medical advice.
+> **Status:** an early-stage personal project. Staff accounts, passwords and sessions are in place, but roles, patient records and an audit log are not yet (see [Limitations](#limitations)), so do not use it with real patient data. Generated summaries can be wrong and are not medical advice.
 
 ## Contents
 
@@ -23,7 +23,7 @@ All model inference runs locally through [Ollama](https://ollama.com), so docume
 
 ```mermaid
 flowchart LR
-    UI["React SPA<br/>(Vite, :5173)"] -->|"REST, JWT"| API["Go API<br/>(:8080)"]
+    UI["React SPA<br/>(Vite, :5173)"] -->|"REST, session cookie"| API["Go API<br/>(:8080)"]
     API -->|"internal token"| AI["Python AI service<br/>(FastAPI, :9000)"]
     API --> DB[("PostgreSQL")]
     AI --> DB
@@ -32,8 +32,8 @@ flowchart LR
 
 The system has three services that share one PostgreSQL database:
 
-- **Frontend (React).** Login, document upload and listing, and a viewer for the generated summaries.
-- **Backend (Go).** The public API. It handles login and uploads, checks that a document belongs to the caller, and forwards processing requests to the AI service.
+- **Frontend (React).** Login and password setup, document upload and listing, and a viewer for the generated summaries.
+- **Backend (Go).** The public API. It handles accounts, login sessions and uploads, checks that a document belongs to the caller, and forwards processing requests to the AI service.
 - **AI service (Python).** Runs the extraction and summarisation pipeline against local Ollama models.
 
 When a document is uploaded, the pipeline runs as a background job. The document list and summary pages update themselves while it runs:
@@ -53,12 +53,21 @@ The cumulative patient summary is a separate background job, started from the Pa
 - **Bounded work.** Uploads must be PDF, JPG or PNG files whose content matches the extension, are capped at 20 MB and 20 PDF pages, and are stored under random file names. Model output is capped per page and per summary so a looping model cannot run forever, and a model call that sends nothing for 10 minutes is abandoned.
 - **Fallback model.** Both models read images and text. If `qwen3.5:4b` returns an error or hits the output cap, the same request goes to `gemma4:e2b`. If both fail, the job is marked `failed`, so cut-off output is never saved as a result.
 
+### Accounts and login
+
+The app is for hospital staff; patients have no accounts. The design, and the stages still to come, are in [docs/auth-plan.md](docs/auth-plan.md).
+
+- **Accounts are created, never signed up for.** `medsumctl create-admin` and `create-user` create an account and print a one-time setup link (valid for 72 hours) that the person opens to choose their own password; `medsumctl reset-link` issues a reset link (24 hours). The token is in the link's URL fragment, which browsers don't send to servers, and only its SHA-256 is stored.
+- **Passwords** are hashed with argon2id (OWASP parameters). They need at least 12 characters, and common ones are refused. Five wrong passwords in a row lock the account for 15 minutes. Every failed login gets the same answer, and an unknown email takes as long to refuse as a wrong password, so the login form can't be used to find out which accounts exist.
+- **Sessions** are rows in the database, not tokens the browser can read. The browser holds a random value in an `HttpOnly`, `SameSite=Strict` cookie; the database holds only its hash. A session ends after 30 minutes without a request or 12 hours after login. Logging out, changing the password or disabling the account ends sessions at once.
+- **CSRF:** besides `SameSite=Strict`, every request that changes something must carry an `X-Requested-With` header, which another site can't add without passing a CORS check that only `ALLOWED_ORIGINS` pass.
+
 ## Tech stack
 
 | Layer | Technology |
 |---|---|
 | Frontend | React 18, React Router, Vite, Tailwind CSS |
-| Backend | Go (`net/http`), pgx, JWT |
+| Backend | Go (`net/http`), pgx, argon2id passwords, server-side sessions |
 | AI service | Python, FastAPI, PyMuPDF, Ollama Python client |
 | Models | `qwen3.5:4b` (primary, extraction and summaries), `gemma4:e2b` (fallback) |
 | Database | PostgreSQL |
@@ -145,7 +154,6 @@ cd frontend; .\run.ps1     # Web app on http://localhost:5173
 # Terminal 1: Go API on http://localhost:8080
 cd backend
 export DATABASE_URL="postgres://postgres:postgres@localhost:5432/med_sum?sslmode=disable"
-export JWT_SECRET="dev-secret"
 export INTERNAL_API_TOKEN="dev-internal-token"
 go run ./cmd/server
 ```
@@ -164,9 +172,23 @@ cd frontend
 npm run dev
 ```
 
-### 6. Try it out
+### 6. Create the development accounts
 
-1. Open http://localhost:5173 and log in with any phone number and any OTP (the OTP is not checked yet).
+There is no sign-up and there are no default passwords. For local development, `medsumctl seed-dev` creates an organisation ("Dev Hospital"), an admin (`dev-admin@med-sum.test`), a clinician (`dev-clinician@med-sum.test`) and one account per synthetic patient (see [Synthetic dataset](#synthetic-dataset)), all with the password you choose (at least 12 characters):
+
+```bash
+cd backend
+export DATABASE_URL="postgres://postgres:postgres@localhost:5432/med_sum?sslmode=disable"
+export MEDSUM_ENV=dev
+export MEDSUM_DEV_PASSWORD="choose a long dev password"
+go run ./cmd/medsumctl seed-dev
+```
+
+On PowerShell, set the same variables with `$env:NAME = "value"`.
+
+### 7. Try it out
+
+1. Open http://localhost:5173 and log in as `dev-clinician@med-sum.test` with your `MEDSUM_DEV_PASSWORD`.
 2. Upload a lab report or prescription as a PDF, JPG or PNG. Processing starts straight away; the document list shows its status and updates itself. On a CPU each page takes a few minutes.
 3. Open the document to read its summary once it shows **Ready**.
 4. Open **Patient summary** and choose **Generate summary** to combine every processed document.
@@ -176,26 +198,33 @@ npm run dev
 | Variable | Used by | Default |
 |---|---|---|
 | `DATABASE_URL` | Backend (required), AI service | AI service falls back to `postgres://postgres:postgres@localhost:5432/med_sum?sslmode=disable` |
-| `JWT_SECRET` | Backend (required) | none |
 | `INTERNAL_API_TOKEN` | Backend (required), AI service | none; must be the same in both services |
 | `HTTP_ADDRESS` | Backend | `:8080` |
 | `UPLOADS_DIR` | Backend | `./uploads` (resolved to an absolute path) |
 | `INSIGHTS_SERVICE_URL` | Backend | `http://localhost:9000` |
+| `ALLOWED_ORIGINS` | Backend | `http://localhost:5173`; comma-separated browser origins that may call the API |
+| `COOKIE_SECURE` | Backend | `true`; set `false` only for a browser that won't keep a `Secure` cookie on plain-HTTP `localhost` |
+| `MEDSUM_APP_URL` | `medsumctl` | `http://localhost:5173`; where setup and reset links point |
+| `MEDSUM_ENV`, `MEDSUM_DEV_PASSWORD` | `medsumctl seed-dev`, `dataset.load` | none; `seed-dev` runs only with `MEDSUM_ENV=dev` |
 | `MEDSUM_PRIMARY_MODEL` | AI service | `qwen3.5:4b` |
 | `MEDSUM_FALLBACK_MODEL` | AI service | `gemma4:e2b` |
 | `MEDSUM_NUM_CTX` | AI service | `16384` (context window for each model call) |
-| `VITE_API_BASE_URL` | Frontend | `http://localhost:8080`, set in `frontend/.env.local` |
-
-The backend allows CORS requests from `http://localhost:5173` only.
+| `VITE_API_BASE_URL` | Frontend | `/api`, set in `frontend/.env.local`; the Vite dev server proxies it to the backend |
+| `MEDSUM_API_TARGET` | Frontend (Vite proxy) | `http://localhost:8080` |
 
 ## API
 
-All backend routes except `/healthz` and `/login` require an `Authorization: Bearer <token>` header.
+All backend routes except `/healthz`, `/auth/login`, `/auth/logout` and `/auth/setup*` need a session: the `medsum_session` cookie that `/auth/login` sets. Every request other than `GET` must also carry `X-Requested-With: med-sum`, and a browser request must come from an origin in `ALLOWED_ORIGINS` (CSRF protection).
 
 | Method | Route | Description |
 |---|---|---|
 | `GET` | `/healthz` | Health check |
-| `POST` | `/login` | Log in with `{phone_number, full_name?}`; returns a JWT and the user |
+| `POST` | `/auth/login` | Log in with `{email, password}`; sets the session cookie and returns the account |
+| `POST` | `/auth/logout` | End the session |
+| `GET` | `/auth/me` | The logged-in account: id, email, name, roles, organisation |
+| `POST` | `/auth/password` | Change the password with `{current_password, new_password}`; ends the account's other sessions |
+| `POST` | `/auth/setup/info` | `{token}` from a setup or reset link: whose account it is for |
+| `POST` | `/auth/setup` | Set a password with `{token, password}` from a setup or reset link |
 | `GET` | `/documents` | List the user's documents, newest first, each with its `insight_status` |
 | `POST` | `/documents` | Upload a PDF, JPG or PNG (multipart field `file`, max 20 MB) and start processing it |
 | `DELETE` | `/documents/{id}` | Delete a document and its file |
@@ -206,20 +235,23 @@ All backend routes except `/healthz` and `/login` require an `Authorization: Bea
 
 The AI service exposes `GET /health` and two internal routes, `POST /internal/generate-insights` and `POST /internal/generate-user-insights`. Both require an `X-Internal-Token` header.
 
-A Postman collection is in [`postman/collections/`](postman/collections/med-sum.postman_collection.json). It uses the variables `backend_url`, `ai_service_url`, `auth_token` (from the login response) and `internal_api_token`.
+A Postman collection is in [`postman/collections/`](postman/collections/med-sum.postman_collection.json). It uses the variables `backend_url`, `ai_service_url`, `email`, `password` and `internal_api_token`; Postman keeps the session cookie from the login request.
 
 ## Project structure
 
 ```
 backend/
-  cmd/server/            entry point: configuration, CORS, HTTP server
-  internal/httpapi/      handlers, JWT auth, forwarding to the AI service
+  cmd/server/            entry point: configuration, HTTP server
+  cmd/medsumctl/         command line: organisations, accounts, setup and reset links, dev accounts
+  internal/auth/         password hashing and rules, random tokens
+  internal/httpapi/      handlers, sessions, CORS and CSRF checks, forwarding to the AI service
   internal/db/           PostgreSQL data access (pgx)
 db/schema.sql            the whole database schema (no migrations; see step 2 of setup)
 frontend/
   src/api/               API client
   src/components/        shared components (sandboxed HTML viewer)
-  src/pages/             login, documents, document summary, patient summary
+  src/auth/              the logged-in account (AuthProvider) and the route guard
+  src/pages/             login, set password, account, documents, document summary, patient summary
 scripts/
   src/insights_service.py    FastAPI service and background job handling
   src/extract_report_slm.py  page extraction from images
@@ -261,11 +293,11 @@ The extraction and summary steps can also be run on their own, which is useful f
 
 ### Synthetic dataset
 
-[`scripts/evals/dataset/`](scripts/evals/dataset/README.md) holds 17 fictional documents (lab reports and prescriptions for 4 patients) with an answer key and expected transcription for each. Regenerate it with `python -m dataset.build` from `scripts/src`. `python -m dataset.load` shows what it would upload through the backend; `--yes` uploads it, which starts processing on the AI service (live model runs).
+[`scripts/evals/dataset/`](scripts/evals/dataset/README.md) holds 17 fictional documents (lab reports and prescriptions for 4 patients) with an answer key and expected transcription for each. Regenerate it with `python -m dataset.build` from `scripts/src`. `python -m dataset.load` shows what it would upload through the backend; `--yes` uploads it, which starts processing on the AI service (live model runs). It logs in as each patient's development account, so run `medsumctl seed-dev` first and set `MEDSUM_DEV_PASSWORD`.
 
 ## Limitations
 
-- **No real authentication.** Any phone number receives a token, and the OTP field is not verified.
+- **Authentication is stage 1 of [the plan](docs/auth-plan.md).** Accounts, passwords and sessions work, but there are no roles or permissions yet (an admin account can do what a clinician can), each account still sees only the documents it uploaded, there is no audit log and no second factor, and accounts are created from the command line only. Medical registration numbers are not verified. There is no email, so setup and reset links are handed over by whoever creates them.
 - **One extraction prompt.** Lab reports and prescriptions share one prompt; the document type is not detected yet.
 - **Patient summary ordering.** Reports are ordered by upload date, not by the date printed on them, and the summary is only regenerated on request.
 - **Summaries are model-written HTML.** Values are not yet stored as structured data or checked against the source document.
@@ -275,7 +307,7 @@ The extraction and summary steps can also be run on their own, which is useful f
 
 The next phase focuses on doctors and hospital groups:
 
-- Real OTP authentication and role-based access for patients, doctors and organisations
+- Roles and staff management, patient records with organisation-scoped access, an audit log and a second factor (stages 2-6 of [the auth plan](docs/auth-plan.md))
 - Patient-controlled sharing of records with doctors
 - Structured clinical data (lab values, medications, diagnoses) instead of HTML only
 - Timelines, trends and flags for abnormal values

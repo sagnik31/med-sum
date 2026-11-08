@@ -83,7 +83,7 @@ func TestNewStoragePathIsRandomAndKeepsTheExtension(t *testing.T) {
 
 func TestUploadSavesTheFileAndStartsProcessing(t *testing.T) {
 	e := newTestEnv(t)
-	userID, auth := e.login("+910000000001")
+	userID, auth := e.login("me@hospital.test")
 	body, contentType := multipartFile(t, "file", "cbc.pdf", pdfBytes)
 
 	rec := e.do(http.MethodPost, "/documents", auth, body, contentType)
@@ -122,7 +122,7 @@ func TestUploadSavesTheFileAndStartsProcessing(t *testing.T) {
 func TestUploadSucceedsWhenTheAIServiceIsDown(t *testing.T) {
 	e := newTestEnv(t)
 	e.ai.srv.Close()
-	_, auth := e.login("+910000000001")
+	_, auth := e.login("me@hospital.test")
 	body, contentType := multipartFile(t, "file", "rx.png", pngBytes)
 
 	rec := e.do(http.MethodPost, "/documents", auth, body, contentType)
@@ -154,7 +154,7 @@ func TestRejectedUploadsStoreNothing(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			e := newTestEnv(t)
-			_, auth := e.login("+910000000001")
+			_, auth := e.login("me@hospital.test")
 			body, contentType := multipartFile(t, tt.field, tt.file, tt.content)
 
 			rec := e.do(http.MethodPost, "/documents", auth, body, contentType)
@@ -174,7 +174,7 @@ func TestRejectedUploadsStoreNothing(t *testing.T) {
 
 func TestUploadIsNotAMultipartForm(t *testing.T) {
 	e := newTestEnv(t)
-	_, auth := e.login("+910000000001")
+	_, auth := e.login("me@hospital.test")
 
 	rec := e.do(http.MethodPost, "/documents", auth, strings.NewReader("{}"), "application/json")
 
@@ -185,7 +185,7 @@ func TestUploadIsNotAMultipartForm(t *testing.T) {
 
 func TestUploadRemovesTheFileWhenTheDatabaseFails(t *testing.T) {
 	e := newTestEnv(t)
-	_, auth := e.login("+910000000001")
+	_, auth := e.login("me@hospital.test")
 	e.store.failWith = io.ErrUnexpectedEOF
 	body, contentType := multipartFile(t, "file", "cbc.pdf", pdfBytes)
 

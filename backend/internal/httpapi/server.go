@@ -17,6 +17,7 @@ import (
 	"strings"
 	"time"
 
+	"backend/internal/auth"
 	"backend/internal/db"
 
 	"github.com/jackc/pgx/v5/pgtype"
@@ -25,7 +26,22 @@ import (
 // Store is the data access the handlers use. *db.Store implements it; tests
 // use an in-memory fake.
 type Store interface {
-	UpsertUserByPhone(ctx context.Context, phone string, fullName *string) (*db.User, error)
+	// Accounts and sessions
+	GetUserByEmail(ctx context.Context, email string) (*db.User, error)
+	GetUserByID(ctx context.Context, id string) (*db.User, error)
+	RecordLoginFailure(ctx context.Context, userID string, maxFailures int, lockUntil time.Time) (*time.Time, error)
+	RecordLoginSuccess(ctx context.Context, userID string, now time.Time) error
+	SetPasswordHash(ctx context.Context, userID, hash string, now time.Time) error
+	CreateSession(ctx context.Context, sess db.Session) error
+	GetSession(ctx context.Context, tokenHash []byte) (*db.SessionWithUser, error)
+	TouchSession(ctx context.Context, tokenHash []byte, now time.Time) error
+	DeleteSession(ctx context.Context, tokenHash []byte) error
+	DeleteUserSessions(ctx context.Context, userID string, keep []byte) error
+	DeleteExpiredSessions(ctx context.Context, now time.Time, idle time.Duration) (int64, error)
+	GetUsableToken(ctx context.Context, tokenHash []byte, now time.Time) (*db.User, error)
+	CompletePasswordSetup(ctx context.Context, tokenHash []byte, passwordHash string, now time.Time) (string, error)
+
+	// Documents and summaries
 	GetPatientSummary(ctx context.Context, userID string) (*db.PatientSummary, error)
 	CreateDocument(ctx context.Context, userID, originalName, contentType, storagePath string) (*db.Document, error)
 	ListDocumentsByUser(ctx context.Context, userID string) ([]db.Document, error)
@@ -34,45 +50,74 @@ type Store interface {
 	GetInsightByDocumentID(ctx context.Context, docID string) (*db.Insight, error)
 }
 
-type Server struct {
-	db            Store
-	jwtSecret     []byte
-	uploadsDir    string // absolute, so the AI service can open stored paths
-	insightsURL   string // AI service base URL
-	internalToken string // shared secret the AI service requires
-	httpClient    *http.Client
-	mux           *http.ServeMux
+// Config is what the server needs besides its store.
+type Config struct {
+	UploadsDir     string   // absolute, so the AI service can open stored paths
+	InsightsURL    string   // AI service base URL
+	InternalToken  string   // shared secret the AI service requires
+	AllowedOrigins []string // browser origins allowed to call the API
+	CookieSecure   bool     // false only for plain-HTTP local development
+	Hasher         *auth.Hasher
+	Now            func() time.Time // the clock; time.Now when nil
 }
 
-func NewServer(store Store, jwtSecret, uploadsDir, insightsURL, internalToken string) *Server {
+type Server struct {
+	db             Store
+	uploadsDir     string
+	insightsURL    string
+	internalToken  string
+	allowedOrigins map[string]bool
+	cookieSecure   bool
+	hasher         *auth.Hasher
+	now            func() time.Time
+	httpClient     *http.Client
+	mux            *http.ServeMux
+	handler        http.Handler
+}
+
+func NewServer(store Store, cfg Config) *Server {
 	s := &Server{
-		db:            store,
-		jwtSecret:     []byte(jwtSecret),
-		uploadsDir:    uploadsDir,
-		insightsURL:   strings.TrimRight(insightsURL, "/"),
-		internalToken: internalToken,
-		httpClient:    &http.Client{Timeout: 10 * time.Second},
-		mux:           http.NewServeMux(),
+		db:             store,
+		uploadsDir:     cfg.UploadsDir,
+		insightsURL:    strings.TrimRight(cfg.InsightsURL, "/"),
+		internalToken:  cfg.InternalToken,
+		allowedOrigins: map[string]bool{},
+		cookieSecure:   cfg.CookieSecure,
+		hasher:         cfg.Hasher,
+		now:            cfg.Now,
+		httpClient:     &http.Client{Timeout: 10 * time.Second},
+		mux:            http.NewServeMux(),
+	}
+	if s.now == nil {
+		s.now = time.Now
+	}
+	for _, o := range cfg.AllowedOrigins {
+		s.allowedOrigins[o] = true
 	}
 
 	// Public
 	s.mux.HandleFunc("/healthz", s.handleHealth)
-	s.mux.HandleFunc("/login", s.handleLogin)
+	s.mux.HandleFunc("/auth/login", s.handleLogin)
+	s.mux.HandleFunc("/auth/logout", s.handleLogout)
+	s.mux.HandleFunc("/auth/setup/info", s.handleSetupInfo)
+	s.mux.HandleFunc("/auth/setup", s.handleSetup)
 
-	// Authenticated:
+	// Logged in
+	s.mux.HandleFunc("/auth/me", s.withSession(s.handleMe))
+	s.mux.HandleFunc("/auth/password", s.withSession(s.handleChangePassword))
 	// /documents (POST = upload, GET = list)
-	s.mux.HandleFunc("/documents", s.withAuth(s.handleDocuments))
+	s.mux.HandleFunc("/documents", s.withSession(s.handleDocuments))
 	// /documents/{id} and /documents/{id}/insight (GET = fetch, POST = generate)
-	s.mux.HandleFunc("/documents/", s.withAuth(s.handleDocumentByID))
-
+	s.mux.HandleFunc("/documents/", s.withSession(s.handleDocumentByID))
 	// /user/insights (GET = fetch the patient summary, POST = generate it)
-	s.mux.HandleFunc("/user/insights", s.withAuth(s.handlePatientInsights))
+	s.mux.HandleFunc("/user/insights", s.withSession(s.handlePatientInsights))
 
+	s.handler = s.withOrigins(s.mux)
 	return s
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	s.mux.ServeHTTP(w, r)
+	s.handler.ServeHTTP(w, r)
 }
 
 // Simple helper for JSON responses
@@ -95,55 +140,6 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte("ok"))
-}
-
-// ----- Login -----
-
-type loginRequest struct {
-	PhoneNumber string  `json:"phone_number"`
-	FullName    *string `json:"full_name"`
-}
-
-type loginResponse struct {
-	Token string  `json:"token"`
-	User  db.User `json:"user"`
-}
-
-func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
-
-	var req loginRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid JSON body", http.StatusBadRequest)
-		return
-	}
-	if strings.TrimSpace(req.PhoneNumber) == "" {
-		http.Error(w, "phone_number is required", http.StatusBadRequest)
-		return
-	}
-
-	user, err := s.db.UpsertUserByPhone(r.Context(), req.PhoneNumber, req.FullName)
-	if err != nil {
-		log.Printf("UpsertUserByPhone error: %v", err)
-		http.Error(w, "internal error", http.StatusInternalServerError)
-		return
-	}
-
-	token, err := s.generateToken(user.ID)
-	if err != nil {
-		log.Printf("generateToken error: %v", err)
-		http.Error(w, "internal error", http.StatusInternalServerError)
-		return
-	}
-
-	resp := loginResponse{
-		Token: token,
-		User:  *user,
-	}
-	writeJSON(w, http.StatusOK, resp)
 }
 
 // ----- Documents collection: POST /documents, GET /documents -----
