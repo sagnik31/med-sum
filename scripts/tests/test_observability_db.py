@@ -16,6 +16,7 @@ import pytest
 
 import llm
 from dataset_records import DOC_IDS, key
+from db_rows import add_account
 from observability import (
     JsonFormatter,
     RunError,
@@ -36,30 +37,9 @@ SECRET = "Asha Rao, Hb 13.2"  # stands in for patient content
 
 
 def add_document(db) -> str:
-    """
-    A document row to hang runs on. Works with the users table before and
-    after auth stage 1 (docs/auth-plan.md), which is uncommitted in the
-    working tree while this is written; once it lands, use db_rows.
-    """
+    """A document row to hang runs on."""
+    user_id = add_account(db)
     with db.cursor() as cur:
-        cur.execute("SELECT to_regclass('organizations') IS NOT NULL")
-        if cur.fetchone()[0]:
-            cur.execute(
-                "INSERT INTO organizations (name) VALUES ('Test Hospital')"
-                " ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name RETURNING id"
-            )
-            (org,) = cur.fetchone()
-            cur.execute(
-                "INSERT INTO users (org_id, email, full_name)"
-                " VALUES (%s, %s, 'Dr Test') RETURNING id",
-                (org, f"{uuid.uuid4().hex}@hospital.test"),
-            )
-        else:
-            cur.execute(
-                "INSERT INTO users (phone_number) VALUES (%s) RETURNING id",
-                (uuid.uuid4().hex,),
-            )
-        (user_id,) = cur.fetchone()
         cur.execute(
             "INSERT INTO documents (user_id, original_name, content_type, storage_path)"
             " VALUES (%s, 'report.pdf', 'application/pdf', '/tmp/x.pdf') RETURNING id",
