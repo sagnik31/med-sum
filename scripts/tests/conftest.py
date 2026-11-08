@@ -4,14 +4,11 @@ Shared fixtures for the AI service tests.
 - No test reaches Ollama: every test gets a fake model client, which fails
   the test on any call it was not told to expect.
 - Tests marked `db` run against a throwaway database (med_sum_test_py),
-  created from the schema files at the start of the session and dropped at
+  created from db/schema.sql at the start of the session and dropped at
   the end. The development database (med_sum) is never touched.
 """
 
 import os
-import shutil
-import subprocess
-from pathlib import Path
 from types import SimpleNamespace
 from urllib.parse import urlsplit, urlunsplit
 
@@ -19,12 +16,8 @@ import psycopg2
 import pytest
 
 import llm
+import reset_db
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-SCHEMA_FILES = [
-    PROJECT_ROOT / "db" / "migrations" / "med_sum_schema.sql",
-    PROJECT_ROOT / "db" / "migrations" / "002_patient_summary_status.sql",
-]
 TEST_DB_NAME = "med_sum_test_py"
 # Any database on the server will do; it is only used to create and drop the test one.
 ADMIN_URL = os.environ.get(
@@ -96,7 +89,7 @@ def model_client(monkeypatch) -> FakeModelClient:
 def pytest_collection_modifyitems(items):
     """Mark every test that uses the database, so `-m "not db"` skips them."""
     for item in items:
-        if "db" in getattr(item, "fixturenames", ()):
+        if {"db", "database_url"} & set(getattr(item, "fixturenames", ())):
             item.add_marker(pytest.mark.db)
 
 
@@ -113,9 +106,6 @@ def _unavailable(reason: str):
 
 @pytest.fixture(scope="session")
 def database_url():
-    psql = shutil.which("psql")
-    if not psql:
-        _unavailable("psql is not on PATH")
     try:
         admin = psycopg2.connect(ADMIN_URL, connect_timeout=5)
     except psycopg2.OperationalError as e:
@@ -131,13 +121,10 @@ def database_url():
         cur.execute(f"CREATE DATABASE {TEST_DB_NAME}")
     url = _url_with_database(ADMIN_URL, TEST_DB_NAME)
     try:
-        for schema in SCHEMA_FILES:
-            subprocess.run(
-                [psql, "-q", "-v", "ON_ERROR_STOP=1", "-d", url, "-f", str(schema)],
-                check=True,
-                capture_output=True,
-                text=True,
-            )
+        conn = psycopg2.connect(url)
+        with conn:
+            reset_db.load_schema(conn)
+        conn.close()
         yield url
     finally:
         drop()

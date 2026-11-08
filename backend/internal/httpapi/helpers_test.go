@@ -115,7 +115,6 @@ func (f *fakeStore) CreateDocument(_ context.Context, userID, originalName, cont
 		OriginalName: originalName,
 		ContentType:  contentType,
 		StoragePath:  storagePath,
-		Status:       "uploaded",
 		UploadedAt:   now,
 		UpdatedAt:    now,
 	}

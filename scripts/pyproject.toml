@@ -12,5 +12,5 @@ testpaths = ["tests"]
 pythonpath = ["src"]
 addopts = "-ra --strict-markers"
 markers = [
-    "db: needs a throwaway Postgres database; skipped when Postgres or psql is unavailable (set MEDSUM_REQUIRE_DB=1 to fail instead)",
+    "db: needs a throwaway Postgres database; skipped when Postgres is unavailable (set MEDSUM_REQUIRE_DB=1 to fail instead)",
 ]

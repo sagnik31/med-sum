@@ -15,7 +15,6 @@ type Document struct {
 	OriginalName string    `json:"original_name"`
 	ContentType  string    `json:"content_type"`
 	StoragePath  string    `json:"-"` // server-side path; never sent to clients
-	Status       string    `json:"status"`
 	UploadedAt   time.Time `json:"uploaded_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 	// Status of the document's insight job ("not_started" when there is
@@ -32,9 +31,9 @@ func (s *Store) CreateDocument(
 	storagePath string,
 ) (*Document, error) {
 	const q = `
-INSERT INTO documents (user_id, original_name, content_type, storage_path, status)
-VALUES ($1, $2, $3, $4, 'uploaded')
-RETURNING id, user_id, original_name, content_type, storage_path, status, uploaded_at, updated_at;
+INSERT INTO documents (user_id, original_name, content_type, storage_path)
+VALUES ($1, $2, $3, $4)
+RETURNING id, user_id, original_name, content_type, storage_path, uploaded_at, updated_at;
 `
 	row := s.pool.QueryRow(ctx, q, userID, originalName, contentType, storagePath)
 
@@ -45,7 +44,6 @@ RETURNING id, user_id, original_name, content_type, storage_path, status, upload
 		&d.OriginalName,
 		&d.ContentType,
 		&d.StoragePath,
-		&d.Status,
 		&d.UploadedAt,
 		&d.UpdatedAt,
 	); err != nil {
@@ -58,7 +56,7 @@ RETURNING id, user_id, original_name, content_type, storage_path, status, upload
 // with the status of each document's insight job.
 func (s *Store) ListDocumentsByUser(ctx context.Context, userID string) ([]Document, error) {
 	const q = `
-SELECT d.id, d.user_id, d.original_name, d.content_type, d.storage_path, d.status,
+SELECT d.id, d.user_id, d.original_name, d.content_type, d.storage_path,
        d.uploaded_at, d.updated_at, COALESCE(i.status, 'not_started')
 FROM documents d
 LEFT JOIN insights i ON i.document_id = d.id
@@ -80,7 +78,6 @@ ORDER BY d.uploaded_at DESC;
 			&d.OriginalName,
 			&d.ContentType,
 			&d.StoragePath,
-			&d.Status,
 			&d.UploadedAt,
 			&d.UpdatedAt,
 			&d.InsightStatus,

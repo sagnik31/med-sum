@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"encoding/json"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -15,8 +14,6 @@ type Insight struct {
 	HTMLInsights string
 	Status       string
 	ErrorMessage *string // set by the AI service when status is "failed"
-	DetailsJSON  json.RawMessage
-	GeneratedAt  *time.Time
 	UpdatedAt    *time.Time
 }
 
@@ -30,7 +27,6 @@ func (s *Store) GetDocumentByIDAndUser(ctx context.Context, docID, userID string
 		  original_name,
 		  content_type,
 		  storage_path,
-		  status,
 		  uploaded_at,
 		  updated_at
 		FROM documents
@@ -46,7 +42,6 @@ func (s *Store) GetDocumentByIDAndUser(ctx context.Context, docID, userID string
 		&d.OriginalName,
 		&d.ContentType,
 		&d.StoragePath,
-		&d.Status,
 		&d.UploadedAt,
 		&d.UpdatedAt,
 	)
@@ -69,8 +64,6 @@ func (s *Store) GetInsightByDocumentID(ctx context.Context, docID string) (*Insi
 		  COALESCE(html_insights, ''),
 		  status,
 		  error_message,
-		  details_json,
-		  generated_at,
 		  updated_at
 		FROM insights
 		WHERE document_id = $1
@@ -84,8 +77,6 @@ func (s *Store) GetInsightByDocumentID(ctx context.Context, docID string) (*Insi
 		&ins.HTMLInsights,
 		&ins.Status,
 		&ins.ErrorMessage,
-		&ins.DetailsJSON,
-		&ins.GeneratedAt,
 		&ins.UpdatedAt,
 	)
 	if err == pgx.ErrNoRows {

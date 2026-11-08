@@ -83,14 +83,12 @@ func setupTestDB() (func(), error) {
 	testURL := u.String()
 
 	_, thisFile, _, _ := runtime.Caller(0)
-	migrations := filepath.Join(filepath.Dir(thisFile), "..", "..", "..", "db", "migrations")
-	for _, f := range []string{"med_sum_schema.sql", "002_patient_summary_status.sql"} {
-		out, err := exec.Command(psql, "-q", "-v", "ON_ERROR_STOP=1", "-d", testURL,
-			"-f", filepath.Join(migrations, f)).CombinedOutput()
-		if err != nil {
-			cleanup()
-			return nil, fmt.Errorf("load %s: %v\n%s", f, err, out)
-		}
+	schema := filepath.Join(filepath.Dir(thisFile), "..", "..", "..", "db", "schema.sql")
+	out, err := exec.Command(psql, "-q", "-v", "ON_ERROR_STOP=1", "-d", testURL,
+		"-f", schema).CombinedOutput()
+	if err != nil {
+		cleanup()
+		return nil, fmt.Errorf("load %s: %v\n%s", schema, err, out)
 	}
 
 	testStore, err = New(ctx, testURL)
@@ -196,7 +194,7 @@ func TestCreateDocument(t *testing.T) {
 
 	d := mustDocument(t, s, u.ID, `D:\uploads\abc.pdf`)
 
-	if d.ID == "" || d.UserID != u.ID || d.Status != "uploaded" || d.StoragePath != `D:\uploads\abc.pdf` {
+	if d.ID == "" || d.UserID != u.ID || d.StoragePath != `D:\uploads\abc.pdf` {
 		t.Errorf("document = %+v", d)
 	}
 	if time.Since(d.UploadedAt) > time.Minute {
