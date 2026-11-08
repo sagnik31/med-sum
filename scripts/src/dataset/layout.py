@@ -51,6 +51,9 @@ class LabTest:
     num: object = AUTO  # expected value_num
     computed: object = AUTO  # expected flag_computed
     analyte: object = AUTO
+    # Expected conversion to the analyte's canonical unit (the unit table of
+    # derive/units.py), written by hand; None when printed in that unit.
+    converted: dict | None = None
     panel: str | None = None  # set by the panel the test is printed in
 
     def value_num(self) -> float | None:

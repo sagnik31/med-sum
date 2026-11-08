@@ -101,8 +101,9 @@ README_RULES = """## How the answer keys are labelled
   that code: `value_num` only when the printed value is a plain number (Indian
   digit grouping such as `2,45,000` included); a computed flag only when exactly
   one range applies; no days for durations in months or "Continue"; no daily
-  schedule for a weekly dose. Unit conversions are left empty until the unit
-  table exists (step 5).
+  schedule for a weekly dose. A conversion is given only for a value printed in
+  a unit other than its analyte's canonical one (counts in `10³/µL` or
+  `lakh/cumm`, converted to `/cumm`).
 - **Text layers:** PDFs with a text layer were laid out by PyMuPDF; their text
   splits table cells over lines and keeps ligatures (`ﬁ`), so compare it with
   Unicode normalisation (NFKC) and spacing ignored.

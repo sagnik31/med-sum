@@ -149,6 +149,11 @@ def fixed(m: float, n: float, ni: float) -> dict:
     }
 
 
+def cumm(value: float, printed_unit: str) -> dict:
+    """Expected conversion of a count to /cumm, the canonical count unit."""
+    return {"value": value, "unit": "/cumm", "from_unit": printed_unit}
+
+
 TIMES = {"OD": {"times_per_day": 1}, "BD": {"times_per_day": 2}, "TDS": {"times_per_day": 3}}  # fmt: skip
 SOS = {"as_needed": True}
 
@@ -416,8 +421,10 @@ d03 = Doc(
                            ("Sample Collected", "16-Dec-2024", date(2024, 12, 16))),
             *lab_panel("HAEMATOLOGY", [
                 LabTest(HB, "11.2", "g/dL", (rng("12.0 - 15.0"),), "L"),
-                LabTest("Total Leucocyte Count", "6.8", "10³/µL", (rng("4.0 - 10.0"),)),
-                LabTest("Platelets", "2.31", "lakh/cumm", (rng("1.50 - 4.10"),)),
+                LabTest("Total Leucocyte Count", "6.8", "10³/µL", (rng("4.0 - 10.0"),),
+                        converted=cumm(6800, "10³/µL")),
+                LabTest("Platelets", "2.31", "lakh/cumm", (rng("1.50 - 4.10"),),
+                        converted=cumm(231000, "lakh/cumm")),
                 LabTest("MCV", "79", "fL", (rng("83 - 101"),), "L"),
             ], flag_column=False),
         ],
@@ -814,8 +821,10 @@ d16 = Doc(
                        ("Reported", "02-Apr-2025 10:05 AM", date(2025, 4, 2))),
         *lab_panel("HAEMATOLOGY", [
             LabTest(HB, "14.8", "g/dL", (rng("13.0 - 17.0"),)),
-            LabTest("Total Leucocyte Count", "7.9", "10³/µL", (rng("4.0 - 10.0"),)),
-            LabTest("Platelets", "2.65", "lakh/cumm", (rng("1.50 - 4.10"),)),
+            LabTest("Total Leucocyte Count", "7.9", "10³/µL", (rng("4.0 - 10.0"),),
+                    converted=cumm(7900, "10³/µL")),
+            LabTest("Platelets", "2.65", "lakh/cumm", (rng("1.50 - 4.10"),),
+                    converted=cumm(265000, "lakh/cumm")),
         ], flag_column=False),
         *end_of_report("Dr. Prakash Nair, MD (Pathology)"),
     ]],

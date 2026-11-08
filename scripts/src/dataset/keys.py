@@ -141,6 +141,7 @@ def _item(item, cite: dict) -> tuple[str, str, dict, dict | None]:
                 for r in item.ranges
             ],
             "flag_computed": item.flag_computed(),
+            "converted": item.converted,
         }
         return "observations", "obs", printed, derived
     if isinstance(item, Medicine):

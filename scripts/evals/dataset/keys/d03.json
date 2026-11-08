@@ -231,7 +231,11 @@
           }
         ],
         "flag_computed": "normal",
-        "converted": null
+        "converted": {
+          "value": 6800.0,
+          "unit": "/cumm",
+          "from_unit": "10³/µL"
+        }
       }
     },
     {
@@ -266,7 +270,11 @@
           }
         ],
         "flag_computed": "normal",
-        "converted": null
+        "converted": {
+          "value": 231000.0,
+          "unit": "/cumm",
+          "from_unit": "lakh/cumm"
+        }
       }
     },
     {
