@@ -5,6 +5,7 @@ patient each document was uploaded to.
 """
 
 import json
+from datetime import date
 from functools import cache
 
 import pymupdf
@@ -12,6 +13,7 @@ import pymupdf
 from dataset.build import DATASET_DIR
 from record.document import DocumentRecord, PageTranscription
 from record.printed import PARSE_MODELS, DocumentType, LabReportParse, PrescriptionParse
+from validators import ExpectedPatient
 
 MANIFEST = json.loads((DATASET_DIR / "manifest.json").read_text(encoding="utf-8"))
 DOCS = {d["id"]: d for d in MANIFEST["documents"]}
@@ -72,3 +74,16 @@ def keyed_record(doc_id: str) -> DocumentRecord:
     record = key(doc_id)
     record.pages = with_text_layers(doc_id, record.pages)
     return record
+
+
+def expected_patient(doc_id: str) -> ExpectedPatient:
+    """The patient a document was uploaded to, as the Phase B patient record has it."""
+    patient = next(
+        p for p in MANIFEST["patients"] if p["key"] == DOCS[doc_id]["patient"]
+    )
+    return ExpectedPatient(
+        name=patient["name"],
+        sex=patient["sex"],
+        date_of_birth=date.fromisoformat(patient["date_of_birth"]),
+        mrn=patient["mrn"],
+    )
