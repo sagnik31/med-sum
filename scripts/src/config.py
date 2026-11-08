@@ -42,4 +42,11 @@ OUTPUT_HTML_SLM = os.path.join(
 PATIENT_SUMMARY_PROMPT_FILE = os.path.join(
     SCRIPTS_DIR, "prompt", "txt", "patient_summary_prompt.txt"
 )
+
+# Structured JSON log file (observability.configure_logging). Logs hold ids,
+# statuses and timings only, never patient content; it is gitignored.
+LOG_FILE = os.environ.get(
+    "MEDSUM_LOG_FILE", os.path.join(SCRIPTS_DIR, "logs", "medsum.jsonl")
+)
+
 # ----------------------------------
