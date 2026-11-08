@@ -55,7 +55,7 @@ The cumulative patient summary is a separate background job, started from the Pa
 
 ### Accounts and login
 
-The app is for hospital staff; patients have no accounts. The design, and the stages still to come, are in [docs/auth-plan.md](docs/auth-plan.md).
+The app is for hospital staff; patients have no accounts.
 
 - **Accounts are created, never signed up for.** `medsumctl create-admin` and `create-user` create an account and print a one-time setup link (valid for 72 hours) that the person opens to choose their own password; `medsumctl reset-link` issues a reset link (24 hours). The token is in the link's URL fragment, which browsers don't send to servers, and only its SHA-256 is stored.
 - **Passwords** are hashed with argon2id (OWASP parameters). They need at least 12 characters, and common ones are refused. Five wrong passwords in a row lock the account for 15 minutes. Every failed login gets the same answer, and an unknown email takes as long to refuse as a wrong password, so the login form can't be used to find out which accounts exist.
@@ -310,7 +310,7 @@ The extraction and summary steps can also be run on their own, which is useful f
 
 ## Limitations
 
-- **Authentication is at stage 2 of [the plan](docs/auth-plan.md).** Accounts, sessions, roles and staff management work, but each account still sees only the documents it uploaded (patient records shared within an organisation come in stage 3), and there is no audit log and no second factor. The first admin of an organisation is created from the command line. Medical registration numbers are not verified. There is no email, so setup and reset links are handed over by whoever creates them.
+- **Authentication is not finished.** Accounts, sessions, roles and staff management work, but each account still sees only the documents it uploaded (patient records shared within an organisation come later), and there is no audit log and no second factor. The first admin of an organisation is created from the command line. Medical registration numbers are not verified. There is no email, so setup and reset links are handed over by whoever creates them.
 - **One extraction prompt.** Lab reports and prescriptions share one prompt; the document type is not detected yet.
 - **Patient summary ordering.** Reports are ordered by upload date, not by the date printed on them, and the summary is only regenerated on request.
 - **Summaries are model-written HTML.** Values are not yet stored as structured data or checked against the source document.
@@ -320,7 +320,7 @@ The extraction and summary steps can also be run on their own, which is useful f
 
 The next phase focuses on doctors and hospital groups:
 
-- Patient records with organisation-scoped access, an audit log and a second factor (stages 3-6 of [the auth plan](docs/auth-plan.md))
+- Patient records with organisation-scoped access, an audit log and a second factor
 - Patient-controlled sharing of records with doctors
 - Structured clinical data (lab values, medications, diagnoses) instead of HTML only
 - Timelines, trends and flags for abnormal values

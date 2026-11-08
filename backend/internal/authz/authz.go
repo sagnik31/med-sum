@@ -1,5 +1,4 @@
-// Package authz decides what an account may do (docs/auth-plan.md,
-// section 2). Handlers ask for a permission, never for a role, so a new
+// Package authz decides what an account may do. Handlers ask for a permission, never for a role, so a new
 // role is one entry in rolePermissions.
 package authz
 

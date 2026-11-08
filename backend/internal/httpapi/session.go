@@ -11,7 +11,7 @@ import (
 	"backend/internal/db"
 )
 
-// Session rules (docs/auth-plan.md, section 3.2).
+// Session rules.
 const (
 	sessionCookie   = "medsum_session"
 	idleTimeout     = 30 * time.Minute // without a request

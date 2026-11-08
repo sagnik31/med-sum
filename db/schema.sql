@@ -9,7 +9,7 @@
 -- Needs PostgreSQL 13+ (gen_random_uuid() is built in).
 
 -- -------------------------------------------------------------------
--- Organisations and staff accounts (docs/auth-plan.md, stage 1).
+-- Organisations and staff accounts.
 -- One organisation in the MVP; every account belongs to one.
 -- -------------------------------------------------------------------
 CREATE TABLE organizations (
@@ -20,8 +20,8 @@ CREATE TABLE organizations (
 
 -- Staff accounts: clinicians and admins, created by an admin (or by
 -- medsumctl), never by sign-up. An account sets its own password through
--- a one-time setup link. Until patients become records of their own
--- (stage 3), each account is also the patient whose documents it uploads,
+-- a one-time setup link. Until patients become records of their own,
+-- each account is also the patient whose documents it uploads,
 -- and the cumulative patient summary lives on this row.
 CREATE TABLE users (
     id                          uuid PRIMARY KEY DEFAULT gen_random_uuid(),

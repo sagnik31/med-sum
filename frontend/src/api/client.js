@@ -8,7 +8,7 @@
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
 
 // The API refuses state-changing requests without this header (CSRF
-// protection; see docs/auth-plan.md, section 3.3).
+// protection).
 const CSRF_HEADER = { "X-Requested-With": "med-sum" };
 
 // Fired when the API answers 401, so the app can return to the login page.

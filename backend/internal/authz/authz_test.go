@@ -10,7 +10,7 @@ var all = []Permission{
 	ReviewWrite, SummaryRead, SummaryGenerate, StaffManage, AuditRead,
 }
 
-// The matrix of docs/auth-plan.md, section 2, written out in full so a
+// The permission matrix, written out in full so a
 // change to rolePermissions has to change this test too.
 func TestPermissionMatrix(t *testing.T) {
 	want := map[Permission][2]bool{ // clinician, admin

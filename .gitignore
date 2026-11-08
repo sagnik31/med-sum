@@ -8,3 +8,6 @@ data/
 **/.venv
 
 scripts/logs/
+
+# Planning docs stay local, out of git
+docs/

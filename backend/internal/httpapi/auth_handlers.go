@@ -12,7 +12,7 @@ import (
 	"backend/internal/db"
 )
 
-// Login lockout (docs/auth-plan.md, section 3.1).
+// Login lockout.
 const (
 	maxLoginFailures = 5
 	lockDuration     = 15 * time.Minute

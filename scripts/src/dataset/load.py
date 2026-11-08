@@ -12,7 +12,7 @@ database the backend uses.
 
 The accounts come from `medsumctl seed-dev` (backend/cmd/medsumctl), with
 the password in MEDSUM_DEV_PASSWORD. Until patients are records of their
-own (stage 3 of docs/auth-plan.md), each synthetic patient's documents are
+own, each synthetic patient's documents are
 uploaded by an account of its own, patient-<key>@med-sum.test.
 """
 

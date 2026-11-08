@@ -265,7 +265,7 @@ const (
 )
 
 // devPatientEmail is the interim account of a synthetic patient: until
-// patients are records (stage 3), each one's documents are uploaded by an
+// patients are records, each one's documents are uploaded by an
 // account of its own.
 func devPatientEmail(key string) string { return "patient-" + key + "@med-sum.test" }
 
