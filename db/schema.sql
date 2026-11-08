@@ -56,6 +56,7 @@ CREATE INDEX users_org_id_idx ON users (org_id);
 -- whichever comes first; the API enforces both.
 CREATE TABLE sessions (
     token_hash   bytea PRIMARY KEY CHECK (octet_length(token_hash) = 32),
+    id           uuid NOT NULL UNIQUE DEFAULT gen_random_uuid(),  -- names a session to its owner
     user_id      uuid NOT NULL REFERENCES users (id) ON DELETE CASCADE,
     created_at   timestamptz NOT NULL,
     last_seen_at timestamptz NOT NULL,

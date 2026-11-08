@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { changePassword } from "../api/client.js";
 import { useAuth } from "../auth/context.js";
 import { inputClass } from "./LoginPage.jsx";
+import SessionsSection from "../components/SessionsSection.jsx";
 
 function AccountPage() {
   const { user } = useAuth();
@@ -12,6 +13,7 @@ function AccountPage() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
+  const [sessionsKey, setSessionsKey] = useState(0); // reloads the sessions list
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -25,6 +27,7 @@ function AccountPage() {
     try {
       await changePassword(current, next);
       setMessage("Password changed. Your other sessions have been logged out.");
+      setSessionsKey((k) => k + 1);
       setCurrent("");
       setNext("");
       setConfirm("");
@@ -36,7 +39,7 @@ function AccountPage() {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow p-6 max-w-md space-y-6">
+    <div className="bg-white rounded-xl shadow p-6 max-w-2xl space-y-6">
       <section>
         <h1 className="text-xl font-semibold mb-2">Account</h1>
         <dl className="text-sm grid grid-cols-[auto,1fr] gap-x-4 gap-y-1">
@@ -113,6 +116,8 @@ function AccountPage() {
           </button>
         </form>
       </section>
+
+      <SessionsSection key={sessionsKey} />
     </div>
   );
 }

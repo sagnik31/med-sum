@@ -72,6 +72,7 @@ func main() {
 		InternalToken:  internalToken,
 		AllowedOrigins: origins,
 		CookieSecure:   cookieSecure,
+		AppURL:         getEnv("MEDSUM_APP_URL", "http://localhost:5173"),
 		Hasher:         hasher,
 	})
 

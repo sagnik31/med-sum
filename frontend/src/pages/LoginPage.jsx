@@ -16,7 +16,7 @@ function LoginPage() {
   const [error, setError] = useState("");
 
   // Where RequireAuth sent the user from, if anywhere.
-  const from = location.state?.from?.pathname || "/documents";
+  const from = location.state?.from?.pathname || "/";
 
   if (status === "in") {
     return <Navigate to={from} replace />;

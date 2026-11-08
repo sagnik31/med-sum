@@ -184,3 +184,11 @@ func TestNormalizeEmail(t *testing.T) {
 		}
 	}
 }
+
+func TestSetPasswordLinkPutsTheTokenInTheFragment(t *testing.T) {
+	for _, app := range []string{"https://app.test", "https://app.test/"} {
+		if got := SetPasswordLink(app, "abc"); got != "https://app.test/set-password#token=abc" {
+			t.Errorf("SetPasswordLink(%q) = %q", app, got)
+		}
+	}
+}

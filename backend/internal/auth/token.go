@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"errors"
+	"strings"
 	"time"
 )
 
@@ -41,3 +42,10 @@ const (
 	SetupLinkTTL = 72 * time.Hour // a new account's first password
 	ResetLinkTTL = 24 * time.Hour // a new password issued by an admin
 )
+
+// SetPasswordLink is the link a setup or reset token is sent in. The token
+// is in the URL fragment, so the browser never sends it to a server or in a
+// Referer.
+func SetPasswordLink(appURL, token string) string {
+	return strings.TrimRight(appURL, "/") + "/set-password#token=" + token
+}

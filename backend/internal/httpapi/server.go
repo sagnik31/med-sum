@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"backend/internal/auth"
+	"backend/internal/authz"
 	"backend/internal/db"
 
 	"github.com/jackc/pgx/v5/pgtype"
@@ -38,8 +39,16 @@ type Store interface {
 	DeleteSession(ctx context.Context, tokenHash []byte) error
 	DeleteUserSessions(ctx context.Context, userID string, keep []byte) error
 	DeleteExpiredSessions(ctx context.Context, now time.Time, idle time.Duration) (int64, error)
+	ListUserSessions(ctx context.Context, userID string) ([]db.Session, error)
+	DeleteUserSession(ctx context.Context, userID, sessionID string) (bool, error)
 	GetUsableToken(ctx context.Context, tokenHash []byte, now time.Time) (*db.User, error)
 	CompletePasswordSetup(ctx context.Context, tokenHash []byte, passwordHash string, now time.Time) (string, error)
+	CreateOneTimeToken(ctx context.Context, t db.OneTimeToken) error
+
+	// Staff management, always within one organisation
+	ListUsers(ctx context.Context, orgID string) ([]db.User, error)
+	CreateUser(ctx context.Context, nu db.NewUser) (*db.User, error)
+	UpdateUser(ctx context.Context, upd db.UserUpdate) (*db.User, error)
 
 	// Documents and summaries
 	GetPatientSummary(ctx context.Context, userID string) (*db.PatientSummary, error)
@@ -57,6 +66,7 @@ type Config struct {
 	InternalToken  string   // shared secret the AI service requires
 	AllowedOrigins []string // browser origins allowed to call the API
 	CookieSecure   bool     // false only for plain-HTTP local development
+	AppURL         string   // where the frontend is served; setup links point there
 	Hasher         *auth.Hasher
 	Now            func() time.Time // the clock; time.Now when nil
 }
@@ -68,6 +78,7 @@ type Server struct {
 	internalToken  string
 	allowedOrigins map[string]bool
 	cookieSecure   bool
+	appURL         string
 	hasher         *auth.Hasher
 	now            func() time.Time
 	httpClient     *http.Client
@@ -83,6 +94,7 @@ func NewServer(store Store, cfg Config) *Server {
 		internalToken:  cfg.InternalToken,
 		allowedOrigins: map[string]bool{},
 		cookieSecure:   cfg.CookieSecure,
+		appURL:         strings.TrimRight(cfg.AppURL, "/"),
 		hasher:         cfg.Hasher,
 		now:            cfg.Now,
 		httpClient:     &http.Client{Timeout: 10 * time.Second},
@@ -105,8 +117,23 @@ func NewServer(store Store, cfg Config) *Server {
 	// Logged in
 	s.mux.HandleFunc("/auth/me", s.withSession(s.handleMe))
 	s.mux.HandleFunc("/auth/password", s.withSession(s.handleChangePassword))
+	// /auth/sessions (GET = list mine, DELETE = end all but this one) and
+	// /auth/sessions/{id} (DELETE = end one of mine)
+	s.mux.HandleFunc("/auth/sessions", s.withSession(s.handleSessions))
+	s.mux.HandleFunc("/auth/sessions/", s.withSession(s.handleSessionByID))
+
+	// Staff management (admins)
+	s.mux.HandleFunc("/admin/users", s.withSession(byMethod(map[string]methodRoute{
+		http.MethodGet:  {authz.StaffManage, s.handleListStaff},
+		http.MethodPost: {authz.StaffManage, s.handleCreateStaff},
+	})))
+	s.mux.HandleFunc("/admin/users/", s.withSession(s.handleStaffByID))
+
 	// /documents (POST = upload, GET = list)
-	s.mux.HandleFunc("/documents", s.withSession(s.handleDocuments))
+	s.mux.HandleFunc("/documents", s.withSession(byMethod(map[string]methodRoute{
+		http.MethodGet:  {authz.DocumentRead, s.handleListDocuments},
+		http.MethodPost: {authz.DocumentUpload, s.handleUploadDocument},
+	})))
 	// /documents/{id} and /documents/{id}/insight (GET = fetch, POST = generate)
 	s.mux.HandleFunc("/documents/", s.withSession(s.handleDocumentByID))
 	// /user/insights (GET = fetch the patient summary, POST = generate it)
@@ -143,17 +170,6 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 }
 
 // ----- Documents collection: POST /documents, GET /documents -----
-
-func (s *Server) handleDocuments(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodPost:
-		s.handleUploadDocument(w, r)
-	case http.MethodGet:
-		s.handleListDocuments(w, r)
-	default:
-		w.WriteHeader(http.StatusMethodNotAllowed)
-	}
-}
 
 // maxUploadSize caps a whole upload request (the file plus form overhead).
 const maxUploadSize = 20 << 20 // 20 MB
@@ -322,9 +338,13 @@ func (s *Server) handleDocumentByID(w http.ResponseWriter, r *http.Request) {
 	if len(parts) == 2 && parts[1] == "insight" {
 		switch r.Method {
 		case http.MethodGet:
-			s.handleGetDocumentInsight(w, r, docID)
+			if permit(w, r, authz.DocumentRead) {
+				s.handleGetDocumentInsight(w, r, docID)
+			}
 		case http.MethodPost:
-			s.handleGenerateDocumentInsight(w, r, docID)
+			if permit(w, r, authz.DocumentReprocess) {
+				s.handleGenerateDocumentInsight(w, r, docID)
+			}
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
@@ -339,7 +359,9 @@ func (s *Server) handleDocumentByID(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodDelete:
-		s.handleDeleteDocument(w, r, docID)
+		if permit(w, r, authz.DocumentDelete) {
+			s.handleDeleteDocument(w, r, docID)
+		}
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
@@ -525,8 +547,13 @@ func (s *Server) handlePatientInsights(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		s.handleGetPatientInsights(w, r, userID)
+		if permit(w, r, authz.SummaryRead) {
+			s.handleGetPatientInsights(w, r, userID)
+		}
 	case http.MethodPost:
+		if !permit(w, r, authz.SummaryGenerate) {
+			return
+		}
 		// The summary only ever covers the caller's own documents.
 		err := s.callInsightsService(r.Context(), "/internal/generate-user-insights",
 			map[string]string{"user_id": userID})

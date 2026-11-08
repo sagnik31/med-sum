@@ -8,8 +8,16 @@ import DocumentsPage from "./pages/DocumentsPage.jsx";
 import InsightPage from "./pages/InsightPage.jsx";
 import UserInsightsPage from "./pages/UserInsightsPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
+import StaffPage from "./pages/StaffPage.jsx";
 import RequireAuth from "./auth/RequireAuth.jsx";
 import { useAuth } from "./auth/context.js";
+import { PERM, can, homePath } from "./auth/permissions.js";
+
+// "/" goes to the start page for the user's roles.
+function Home() {
+  const { user } = useAuth();
+  return <Navigate to={homePath(user)} replace />;
+}
 
 function Nav() {
   const { status, user, logout } = useAuth();
@@ -27,9 +35,16 @@ function Nav() {
       </Link>
       {status === "in" ? (
         <div className="flex items-center gap-4 text-sm">
-          <Link to="/documents" className="hover:underline">
-            Documents
-          </Link>
+          {can(user, PERM.documentRead) && (
+            <Link to="/documents" className="hover:underline">
+              Documents
+            </Link>
+          )}
+          {can(user, PERM.staffManage) && (
+            <Link to="/admin/staff" className="hover:underline">
+              Staff
+            </Link>
+          )}
           <Link to="/account" className="hover:underline" title={user.email}>
             {user.full_name}
           </Link>
@@ -57,13 +72,14 @@ function App() {
 
       <main className="max-w-4xl mx-auto px-4 py-6">
         <Routes>
-          <Route path="/" element={<Navigate to="/documents" replace />} />
+          <Route path="/" element={<RequireAuth><Home /></RequireAuth>} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/set-password" element={<SetPasswordPage />} />
           <Route path="/account" element={<RequireAuth><AccountPage /></RequireAuth>} />
-          <Route path="/documents" element={<RequireAuth><DocumentsPage /></RequireAuth>} />
-          <Route path="/user-insights" element={<RequireAuth><UserInsightsPage /></RequireAuth>} />
-          <Route path="/insights/:id" element={<RequireAuth><InsightPage /></RequireAuth>} />
+          <Route path="/documents" element={<RequireAuth perm={PERM.documentRead}><DocumentsPage /></RequireAuth>} />
+          <Route path="/user-insights" element={<RequireAuth perm={PERM.documentRead}><UserInsightsPage /></RequireAuth>} />
+          <Route path="/insights/:id" element={<RequireAuth perm={PERM.documentRead}><InsightPage /></RequireAuth>} />
+          <Route path="/admin/staff" element={<RequireAuth perm={PERM.staffManage}><StaffPage /></RequireAuth>} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>

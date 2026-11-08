@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"backend/internal/auth"
+	"backend/internal/authz"
 	"backend/internal/db"
 )
 
@@ -36,18 +37,20 @@ type orgResponse struct {
 	Name string `json:"name"`
 }
 
-// meResponse is the logged-in account as the frontend sees it.
+// meResponse is the logged-in account as the frontend sees it. The
+// frontend shows or hides pages by permissions; the API enforces them.
 type meResponse struct {
-	ID       string      `json:"id"`
-	Email    string      `json:"email"`
-	FullName string      `json:"full_name"`
-	Roles    []string    `json:"roles"`
-	Org      orgResponse `json:"org"`
+	ID          string             `json:"id"`
+	Email       string             `json:"email"`
+	FullName    string             `json:"full_name"`
+	Roles       []string           `json:"roles"`
+	Permissions []authz.Permission `json:"permissions"`
+	Org         orgResponse        `json:"org"`
 }
 
 func meFromUser(u *db.User) meResponse {
 	return meResponse{ID: u.ID, Email: u.Email, FullName: u.FullName, Roles: u.Roles,
-		Org: orgResponse{ID: u.OrgID, Name: u.OrgName}}
+		Permissions: authz.Permissions(u.Roles), Org: orgResponse{ID: u.OrgID, Name: u.OrgName}}
 }
 
 // ----- POST /auth/login -----
@@ -161,7 +164,7 @@ func (s *Server) handleMe(w http.ResponseWriter, r *http.Request) {
 	}
 	p, _ := principalFromContext(r.Context())
 	writeJSON(w, http.StatusOK, meResponse{ID: p.UserID, Email: p.Email, FullName: p.FullName,
-		Roles: p.Roles, Org: orgResponse{ID: p.OrgID, Name: p.OrgName}})
+		Roles: p.Roles, Permissions: authz.Permissions(p.Roles), Org: orgResponse{ID: p.OrgID, Name: p.OrgName}})
 }
 
 // ----- POST /auth/password -----

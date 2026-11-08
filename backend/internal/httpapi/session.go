@@ -128,6 +128,12 @@ func truncate(s string, n int) string {
 // withSession requires a live session and puts its Principal in the
 // request context. An expired session is removed; a disabled account's
 // session is refused.
+// sessionLive reports whether a session is within both its idle and
+// absolute timeouts at now.
+func sessionLive(sess db.Session, now time.Time) bool {
+	return now.Before(sess.ExpiresAt) && now.Sub(sess.LastSeenAt) < idleTimeout
+}
+
 func (s *Server) withSession(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		hash := sessionTokenHash(r)
@@ -148,8 +154,7 @@ func (s *Server) withSession(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		now := s.now()
-		if !now.Before(sess.ExpiresAt) || now.Sub(sess.LastSeenAt) >= idleTimeout ||
-			sess.User.Status != db.StatusActive {
+		if !sessionLive(sess.Session, now) || sess.User.Status != db.StatusActive {
 			if err := s.db.DeleteSession(ctx, hash); err != nil {
 				log.Printf("DeleteSession error: %v", err)
 			}

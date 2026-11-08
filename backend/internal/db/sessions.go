@@ -12,6 +12,7 @@ import (
 // cookie value; the value itself is never stored.
 type Session struct {
 	TokenHash  []byte
+	ID         string // set by the database; names the session to its owner
 	UserID     string
 	CreatedAt  time.Time
 	LastSeenAt time.Time
@@ -39,7 +40,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7)`,
 // nil. It does not check expiry; the caller does, against its own clock.
 func (s *Store) GetSession(ctx context.Context, tokenHash []byte) (*SessionWithUser, error) {
 	const q = `
-SELECT s.token_hash, s.user_id, s.created_at, s.last_seen_at, s.expires_at,
+SELECT s.token_hash, s.id, s.user_id, s.created_at, s.last_seen_at, s.expires_at,
        COALESCE(s.ip, ''), COALESCE(s.user_agent, ''), ` + userColumns + `
 FROM sessions s
 JOIN users u ON u.id = s.user_id
@@ -49,7 +50,7 @@ WHERE s.token_hash = $1;
 	var r SessionWithUser
 	u := &r.User
 	err := s.pool.QueryRow(ctx, q, tokenHash).Scan(
-		&r.TokenHash, &r.UserID, &r.CreatedAt, &r.LastSeenAt, &r.ExpiresAt, &r.IP, &r.UserAgent,
+		&r.TokenHash, &r.ID, &r.UserID, &r.CreatedAt, &r.LastSeenAt, &r.ExpiresAt, &r.IP, &r.UserAgent,
 		&u.ID, &u.OrgID, &u.OrgName, &u.Email, &u.FullName, &u.RegistrationNo, &u.Roles,
 		&u.Status, &u.PasswordHash, &u.FailedLogins, &u.LockedUntil, &u.CreatedAt, &u.LastLoginAt)
 	if errors.Is(err, pgx.ErrNoRows) {
@@ -79,6 +80,34 @@ func (s *Store) DeleteUserSessions(ctx context.Context, userID string, keep []by
 	_, err := s.pool.Exec(ctx,
 		`DELETE FROM sessions WHERE user_id = $1 AND ($2::bytea IS NULL OR token_hash <> $2)`, userID, keep)
 	return err
+}
+
+// ListUserSessions returns the account's sessions, most recently used
+// first. Expired ones may be among them until the next purge.
+func (s *Store) ListUserSessions(ctx context.Context, userID string) ([]Session, error) {
+	rows, err := s.pool.Query(ctx, `
+SELECT token_hash, id, user_id, created_at, last_seen_at, expires_at, COALESCE(ip, ''), COALESCE(user_agent, '')
+FROM sessions WHERE user_id = $1
+ORDER BY last_seen_at DESC, created_at DESC`, userID)
+	if err != nil {
+		return nil, err
+	}
+	return pgx.CollectRows(rows, func(r pgx.CollectableRow) (Session, error) {
+		var x Session
+		err := r.Scan(&x.TokenHash, &x.ID, &x.UserID, &x.CreatedAt, &x.LastSeenAt, &x.ExpiresAt, &x.IP, &x.UserAgent)
+		return x, err
+	})
+}
+
+// DeleteUserSession removes one session by id, if it belongs to the
+// account, and reports whether it did. A malformed id removes nothing.
+func (s *Store) DeleteUserSession(ctx context.Context, userID, sessionID string) (bool, error) {
+	tag, err := s.pool.Exec(ctx,
+		`DELETE FROM sessions WHERE user_id = $1 AND id::text = $2`, userID, sessionID)
+	if err != nil {
+		return false, err
+	}
+	return tag.RowsAffected() > 0, nil
 }
 
 // DeleteExpiredSessions removes sessions past their absolute expiry or

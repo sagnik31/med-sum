@@ -23,6 +23,7 @@ const (
 	testInternalToken = "test-internal-token"
 	testOrigin        = "http://localhost:5173"
 	testPassword      = "a long test password"
+	testAppURL        = "https://app.test"
 )
 
 // testHasher uses tiny argon2 parameters so the tests stay fast.
@@ -92,14 +93,24 @@ func leftPad(n int) string {
 
 // ----- accounts -----
 
-// addUser stores an account directly. An active account gets testPassword.
+// addUser stores an account in the test organisation, "org-1". An active
+// account gets testPassword. With no roles it is a clinician.
 func (f *fakeStore) addUser(email, status string, roles ...string) *db.User {
+	return f.addUserIn("org-1", email, status, roles...)
+}
+
+// addUserIn stores an account in the organisation orgID.
+func (f *fakeStore) addUserIn(orgID, email, status string, roles ...string) *db.User {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if len(roles) == 0 {
 		roles = []string{db.RoleClinician}
 	}
-	u := &db.User{ID: f.newID(), OrgID: "org-1", OrgName: "Test Hospital", Email: email,
+	orgName := "Test Hospital"
+	if orgID != "org-1" {
+		orgName = "Hospital " + orgID
+	}
+	u := &db.User{ID: f.newID(), OrgID: orgID, OrgName: orgName, Email: email,
 		FullName: "Dr " + email, Roles: roles, Status: status, CreatedAt: time.Now()}
 	if status != db.StatusInvited {
 		hash, err := testHasher.Hash(testPassword)
@@ -194,6 +205,9 @@ func (f *fakeStore) CreateSession(_ context.Context, sess db.Session) error {
 		return f.failWith
 	}
 	copied := sess
+	if copied.ID == "" {
+		copied.ID = f.newID()
+	}
 	f.sessions[string(sess.TokenHash)] = &copied
 	return nil
 }
@@ -513,6 +527,7 @@ func newTestEnv(t *testing.T) *testEnv {
 		InternalToken:  testInternalToken,
 		AllowedOrigins: []string{testOrigin},
 		CookieSecure:   true,
+		AppURL:         testAppURL + "/",
 		Hasher:         testHasher,
 		Now:            e.now,
 	})
@@ -536,6 +551,13 @@ func (e *testEnv) advance(d time.Duration) {
 func (e *testEnv) login(email string) (userID, session string) {
 	e.t.Helper()
 	u := e.store.addUser(email, db.StatusActive)
+	return u.ID, e.loginAs(email, testPassword)
+}
+
+// loginWith is login with roles.
+func (e *testEnv) loginWith(email string, roles ...string) (userID, session string) {
+	e.t.Helper()
+	u := e.store.addUser(email, db.StatusActive, roles...)
 	return u.ID, e.loginAs(email, testPassword)
 }
 
@@ -593,6 +615,16 @@ func (e *testEnv) postJSON(path, session string, v any) *httptest.ResponseRecord
 		e.t.Fatal(err)
 	}
 	return e.do(http.MethodPost, path, session, bytes.NewReader(body), "application/json")
+}
+
+// sendJSON sends a JSON body with any method.
+func (e *testEnv) sendJSON(method, path, session string, v any) *httptest.ResponseRecorder {
+	e.t.Helper()
+	body, err := json.Marshal(v)
+	if err != nil {
+		e.t.Fatal(err)
+	}
+	return e.do(method, path, session, bytes.NewReader(body), "application/json")
 }
 
 // multipartFile builds an upload body with one file field.

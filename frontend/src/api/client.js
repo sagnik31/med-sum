@@ -123,6 +123,44 @@ export function setPasswordWithLink(token, password) {
   });
 }
 
+// Your own sessions: [{id, current, created_at, last_seen_at, expires_at, ip, user_agent}]
+export function fetchSessions() {
+  return apiRequest("/auth/sessions");
+}
+
+// Ends every session of yours except this one.
+export function endOtherSessions() {
+  return apiRequest("/auth/sessions", { method: "DELETE" });
+}
+
+export function endSession(id) {
+  return apiRequest(`/auth/sessions/${encodeURIComponent(id)}`, { method: "DELETE" });
+}
+
+// ---------- Staff API (admins) ----------
+
+export function fetchStaff() {
+  return apiRequest("/admin/users");
+}
+
+// Returns { user, link: { purpose, url, expires_at } }.
+export function createStaff({ email, fullName, registrationNo, roles }) {
+  return apiRequest("/admin/users", {
+    method: "POST",
+    json: { email, full_name: fullName, registration_no: registrationNo, roles },
+  });
+}
+
+// changes: any of { roles, status: "active" | "disabled", full_name, registration_no }
+export function updateStaff(id, changes) {
+  return apiRequest(`/admin/users/${encodeURIComponent(id)}`, { method: "PATCH", json: changes });
+}
+
+// A new setup link (invited account) or reset link (active account).
+export function issueStaffLink(id) {
+  return apiRequest(`/admin/users/${encodeURIComponent(id)}/reset-link`, { method: "POST" });
+}
+
 // ---------- Documents API ----------
 
 export function fetchDocuments() {

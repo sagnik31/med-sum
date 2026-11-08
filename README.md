@@ -4,7 +4,7 @@ Med-Sum turns medical documents into readable summaries. A patient uploads presc
 
 All model inference runs locally through [Ollama](https://ollama.com), so documents never leave the machine.
 
-> **Status:** an early-stage personal project. Staff accounts, passwords and sessions are in place, but roles, patient records and an audit log are not yet (see [Limitations](#limitations)), so do not use it with real patient data. Generated summaries can be wrong and are not medical advice.
+> **Status:** an early-stage personal project. Staff accounts, sessions, roles and staff management are in place, but patient records and an audit log are not yet (see [Limitations](#limitations)), so do not use it with real patient data. Generated summaries can be wrong and are not medical advice.
 
 ## Contents
 
@@ -60,6 +60,9 @@ The app is for hospital staff; patients have no accounts. The design, and the st
 - **Accounts are created, never signed up for.** `medsumctl create-admin` and `create-user` create an account and print a one-time setup link (valid for 72 hours) that the person opens to choose their own password; `medsumctl reset-link` issues a reset link (24 hours). The token is in the link's URL fragment, which browsers don't send to servers, and only its SHA-256 is stored.
 - **Passwords** are hashed with argon2id (OWASP parameters). They need at least 12 characters, and common ones are refused. Five wrong passwords in a row lock the account for 15 minutes. Every failed login gets the same answer, and an unknown email takes as long to refuse as a wrong password, so the login form can't be used to find out which accounts exist.
 - **Sessions** are rows in the database, not tokens the browser can read. The browser holds a random value in an `HttpOnly`, `SameSite=Strict` cookie; the database holds only its hash. A session ends after 30 minutes without a request or 12 hours after login. Logging out, changing the password or disabling the account ends sessions at once.
+- **Roles:** a *clinician* works with documents and summaries; an *admin* manages staff accounts and sees no clinical data. Someone who needs both holds both roles. The API checks a permission on every route (`backend/internal/authz`), and the frontend shows only the pages the account may use.
+- **Staff management:** an admin invites staff from the Staff page, which shows a setup link to pass on, and can change roles, disable or enable an account, or issue a password reset link. Disabling an account or changing its roles logs it out everywhere. Admins can't disable themselves or drop their own admin role, and an organisation always keeps at least one active admin.
+- **Your sessions:** the Account page lists where you are logged in and can log out any of those sessions, or all but the current one.
 - **CSRF:** besides `SameSite=Strict`, every request that changes something must carry an `X-Requested-With` header, which another site can't add without passing a CORS check that only `ALLOWED_ORIGINS` pass.
 
 ## Tech stack
@@ -221,10 +224,17 @@ All backend routes except `/healthz`, `/auth/login`, `/auth/logout` and `/auth/s
 | `GET` | `/healthz` | Health check |
 | `POST` | `/auth/login` | Log in with `{email, password}`; sets the session cookie and returns the account |
 | `POST` | `/auth/logout` | End the session |
-| `GET` | `/auth/me` | The logged-in account: id, email, name, roles, organisation |
+| `GET` | `/auth/me` | The logged-in account: id, email, name, roles, permissions, organisation |
 | `POST` | `/auth/password` | Change the password with `{current_password, new_password}`; ends the account's other sessions |
 | `POST` | `/auth/setup/info` | `{token}` from a setup or reset link: whose account it is for |
 | `POST` | `/auth/setup` | Set a password with `{token, password}` from a setup or reset link |
+| `GET` | `/auth/sessions` | Your live sessions, with the current one marked |
+| `DELETE` | `/auth/sessions` | End all your sessions except the current one |
+| `DELETE` | `/auth/sessions/{id}` | End one of your sessions |
+| `GET` | `/admin/users` | Staff of your organisation (admins) |
+| `POST` | `/admin/users` | Invite `{email, full_name, registration_no?, roles}`; returns the account and its setup link (admins) |
+| `PATCH` | `/admin/users/{id}` | Change `{roles?, status?, full_name?, registration_no?}`; `status` is `active` or `disabled` (admins) |
+| `POST` | `/admin/users/{id}/reset-link` | A new setup link (invited account) or reset link (active account) (admins) |
 | `GET` | `/documents` | List the user's documents, newest first, each with its `insight_status` |
 | `POST` | `/documents` | Upload a PDF, JPG or PNG (multipart field `file`, max 20 MB) and start processing it |
 | `DELETE` | `/documents/{id}` | Delete a document and its file |
@@ -232,6 +242,8 @@ All backend routes except `/healthz`, `/auth/login`, `/auth/logout` and `/auth/s
 | `POST` | `/documents/{id}/insight` | Start or retry summary generation |
 | `GET` | `/user/insights` | Get the cumulative patient summary and its status (`none`, `processing`, `completed`, `failed`) |
 | `POST` | `/user/insights` | Start generating the cumulative patient summary |
+
+Document and summary routes need the clinician role and `/admin/*` the admin role; without it the answer is 403. Accounts in another organisation are answered with 404.
 
 The AI service exposes `GET /health` and two internal routes, `POST /internal/generate-insights` and `POST /internal/generate-user-insights`. Both require an `X-Internal-Token` header.
 
@@ -244,14 +256,15 @@ backend/
   cmd/server/            entry point: configuration, HTTP server
   cmd/medsumctl/         command line: organisations, accounts, setup and reset links, dev accounts
   internal/auth/         password hashing and rules, random tokens
+  internal/authz/        roles and the permissions they grant
   internal/httpapi/      handlers, sessions, CORS and CSRF checks, forwarding to the AI service
   internal/db/           PostgreSQL data access (pgx)
 db/schema.sql            the whole database schema (no migrations; see step 2 of setup)
 frontend/
   src/api/               API client
   src/components/        shared components (sandboxed HTML viewer)
-  src/auth/              the logged-in account (AuthProvider) and the route guard
-  src/pages/             login, set password, account, documents, document summary, patient summary
+  src/auth/              the logged-in account (AuthProvider), permissions and the route guard
+  src/pages/             login, set password, account, staff, documents, document summary, patient summary
 scripts/
   src/insights_service.py    FastAPI service and background job handling
   src/extract_report_slm.py  page extraction from images
@@ -297,7 +310,7 @@ The extraction and summary steps can also be run on their own, which is useful f
 
 ## Limitations
 
-- **Authentication is stage 1 of [the plan](docs/auth-plan.md).** Accounts, passwords and sessions work, but there are no roles or permissions yet (an admin account can do what a clinician can), each account still sees only the documents it uploaded, there is no audit log and no second factor, and accounts are created from the command line only. Medical registration numbers are not verified. There is no email, so setup and reset links are handed over by whoever creates them.
+- **Authentication is at stage 2 of [the plan](docs/auth-plan.md).** Accounts, sessions, roles and staff management work, but each account still sees only the documents it uploaded (patient records shared within an organisation come in stage 3), and there is no audit log and no second factor. The first admin of an organisation is created from the command line. Medical registration numbers are not verified. There is no email, so setup and reset links are handed over by whoever creates them.
 - **One extraction prompt.** Lab reports and prescriptions share one prompt; the document type is not detected yet.
 - **Patient summary ordering.** Reports are ordered by upload date, not by the date printed on them, and the summary is only regenerated on request.
 - **Summaries are model-written HTML.** Values are not yet stored as structured data or checked against the source document.
@@ -307,7 +320,7 @@ The extraction and summary steps can also be run on their own, which is useful f
 
 The next phase focuses on doctors and hospital groups:
 
-- Roles and staff management, patient records with organisation-scoped access, an audit log and a second factor (stages 2-6 of [the auth plan](docs/auth-plan.md))
+- Patient records with organisation-scoped access, an audit log and a second factor (stages 3-6 of [the auth plan](docs/auth-plan.md))
 - Patient-controlled sharing of records with doctors
 - Structured clinical data (lab values, medications, diagnoses) instead of HTML only
 - Timelines, trends and flags for abnormal values

@@ -237,8 +237,7 @@ func (c *ctl) resetLink(ctx context.Context, args []string) error {
 }
 
 // issueLink stores a new one-time token for the account (replacing its
-// unused ones) and returns the link. The token is in the URL fragment, so
-// the browser never sends it to a server or in a Referer.
+// unused ones) and returns the link.
 func (c *ctl) issueLink(ctx context.Context, userID, purpose string) (string, error) {
 	token, hash, err := auth.NewToken()
 	if err != nil {
@@ -254,7 +253,7 @@ func (c *ctl) issueLink(ctx context.Context, userID, purpose string) (string, er
 	}); err != nil {
 		return "", err
 	}
-	return c.appURL + "/set-password#token=" + token, nil
+	return auth.SetPasswordLink(c.appURL, token), nil
 }
 
 // Development accounts. The dataset loader (scripts/src/dataset/load.py)

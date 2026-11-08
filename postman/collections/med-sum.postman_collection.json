@@ -99,9 +99,223 @@
                   ]
                 }
               }
+            },
+            {
+              "name": "List My Sessions",
+              "id": "3568715d-1182-43c3-9a1d-064fb88737e5",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{backend_url}}/auth/sessions",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "sessions"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "End My Other Sessions",
+              "id": "3b3014d2-644a-446d-891b-314102061f3d",
+              "request": {
+                "method": "DELETE",
+                "url": {
+                  "raw": "{{backend_url}}/auth/sessions",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "sessions"
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "X-Requested-With",
+                    "value": "med-sum",
+                    "type": "text"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "End One Session",
+              "id": "0db33c13-69f8-4219-ba4d-218df66d2857",
+              "request": {
+                "method": "DELETE",
+                "url": {
+                  "raw": "{{backend_url}}/auth/sessions/:id",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "sessions",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "Session ID from List My Sessions"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "X-Requested-With",
+                    "value": "med-sum",
+                    "type": "text"
+                  }
+                ]
+              }
             }
           ],
           "id": "85d6b170-4fb8-4192-abd7-ef65d8e2547e"
+        },
+        {
+          "name": "Staff (admin)",
+          "description": "Needs an account with the admin role.",
+          "id": "113398f2-c5b1-4319-a53d-ab13d5e23f57",
+          "item": [
+            {
+              "name": "List Staff",
+              "id": "d0aaf99d-6306-41d7-9a15-a6c68853b2cb",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{backend_url}}/admin/users",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Invite Staff",
+              "id": "6feca285-96df-4b12-b41a-1d1a4636601f",
+              "request": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{backend_url}}/admin/users",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users"
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "X-Requested-With",
+                    "value": "med-sum",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"new.doctor@med-sum.test\",\n  \"full_name\": \"Dr New Doctor\",\n  \"registration_no\": \"\",\n  \"roles\": [\n    \"clinician\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "Update Staff",
+              "id": "27ad00d4-6246-4b46-93eb-ae9c24ab7b89",
+              "request": {
+                "method": "PATCH",
+                "url": {
+                  "raw": "{{backend_url}}/admin/users/:id",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "Account ID"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "X-Requested-With",
+                    "value": "med-sum",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"disabled\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "Issue Setup or Reset Link",
+              "id": "5720864a-de83-4bb5-85cc-ad9c2bb844d9",
+              "request": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{backend_url}}/admin/users/:id/reset-link",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users",
+                    ":id",
+                    "reset-link"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "Account ID"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "X-Requested-With",
+                    "value": "med-sum",
+                    "type": "text"
+                  }
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Documents",
