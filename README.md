@@ -207,11 +207,12 @@ On PowerShell, set the same variables with `$env:NAME = "value"`.
 | `INSIGHTS_SERVICE_URL` | Backend | `http://localhost:9000` |
 | `ALLOWED_ORIGINS` | Backend | `http://localhost:5173`; comma-separated browser origins that may call the API |
 | `COOKIE_SECURE` | Backend | `true`; set `false` only for a browser that won't keep a `Secure` cookie on plain-HTTP `localhost` |
-| `MEDSUM_APP_URL` | `medsumctl` | `http://localhost:5173`; where setup and reset links point |
+| `MEDSUM_APP_URL` | Backend, `medsumctl` | `http://localhost:5173`; where setup and reset links point |
 | `MEDSUM_ENV`, `MEDSUM_DEV_PASSWORD` | `medsumctl seed-dev`, `dataset.load` | none; `seed-dev` runs only with `MEDSUM_ENV=dev` |
 | `MEDSUM_PRIMARY_MODEL` | AI service | `qwen3.5:4b` |
 | `MEDSUM_FALLBACK_MODEL` | AI service | `gemma4:e2b` |
 | `MEDSUM_NUM_CTX` | AI service | `16384` (context window for each model call) |
+| `MEDSUM_LOG_FILE` | Pipeline logging (`observability`) | `scripts/logs/medsum.jsonl`; JSON log lines without patient content. The AI service doesn't use it yet |
 | `VITE_API_BASE_URL` | Frontend | `/api`, set in `frontend/.env.local`; the Vite dev server proxies it to the backend |
 | `MEDSUM_API_TARGET` | Frontend (Vite proxy) | `http://localhost:8080` |
 
@@ -262,7 +263,7 @@ backend/
 db/schema.sql            the whole database schema (no migrations; see step 2 of setup)
 frontend/
   src/api/               API client
-  src/components/        shared components (sandboxed HTML viewer)
+  src/components/        shared components (sandboxed HTML viewer, sessions list)
   src/auth/              the logged-in account (AuthProvider), permissions and the route guard
   src/pages/             login, set password, account, staff, documents, document summary, patient summary
 scripts/
@@ -273,6 +274,7 @@ scripts/
   src/record/                the structured record of a document and the schemas the model fills in
   src/derive/                values computed from the printed text: numbers, ranges, flags, unit table, dose schedules, dates
   src/validators/            deterministic checks of a record against its transcription and PDF text
+  src/observability/         pipeline runs and steps in the database, provenance checks, JSON logs
   src/reset_db.py            resets the development database and uploads
   schemas/                   those schemas exported as JSON (regenerate: `python -m record.schemas` in src/)
   src/dataset/               synthetic dataset generator and loader
