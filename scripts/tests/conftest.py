@@ -8,6 +8,8 @@ Shared fixtures for the AI service tests.
   the end. The development database (med_sum) is never touched.
 """
 
+import io
+import logging
 import os
 from types import SimpleNamespace
 from urllib.parse import urlsplit, urlunsplit
@@ -17,6 +19,7 @@ import pytest
 
 import llm
 import reset_db
+from observability import JsonFormatter
 from pipeline import checkpoints
 
 TEST_DB_NAME = "med_sum_test_py"
@@ -82,6 +85,37 @@ def model_client(monkeypatch) -> FakeModelClient:
     fake = FakeModelClient()
     monkeypatch.setattr(llm, "_client", fake)
     return fake
+
+
+# -------------------------------------------------------------------
+# Logs
+# -------------------------------------------------------------------
+@pytest.fixture
+def json_log():
+    """Everything logged during the test, formatted as the service will."""
+    out = io.StringIO()
+    handler = logging.StreamHandler(out)
+    handler.setFormatter(JsonFormatter())
+    root = logging.getLogger()
+    old_level = root.level
+    root.addHandler(handler)
+    root.setLevel(logging.DEBUG)
+    yield out
+    root.removeHandler(handler)
+    root.setLevel(old_level)
+
+
+@pytest.fixture
+def root_logger():
+    """Put the root logger back as it was after configure_logging."""
+    root = logging.getLogger()
+    handlers, level = list(root.handlers), root.level
+    yield root
+    for handler in list(root.handlers):
+        if handler not in handlers:
+            root.removeHandler(handler)
+            handler.close()
+    root.setLevel(level)
 
 
 # -------------------------------------------------------------------

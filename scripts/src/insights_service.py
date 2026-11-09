@@ -23,10 +23,15 @@ Current behavior of the worker:
     - Extracts Markdown from page images, cached in documents.extracted_markdown
     - Generates HTML insights from that Markdown
     - Both steps use the primary model, with a fallback (see llm.py)
+
+- Logs: structured JSON lines on stderr and in config.LOG_FILE, set up when
+  the app starts (observability.configure_logging). They carry ids, events
+  and sizes, never document content or exception messages.
 """
 
 import hmac
 import logging
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, BackgroundTasks, Depends, Header, HTTPException
 from fastapi.responses import JSONResponse
@@ -35,25 +40,41 @@ import psycopg
 
 import os
 
+import config
+from observability import configure_logging
+
 
 # -------------------------------------------------------------------
 # Logging
 # -------------------------------------------------------------------
-logging.basicConfig(
-    level=logging.INFO,
-    format="[%(levelname)s] %(asctime)s %(name)s - %(message)s",
-)
-logger = logging.getLogger("insights_service")
+logger = logging.getLogger("medsum.service")
+
+
+def _obs(event: str, **fields) -> dict:
+    """`extra` for a log line: an event name and ids or counts, never content."""
+    return {"obs": {"event": event, **fields}}
+
 
 # -------------------------------------------------------------------
 # FastAPI app + internal auth
 # -------------------------------------------------------------------
-app = FastAPI(title="Insights Generation Service")
-
 # Shared with the Go backend (same variable name there).
 INTERNAL_API_TOKEN = os.environ.get("INTERNAL_API_TOKEN", "")
-if not INTERNAL_API_TOKEN:
-    logger.warning("INTERNAL_API_TOKEN is not set; /internal/* will reject all calls.")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    configure_logging(log_file=config.LOG_FILE)
+    logger.info("service started", extra=_obs("service_started"))
+    if not INTERNAL_API_TOKEN:
+        logger.warning(
+            "INTERNAL_API_TOKEN is not set; /internal/* will reject all calls",
+            extra=_obs("internal_token_missing"),
+        )
+    yield
+
+
+app = FastAPI(title="Insights Generation Service", lifespan=lifespan)
 
 
 def require_internal_token(x_internal_token: str = Header(default="")) -> None:
@@ -125,7 +146,10 @@ def mark_insight_failed(conn, document_id: str, message: str) -> None:
             )
         conn.commit()
     except Exception:
-        logger.exception(f"[worker] Could not mark document_id={document_id} as failed")
+        logger.exception(
+            "could not record the failed document job",
+            extra=_obs("job_failure_not_recorded", document_id=document_id),
+        )
 
 
 def run_insights_pipeline(document_id: str) -> None:
@@ -137,7 +161,9 @@ def run_insights_pipeline(document_id: str) -> None:
       4. Generates HTML insights via generate_insights_html (SLM).
       5. Saves the result to the DB.
     """
-    logger.info(f"[worker] Starting insight generation for document_id={document_id!r}")
+    logger.info(
+        "document job started", extra=_obs("job_started", document_id=document_id)
+    )
 
     conn = get_db_connection()
     claimed = False
@@ -164,8 +190,9 @@ def run_insights_pipeline(document_id: str) -> None:
 
         if not claimed:
             logger.info(
-                f"[worker] Nothing to do for document_id={document_id}: "
-                "document not found, or insights already completed/processing."
+                "document job not claimed: no such document, or it is already"
+                " completed or being processed",
+                extra=_obs("job_not_claimed", document_id=document_id),
             )
             return
 
@@ -185,7 +212,8 @@ def run_insights_pipeline(document_id: str) -> None:
 
         if not input_path:
             logger.error(
-                f"[worker] Document path not found (unexpected): {document_id}"
+                "document has no stored file path",
+                extra=_obs("file_path_missing", document_id=document_id),
             )
             mark_insight_failed(conn, document_id, "Document has no stored file path.")
             return
@@ -198,17 +226,19 @@ def run_insights_pipeline(document_id: str) -> None:
             input_path = os.path.join(PROJECT_ROOT, "backend", input_path)
 
         if not os.path.exists(input_path):
-            logger.error(f"[worker] File not found on disk: {input_path}")
+            logger.error(
+                "uploaded file not found on disk",
+                extra=_obs("file_missing", document_id=document_id),
+            )
             mark_insight_failed(conn, document_id, "Uploaded file not found on disk.")
             return
-
-        logger.info("[worker] Using input file path: %s", input_path)
 
         # 2. Conditional Extraction
         markdown = existing_markdown
         if not markdown:
             logger.info(
-                "[worker] No existing markdown found. Running VLM extraction..."
+                "no cached transcription; transcribing the pages",
+                extra=_obs("transcription_started", document_id=document_id),
             )
             # Run extraction only
             from extract_report_slm import extract_markdown_from_file
@@ -225,13 +255,25 @@ def run_insights_pipeline(document_id: str) -> None:
                         (markdown, document_id),
                     )
                     conn.commit()
-                logger.info("[worker] Saved extracted markdown to DB.")
-            except Exception as e:
-                logger.error(f"[worker] Failed to save extracted markdown: {e}")
-                # We continue anyway to generate insights, though it won't be cached
+                logger.info(
+                    "transcription saved",
+                    extra=_obs(
+                        "transcription_saved",
+                        document_id=document_id,
+                        markdown_chars=len(markdown),
+                    ),
+                )
+            except Exception:
+                # Logged by type only: the message could quote the document.
+                logger.exception(
+                    "could not save the transcription; going on without caching it",
+                    extra=_obs("transcription_not_saved", document_id=document_id),
+                )
+                conn.rollback()
         else:
             logger.info(
-                "[worker] Found existing markdown in DB. Skipping VLM extraction."
+                "using the cached transcription",
+                extra=_obs("transcription_cached", document_id=document_id),
             )
 
         # 3. Generate HTML Insights (SLM)
@@ -242,10 +284,13 @@ def run_insights_pipeline(document_id: str) -> None:
         html = generate_insights_html(markdown)
 
         logger.info(
-            "[worker] Insights generated for document_id=%s (markdown_len=%d, html_len=%d)",
-            document_id,
-            len(markdown),
-            len(html),
+            "insight HTML generated",
+            extra=_obs(
+                "insights_generated",
+                document_id=document_id,
+                markdown_chars=len(markdown),
+                html_chars=len(html),
+            ),
         )
 
         # 4. Save to DB (Update)
@@ -258,14 +303,14 @@ def run_insights_pipeline(document_id: str) -> None:
             cur.execute(update_query, (html, document_id))
             conn.commit()
             logger.info(
-                f"[worker] DB updated (Completed) for document_id={document_id!r}"
+                "document job completed",
+                extra=_obs("job_completed", document_id=document_id),
             )
 
     except Exception as e:
+        # The message goes to the database only; the log gets its type.
         logger.exception(
-            "[worker] Unhandled exception while generating insights for document_id=%s: %s",
-            document_id,
-            e,
+            "document job failed", extra=_obs("job_failed", document_id=document_id)
         )
         if claimed:
             mark_insight_failed(conn, document_id, str(e) or type(e).__name__)
@@ -273,7 +318,9 @@ def run_insights_pipeline(document_id: str) -> None:
         if conn:
             conn.close()
 
-    logger.info(f"[worker] Finished insight generation for document_id={document_id!r}")
+    logger.info(
+        "document job finished", extra=_obs("job_finished", document_id=document_id)
+    )
 
 
 # -------------------------------------------------------------------
@@ -299,7 +346,8 @@ async def generate_insights_endpoint(
     Returns quickly; work is done in the background task.
     """
     logger.info(
-        f"Received POST /internal/generate-insights for document_id={req.document_id!r}"
+        "document job requested",
+        extra=_obs("job_requested", document_id=req.document_id),
     )
 
     # Schedule background worker
@@ -326,7 +374,8 @@ def generate_user_insights_endpoint(
     must run this in its threadpool or it freezes the event loop.
     """
     logger.info(
-        f"Received POST /internal/generate-user-insights for user_id={req.user_id!r}"
+        "patient summary requested",
+        extra=_obs("summary_requested", user_id=req.user_id),
     )
 
     # Claim the job the same way as document insights: skip it while a live
@@ -359,7 +408,9 @@ def generate_user_insights_endpoint(
 
 def run_patient_summary(user_id: str) -> None:
     """Background job: summarise every processed document of one user."""
-    logger.info(f"[summary] Starting patient summary for user_id={user_id!r}")
+    logger.info(
+        "patient summary started", extra=_obs("summary_started", user_id=user_id)
+    )
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
@@ -406,11 +457,14 @@ def run_patient_summary(user_id: str) -> None:
             )
         conn.commit()
         logger.info(
-            f"[summary] Completed for user_id={user_id!r} ({len(rows)} documents)"
+            "patient summary completed",
+            extra=_obs("summary_completed", user_id=user_id, documents=len(rows)),
         )
 
     except Exception as e:
-        logger.exception(f"[summary] Failed for user_id={user_id!r}")
+        logger.exception(
+            "patient summary failed", extra=_obs("summary_failed", user_id=user_id)
+        )
         try:
             conn.rollback()
             with conn.cursor() as cur:
@@ -426,6 +480,9 @@ def run_patient_summary(user_id: str) -> None:
                 )
             conn.commit()
         except Exception:
-            logger.exception(f"[summary] Could not record failure for {user_id!r}")
+            logger.exception(
+                "could not record the failed patient summary",
+                extra=_obs("summary_failure_not_recorded", user_id=user_id),
+            )
     finally:
         conn.close()

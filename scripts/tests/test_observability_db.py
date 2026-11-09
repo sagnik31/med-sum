@@ -5,9 +5,7 @@ logs never carry what the database holds.
 """
 
 import contextvars
-import io
 import json
-import logging
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 
@@ -18,7 +16,6 @@ import llm
 from dataset_records import DOC_IDS, key
 from db_rows import add_account
 from observability import (
-    JsonFormatter,
     RunError,
     check_provenance,
     current_step,
@@ -479,21 +476,6 @@ def test_check_provenance_names_each_broken_link(db, document_id):
 # -------------------------------------------------------------------
 # Logs
 # -------------------------------------------------------------------
-@pytest.fixture
-def json_log():
-    """Everything logged during the test, formatted as the service will."""
-    out = io.StringIO()
-    handler = logging.StreamHandler(out)
-    handler.setFormatter(JsonFormatter())
-    root = logging.getLogger()
-    old_level = root.level
-    root.addHandler(handler)
-    root.setLevel(logging.DEBUG)
-    yield out
-    root.removeHandler(handler)
-    root.setLevel(old_level)
-
-
 def test_logs_carry_ids_and_timings_but_never_patient_content(
     db, document_id, model_client, json_log
 ):

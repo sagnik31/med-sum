@@ -59,17 +59,35 @@ def chat(
             )
         except (ollama.ResponseError, ConnectionError, httpx.TimeoutException) as e:
             failures.append(f"{model}: {e}")
-            logger.warning("Model %s failed: %s", model, e)
+            # The type only: the message stays in the exception for the caller.
+            logger.warning(
+                "model %s failed: %s",
+                model,
+                type(e).__name__,
+                extra={"obs": {"event": "model_failed", "model": model,
+                               "model_role": role, "error_type": type(e).__name__}},
+            )  # fmt: skip
             continue
         record_model_call(
             ModelCall(model, role, prompt_tokens, completion_tokens, complete)
         )
         if complete:
             if model != PRIMARY_MODEL:
-                logger.warning("Used fallback model %s", model)
+                logger.warning(
+                    "used the fallback model %s",
+                    model,
+                    extra={"obs": {"event": "fallback_used", "model": model,
+                                   "model_role": role}},
+                )  # fmt: skip
             return text
         failures.append(f"{model}: output hit the {max_tokens}-token cap")
-        logger.warning("Model %s hit the %d-token cap", model, max_tokens)
+        logger.warning(
+            "model %s hit the %d-token cap",
+            model,
+            max_tokens,
+            extra={"obs": {"event": "output_capped", "model": model,
+                           "model_role": role}},
+        )  # fmt: skip
     raise ModelOutputError("No model produced complete output. " + "; ".join(failures))
 
 

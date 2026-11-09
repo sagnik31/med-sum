@@ -212,7 +212,7 @@ On PowerShell, set the same variables with `$env:NAME = "value"`.
 | `MEDSUM_PRIMARY_MODEL` | AI service | `qwen3.5:4b` |
 | `MEDSUM_FALLBACK_MODEL` | AI service | `gemma4:e2b` |
 | `MEDSUM_NUM_CTX` | AI service | `16384` (context window for each model call) |
-| `MEDSUM_LOG_FILE` | Pipeline logging (`observability`) | `scripts/logs/medsum.jsonl`; JSON log lines without patient content. The AI service doesn't use it yet |
+| `MEDSUM_LOG_FILE` | AI service logs (`observability`) | `scripts/logs/medsum.jsonl`; JSON log lines (ids, events, timings) without patient content, also on stderr. Set up when the service starts |
 | `VITE_API_BASE_URL` | Frontend | `/api`, set in `frontend/.env.local`; the Vite dev server proxies it to the backend |
 | `MEDSUM_API_TARGET` | Frontend (Vite proxy) | `http://localhost:8080` |
 

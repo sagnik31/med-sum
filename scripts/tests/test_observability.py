@@ -369,19 +369,6 @@ def test_an_exception_is_logged_without_its_message():
     assert "Asha" not in json.dumps(line)
 
 
-@pytest.fixture
-def root_logger():
-    """Put the root logger back as it was after configure_logging."""
-    root = logging.getLogger()
-    handlers, level = list(root.handlers), root.level
-    yield root
-    for handler in list(root.handlers):
-        if handler not in handlers:
-            root.removeHandler(handler)
-            handler.close()
-    root.setLevel(level)
-
-
 def test_configure_logging_writes_json_lines_to_the_file(tmp_path, root_logger):
     log_file = tmp_path / "logs" / "medsum.jsonl"
 
