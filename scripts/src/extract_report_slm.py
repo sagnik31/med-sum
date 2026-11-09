@@ -13,10 +13,10 @@ import pymupdf
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from config import (
     OUTPUT_MD_SLM,
-    INPUT_PDF,
+    SAMPLE_DOCUMENT,
     EXTRACTION_PROMPT_FILE,
     PRIMARY_MODEL,
-)  # INPUT_PDF is generic input file
+)
 from llm import chat
 
 END_MARKER = "[[END_OF_PAGE]]"
@@ -45,18 +45,9 @@ def load_prompt(path: str) -> str:
         return f.read()
 
 
-def run_vlm_on_image_bytes(image_bytes: bytes, system_prompt: str, label: str) -> str:
-    """
-    Transcribe a single image (JPG/PNG or PDF-rendered page) given as bytes,
-    using the primary model with the fallback if needed (see llm.chat).
-    Stops when END_MARKER is seen and returns the content WITHOUT it.
-    """
-    print(f"\n=== 👁️ Processing {label} with vision model ===\n")
-
-    if VERBOSE:
-        print(f"SYSTEM PROMPT: {system_prompt}")
-
-    messages = [
+def transcription_messages(image_bytes: bytes, system_prompt: str) -> list[dict]:
+    """The request that transcribes one page image (also the pipeline's)."""
+    return [
         {"role": "system", "content": system_prompt},
         {
             "role": "user",
@@ -68,8 +59,20 @@ def run_vlm_on_image_bytes(image_bytes: bytes, system_prompt: str, label: str) -
         },
     ]
 
+
+def run_vlm_on_image_bytes(image_bytes: bytes, system_prompt: str, label: str) -> str:
+    """
+    Transcribe a single image (JPG/PNG or PDF-rendered page) given as bytes,
+    using the primary model with the fallback if needed (see llm.chat).
+    Stops when END_MARKER is seen and returns the content WITHOUT it.
+    """
+    print(f"\n=== 👁️ Processing {label} with vision model ===\n")
+
+    if VERBOSE:
+        print(f"SYSTEM PROMPT: {system_prompt}")
+
     page_md = chat(
-        messages,
+        transcription_messages(image_bytes, system_prompt),
         max_tokens=MAX_TOKENS_PER_PAGE,
         stop_marker=END_MARKER,
         verbose=VERBOSE,
@@ -153,10 +156,18 @@ def extract_markdown_from_file(input_path: str, on_page=None) -> str:
     return full_md
 
 
-def main():
+def main(argv: list[str] | None = None):
+    """
+    Transcribe one file and save the Markdown to OUTPUT_MD_SLM:
+
+        python extract_report_slm.py [file]
+
+    Without a file, a synthetic lab report from the dataset (SAMPLE_DOCUMENT).
+    """
     global VERBOSE
     VERBOSE = True
-    input_path = INPUT_PDF  # generic input file path from config
+    argv = sys.argv[1:] if argv is None else argv
+    input_path = argv[0] if argv else SAMPLE_DOCUMENT
 
     if not os.path.exists(input_path):
         print(f"[ERROR] Input file not found: {input_path}", file=sys.stderr)

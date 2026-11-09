@@ -166,3 +166,29 @@ def test_one_page_is_sent_to_the_model_with_the_image_and_end_marker(model_clien
     assert (
         model_client.calls[0]["options"]["num_predict"] == extract.MAX_TOKENS_PER_PAGE
     )
+
+
+# -------------------------------------------------------------------
+# Running it on its own
+# -------------------------------------------------------------------
+def test_on_its_own_it_reads_a_synthetic_document_by_default(
+    tmp_path, monkeypatch, transcriber
+):
+    out = tmp_path / "out.md"
+    monkeypatch.setattr(extract, "OUTPUT_MD_SLM", str(out))
+
+    extract.main([])
+
+    assert os.path.normpath(extract.SAMPLE_DOCUMENT).split(os.sep)[-4:] == [
+        "evals", "dataset", "documents", "d09_lab_report.pdf"
+    ]  # fmt: skip
+    assert "d09_lab_report.pdf - page 1/1" in transcriber[0]["label"]
+    assert out.read_text("utf-8") == f"text of {transcriber[0]['label']}"
+
+
+def test_on_its_own_it_reads_the_file_it_is_given(tmp_path, monkeypatch, transcriber):
+    monkeypatch.setattr(extract, "OUTPUT_MD_SLM", str(tmp_path / "out.md"))
+
+    extract.main([make_png(tmp_path / "page.png")])
+
+    assert transcriber[0]["label"] == "page.png"

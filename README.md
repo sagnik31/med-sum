@@ -304,7 +304,7 @@ Checks and tests for each part:
 
 The tests never call a model: model calls are replaced with fakes, so Ollama need not be running. The database tests create a throwaway database (`med_sum_test_go` for Go, `med_sum_test_py` for Python) from `db/schema.sql`, and drop it afterwards; your `med_sum` database is not touched. The Go tests need `psql` on the `PATH`. Both connect as `postgres:postgres@localhost:5432` unless `MEDSUM_TEST_ADMIN_URL` says otherwise. When Postgres can't be reached they are skipped; set `MEDSUM_REQUIRE_DB=1` to make that a failure. `pytest -m "not db"` runs only the tests that need no database.
 
-The extraction and summary steps can also be run on their own, which is useful for tuning prompts. `python scripts/src/extract_report_slm.py` reads a sample report from `data/input/` and writes Markdown to `data/output/`; `python scripts/src/generate_insights_txt.py` turns that Markdown into HTML. The paths are set in `scripts/src/config.py`, and `data/` is not checked in.
+The extraction and summary steps can also be run on their own, which is useful for tuning prompts. `python scripts/src/extract_report_slm.py [file]` transcribes a file (by default a synthetic lab report from `scripts/evals/dataset/`) and writes Markdown to `data/output/`; `python scripts/src/generate_insights_txt.py` turns that Markdown into HTML. The paths are set in `scripts/src/config.py`, and `data/` is not checked in.
 
 ### Synthetic dataset
 

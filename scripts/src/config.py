@@ -6,7 +6,11 @@ SRC_DIR = os.path.dirname(os.path.abspath(__file__))  # .../scripts/src
 SCRIPTS_DIR = os.path.dirname(SRC_DIR)  # .../scripts
 PROJECT_ROOT = os.path.dirname(SCRIPTS_DIR)  # .../med-sum
 
-INPUT_PDF = os.path.join(PROJECT_ROOT, "data", "input", "txt", "medical_report.pdf")
+# The document the extraction script transcribes when run on its own: a
+# synthetic lab report from the dataset (scripts/evals/dataset/).
+SAMPLE_DOCUMENT = os.path.join(
+    SCRIPTS_DIR, "evals", "dataset", "documents", "d09_lab_report.pdf"
+)
 OUTPUT_MD_SLM = os.path.join(
     PROJECT_ROOT, "data", "output", "extraction", "txt", "extracted_report_slm.md"
 )
