@@ -9,7 +9,9 @@ db/schema.sql only creates that schema; the package creates and migrates
 its own tables in it (setup()), and reset_db empties it with the rest.
 
 The saved state is the graph's state, which holds document content, so
-checkpoints are patient data like pipeline_steps: database only.
+checkpoints are patient data like pipeline_steps: database only. Restoring
+it is limited to the types the state can hold (pipeline.state), so a
+checkpoint can't make the service build any other class.
 """
 
 import os
@@ -18,7 +20,10 @@ from contextlib import contextmanager
 
 import psycopg
 from langgraph.checkpoint.postgres import PostgresSaver
+from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
 from psycopg.rows import dict_row
+
+from pipeline.state import checkpoint_types
 
 CHECKPOINT_SCHEMA = "langgraph"
 
@@ -46,11 +51,16 @@ def connect(url: str | None = None) -> psycopg.Connection:
     )
 
 
+def serializer() -> JsonPlusSerializer:
+    """LangGraph's serializer, restoring only the state's own types."""
+    return JsonPlusSerializer(allowed_msgpack_modules=checkpoint_types())
+
+
 @contextmanager
 def open_checkpointer(url: str | None = None) -> Iterator[PostgresSaver]:
     """A checkpointer on its own connection, closed when the block ends."""
     with connect(url) as conn:
-        yield PostgresSaver(conn)
+        yield PostgresSaver(conn, serde=serializer())
 
 
 def setup(url: str | None = None) -> None:
