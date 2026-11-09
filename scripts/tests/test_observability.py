@@ -265,7 +265,7 @@ def test_llm_reports_a_capped_primary_and_the_fallback_that_answered(
     assert (step.prompt_tokens, step.completion_tokens) == (20, 12)
 
 
-def test_llm_reports_nothing_for_a_model_that_raised(monkeypatch, recording_step):
+def test_llm_reports_a_model_that_raised_without_tokens(monkeypatch, recording_step):
     monkeypatch.setattr(
         llm,
         "_client",
@@ -279,8 +279,12 @@ def test_llm_reports_nothing_for_a_model_that_raised(monkeypatch, recording_step
 
     llm.chat(MESSAGES, max_tokens=10)
 
-    assert recording_step.model_calls == 1
-    assert recording_step.model_role == "fallback"
+    assert recording_step.model_calls == 2  # the failed call is counted
+    assert (recording_step.model, recording_step.model_role) == (
+        llm.FALLBACK_MODEL,
+        "fallback",
+    )
+    assert (recording_step.prompt_tokens, recording_step.completion_tokens) == (10, 2)
 
 
 def test_llm_works_without_a_step_and_without_token_counts(model_client):
@@ -289,14 +293,21 @@ def test_llm_works_without_a_step_and_without_token_counts(model_client):
     assert llm.chat(MESSAGES, max_tokens=10) == "fine"
 
 
-def test_a_stop_marker_reply_is_reported_without_token_counts(
-    model_client, recording_step
+def test_a_stop_marker_reply_is_reported_with_its_token_counts(
+    monkeypatch, recording_step
 ):
-    model_client.replies[llm.PRIMARY_MODEL] = ["answer END ignored"]
+    monkeypatch.setattr(
+        llm,
+        "_client",
+        CountingClient({llm.PRIMARY_MODEL: [("answer END ignored", "stop")]}),
+    )
 
     assert llm.chat(MESSAGES, max_tokens=10, stop_marker="END") == "answer"
     assert recording_step.model == llm.PRIMARY_MODEL
-    assert recording_step.prompt_tokens is None
+    assert (recording_step.prompt_tokens, recording_step.completion_tokens) == (
+        10,
+        len("answer END ignored"),
+    )
 
 
 # -------------------------------------------------------------------

@@ -38,13 +38,26 @@ class FakeModelClient:
     Stands in for ollama.Client.
 
     `replies[model]` is a list consumed in order. Each reply is the reply
-    text (finishes normally), a (text, done_reason) pair, or an exception
-    to raise. Every call is recorded in `calls`.
+    text (finishes normally), a (text, done_reason) pair, a (text,
+    done_reason, fields) triple whose fields (token counts, durations) go
+    on the final chunk, or an exception to raise. Every call is recorded in
+    `calls`. `list()` answers from `digests` (model -> digest), or raises
+    `list_error` if it is set.
     """
 
     def __init__(self):
         self.replies: dict[str, list] = {}
         self.calls: list[dict] = []
+        self.digests: dict[str, str] = {}
+        self.list_error: BaseException | None = None
+        self.list_calls = 0
+
+    def list(self):
+        self.list_calls += 1
+        if self.list_error is not None:
+            raise self.list_error
+        models = [SimpleNamespace(model=m, digest=d) for m, d in self.digests.items()]
+        return SimpleNamespace(models=models)
 
     def chat(self, *, model, messages, stream, think, options, format=None):
         self.calls.append(
@@ -63,11 +76,13 @@ class FakeModelClient:
         reply = queue.pop(0)
         if isinstance(reply, BaseException):
             raise reply
-        text, done_reason = reply if isinstance(reply, tuple) else (reply, "stop")
-        return _stream_chunks(text, done_reason)
+        if not isinstance(reply, tuple):
+            reply = (reply, "stop")
+        text, done_reason, *fields = reply
+        return _stream_chunks(text, done_reason, fields[0] if fields else {})
 
 
-def _stream_chunks(text: str, done_reason: str):
+def _stream_chunks(text: str, done_reason: str, fields: dict):
     """Yield `text` a few characters at a time, like a streamed reply."""
     pieces = [text[i : i + 5] for i in range(0, len(text), 5)] or [""]
     for piece in pieces[:-1]:
@@ -78,6 +93,7 @@ def _stream_chunks(text: str, done_reason: str):
         message=SimpleNamespace(content=pieces[-1]),
         done=True,
         done_reason=done_reason,
+        **fields,
     )
 
 
@@ -85,6 +101,7 @@ def _stream_chunks(text: str, done_reason: str):
 def model_client(monkeypatch) -> FakeModelClient:
     fake = FakeModelClient()
     monkeypatch.setattr(llm, "_client", fake)
+    monkeypatch.setattr(llm, "_digests", {})
     return fake
 
 
