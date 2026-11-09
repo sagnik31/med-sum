@@ -46,7 +46,7 @@ class FakeModelClient:
         self.replies: dict[str, list] = {}
         self.calls: list[dict] = []
 
-    def chat(self, *, model, messages, stream, think, options):
+    def chat(self, *, model, messages, stream, think, options, format=None):
         self.calls.append(
             {
                 "model": model,
@@ -54,6 +54,7 @@ class FakeModelClient:
                 "stream": stream,
                 "think": think,
                 "options": options,
+                "format": format,
             }
         )
         queue = self.replies.get(model)

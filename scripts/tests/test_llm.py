@@ -115,3 +115,50 @@ def test_reply_is_stripped(model_client):
     model_client.replies[llm.PRIMARY_MODEL] = ["\n\n  <h2>Summary</h2>  \n"]
 
     assert llm.chat(MESSAGES, max_tokens=100) == "<h2>Summary</h2>"
+
+
+# -------------------------------------------------------------------
+# Structured output and starting at the fallback
+# -------------------------------------------------------------------
+def test_no_format_is_sent_unless_asked(model_client):
+    model_client.replies[llm.PRIMARY_MODEL] = ["ok"]
+
+    llm.chat(MESSAGES, max_tokens=10)
+
+    assert model_client.calls[0]["format"] is None
+
+
+def test_a_schema_is_sent_as_the_format_to_each_model(model_client):
+    schema = {"type": "object", "properties": {"a": {"type": "string"}}}
+    model_client.replies[llm.PRIMARY_MODEL] = [ConnectionError("down")]
+    model_client.replies[llm.FALLBACK_MODEL] = ['{"a": "x"}']
+
+    assert llm.chat(MESSAGES, max_tokens=10, format=schema) == '{"a": "x"}'
+    assert [c["format"] for c in model_client.calls] == [schema, schema]
+
+
+def test_starting_at_the_fallback_skips_the_primary(model_client):
+    model_client.replies[llm.FALLBACK_MODEL] = ["from the fallback"]
+
+    assert (
+        llm.chat(MESSAGES, max_tokens=10, model_role="fallback") == "from the fallback"
+    )
+    assert models_called(model_client) == [llm.FALLBACK_MODEL]
+
+
+def test_a_failing_fallback_has_no_model_after_it(model_client):
+    model_client.replies[llm.FALLBACK_MODEL] = [ConnectionError("refused")]
+
+    with pytest.raises(llm.ModelOutputError, match=f"{llm.FALLBACK_MODEL}: refused"):
+        llm.chat(MESSAGES, max_tokens=10, model_role="fallback")
+    assert models_called(model_client) == [llm.FALLBACK_MODEL]
+
+
+def test_an_unknown_role_is_refused(model_client):
+    with pytest.raises(ValueError, match="unknown model role"):
+        llm.chat(MESSAGES, max_tokens=10, model_role="tertiary")
+
+
+def test_model_for_names_the_configured_models():
+    assert llm.model_for("primary") == llm.PRIMARY_MODEL
+    assert llm.model_for("fallback") == llm.FALLBACK_MODEL

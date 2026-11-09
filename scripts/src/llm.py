@@ -8,9 +8,15 @@ instead of saving a cut-off result.
 
 Each reply that comes back (complete or capped) is reported to the active
 pipeline step, if any, with its model, role and token counts (section 8.4).
+
+A caller can start at the fallback (`model_role="fallback"`), e.g. when the
+graph re-runs a parse the primary kept getting wrong; there is then no
+model after it. `format` is Ollama's structured output: a JSON schema the
+reply is constrained to.
 """
 
 import logging
+from typing import Literal
 
 import httpx
 import ollama
@@ -33,8 +39,17 @@ _client = ollama.Client(timeout=MODEL_TIMEOUT_SECONDS)
 GENERATION_OPTIONS = {"temperature": 0, "presence_penalty": 0}
 
 
+ModelRole = Literal["primary", "fallback"]
+_MODELS = {"primary": PRIMARY_MODEL, "fallback": FALLBACK_MODEL}
+
+
 class ModelOutputError(RuntimeError):
     """Neither model produced complete output."""
+
+
+def model_for(role: ModelRole) -> str:
+    """The configured model for a role."""
+    return _MODELS[role]
 
 
 def chat(
@@ -42,20 +57,26 @@ def chat(
     *,
     max_tokens: int,
     stop_marker: str | None = None,
+    format: dict | None = None,
+    model_role: ModelRole = "primary",
     verbose: bool = False,
 ) -> str:
     """
     Run `messages` on the primary model, then the fallback if needed, and
-    return the reply text.
+    return the reply text. With model_role="fallback" only the fallback runs.
 
     If `stop_marker` is given, generation stops as soon as it appears and the
-    text before it is returned.
+    text before it is returned. `format` (a JSON schema) constrains the reply.
     """
+    if model_role not in _MODELS:
+        raise ValueError(f"unknown model role {model_role!r}")
+    roles = ("primary", "fallback") if model_role == "primary" else ("fallback",)
     failures = []
-    for model, role in ((PRIMARY_MODEL, "primary"), (FALLBACK_MODEL, "fallback")):
+    for role in roles:
+        model = _MODELS[role]
         try:
             text, complete, prompt_tokens, completion_tokens = _stream(
-                model, messages, max_tokens, stop_marker, verbose
+                model, messages, max_tokens, stop_marker, format, verbose
             )
         except (ollama.ResponseError, ConnectionError, httpx.TimeoutException) as e:
             failures.append(f"{model}: {e}")
@@ -72,7 +93,7 @@ def chat(
             ModelCall(model, role, prompt_tokens, completion_tokens, complete)
         )
         if complete:
-            if model != PRIMARY_MODEL:
+            if role == "fallback":
                 logger.warning(
                     "used the fallback model %s",
                     model,
@@ -96,6 +117,7 @@ def _stream(
     messages: list[dict],
     max_tokens: int,
     stop_marker: str | None,
+    format: dict | None,
     verbose: bool,
 ) -> tuple[str, bool, int | None, int | None]:
     """
@@ -106,12 +128,14 @@ def _stream(
     text = ""
     done_reason = None
     prompt_tokens = completion_tokens = None
+    extra = {"format": format} if format is not None else {}
     for chunk in _client.chat(
         model=model,
         messages=messages,
         stream=True,
         think=False,
         options={**GENERATION_OPTIONS, "num_ctx": NUM_CTX, "num_predict": max_tokens},
+        **extra,
     ):
         token = chunk.message.content or ""
         text += token
