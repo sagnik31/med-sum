@@ -167,11 +167,80 @@ CREATE TABLE pipeline_steps (
     findings          jsonb NOT NULL DEFAULT '[]',          -- validator findings
     error             text,
     UNIQUE (run_id, seq),
+    UNIQUE (id, run_id),  -- lets a model call name its step and run together
     CHECK ((status = 'running') = (ended_at IS NULL)),
     CHECK (ended_at IS NULL OR ended_at >= started_at),
     CHECK (model_role IS NULL OR model IS NOT NULL)
 );
 CREATE INDEX pipeline_steps_run_id_idx ON pipeline_steps (run_id, seq);
+
+-- One row per model round trip made by llm.chat (a child span of its
+-- step): the primary, the fallback, and calls that raised. A step's
+-- prompt_tokens and completion_tokens are the sums of its rows'
+-- input_tokens and output_tokens. Never prompt text, reply text or images:
+-- sizes and counts only, so a cloud model's cost can be estimated from
+-- local runs (token counts don't carry over between tokenizers; characters
+-- and pixels do).
+--
+-- OpenTelemetry GenAI semantic conventions, for an OTLP exporter later
+-- (observability.model_calls.OTEL_GENAI_ATTRIBUTES holds the same map):
+--   span id                          id (parent span: step_id)
+--   gen_ai.operation.name            'chat'
+--   gen_ai.provider.name             provider
+--   gen_ai.request.model             model
+--   gen_ai.response.model            model (Ollama answers with the model asked)
+--   gen_ai.request.temperature       request ->> 'temperature'
+--   gen_ai.request.max_tokens        request ->> 'num_predict'
+--   gen_ai.response.finish_reasons   ARRAY[done_reason]
+--   gen_ai.usage.input_tokens        input_tokens
+--   gen_ai.usage.output_tokens       output_tokens
+--   error.type                       error_type
+CREATE TABLE pipeline_model_calls (
+    id                  uuid PRIMARY KEY,                -- the span id, made by llm.chat
+    step_id             uuid NOT NULL,
+    run_id              uuid NOT NULL REFERENCES pipeline_runs (id) ON DELETE CASCADE,
+    seq                 integer NOT NULL CHECK (seq >= 1),  -- order within the step
+    started_at          timestamptz NOT NULL,
+    ended_at            timestamptz NOT NULL,
+    provider            text NOT NULL DEFAULT 'ollama',
+    model               text NOT NULL,
+    model_digest        text,                            -- null when the lookup failed
+    role                text NOT NULL CHECK (role IN ('primary', 'fallback')),
+    -- The options sent (temperature, num_ctx, num_predict, think, stop,
+    -- structured_output on/off); never the prompt or the schema itself.
+    request             jsonb NOT NULL DEFAULT '{}' CHECK (jsonb_typeof(request) = 'object'),
+    -- ok: ended on its own; capped: hit num_predict; stopped: a call with
+    -- a stop marker that ended normally; failed: raised (error_type set).
+    status              text NOT NULL CHECK (status IN ('ok', 'capped', 'stopped', 'failed')),
+    done_reason         text,                            -- as the provider sent it
+    error_type          text,                            -- exception type name only
+    input_tokens        integer CHECK (input_tokens >= 0),
+    output_tokens       integer CHECK (output_tokens >= 0),
+    cached_input_tokens integer CHECK (cached_input_tokens >= 0),  -- null for Ollama
+    reasoning_tokens    integer CHECK (reasoning_tokens >= 0),     -- null for Ollama
+    total_ms            integer CHECK (total_ms >= 0),   -- the provider's timings
+    load_ms             integer CHECK (load_ms >= 0),
+    prompt_eval_ms      integer CHECK (prompt_eval_ms >= 0),
+    eval_ms             integer CHECK (eval_ms >= 0),
+    first_token_ms      integer CHECK (first_token_ms >= 0),  -- measured by llm.chat
+    wall_ms             integer NOT NULL CHECK (wall_ms >= 0), -- measured by llm.chat
+    input_chars         integer NOT NULL CHECK (input_chars >= 0),   -- message text
+    output_chars        integer NOT NULL CHECK (output_chars >= 0),  -- streamed text
+    image_count         integer NOT NULL DEFAULT 0 CHECK (image_count >= 0),
+    -- [width, height] per image, null where the format wasn't recognised.
+    image_pixels        jsonb NOT NULL DEFAULT '[]' CHECK (jsonb_typeof(image_pixels) = 'array'),
+    -- Heuristic, null without a token count: the prompt left less room
+    -- than num_predict in num_ctx. Ollama is believed to cut an over-long
+    -- prompt and say so only in its own log.
+    prompt_truncated    boolean,
+    FOREIGN KEY (step_id, run_id) REFERENCES pipeline_steps (id, run_id) ON DELETE CASCADE,
+    UNIQUE (step_id, seq),
+    CHECK (ended_at >= started_at),
+    CHECK ((status = 'failed') = (error_type IS NOT NULL)),
+    CHECK (status <> 'failed' OR (input_tokens IS NULL AND output_tokens IS NULL))
+);
+CREATE INDEX pipeline_model_calls_run_id_idx ON pipeline_model_calls (run_id);
+CREATE INDEX pipeline_model_calls_model_idx ON pipeline_model_calls (model, role);
 
 -- -------------------------------------------------------------------
 -- The structured record of a document (section 8.1): one JSONB value per

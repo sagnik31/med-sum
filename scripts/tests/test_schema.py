@@ -4,12 +4,15 @@ db/schema.sql: the pipeline tables (section 8.4) and the record table
 """
 
 import json
+import uuid
 
 import psycopg
+import psycopg.rows
 import pytest
 
 from dataset_records import key
 from db_rows import add_account
+from observability.model_calls import OTEL_GENAI_ATTRIBUTES as OTEL
 
 
 def one(db, sql, *params):
@@ -130,7 +133,8 @@ def test_deleting_a_document_deletes_its_runs_steps_and_record(db, document):
             "VALUES (%s, 1, '{\"schema_version\": 1}', %s)", document, run_id)  # fmt: skip
 
     run(db, "DELETE FROM documents WHERE id = %s", document)
-    for table in ("pipeline_runs", "pipeline_steps", "document_records"):
+    for table in ("pipeline_runs", "pipeline_steps", "document_records",
+                  "pipeline_model_calls"):  # fmt: skip
         assert one(db, f"SELECT count(*) FROM {table}") == (0,), table
 
 
@@ -153,3 +157,125 @@ def test_one_job_row_per_document(db, document):
     refused(
         db, "INSERT INTO insights (document_id, status) VALUES (%s, 'failed')", document
     )
+
+
+# -------------------------------------------------------------------
+# Model calls
+# -------------------------------------------------------------------
+def new_call(db, step_id, run_id, seq, **cols) -> str:
+    cols = {
+        "id": str(uuid.uuid4()), "step_id": step_id, "run_id": run_id, "seq": seq,
+        "started_at": "2026-11-09T10:00:00Z", "ended_at": "2026-11-09T10:00:05Z",
+        "model": "qwen3.5:4b", "role": "primary", "status": "ok",
+        "wall_ms": 5000, "input_chars": 10, "output_chars": 4, **cols,
+    }  # fmt: skip
+    names = ", ".join(cols)
+    marks = ", ".join(["%s"] * len(cols))
+    run(db, f"INSERT INTO pipeline_model_calls ({names}) VALUES ({marks})",
+        *cols.values())  # fmt: skip
+    return cols["id"]
+
+
+def test_a_model_call_belongs_to_a_step_of_its_own_run(db, document):
+    run_id = new_run(db, document)
+    step = new_step(db, run_id, 1)
+    call = new_call(db, step, run_id, 1, request=json.dumps({"num_ctx": 16384}),
+                    image_pixels=json.dumps([[1700, 2200]]), image_count=1)  # fmt: skip
+
+    provider, request, pixels, digest = one(
+        db, "SELECT provider, request, image_pixels, model_digest "
+            "FROM pipeline_model_calls WHERE id = %s", call)  # fmt: skip
+    assert (provider, request, pixels, digest) == (
+        "ollama",
+        {"num_ctx": 16384},
+        [[1700, 2200]],
+        None,
+    )
+    other_run = new_run(db, document)
+    refused(db, "INSERT INTO pipeline_model_calls (id, step_id, run_id, seq, "
+                "started_at, ended_at, model, role, status, wall_ms, input_chars, "
+                "output_chars) VALUES (gen_random_uuid(), %s, %s, 2, now(), now(), "
+                "'m', 'primary', 'ok', 0, 0, 0)", step, other_run)  # fmt: skip
+
+
+def test_model_calls_are_numbered_within_their_step(db, document):
+    run_id = new_run(db, document)
+    first, second = new_step(db, run_id, 1), new_step(db, run_id, 2)
+    new_call(db, first, run_id, 1)
+    new_call(db, second, run_id, 1)  # each step numbers its own calls
+
+    with pytest.raises(psycopg.errors.UniqueViolation):
+        new_call(db, first, run_id, 1)
+
+
+@pytest.mark.parametrize(
+    "cols",
+    [
+        {"status": "done"},
+        {"role": "tertiary"},
+        {"status": "failed"},  # no error type
+        {"error_type": "ConnectionError"},  # an error type on a call that didn't fail
+        {"status": "failed", "error_type": "ReadTimeout", "input_tokens": 10},
+        {"input_tokens": -1},
+        {"wall_ms": -1},
+        {"started_at": "2026-11-09T10:00:06Z"},  # after it ended
+        {"request": json.dumps([])},
+        {"image_pixels": json.dumps({})},
+    ],
+    ids=["status", "role", "failed-without-type", "type-without-failure",
+         "tokens-on-failure", "negative-tokens", "negative-time", "ends-first",
+         "request-not-object", "pixels-not-list"],
+)  # fmt: skip
+def test_a_model_call_refuses_inconsistent_values(db, document, cols):
+    run_id = new_run(db, document)
+    step = new_step(db, run_id, 1)
+
+    with pytest.raises(psycopg.errors.IntegrityError):
+        new_call(db, step, run_id, 1, **cols)
+
+
+def test_a_failed_call_keeps_its_error_type_and_timings(db, document):
+    run_id = new_run(db, document)
+    step = new_step(db, run_id, 1)
+    new_call(db, step, run_id, 1, status="failed", error_type="ReadTimeout",
+             output_chars=0)  # fmt: skip
+
+    assert one(db, "SELECT error_type, wall_ms, input_tokens "
+                   "FROM pipeline_model_calls") == ("ReadTimeout", 5000, None)  # fmt: skip
+
+
+def test_deleting_a_step_or_run_deletes_its_model_calls(db, document):
+    run_id = new_run(db, document)
+    first, second = new_step(db, run_id, 1), new_step(db, run_id, 2)
+    new_call(db, first, run_id, 1)
+    new_call(db, second, run_id, 1)
+
+    run(db, "DELETE FROM pipeline_steps WHERE id = %s", first)
+    assert one(db, "SELECT count(*) FROM pipeline_model_calls") == (1,)
+    run(db, "DELETE FROM documents WHERE id = %s", document)
+    assert one(db, "SELECT count(*) FROM pipeline_model_calls") == (0,)
+
+
+def test_the_opentelemetry_map_names_real_columns(db, document):
+    run_id = new_run(db, document)
+    step = new_step(db, run_id, 1)
+    new_call(db, step, run_id, 1, done_reason="stop", input_tokens=650,
+             output_tokens=1583,
+             request=json.dumps({"temperature": 0, "num_predict": 4096}))  # fmt: skip
+    select = ", ".join(f'{expr} AS "{name}"' for name, expr in OTEL.items())
+
+    with db.cursor(row_factory=psycopg.rows.dict_row) as cur:
+        cur.execute(f"SELECT {select} FROM pipeline_model_calls")
+        attributes = cur.fetchone()
+    assert attributes == {
+        "gen_ai.operation.name": "chat",
+        "gen_ai.provider.name": "ollama",
+        "gen_ai.request.model": "qwen3.5:4b",
+        "gen_ai.response.model": "qwen3.5:4b",
+        "gen_ai.request.temperature": 0.0,
+        "gen_ai.request.max_tokens": 4096,
+        "gen_ai.response.finish_reasons": ["stop"],
+        "gen_ai.usage.input_tokens": 650,
+        "gen_ai.usage.output_tokens": 1583,
+        "error.type": None,
+    }
