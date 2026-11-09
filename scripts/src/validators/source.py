@@ -2,6 +2,12 @@
 Validators 1 and 2: every extracted value is where its citation says, in
 the transcription and, for PDFs with a text layer, in the PDF's own text.
 
+A citation's quote must be an exact part of its cited lines, compared as
+whole tokens with spacing and Unicode forms ignored (text.contains). The
+parse prompt asks for whole lines, but small models often quote only the
+cell or value they need; that is still a faithful quote, and a repair would
+gain nothing. Text that is not on those lines remains an error.
+
 Validator 1 only catches values lost or changed between transcription and
 parse; a misread in the image is in both. Validator 2 is the one check on
 the vision step, and only where a text layer exists (decisions 24, 40).
@@ -10,7 +16,7 @@ the vision step, and only where a text layer exists (decisions 24, 40).
 from record.document import DocumentRecord
 from validators.fields import CitedField, Place, cited_fields, item_citations
 from validators.findings import Finding, Severity, Validator
-from validators.text import cited_lines, contains, lines_before, normalise, squash
+from validators.text import cited_lines, contains, lines_before, squash
 
 
 def check_source_text(record: DocumentRecord) -> list[Finding]:
@@ -25,9 +31,9 @@ def check_source_text(record: DocumentRecord) -> list[Finding]:
             findings.append(_error(
                 f"cites page {citation.page}, lines {citation.first_line}-"
                 f"{citation.last_line}, which are not in the transcription", **where))  # fmt: skip
-        elif normalise("\n".join(lines)) != normalise(citation.quote):
+        elif not contains("\n".join(lines), citation.quote):
             findings.append(_error(
-                "the quote does not match the cited lines",
+                "the quote is not on the cited lines",
                 details={"quote": citation.quote, "lines": "\n".join(lines)}, **where))  # fmt: skip
 
     for f in cited_fields(record):

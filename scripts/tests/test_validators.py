@@ -164,9 +164,51 @@ def test_part_of_a_value_is_not_the_value():
 
 def test_a_quote_that_differs_from_its_lines():
     record = keyed_record("d01")
-    obs(record, "Haemoglobin").printed.citation.quote = "| Haemoglobin | 10.4 |"
+    obs(record, "Haemoglobin").printed.citation.quote = "| Haemoglobin | 10.5 |"
 
     assert problems(check_source_text(record)) == {("source_text", "obs-1", None)}
+
+
+@pytest.mark.parametrize(
+    "part",
+    ["| Haemoglobin | 10.4 |", "Haemoglobin | 10.4", "Haemoglobin"],
+    ids=["leading-cells", "without-outer-bars", "one-cell"],
+)
+def test_an_exact_part_of_the_cited_line_is_a_faithful_quote(part):
+    record = keyed_record("d01")
+    c = obs(record, "Haemoglobin").printed.citation
+    assert part in c.quote
+    c.quote = part
+
+    assert check_source_text(record) == []
+
+
+@pytest.mark.parametrize(
+    "part", ["Haemoglobin | 10", "aemoglobin"], ids=["cut-number", "cut-word"]
+)
+def test_a_part_that_cuts_a_token_is_not_a_quote(part):
+    record = keyed_record("d01")
+    obs(record, "Haemoglobin").printed.citation.quote = part
+
+    assert problems(check_source_text(record)) == {("source_text", "obs-1", None)}
+
+
+def test_a_quote_from_another_line_is_not_on_the_cited_line():
+    record = keyed_record("d01")
+    hb, rbc = obs(record, "Haemoglobin"), obs(record, "RBC Count")
+    hb.printed.citation.quote = rbc.printed.citation.quote
+
+    assert problems(check_source_text(record)) == {("source_text", "obs-1", None)}
+
+
+def test_a_label_and_value_quoted_from_a_header_line():
+    record = keyed_record("d01")
+    name = record.patient.printed.name
+    line = record.pages[0].lines[name.citation.first_line - 1]
+    assert ":" in line and name.text in line
+    name.citation.quote = name.text
+
+    assert check_source_text(record) == []
 
 
 def test_a_quote_differing_only_in_spacing_is_the_same_quote():
