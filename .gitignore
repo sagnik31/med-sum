@@ -11,3 +11,6 @@ scripts/logs/
 
 # Planning docs stay local, out of git
 docs/
+
+# Eval reports (generated)
+scripts/evals/results/
