@@ -42,10 +42,14 @@ def page(n: int, *lines: str) -> PageTranscription:
 def test_a_run_starts_with_empty_results_on_the_primary_model():
     patient = ExpectedPatient(name="Dr Test")
 
-    state = initial_state("doc-1", expected_patient=patient)
+    state = initial_state(
+        "doc-1", file_path="/up/a.pdf", uploaded_by="Dr Test", expected_patient=patient
+    )
 
     assert state == {
         "document_id": "doc-1",
+        "file_path": "/up/a.pdf",
+        "uploaded_by": "Dr Test",
         "expected_patient": patient,
         "transcriptions": [],
         "findings": [],
@@ -159,11 +163,13 @@ def full_state(doc_id: str) -> dict:
         ],
         "transcriptions": record.pages,
         "parse": parse_of(record),
+        "parse_error": None,
         "parse_attempts": 1,
         "record": record,
         "findings": validate(
             record, expected_patient=expected_patient(doc_id), today=date(2026, 11, 9)
         ),
+        "insight_html": "<html></html>",
         "end_state": "needs_review",
         "error": None,
     }

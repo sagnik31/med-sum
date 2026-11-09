@@ -1,6 +1,6 @@
 """
 The pipeline graph's state: what the nodes read and write as a document
-goes through classify, transcribe, parse, validate, repair and render.
+goes through its nodes (pipeline/nodes.py).
 
 The state is checkpointed after every node, so it holds document content
 (transcriptions, the parse, the record) but never page images: a page is
@@ -59,6 +59,11 @@ def merge_pages(
 class GraphState(TypedDict):
     # Given when the run starts -------------------------------------------
     document_id: str
+    # The stored upload (absolute path). A path, never file content; it is
+    # stored in the checkpoint and never logged.
+    file_path: NotRequired[str]
+    # The uploader's name, kept on the record (SourceDocument.uploaded_by).
+    uploaded_by: NotRequired[str | None]
     # Who the document was uploaded for, for validator 9 (patient match).
     # Until patients are records of their own, only the uploader's name.
     expected_patient: NotRequired[ExpectedPatient | None]
@@ -76,6 +81,9 @@ class GraphState(TypedDict):
 
     # parse and repair ----------------------------------------------------
     parse: NotRequired[LabReportParse | PrescriptionParse | None]
+    # Why the last parse reply was refused (not JSON, or not the schema),
+    # for the repair prompt; None after a parse that fit.
+    parse_error: NotRequired[str | None]
     # Parse attempts so far with the model in use (1 = the first parse).
     parse_attempts: NotRequired[int]
     model_role: NotRequired[ModelRole]
@@ -84,6 +92,10 @@ class GraphState(TypedDict):
     record: NotRequired[DocumentRecord | None]
     findings: NotRequired[list[Finding]]
 
+    # render --------------------------------------------------------------
+    # The insight page as the app shows it today (step 10 replaces it).
+    insight_html: NotRequired[str | None]
+
     # end -----------------------------------------------------------------
     end_state: NotRequired[EndState | None]
     # Why the run failed, for the database; never logged.
@@ -91,17 +103,25 @@ class GraphState(TypedDict):
 
 
 def initial_state(
-    document_id: str, *, expected_patient: ExpectedPatient | None = None
+    document_id: str,
+    *,
+    file_path: str | None = None,
+    uploaded_by: str | None = None,
+    expected_patient: ExpectedPatient | None = None,
 ) -> GraphState:
     """The state a run starts from."""
-    return GraphState(
+    state = GraphState(
         document_id=str(document_id),
+        uploaded_by=uploaded_by,
         expected_patient=expected_patient,
         transcriptions=[],
         findings=[],
         parse_attempts=0,
         model_role="primary",
     )
+    if file_path is not None:
+        state["file_path"] = str(file_path)
+    return state
 
 
 # -------------------------------------------------------------------
