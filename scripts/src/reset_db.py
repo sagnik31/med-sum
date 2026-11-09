@@ -8,8 +8,9 @@ From scripts/src:
     python -m reset_db         # says what it would delete; deletes nothing
     python -m reset_db --yes   # deletes it
 
-It drops every table in the database's public schema and loads
-db/schema.sql, then deletes the files in the uploads folder. data/input/
+It drops every table in the database's public schema and the LangGraph
+checkpoint schema, loads db/schema.sql and creates the checkpoint tables,
+then deletes the files in the uploads folder. data/input/
 and data/output/ are never touched. Only a database on this machine can be
 reset. Nothing it prints holds patient content: counts only.
 """
@@ -23,15 +24,17 @@ from urllib.parse import urlsplit
 
 import psycopg
 
+from pipeline import checkpoints
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SCHEMA_FILE = PROJECT_ROOT / "db" / "schema.sql"
 UPLOADS_DIR = PROJECT_ROOT / "backend" / "uploads"
 DEFAULT_URL = "postgres://postgres:postgres@localhost:5432/med_sum?sslmode=disable"
 LOCAL_HOSTS = {"", "localhost", "127.0.0.1", "::1"}
 
-# Schemas whose contents a reset removes. The LangGraph checkpoint schema
-# joins this list with the first graph code (step 8).
-RESET_SCHEMAS = ("public",)
+# Schemas whose contents a reset removes: the application's tables and the
+# LangGraph checkpoints.
+RESET_SCHEMAS = ("public", checkpoints.CHECKPOINT_SCHEMA)
 
 
 class NotLocal(Exception):
@@ -52,7 +55,7 @@ def database_name(url: str) -> str:
 @dataclass
 class Plan:
     database: str
-    rows: dict[str, int]  # table -> row count
+    rows: dict[str, int]  # table (schema-qualified outside public) -> row count
     uploads: Path
     files: int
 
@@ -62,16 +65,17 @@ def plan(url: str, uploads: Path) -> Plan:
     check_local(url)
     with psycopg.connect(url) as conn, conn.cursor() as cur:
         cur.execute(
-            "SELECT table_name FROM information_schema.tables "
+            "SELECT table_schema, table_name FROM information_schema.tables "
             "WHERE table_schema = ANY(%s) AND table_type = 'BASE TABLE' "
-            "ORDER BY table_name",
+            "ORDER BY table_schema <> 'public', table_schema, table_name",
             (list(RESET_SCHEMAS),),
         )
-        tables = [name for (name,) in cur.fetchall()]
+        tables = cur.fetchall()
         rows = {}
-        for table in tables:
-            cur.execute(f'SELECT count(*) FROM "{table}"')
-            rows[table] = cur.fetchone()[0]
+        for schema, table in tables:
+            cur.execute(f'SELECT count(*) FROM "{schema}"."{table}"')
+            label = table if schema == "public" else f"{schema}.{table}"
+            rows[label] = cur.fetchone()[0]
     return Plan(database_name(url), rows, uploads, len(_upload_files(uploads)))
 
 
@@ -82,7 +86,11 @@ def load_schema(conn) -> None:
 
 
 def reset_database(url: str) -> None:
-    """Drop everything in the reset schemas and load db/schema.sql, in one transaction."""
+    """
+    Drop everything in the reset schemas and load db/schema.sql, in one
+    transaction; then create the checkpoint tables, which need a
+    connection of their own (their indexes are built concurrently).
+    """
     check_local(url)
     # Leaving the block commits and closes the connection (psycopg 3).
     with psycopg.connect(url) as conn, conn.cursor() as cur:
@@ -90,6 +98,7 @@ def reset_database(url: str) -> None:
             cur.execute(f'DROP SCHEMA IF EXISTS "{schema}" CASCADE')
             cur.execute(f'CREATE SCHEMA "{schema}"')
         load_schema(conn)
+    checkpoints.setup(url)
 
 
 def _upload_files(uploads: Path) -> list[Path]:

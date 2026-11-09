@@ -17,6 +17,7 @@ import pytest
 
 import llm
 import reset_db
+from pipeline import checkpoints
 
 TEST_DB_NAME = "med_sum_test_py"
 # Any database on the server will do; it is only used to create and drop the test one.
@@ -122,6 +123,7 @@ def database_url():
     try:
         with psycopg.connect(url) as conn:  # commits and closes
             reset_db.load_schema(conn)
+        checkpoints.setup(url)
         yield url
     finally:
         drop()
@@ -138,5 +140,9 @@ def db(database_url, monkeypatch):
     conn = psycopg.connect(database_url, autocommit=True)
     with conn.cursor() as cur:
         cur.execute("TRUNCATE organizations, users, documents, insights CASCADE")
+        cur.execute(
+            "TRUNCATE langgraph.checkpoints, langgraph.checkpoint_blobs,"
+            " langgraph.checkpoint_writes"
+        )
     yield conn
     conn.close()

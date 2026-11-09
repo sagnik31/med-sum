@@ -119,6 +119,14 @@ CREATE INDEX insights_status_idx ON insights (status);
 -- exporter can be added later. Inputs and outputs hold patient content:
 -- they stay here, never in logs.
 -- -------------------------------------------------------------------
+-- LangGraph checkpoints (the graph's state after each node, so a run
+-- that crashed resumes from its last finished node) live in a schema of
+-- their own. langgraph-checkpoint-postgres creates and migrates its tables
+-- there itself (pipeline.checkpoints.setup() in the AI service); this file
+-- only creates the schema. Checkpoints hold document content, like
+-- pipeline_steps.
+CREATE SCHEMA IF NOT EXISTS langgraph;
+
 CREATE TABLE pipeline_runs (
     id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     trace_id      text NOT NULL UNIQUE DEFAULT replace(gen_random_uuid()::text, '-', ''),
