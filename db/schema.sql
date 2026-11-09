@@ -270,6 +270,89 @@ FROM pipeline_runs r
 LEFT JOIN pipeline_model_calls c ON c.run_id = r.id
 GROUP BY r.id;
 
+-- Per document, over all its runs (each reprocess adds a run).
+CREATE VIEW pipeline_document_model_totals AS
+SELECT t.document_id,
+       count(*)                                               AS runs,
+       max(t.started_at)                                      AS last_run_started_at,
+       sum(t.model_calls)                                     AS model_calls,
+       sum(t.fallback_calls)                                  AS fallback_calls,
+       sum(t.capped_calls)                                    AS capped_calls,
+       sum(t.failed_calls)                                    AS failed_calls,
+       sum(t.input_tokens)                                    AS input_tokens,
+       sum(t.output_tokens)                                   AS output_tokens,
+       sum(t.cached_input_tokens)                             AS cached_input_tokens,
+       sum(t.reasoning_tokens)                                AS reasoning_tokens,
+       sum(t.model_wall_ms)                                   AS model_wall_ms,
+       sum(t.model_total_ms)                                  AS model_total_ms
+FROM pipeline_run_model_totals t
+GROUP BY t.document_id;
+
+-- Per node and model: what one call costs. Token statistics skip calls
+-- without counts; time statistics skip failed calls, whose time is
+-- mostly a timeout. Percentiles are interpolated (percentile_cont).
+CREATE VIEW pipeline_node_model_baseline AS
+SELECT s.node,
+       c.model,
+       count(*)                                               AS calls,
+       count(*) FILTER (WHERE c.status = 'failed')            AS failed_calls,
+       avg(c.input_tokens)                                    AS avg_input_tokens,
+       percentile_cont(0.5)  WITHIN GROUP (ORDER BY c.input_tokens)  AS p50_input_tokens,
+       percentile_cont(0.95) WITHIN GROUP (ORDER BY c.input_tokens)  AS p95_input_tokens,
+       avg(c.output_tokens)                                   AS avg_output_tokens,
+       percentile_cont(0.5)  WITHIN GROUP (ORDER BY c.output_tokens) AS p50_output_tokens,
+       percentile_cont(0.95) WITHIN GROUP (ORDER BY c.output_tokens) AS p95_output_tokens,
+       avg(c.wall_ms) FILTER (WHERE c.status <> 'failed')     AS avg_wall_ms,
+       percentile_cont(0.5)  WITHIN GROUP (ORDER BY c.wall_ms)
+           FILTER (WHERE c.status <> 'failed')                AS p50_wall_ms,
+       percentile_cont(0.95) WITHIN GROUP (ORDER BY c.wall_ms)
+           FILTER (WHERE c.status <> 'failed')                AS p95_wall_ms,
+       avg(c.first_token_ms)                                  AS avg_first_token_ms,
+       avg(c.input_chars)                                     AS avg_input_chars,
+       avg(c.output_chars) FILTER (WHERE c.status <> 'failed') AS avg_output_chars,
+       avg(c.image_count)                                     AS avg_images
+FROM pipeline_model_calls c
+JOIN pipeline_steps s ON s.id = c.step_id
+GROUP BY s.node, c.model;
+
+-- Per model: how often it fails, hits the cap or hands over to the
+-- fallback, and how fast it reads and writes. fallback_rate is the share
+-- of its calls as primary that the fallback had to follow (the next call
+-- in the same step); rates are over all its calls otherwise. Speeds use
+-- the provider's own eval timings, over calls that have them.
+CREATE VIEW pipeline_model_baseline AS
+SELECT c.model,
+       count(*)                                               AS calls,
+       count(*) FILTER (WHERE c.role = 'primary')             AS primary_calls,
+       count(*) FILTER (WHERE c.role = 'fallback')            AS fallback_calls,
+       count(*) FILTER (WHERE c.role = 'primary' AND EXISTS (
+           SELECT 1 FROM pipeline_model_calls n
+           WHERE n.step_id = c.step_id AND n.seq = c.seq + 1
+             AND n.role = 'fallback'))                        AS handed_to_fallback,
+       round(count(*) FILTER (WHERE c.role = 'primary' AND EXISTS (
+           SELECT 1 FROM pipeline_model_calls n
+           WHERE n.step_id = c.step_id AND n.seq = c.seq + 1
+             AND n.role = 'fallback'))::numeric
+             / nullif(count(*) FILTER (WHERE c.role = 'primary'), 0), 4)
+                                                              AS fallback_rate,
+       round(count(*) FILTER (WHERE c.status = 'capped')::numeric / count(*), 4)
+                                                              AS cap_hit_rate,
+       round(count(*) FILTER (WHERE c.status = 'failed')::numeric / count(*), 4)
+                                                              AS failure_rate,
+       round(sum(c.output_tokens) FILTER (WHERE c.eval_ms > 0)::numeric * 1000
+             / nullif(sum(c.eval_ms) FILTER (WHERE c.output_tokens IS NOT NULL
+                                             AND c.eval_ms > 0), 0), 2)
+                                                              AS output_tokens_per_s,
+       round(sum(c.input_tokens) FILTER (WHERE c.prompt_eval_ms > 0)::numeric * 1000
+             / nullif(sum(c.prompt_eval_ms) FILTER (WHERE c.input_tokens IS NOT NULL
+                                                    AND c.prompt_eval_ms > 0), 0), 2)
+                                                              AS input_tokens_per_s,
+       sum(c.input_tokens)                                    AS input_tokens,
+       sum(c.output_tokens)                                   AS output_tokens,
+       sum(c.wall_ms)                                         AS wall_ms
+FROM pipeline_model_calls c
+GROUP BY c.model;
+
 -- -------------------------------------------------------------------
 -- The structured record of a document (section 8.1): one JSONB value per
 -- document, with its schema version (decision 15). Reprocessing replaces
