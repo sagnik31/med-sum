@@ -18,7 +18,13 @@ Reported, per document:
   most like its cited quote (on that page; line numbers are ignored). A
   panel name or a remark's test name, printed above its line, may be
   anywhere on the page. The parse step can only copy what is there;
+- layout: of the lines whose content is right, how many keep their shape
+  (a heading and its level, a table row and its cell count, or plain
+  text). Reported apart from the content scores, since the parse step
+  relies on table rows and headings;
 - unreadable: lines the model marked `[unreadable]` (signal LC-01).
+
+Value recall also gates the choice of primary model (choose.py).
 """
 
 import re
@@ -37,17 +43,51 @@ UNREADABLE = "[unreadable]"
 _SEPARATOR = re.compile(r"^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)*\|?\s*$")
 
 
-def content_lines(lines: Iterable[str]) -> list[str]:
+def shaped_lines(lines: Iterable[str]) -> list[tuple[str, str]]:
+    """(content, shape) per content line; shape is 'heading N', 'table N cells' or 'text'."""
     out = []
     for line in lines:
         if _SEPARATOR.match(line):
             continue
-        text = unicodedata.normalize("NFKC", line)
-        text = re.sub(r"^\s*#+\s*", "", text).replace("|", " ")
+        raw = unicodedata.normalize("NFKC", line).strip()
+        text = re.sub(r"^#+\s*", "", raw).replace("|", " ")
         text = re.sub(r"\s+", " ", text).strip()
-        if text and not text.startswith("<!--"):
-            out.append(text)
+        if not text or text.startswith("<!--"):
+            continue
+        if heading := re.match(r"#+", raw):
+            shape = f"heading {len(heading.group())}"
+        elif raw.startswith("|"):
+            shape = f"table {len(raw.strip('|').split('|'))} cells"
+        else:
+            shape = "text"
+        out.append((text, shape))
     return out
+
+
+def content_lines(lines: Iterable[str]) -> list[str]:
+    return [text for text, _ in shaped_lines(lines)]
+
+
+def layout_differences(
+    expected: list[tuple[str, str]], got: list[tuple[str, str]]
+) -> tuple[int, list[tuple[str, str, str]]]:
+    """
+    Lines whose content was transcribed right, and of those, the ones laid
+    out differently: (content, expected shape, got shape).
+    """
+    matcher = SequenceMatcher(
+        None, [t for t, _ in expected], [t for t, _ in got], autojunk=False
+    )
+    compared, differ = 0, []
+    for op, i1, i2, j1, _ in matcher.get_opcodes():
+        if op != "equal":
+            continue
+        for k in range(i2 - i1):
+            (text, e), (_, g) = expected[i1 + k], got[j1 + k]
+            compared += 1
+            if e != g:
+                differ.append((text, e, g))
+    return compared, differ
 
 
 def edit_distance(a: str, b: str) -> int:
@@ -107,6 +147,14 @@ class MissingValue:
     page: int
 
 
+@dataclass(frozen=True)
+class LayoutDifference:
+    page: int
+    text: str
+    expected: str
+    got: str
+
+
 @dataclass
 class TranscriptionScore:
     document_id: str
@@ -116,8 +164,10 @@ class TranscriptionScore:
     char_edits: int = 0
     chars_expected: int = 0
     values: Ratio = field(default_factory=Ratio)
+    layout: Ratio = field(default_factory=Ratio)
     unreadable: int = 0
     missing_values: list[MissingValue] = field(default_factory=list)
+    layout_differences: list[LayoutDifference] = field(default_factory=list)
 
     @property
     def cer(self) -> float | None:
@@ -133,8 +183,10 @@ class TranscriptionScore:
             "chars_expected": self.chars_expected,
             "cer": self.cer,
             "values": self.values.as_dict(),
+            "layout": self.layout.as_dict(),
             "unreadable": self.unreadable,
             "missing_values": [asdict(m) for m in self.missing_values],
+            "layout_differences": [asdict(d) for d in self.layout_differences],
         }
 
 
@@ -152,7 +204,11 @@ def score_transcription(
     numbers = sorted({p.page for p in key.pages} | set(got))
     expected = {p.page: p.lines for p in key.pages}
     for n in numbers:
-        e, g = content_lines(expected.get(n, [])), content_lines(got.get(n, []))
+        es, gs = shaped_lines(expected.get(n, [])), shaped_lines(got.get(n, []))
+        e, g = [t for t, _ in es], [t for t, _ in gs]
+        compared, differ = layout_differences(es, gs)
+        score.layout += Ratio(correct=compared - len(differ), total=compared)
+        score.layout_differences += [LayoutDifference(n, *d) for d in differ]
         ec, gc = Counter(e), Counter(g)
         score.lines += Counts(
             tp=sum((ec & gc).values()),
@@ -192,6 +248,7 @@ class TranscriptionSummary:
     char_edits: int = 0
     chars_expected: int = 0
     values: Ratio = field(default_factory=Ratio)
+    layout: Ratio = field(default_factory=Ratio)
     unreadable: int = 0
 
     @property
@@ -200,7 +257,8 @@ class TranscriptionSummary:
 
     def as_dict(self) -> dict:
         return {**asdict(self), "lines": self.lines.as_dict(),
-                "values": self.values.as_dict(), "cer": self.cer}  # fmt: skip
+                "values": self.values.as_dict(), "layout": self.layout.as_dict(),
+                "cer": self.cer}  # fmt: skip
 
 
 def summarise_transcriptions(
@@ -215,5 +273,6 @@ def summarise_transcriptions(
         s.char_edits += d.char_edits
         s.chars_expected += d.chars_expected
         s.values += d.values
+        s.layout += d.layout
         s.unreadable += d.unreadable
     return s

@@ -10,6 +10,7 @@ from evals.transcription import (
     edit_distance,
     page_edits,
     score_transcription,
+    shaped_lines,
     summarise_transcriptions,
 )
 
@@ -158,3 +159,60 @@ def test_values_are_found_wherever_the_model_numbered_their_lines():
     s = score_transcription(got, key("d01"))
     assert s.values.correct == s.values.total
     assert (s.lines.fp, s.lines.fn) == (3, 0)
+
+
+# -------------------------------------------------------------------
+# Layout (reported apart from content)
+# -------------------------------------------------------------------
+def test_line_shapes():
+    assert shaped_lines(["# Title", "## CBC", "| a | b |  |", "Plain text"]) == [
+        ("Title", "heading 1"),
+        ("CBC", "heading 2"),
+        ("a b", "table 3 cells"),
+        ("Plain text", "text"),
+    ]
+
+
+@pytest.mark.parametrize("doc_id", DOC_IDS)
+def test_the_expected_transcription_keeps_its_layout(doc_id):
+    s = score_transcription(pages(doc_id), key(doc_id))
+    assert s.layout.correct == s.layout.total > 0 and s.layout_differences == []
+
+
+def test_a_table_row_written_as_text_is_a_layout_difference_only():
+    got = pages("d01")
+    replace_line(got[0], HB_ROW, "Haemoglobin 10.4 L g/dL 12.0 - 15.0")
+    s = score_transcription(got, key("d01"))
+    assert s.char_edits == 0 and s.lines.fn == 0  # content is right
+    assert [(d.page, d.text, d.expected, d.got) for d in s.layout_differences] == [
+        (1, "Haemoglobin 10.4 L g/dL 12.0 - 15.0", "table 5 cells", "text")
+    ]
+    assert s.layout.correct == s.layout.total - 1
+
+
+def test_a_lost_heading_or_merged_cells_are_layout_differences():
+    got = pages("d01")
+    replace_line(got[0], "## COMPLETE BLOOD COUNT", "COMPLETE BLOOD COUNT")
+    replace_line(got[0], HB_ROW, "| Haemoglobin 10.4 | L | g/dL | 12.0 - 15.0 |")
+    s = score_transcription(got, key("d01"))
+    assert {(d.expected, d.got) for d in s.layout_differences} == {
+        ("heading 2", "text"),
+        ("table 5 cells", "table 4 cells"),
+    }
+
+
+def test_layout_is_only_judged_on_lines_whose_content_is_right():
+    got = pages("d01")
+    replace_line(got[0], HB_ROW, "Haemoglobin 10.9 L g/dL 12.0 - 15.0")
+    s = score_transcription(got, key("d01"))
+    assert s.layout_differences == []
+    assert s.layout.total == s.lines.tp
+
+
+def test_layout_adds_up_in_the_summary():
+    got = pages("d01")
+    replace_line(got[0], HB_ROW, "Haemoglobin 10.4 L g/dL 12.0 - 15.0")
+    a = score_transcription(got, key("d01"))
+    total = summarise_transcriptions([a, score_transcription(pages("d02"), key("d02"))])
+    assert total.layout.correct == total.layout.total - 1
+    assert json.loads(json.dumps(total.as_dict()))["layout"]["total"] > 0
