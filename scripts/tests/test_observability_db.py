@@ -485,7 +485,11 @@ def test_logs_carry_ids_and_timings_but_never_patient_content(
     @traced("parse", input_of=lambda s: s)
     def parse(state):
         current_step().set_prompt("txt/parse.txt", SECRET)
-        llm.chat(MESSAGES, max_tokens=10)
+        # The sentinel is in the messages (text and an image) and the reply.
+        llm.chat(
+            [{"role": "user", "content": SECRET, "images": [SECRET.encode()]}],
+            max_tokens=10,
+        )
         current_step().add_findings(
             [
                 Finding(
@@ -539,3 +543,22 @@ def test_logs_carry_ids_and_timings_but_never_patient_content(
     assert parse_row["output"] == {"out": SECRET}
     assert SECRET in parse_row["findings"][0]["message"]
     assert SECRET in repair_row["error"]
+
+    # Each model round trip is logged and stored with sizes, never the text.
+    call_lines = [e for e in lines if e.get("event") == "model_call_ended"]
+    assert [(e["model_role"], e["status"]) for e in call_lines] == [
+        ("primary", "failed"),
+        ("fallback", "ok"),
+    ]
+    assert call_lines[1]["output_chars"] == len(SECRET)
+    assert call_lines[1]["image_count"] == 1
+    with db.cursor() as cur:
+        cur.execute(
+            "SELECT row_to_json(c)::text FROM pipeline_model_calls c"
+            " WHERE run_id = %s ORDER BY seq",
+            (run.id,),
+        )
+        call_rows = [text for (text,) in cur.fetchall()]
+    assert len(call_rows) == 2
+    for text in call_rows:
+        assert SECRET not in text and "Asha" not in text

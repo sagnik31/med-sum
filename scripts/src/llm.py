@@ -31,6 +31,7 @@ import httpx
 import ollama
 
 from config import FALLBACK_MODEL, NUM_CTX, PRIMARY_MODEL
+from observability import model_calls
 from observability.context import ModelCall, record_model_call
 
 logger = logging.getLogger("llm")
@@ -198,33 +199,38 @@ def _report(attempt, model, role, request, sizes, stop_marker=None, error=None):
         status = "capped" if not complete else "stopped" if stop_marker else "ok"
     input_tokens = _count(done, "prompt_eval_count")
     num_ctx, num_predict = request["num_ctx"], request["num_predict"]
-    record_model_call(
-        ModelCall(
-            model=model,
-            role=role,
-            prompt_tokens=input_tokens,
-            completion_tokens=_count(done, "eval_count"),
-            complete=complete,
-            status=status,
-            provider=PROVIDER,
-            model_digest=model_digest(model),
-            request=request,
-            done_reason=done_reason,
-            error_type=type(error).__name__ if error is not None else None,
-            total_ms=_ns_to_ms(done, "total_duration"),
-            load_ms=_ns_to_ms(done, "load_duration"),
-            prompt_eval_ms=_ns_to_ms(done, "prompt_eval_duration"),
-            eval_ms=_ns_to_ms(done, "eval_duration"),
-            first_token_ms=attempt.first_token_ms,
-            wall_ms=wall_ms,
-            input_chars=sizes.chars,
-            output_chars=len(raw),
-            image_count=len(sizes.images),
-            image_pixels=sizes.images,
-            prompt_truncated=prompt_truncated(input_tokens, num_ctx, num_predict),
-            started_at=attempt.started_at,
-            ended_at=ended_at,
-        )
+    call = ModelCall(
+        model=model,
+        role=role,
+        prompt_tokens=input_tokens,
+        completion_tokens=_count(done, "eval_count"),
+        complete=complete,
+        status=status,
+        provider=PROVIDER,
+        model_digest=model_digest(model),
+        request=request,
+        done_reason=done_reason,
+        error_type=type(error).__name__ if error is not None else None,
+        total_ms=_ns_to_ms(done, "total_duration"),
+        load_ms=_ns_to_ms(done, "load_duration"),
+        prompt_eval_ms=_ns_to_ms(done, "prompt_eval_duration"),
+        eval_ms=_ns_to_ms(done, "eval_duration"),
+        first_token_ms=attempt.first_token_ms,
+        wall_ms=wall_ms,
+        input_chars=sizes.chars,
+        output_chars=len(raw),
+        image_count=len(sizes.images),
+        image_pixels=sizes.images,
+        prompt_truncated=prompt_truncated(input_tokens, num_ctx, num_predict),
+        started_at=attempt.started_at,
+        ended_at=ended_at,
+    )
+    record_model_call(call)
+    logger.info(
+        "model call ended: %s %s",
+        model,
+        status,
+        extra={"obs": model_calls.log_fields(call)},
     )
     return text, complete
 

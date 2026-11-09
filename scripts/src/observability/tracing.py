@@ -38,7 +38,7 @@ from contextlib import contextmanager
 import psycopg
 from psycopg.types.json import Jsonb
 
-from observability import context
+from observability import context, model_calls
 from observability.jsonable import jsonable
 from record.common import Provenance
 
@@ -393,6 +393,16 @@ class Run:
                 params,
             )
             closed = cur.rowcount == 1
+            # The step's call rows, in the same transaction as its totals.
+            calls = step.model_call_list()
+            if closed and calls:
+                cur.executemany(
+                    model_calls.INSERT,
+                    [
+                        model_calls.row(call, step_id=step.id, run_id=self.id, seq=n)
+                        for n, call in enumerate(calls, start=1)
+                    ],
+                )
             if closed:
                 cur.execute(
                     f"UPDATE pipeline_runs SET models_used = {_MODELS_USED}"
@@ -462,6 +472,8 @@ class Step:
         self._input = _UNSET
         self._output = _UNSET
         self._model_complete = False
+        self._calls: list[context.ModelCall] = []
+        self._calls_lock = threading.Lock()  # a node may call models in threads
         self._started = time.monotonic()
 
     def set_prompt(
@@ -511,15 +523,30 @@ class Step:
 
     def add_model_call(self, call: context.ModelCall) -> None:
         """
-        Called by llm.chat for every model reply. Token counts add up over
-        the step's calls; the model is the one whose complete reply came
-        last (or the last one called, if none completed).
+        Called by llm.chat for every model round trip, failed ones too.
+        The call is queued for its pipeline_model_calls row (numbered in
+        the order reported), and token counts add up over the step's calls.
+        The step's model is the one whose complete reply came last (or the
+        last one that replied, if none completed); a call that raised
+        doesn't change it.
         """
+        with self._calls_lock:
+            self._calls.append(call)
+            self._add_to_totals(call)
+
+    def model_call_list(self) -> list:
+        """The calls reported so far, in order."""
+        with self._calls_lock:
+            return list(self._calls)
+
+    def _add_to_totals(self, call) -> None:
         self.model_calls += 1
         for name in ("prompt_tokens", "completion_tokens"):
             n = getattr(call, name)
             if n is not None:
                 setattr(self, name, (getattr(self, name) or 0) + n)
+        if call.status == "failed":
+            return
         if call.complete or not self._model_complete:
             self.model = call.model
             self.model_role = call.role
