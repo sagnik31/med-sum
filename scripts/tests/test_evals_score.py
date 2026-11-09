@@ -10,6 +10,7 @@ import pytest
 
 from dataset_records import DOC_IDS, key
 from evals import Counts, Ratio, score_document, summarise
+from evals.score import IDENTITY_MATCH, INVENTED, similarity
 from record.printed import DocumentType, RemarkScope
 
 
@@ -335,3 +336,83 @@ def test_scores_serialise_to_json():
     assert doc["errors"] and doc["fields"]["observations"]["fp"] == 1
     total = json.loads(json.dumps(summarise([s]).as_dict()))
     assert total["documents"] == 1
+
+
+# -------------------------------------------------------------------
+# Pairing threshold
+# -------------------------------------------------------------------
+def test_a_name_less_than_90_percent_alike_does_not_pair():
+    assert 0.8 <= similarity("hb haemoglobin", "haemoglobin") < IDENTITY_MATCH
+    pred = key("d01")
+    by_test(pred, "Haemoglobin").printed.test_name = "Hb Haemoglobin"
+    s = score(pred, "d01")
+    assert [m.label for m in s.missed] == ["Haemoglobin"]
+    assert [h.label for h in s.hallucinated] == ["Hb Haemoglobin"]
+
+
+# -------------------------------------------------------------------
+# Unsafe errors (the model-choice gate)
+# -------------------------------------------------------------------
+@pytest.mark.parametrize("doc_id", DOC_IDS)
+def test_a_perfect_prediction_has_no_unsafe_errors(doc_id):
+    s = score(key(doc_id), doc_id)
+    assert s.unsafe == []
+    k = key(doc_id)
+    assert s.clinical_items == len(k.observations) + len(k.medications) + len(
+        k.allergies
+    )
+
+
+def test_invented_results_medicines_and_allergies_are_unsafe():
+    pred = key("d02")
+    extra = pred.medications[0].model_copy(deep=True)
+    extra.id, extra.printed.name = "med-invented", "Atorva"
+    pred.medications.append(extra)
+    allergy = pred.allergies[0].model_copy(deep=True)
+    allergy.id, allergy.printed.text = "alg-invented", "Allergic to penicillin"
+    pred.allergies.append(allergy)
+    s = score(pred, "d02")
+    assert {(u.group, u.pred_id, u.field) for u in s.unsafe} == {
+        ("medications", "med-invented", INVENTED),
+        ("allergies", "alg-invented", INVENTED),
+    }
+    assert s.unsafe_rate == pytest.approx(2 / 4)  # 3 medicines + 1 allergy
+
+
+def test_an_invented_remark_or_vital_is_not_unsafe():
+    pred = key("d02")
+    vital = pred.vitals[0].model_copy(deep=True)
+    vital.id, vital.printed.name = "vit-invented", "Respiratory Rate"
+    pred.vitals.append(vital)
+    s = score(pred, "d02")
+    assert s.hallucinated and s.unsafe == []
+
+
+def test_wrong_or_invented_clinical_values_are_unsafe_but_missing_ones_are_not():
+    pred = key("d01")
+    by_test(pred, "Haemoglobin").printed.value_text = "10.9"  # wrong: unsafe
+    by_test(pred, "RBC Count").printed.flag_printed = "H"  # invented: unsafe
+    by_test(pred, "Haemoglobin").printed.flag_printed = None  # missing: not
+    by_test(pred, "RBC Count").printed.panel = "CBC"  # not a clinical field
+    s = score(pred, "d01")
+    assert sorted((u.field, u.expected, u.got) for u in s.unsafe) == [
+        ("flag_printed", None, "H"),
+        ("value_text", "10.4", "10.9"),
+    ]
+
+
+def test_a_wrong_medicine_strength_is_unsafe():
+    pred = key("d02")
+    med = next(m for m in pred.medications if m.printed.strength is not None)
+    med.printed.strength = "1000 mg"
+    s = score(pred, "d02")
+    assert [(u.field, u.got) for u in s.unsafe] == [("strength", "1000 mg")]
+
+
+def test_unsafe_errors_add_up_in_the_summary():
+    pred = key("d01")
+    by_test(pred, "Haemoglobin").printed.value_text = "10.9"
+    total = summarise([score(pred, "d01"), score(key("d02"), "d02")])
+    assert total.unsafe == 1 and total.clinical_items == 26 + 4
+    assert total.unsafe_rate == pytest.approx(1 / 30)
+    assert json.loads(json.dumps(total.as_dict()))["unsafe"] == 1

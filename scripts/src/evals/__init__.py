@@ -4,6 +4,7 @@ answer keys (`scripts/evals/dataset`). Scoring is pure code; nothing here
 calls a model.
 """
 
+from evals.choose import Candidate, Choice, choose_primary
 from evals.score import (
     Counts,
     DocumentScore,
@@ -14,6 +15,9 @@ from evals.score import (
 )
 
 __all__ = [
+    "Candidate",
+    "Choice",
+    "choose_primary",
     "Counts",
     "DocumentScore",
     "Ratio",

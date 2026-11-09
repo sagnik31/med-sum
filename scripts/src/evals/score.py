@@ -5,8 +5,9 @@ How items are paired (a model's ids and line numbers never match the key's):
 - Within each group (observations, medications, ...), a predicted item is
   paired with a key item by its identity text (test name, medicine name,
   remark text, ...), compared case-insensitively after NFKC and spacing,
-  with a similarity of at least IDENTITY_MATCH. So a misspelt test name
-  still pairs, and the misspelling costs that one field.
+  with a similarity of at least IDENTITY_MATCH (90%). So a one-letter
+  misspelling still pairs and costs that one field; a name further off
+  is a missed item plus an invented one.
 - Ties (two rows with the same name) are broken by how alike the cited
   quotes are, then by page. Each item pairs at most once.
 
@@ -27,6 +28,12 @@ reading and a derivation bug can be told apart.
 
 Citations are judged by quote, not line number: same page, and the quotes
 (ignoring case, spacing and table pipes) at least CITATION_MATCH alike.
+
+Unsafe errors are what a clinician could act on wrongly, counted apart
+for the model choice (choose.py): an invented lab result, medicine or
+allergy (UNSAFE_ITEMS), or a wrong or invented value in a clinical field
+of a paired item (UNSAFE_FIELDS). A missing value is not unsafe here;
+recall covers it. The rate is unsafe errors per clinical item in the key.
 """
 
 import re
@@ -41,8 +48,16 @@ from record.common import Citation, PrintedText
 from record.document import DocumentRecord
 from record.printed import RemarkScope
 
-IDENTITY_MATCH = 0.8
+IDENTITY_MATCH = 0.9
 CITATION_MATCH = 0.9
+
+UNSAFE_ITEMS = ("observations", "medications", "allergies")
+UNSAFE_FIELDS = {
+    "observations": ("value_text", "unit", "flag_printed"),
+    "medications": ("name", "strength", "dose", "frequency"),
+    "allergies": ("substance",),
+}
+INVENTED = "(invented item)"  # FieldError.field of an unsafe invented item
 
 GROUPS = ("observations", "medications", "conditions", "remarks", "vitals", "allergies")
 HEADER_GROUPS = ("patient", "document")
@@ -130,6 +145,12 @@ class DocumentScore:
     missed: list[ItemRef] = field(default_factory=list)
     hallucinated: list[ItemRef] = field(default_factory=list)
     errors: list[FieldError] = field(default_factory=list)
+    unsafe: list[FieldError] = field(default_factory=list)
+    clinical_items: int = 0  # key items in UNSAFE_ITEMS groups
+
+    @property
+    def unsafe_rate(self) -> float | None:
+        return _div(len(self.unsafe), self.clinical_items)
 
     @property
     def type_correct(self) -> bool:
@@ -164,6 +185,9 @@ class DocumentScore:
             "missed": [asdict(m) for m in self.missed],
             "hallucinated": [asdict(h) for h in self.hallucinated],
             "errors": [_jsonable(asdict(e)) for e in self.errors],
+            "unsafe": [_jsonable(asdict(e)) for e in self.unsafe],
+            "clinical_items": self.clinical_items,
+            "unsafe_rate": self.unsafe_rate,
         }
 
 
@@ -181,6 +205,12 @@ class Summary:
     frequency: Ratio = field(default_factory=Ratio)
     hallucinated: int = 0
     missed: int = 0
+    unsafe: int = 0
+    clinical_items: int = 0
+
+    @property
+    def unsafe_rate(self) -> float | None:
+        return _div(self.unsafe, self.clinical_items)
 
     @property
     def all_fields(self) -> Counts:
@@ -209,6 +239,9 @@ class Summary:
             "frequency": self.frequency.as_dict(),
             "hallucinated": self.hallucinated,
             "missed": self.missed,
+            "unsafe": self.unsafe,
+            "clinical_items": self.clinical_items,
+            "unsafe_rate": self.unsafe_rate,
         }
 
 
@@ -226,6 +259,8 @@ def summarise(scores: Iterable[DocumentScore]) -> Summary:
         s.frequency += d.frequency
         s.hallucinated += len(d.hallucinated)
         s.missed += len(d.missed)
+        s.unsafe += len(d.unsafe)
+        s.clinical_items += d.clinical_items
     return s
 
 
@@ -410,12 +445,18 @@ def _score_group(group, pred_items, key_items, pairs, score: DocumentScore) -> N
     score.items[group] = Counts(
         tp=len(pairs), fp=len(pred_items) - len(pairs), fn=len(key_items) - len(pairs)
     )
+    unsafe_fields = UNSAFE_FIELDS.get(group, ())
+    if group in UNSAFE_ITEMS:
+        score.clinical_items += len(key_items)
     for i, j in pairs:
         p, k = pred_items[i], key_items[j]
         for name in spec.fields:
             e, g = _value(getattr(k.printed, name)), _value(getattr(p.printed, name))
             if not _compare(e, g, fields):
-                score.errors.append(FieldError(group, k.id, p.id, name, e, g))
+                error = FieldError(group, k.id, p.id, name, e, g)
+                score.errors.append(error)
+                if name in unsafe_fields and g is not None:
+                    score.unsafe.append(error)
         _score_derived(group, p.derived if hasattr(p, "derived") else None,
                        k.derived if hasattr(k, "derived") else None, spec,
                        derived, score, k.id, p.id)  # fmt: skip
@@ -428,7 +469,12 @@ def _score_group(group, pred_items, key_items, pairs, score: DocumentScore) -> N
             _score_derived(group, None, getattr(k, "derived", None), spec, derived)
     for i, p in enumerate(pred_items):
         if i not in paired_p:
-            score.hallucinated.append(ItemRef(group, p.id, spec.identity(p.printed)))
+            label = spec.identity(p.printed)
+            score.hallucinated.append(ItemRef(group, p.id, label))
+            if group in UNSAFE_ITEMS:
+                score.unsafe.append(
+                    FieldError(group, None, p.id, INVENTED, None, label)
+                )
             for name in spec.fields:
                 _compare(None, _value(getattr(p.printed, name)), fields)
             _score_derived(group, getattr(p, "derived", None), None, spec, derived)
