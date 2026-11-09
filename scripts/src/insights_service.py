@@ -31,7 +31,7 @@ import logging
 from fastapi import FastAPI, BackgroundTasks, Depends, Header, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-import psycopg2
+import psycopg
 
 import os
 
@@ -97,7 +97,7 @@ def get_db_connection():
         "DATABASE_URL",
         "postgres://postgres:postgres@localhost:5432/med_sum?sslmode=disable",
     )
-    return psycopg2.connect(dsn)
+    return psycopg.connect(dsn)
 
 
 def touch_insight(conn, document_id: str) -> None:

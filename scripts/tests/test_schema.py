@@ -5,7 +5,7 @@ db/schema.sql: the pipeline tables (section 8.4) and the record table
 
 import json
 
-import psycopg2
+import psycopg
 import pytest
 
 from dataset_records import key
@@ -48,7 +48,7 @@ def new_step(db, run_id, seq, **cols) -> str:
 
 
 def refused(db, sql, *params):
-    with pytest.raises(psycopg2.errors.IntegrityError):
+    with pytest.raises(psycopg.errors.IntegrityError):
         run(db, sql, *params)
 
 

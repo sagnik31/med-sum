@@ -4,8 +4,11 @@
 beautifulsoup4
 fastapi
 httpx
+# LangGraph runs the document pipeline; its Postgres checkpointer needs psycopg 3
+langgraph
+langgraph-checkpoint-postgres
 ollama
-psycopg2-binary
+psycopg[binary]
 pydantic
 # 2.x adds layout analysis with onnxruntime and numpy; we only render pages to images
 pymupdf<2

@@ -11,7 +11,7 @@ import logging
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 
-import psycopg2
+import psycopg
 import pytest
 
 import llm
@@ -411,7 +411,7 @@ def test_a_run_can_use_a_given_connection_factory(db, database_url, document_id)
     opened = []
 
     def connect():
-        conn = psycopg2.connect(database_url)
+        conn = psycopg.connect(database_url)
         opened.append(conn)
         return conn
 

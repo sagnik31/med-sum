@@ -21,7 +21,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urlsplit
 
-import psycopg2
+import psycopg
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SCHEMA_FILE = PROJECT_ROOT / "db" / "schema.sql"
@@ -60,7 +60,7 @@ class Plan:
 def plan(url: str, uploads: Path) -> Plan:
     """What a reset would delete."""
     check_local(url)
-    with psycopg2.connect(url) as conn, conn.cursor() as cur:
+    with psycopg.connect(url) as conn, conn.cursor() as cur:
         cur.execute(
             "SELECT table_name FROM information_schema.tables "
             "WHERE table_schema = ANY(%s) AND table_type = 'BASE TABLE' "
@@ -72,7 +72,6 @@ def plan(url: str, uploads: Path) -> Plan:
         for table in tables:
             cur.execute(f'SELECT count(*) FROM "{table}"')
             rows[table] = cur.fetchone()[0]
-    conn.close()
     return Plan(database_name(url), rows, uploads, len(_upload_files(uploads)))
 
 
@@ -85,15 +84,12 @@ def load_schema(conn) -> None:
 def reset_database(url: str) -> None:
     """Drop everything in the reset schemas and load db/schema.sql, in one transaction."""
     check_local(url)
-    conn = psycopg2.connect(url)
-    try:
-        with conn, conn.cursor() as cur:
-            for schema in RESET_SCHEMAS:
-                cur.execute(f'DROP SCHEMA IF EXISTS "{schema}" CASCADE')
-                cur.execute(f'CREATE SCHEMA "{schema}"')
-            load_schema(conn)
-    finally:
-        conn.close()
+    # Leaving the block commits and closes the connection (psycopg 3).
+    with psycopg.connect(url) as conn, conn.cursor() as cur:
+        for schema in RESET_SCHEMAS:
+            cur.execute(f'DROP SCHEMA IF EXISTS "{schema}" CASCADE')
+            cur.execute(f'CREATE SCHEMA "{schema}"')
+        load_schema(conn)
 
 
 def _upload_files(uploads: Path) -> list[Path]:

@@ -35,8 +35,8 @@ import time
 from collections import Counter
 from contextlib import contextmanager
 
-import psycopg2
-from psycopg2.extras import Json
+import psycopg
+from psycopg.types.json import Jsonb
 
 from observability import context
 from observability.jsonable import jsonable
@@ -75,7 +75,7 @@ def _default_connect():
         "DATABASE_URL",
         "postgres://postgres:postgres@localhost:5432/med_sum?sslmode=disable",
     )
-    return psycopg2.connect(dsn)
+    return psycopg.connect(dsn)
 
 
 def _error_text(exc: BaseException) -> str:
@@ -95,7 +95,7 @@ def start_run(document_id: str, graph_version: str, *, connect=None) -> "Run":
     """Insert a pipeline_runs row and return the run; use it as a context manager."""
     conn = _open(connect)
     try:
-        with conn, conn.cursor() as cur:
+        with conn.transaction(), conn.cursor() as cur:
             cur.execute(
                 "INSERT INTO pipeline_runs (document_id, graph_version)"
                 " VALUES (%s, %s) RETURNING id, trace_id",
@@ -129,7 +129,7 @@ def resume_run(run_id: str, *, connect=None) -> "Run":
     """
     conn = _open(connect)
     try:
-        with conn, conn.cursor() as cur:
+        with conn.transaction(), conn.cursor() as cur:
             cur.execute(
                 "SELECT trace_id, document_id, graph_version, ended_at"
                 " FROM pipeline_runs WHERE id = %s FOR UPDATE",
@@ -170,9 +170,11 @@ def resume_run(run_id: str, *, connect=None) -> "Run":
 
 def _open(connect):
     conn = (connect or _default_connect)()
-    # Every write is its own transaction (see Run._tx); never autocommit,
-    # or the row lock that numbers steps would be released at once.
-    conn.autocommit = False
+    # Every write is its own explicit transaction (conn.transaction(), see
+    # Run._tx), which holds the row lock that numbers steps until it ends.
+    # Autocommit keeps reads outside those blocks from leaving a
+    # transaction open.
+    conn.autocommit = True
     return conn
 
 
@@ -219,7 +221,7 @@ class Run:
     @contextmanager
     def _tx(self):
         """One transaction on the run's connection, one thread at a time."""
-        with self._lock, self.conn, self.conn.cursor() as cur:
+        with self._lock, self.conn.transaction(), self.conn.cursor() as cur:
             yield cur
 
     # Ending ------------------------------------------------------------
@@ -314,7 +316,7 @@ class Run:
             "node": node,
             "page": page,
             "attempt": attempt,
-            "input": None if input is _UNSET else Json(jsonable(input)),
+            "input": None if input is _UNSET else Jsonb(jsonable(input)),
         }
         with self._tx() as cur:
             # Lock the run so concurrent steps get distinct numbers, and so
@@ -370,11 +372,11 @@ class Run:
             "prompt_name": step.prompt_name,
             "prompt_hash": step.prompt_hash,
             "input_changed": step._input is not _UNSET,
-            "input": None if step._input is _UNSET else Json(jsonable(step._input)),
-            "output": None if step._output is _UNSET else Json(jsonable(step._output)),
+            "input": None if step._input is _UNSET else Jsonb(jsonable(step._input)),
+            "output": None if step._output is _UNSET else Jsonb(jsonable(step._output)),
             "prompt_tokens": step.prompt_tokens,
             "completion_tokens": step.completion_tokens,
-            "findings": Json(jsonable(step.findings)),
+            "findings": Jsonb(jsonable(step.findings)),
             "error": step.error,
         }
         with self._tx() as cur:

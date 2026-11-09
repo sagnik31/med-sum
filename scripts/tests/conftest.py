@@ -12,7 +12,7 @@ import os
 from types import SimpleNamespace
 from urllib.parse import urlsplit, urlunsplit
 
-import psycopg2
+import psycopg
 import pytest
 
 import llm
@@ -107,10 +107,9 @@ def _unavailable(reason: str):
 @pytest.fixture(scope="session")
 def database_url():
     try:
-        admin = psycopg2.connect(ADMIN_URL, connect_timeout=5)
-    except psycopg2.OperationalError as e:
+        admin = psycopg.connect(ADMIN_URL, connect_timeout=5, autocommit=True)
+    except psycopg.OperationalError as e:
         _unavailable(f"Postgres is unreachable: {e}")
-    admin.autocommit = True
 
     def drop():
         with admin.cursor() as cur:
@@ -121,10 +120,8 @@ def database_url():
         cur.execute(f"CREATE DATABASE {TEST_DB_NAME}")
     url = _url_with_database(ADMIN_URL, TEST_DB_NAME)
     try:
-        conn = psycopg2.connect(url)
-        with conn:
+        with psycopg.connect(url) as conn:  # commits and closes
             reset_db.load_schema(conn)
-        conn.close()
         yield url
     finally:
         drop()
@@ -138,8 +135,7 @@ def db(database_url, monkeypatch):
     test connects to the same database through DATABASE_URL.
     """
     monkeypatch.setenv("DATABASE_URL", database_url)
-    conn = psycopg2.connect(database_url)
-    conn.autocommit = True
+    conn = psycopg.connect(database_url, autocommit=True)
     with conn.cursor() as cur:
         cur.execute("TRUNCATE organizations, users, documents, insights CASCADE")
     yield conn
