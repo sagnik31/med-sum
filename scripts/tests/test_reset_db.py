@@ -12,7 +12,7 @@ from db_rows import add_account
 def tables(db) -> set[str]:
     with db.cursor() as cur:
         cur.execute("SELECT table_name FROM information_schema.tables "
-                    "WHERE table_schema = 'public'")  # fmt: skip
+                    "WHERE table_schema = 'public' AND table_type = 'BASE TABLE'")  # fmt: skip
         return {name for (name,) in cur.fetchall()}
 
 

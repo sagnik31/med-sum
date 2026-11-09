@@ -58,6 +58,14 @@ _MODELS_USED = (
     " GROUP BY model ORDER BY min(seq))"
 )
 
+# A run's model-call totals (pipeline_run_model_totals), computed from the
+# call rows when it ends, logged with run_ended and kept on Run.model_totals.
+RUN_TOTALS = (
+    "model_calls", "fallback_calls", "capped_calls", "failed_calls",
+    "input_tokens", "output_tokens", "cached_input_tokens", "reasoning_tokens",
+    "model_wall_ms", "model_total_ms",
+)  # fmt: skip
+
 _UNSET = object()
 
 
@@ -193,6 +201,7 @@ class Run:
         self.graph_version = graph_version
         self.ended = False
         self.end_state: str | None = None
+        self.model_totals: dict = {}  # set when the run ends
         self._lock = threading.Lock()  # parallel nodes share the connection
         self._started = time.monotonic()
         self._tokens: list = []
@@ -253,6 +262,8 @@ class Run:
             row = cur.fetchone()
             if row is None:
                 raise RunError(f"pipeline run {self.id} has already ended")
+            totals = self._model_totals(cur)
+        self.model_totals = totals
         self.ended = True
         self.end_state = end_state
         level = logging.ERROR if end_state == "failed" else logging.INFO
@@ -270,9 +281,20 @@ class Run:
                     "duration_ms": _ms_since(self._started),
                     "models_used": list(row[0]),
                     "steps_left_running": left_running,
+                    **totals,
                 }
             },
         )
+
+    def _model_totals(self, cur) -> dict:
+        """The run's model-call totals, from the pipeline_run_model_totals view."""
+        cur.execute(
+            f"SELECT {', '.join(RUN_TOTALS)} FROM pipeline_run_model_totals"
+            " WHERE run_id = %s",
+            (self.id,),
+        )
+        values = cur.fetchone()
+        return dict(zip(RUN_TOTALS, values)) if values else {}
 
     # Steps -------------------------------------------------------------
     @contextmanager

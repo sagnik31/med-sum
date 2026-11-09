@@ -243,6 +243,34 @@ CREATE INDEX pipeline_model_calls_run_id_idx ON pipeline_model_calls (run_id);
 CREATE INDEX pipeline_model_calls_model_idx ON pipeline_model_calls (model, role);
 
 -- -------------------------------------------------------------------
+-- Model-call totals and baselines, derived from pipeline_model_calls.
+-- Views, not stored columns, so they can't disagree with the rows; store
+-- them only if these get slow. A token sum is null when no call in the
+-- group reported that count (cached and reasoning tokens, for Ollama).
+-- model_wall_ms is our own measure and includes calls that failed;
+-- model_total_ms is the provider's.
+-- -------------------------------------------------------------------
+CREATE VIEW pipeline_run_model_totals AS
+SELECT r.id                                                   AS run_id,
+       r.document_id,
+       r.started_at,
+       r.ended_at,
+       r.end_state,
+       count(c.id)                                            AS model_calls,
+       count(c.id) FILTER (WHERE c.role = 'fallback')         AS fallback_calls,
+       count(c.id) FILTER (WHERE c.status = 'capped')         AS capped_calls,
+       count(c.id) FILTER (WHERE c.status = 'failed')         AS failed_calls,
+       sum(c.input_tokens)                                    AS input_tokens,
+       sum(c.output_tokens)                                   AS output_tokens,
+       sum(c.cached_input_tokens)                             AS cached_input_tokens,
+       sum(c.reasoning_tokens)                                AS reasoning_tokens,
+       coalesce(sum(c.wall_ms), 0)                            AS model_wall_ms,
+       sum(c.total_ms)                                        AS model_total_ms
+FROM pipeline_runs r
+LEFT JOIN pipeline_model_calls c ON c.run_id = r.id
+GROUP BY r.id;
+
+-- -------------------------------------------------------------------
 -- The structured record of a document (section 8.1): one JSONB value per
 -- document, with its schema version (decision 15). Reprocessing replaces
 -- it; earlier runs' outputs stay in pipeline_steps. Clinician corrections

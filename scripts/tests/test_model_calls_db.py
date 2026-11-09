@@ -5,7 +5,9 @@ its rows.
 """
 
 import contextvars
+import json
 import threading
+import uuid
 from concurrent.futures import ThreadPoolExecutor
 
 import psycopg.rows
@@ -244,3 +246,99 @@ def test_image_sizes_are_stored_as_pairs(db, document_id, model_client):
 
     (row,) = call_rows(db, run.id)
     assert (row["image_count"], row["image_pixels"]) == (2, [[12, 34], None])
+
+
+# -------------------------------------------------------------------
+# Run totals
+# -------------------------------------------------------------------
+def two_steps_of_calls(model_client):
+    """A transcribe whose primary is capped, then a parse the primary answers."""
+    model_client.replies[llm.PRIMARY_MODEL] = [
+        ("cut", "length", {"prompt_eval_count": 100, "eval_count": 50,
+                           "total_duration": 2_000_000_000}),
+        ("ok", "stop", {"prompt_eval_count": 30, "eval_count": 3,
+                        "total_duration": 1_000_000_000}),
+    ]  # fmt: skip
+    model_client.replies[llm.FALLBACK_MODEL] = [
+        ConnectionError("down"),
+    ]
+
+    @traced("transcribe", page=1)
+    def transcribe(state):
+        try:
+            llm.chat(MESSAGES, max_tokens=50)
+        except llm.ModelOutputError:
+            pass
+        return {}
+
+    @traced("parse")
+    def parse(state):
+        return {"text": llm.chat(MESSAGES, max_tokens=50)}
+
+    return transcribe, parse
+
+
+EXPECTED_TOTALS = {
+    "model_calls": 3,
+    "fallback_calls": 1,
+    "capped_calls": 1,
+    "failed_calls": 1,
+    "input_tokens": 130,
+    "output_tokens": 53,
+    "cached_input_tokens": None,  # Ollama doesn't report them
+    "reasoning_tokens": None,
+    "model_total_ms": 3000,
+}
+
+
+def without_wall(totals: dict) -> dict:
+    return {k: v for k, v in totals.items() if k != "model_wall_ms"}
+
+
+def test_a_run_ends_with_its_model_totals(db, document_id, model_client, json_log):
+    transcribe, parse = two_steps_of_calls(model_client)
+
+    with start_run(document_id, GRAPH_VERSION) as run:
+        transcribe({})
+        parse({})
+        run.finish("verified")
+
+    assert without_wall(run.model_totals) == EXPECTED_TOTALS
+    assert run.model_totals["model_wall_ms"] >= 0
+    with db.cursor(row_factory=psycopg.rows.dict_row) as cur:
+        cur.execute(
+            "SELECT * FROM pipeline_run_model_totals WHERE run_id = %s", (run.id,)
+        )
+        view = cur.fetchone()
+    assert view["document_id"] == uuid.UUID(document_id)
+    assert view["end_state"] == "verified"
+    assert {k: view[k] for k in EXPECTED_TOTALS} == EXPECTED_TOTALS
+
+    lines = [json.loads(s) for s in json_log.getvalue().splitlines()]
+    (ended,) = [e for e in lines if e.get("event") == "run_ended"]
+    assert ended["input_tokens"] == 130 and ended["fallback_calls"] == 1
+    assert ended["model_calls"] == 3 and "cached_input_tokens" not in ended
+
+
+def test_a_run_that_fails_on_an_exception_has_its_totals_too(
+    db, document_id, model_client
+):
+    transcribe, _ = two_steps_of_calls(model_client)
+
+    with pytest.raises(RuntimeError):
+        with start_run(document_id, GRAPH_VERSION) as run:
+            transcribe({})
+            raise RuntimeError("crash")
+
+    assert run.end_state == "failed"
+    assert run.model_totals["model_calls"] == 2
+    assert run.model_totals["input_tokens"] == 100
+
+
+def test_a_run_without_model_calls_has_zero_calls(db, document_id):
+    with start_run(document_id, GRAPH_VERSION) as run:
+        run.finish("needs_review")
+
+    assert run.model_totals["model_calls"] == 0
+    assert run.model_totals["input_tokens"] is None
+    assert run.model_totals["model_wall_ms"] == 0

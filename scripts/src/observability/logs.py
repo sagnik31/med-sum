@@ -70,6 +70,12 @@ LOG_FIELDS = frozenset(
         "output_chars",
         "image_count",
         "prompt_truncated",
+        # A run's model-call totals (run_ended).
+        "fallback_calls",
+        "capped_calls",
+        "failed_calls",
+        "model_wall_ms",
+        "model_total_ms",
         "steps_left_running",
         "steps_interrupted",
         # The service's job lines (insights_service): ids and sizes only.
