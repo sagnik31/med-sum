@@ -37,6 +37,7 @@ import os
 
 import config
 import document_jobs
+import model_health
 from observability import configure_logging
 from pipeline import checkpoints
 
@@ -146,8 +147,12 @@ def request_document(document_id: str, *, reprocess: bool = False) -> str:
 
 @app.get("/health")
 async def health():
-    """Simple health check."""
-    return {"status": "ok"}
+    """
+    The service is up, and each model's circuit breaker (model_health):
+    closed, open (skipped until its cool-down ends) or half-open (being
+    probed). A model appears once it has been called.
+    """
+    return {"status": "ok", "model_health": model_health.snapshot()}
 
 
 @app.post("/internal/generate-insights", dependencies=[Depends(require_internal_token)])

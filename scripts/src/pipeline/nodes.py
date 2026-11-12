@@ -35,6 +35,7 @@ from datetime import date
 from pydantic import ValidationError
 
 import llm
+import model_health
 from derive import build_record
 from extract_report_slm import END_MARKER, MAX_TOKENS_PER_PAGE, transcription_messages
 from observability import current_step, stamp, traced
@@ -225,6 +226,7 @@ def _parse_call(state: GraphState, messages: list[dict]) -> dict:
     except llm.OutputCappedError:
         # A cut-off reply is a parse that failed, like one off the schema.
         step.fail(CAPPED)
+        model_health.quality_failure(step.model, step.model_role, "capped")
         return {**failed, "parse_error": CAPPED, "parse_reply": None}
     try:
         parsed = PARSE_MODELS[doc_type].model_validate_json(reply)
@@ -232,6 +234,7 @@ def _parse_call(state: GraphState, messages: list[dict]) -> dict:
         error = schema_errors(e)
         step.fail(error)
         step.set_output({"reply": reply})
+        model_health.quality_failure(step.model, step.model_role, "off_schema")
         return {**failed, "parse_error": error, "parse_reply": reply}
     return {
         "parse": parsed,
@@ -377,6 +380,12 @@ def validate(state: GraphState) -> dict:
         else []
     )
     _step().add_findings(findings)
+    if any(f.severity is Severity.ERROR for f in findings):
+        made_by = state.get("parse_provenance")
+        model_health.quality_failure(
+            made_by.model if made_by else None, state.get("parse_model_role"),
+            "validation",
+        )  # fmt: skip
     return {
         "record": record,
         "findings": findings,

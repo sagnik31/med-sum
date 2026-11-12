@@ -52,6 +52,12 @@ LOG_FIELDS = frozenset(
         "completion_tokens",
         "findings",  # counts per severity, never the findings
         "error_type",
+        # A model's circuit breaker and quality counts (model_health).
+        "failures",
+        "breaker",
+        "cooldown_s",
+        "quality_kind",
+        "quality_failures",
         # One model round trip (model_call_ended): counts and timings only.
         "model_call_id",
         "model_digest",

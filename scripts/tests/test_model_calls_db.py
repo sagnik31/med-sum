@@ -14,6 +14,7 @@ import psycopg.rows
 import pytest
 
 import llm
+import model_health
 from observability import start_run, traced
 from test_observability_db import GRAPH_VERSION, MESSAGES, add_document
 
@@ -167,10 +168,14 @@ def httpx_timeout():
     return httpx.ReadTimeout("timed out")
 
 
-def test_parallel_steps_number_their_calls_on_their_own(db, document_id, model_client):
+def test_parallel_steps_number_their_calls_on_their_own(
+    db, document_id, model_client, monkeypatch
+):
     # Every primary reply is capped, so each chat makes two calls; the
     # fallback answers or fails depending on which thread gets which reply,
     # but each step makes exactly four calls either way.
+    # Its fallback fails 8 times on purpose; the breaker isn't under test.
+    monkeypatch.setattr(model_health, "FAILURES", 1000)
     pages = range(1, 9)
     model_client.replies[llm.PRIMARY_MODEL] = [
         ("cut", "length", {"eval_count": 1}) for _ in range(2 * len(pages))

@@ -31,7 +31,9 @@ def test_health_needs_no_token(client):
     response = client.get("/health")
 
     assert response.status_code == 200
-    assert response.json() == {"status": "ok"}
+    body = response.json()
+    assert body["status"] == "ok"
+    assert set(body["model_health"]) == {"failures_to_open", "cooldown_s", "models"}
 
 
 def test_a_document_job_is_scheduled_with_the_right_token(client, scheduled):

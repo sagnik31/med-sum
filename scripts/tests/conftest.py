@@ -18,6 +18,7 @@ import psycopg
 import pytest
 
 import llm
+import model_health
 import reset_db
 from observability import JsonFormatter
 from pipeline import checkpoints
@@ -101,6 +102,14 @@ def _stream_chunks(text: str, done_reason: str, fields: dict):
 def no_job_worker(monkeypatch):
     """The service starts no job worker in tests; job tests run one themselves."""
     monkeypatch.setenv("MEDSUM_WORKER", "0")
+
+
+@pytest.fixture(autouse=True)
+def fresh_model_health():
+    """Every test starts with every model's circuit breaker closed."""
+    model_health.reset()
+    yield
+    model_health.reset()
 
 
 @pytest.fixture(autouse=True)

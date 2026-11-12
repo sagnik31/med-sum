@@ -12,6 +12,11 @@ status, Ollama's token counts and timings, our own first-token and wall
 times, and the sizes of what was sent and received (characters, image count
 and pixel sizes). Never the prompt, the reply or the image bytes.
 
+Each model has a circuit breaker (model_health): a model that keeps
+failing with errors or timeouts is skipped for a cool-down, so the request
+goes straight to the fallback; with every usable model skipped the call
+raises ModelUnavailableError at once.
+
 A caller can start at the fallback (`model_role="fallback"`), e.g. when the
 graph re-runs a parse the primary kept getting wrong; there is then no
 model after it. `format` is Ollama's structured output: a JSON schema the
@@ -30,6 +35,7 @@ from typing import Literal
 import httpx
 import ollama
 
+import model_health
 from config import FALLBACK_MODEL, NUM_CTX, PRIMARY_MODEL
 from observability import model_calls
 from observability.context import ModelCall, record_model_call
@@ -77,6 +83,14 @@ class OutputCappedError(ModelOutputError):
     """
 
 
+class ModelUnavailableError(ModelOutputError):
+    """
+    Every model the call could use is disabled by its circuit breaker
+    (model_health), so none was called: the call fails at once instead of
+    waiting on a server known to be failing.
+    """
+
+
 def model_for(role: ModelRole) -> str:
     """The configured model for a role."""
     return _MODELS[role]
@@ -109,15 +123,26 @@ def chat(
     sizes = _message_sizes(messages)
     failures = []
     capped = False
+    tried = False
     for role in roles:
         model = _MODELS[role]
+        if not model_health.allow(model, role):
+            wait = model_health.retry_in(model)
+            failures.append(
+                f"{model}: not called, disabled after repeated failures"
+                + (f" (next try in {wait:.0f} s)" if wait is not None else "")
+            )
+            continue
+        tried = True
         attempt = _Attempt()
         try:
             _stream(attempt, model, messages, options, format, verbose, stop_marker)
         except Exception as e:
             _report(attempt, model, role, request, sizes, error=e)
             if not isinstance(e, MODEL_ERRORS):
+                model_health.abandoned(model)
                 raise
+            model_health.failed(model, role, e)
             failures.append(f"{model}: {e}")
             # The type only: the message stays in the exception for the caller.
             logger.warning(
@@ -129,6 +154,7 @@ def chat(
             )  # fmt: skip
             continue
         text, complete = _report(attempt, model, role, request, sizes, stop_marker)
+        model_health.succeeded(model, role)  # it answered, capped or not
         if complete:
             if role == "fallback":
                 logger.warning(
@@ -147,6 +173,8 @@ def chat(
             extra={"obs": {"event": "output_capped", "model": model,
                            "model_role": role}},
         )  # fmt: skip
+    if not tried:
+        raise ModelUnavailableError("No model available. " + "; ".join(failures))
     error = OutputCappedError if capped else ModelOutputError
     raise error("No model produced complete output. " + "; ".join(failures))
 
