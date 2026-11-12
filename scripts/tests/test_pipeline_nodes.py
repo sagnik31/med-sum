@@ -286,6 +286,26 @@ def test_both_models_failing_fails_the_transcribe_step(db, run, model_client):
     assert row["status"] == "failed" and "ModelOutputError" in row["error"]
 
 
+def test_a_page_capped_on_every_model_is_kept_empty_and_noted(db, run, model_client):
+    state = opened("d03")
+    model_client.replies[llm.PRIMARY_MODEL] = [("cut off", "length")]
+    model_client.replies[llm.FALLBACK_MODEL] = [("cut off", "length")]
+
+    out = nodes.transcribe(state)
+
+    assert out["transcriptions"] == [PageTranscription(page=1, lines=[])]
+    assert out["capped_pages"] == [1]
+    [row] = step_rows(db, run)
+    assert (row["status"], row["error"]) == ("failed", nodes.CAPPED)
+
+    # The next page goes on, and the list keeps the first one.
+    state["transcriptions"] = out["transcriptions"]
+    state["capped_pages"] = out["capped_pages"]
+    model_client.replies[llm.PRIMARY_MODEL] = [("cut off", "length")]
+    model_client.replies[llm.FALLBACK_MODEL] = [("cut off", "length")]
+    assert nodes.transcribe(state)["capped_pages"] == [1, 2]
+
+
 # -------------------------------------------------------------------
 # classify: the keyword check and the rule
 # -------------------------------------------------------------------
@@ -497,6 +517,31 @@ def test_a_reply_that_breaks_the_schema_fails_the_step_without_raising(
     assert row["status"] == "failed"
     assert row["error"] == out["parse_error"]
     assert row["output"] == {"reply": reply}
+
+
+def test_a_parse_capped_on_every_model_fails_the_step_without_raising(
+    db, run, model_client
+):
+    state = transcribed("d09")
+    state["doc_type"] = LAB
+    model_client.replies[llm.PRIMARY_MODEL] = [('{"patient":', "length")]
+    model_client.replies[llm.FALLBACK_MODEL] = [('{"patient":', "length")]
+
+    out = nodes.parse(state)
+
+    assert out == {"parse": None, "parse_error": nodes.CAPPED, "parse_attempts": 1}
+    [row] = step_rows(db, run)
+    assert (row["status"], row["error"]) == ("failed", nodes.CAPPED)
+
+
+def test_a_parse_with_no_model_answering_raises(db, run, model_client):
+    state = transcribed("d09")
+    state["doc_type"] = LAB
+    model_client.replies[llm.PRIMARY_MODEL] = [ConnectionError("down")]
+    model_client.replies[llm.FALLBACK_MODEL] = [ConnectionError("down")]
+
+    with pytest.raises(llm.ModelOutputError):
+        nodes.parse(state)
 
 
 def test_schema_errors_name_where_and_why_without_the_values(db, run, model_client):

@@ -49,6 +49,8 @@ CLASSIFY_MAX_TOKENS = 64
 # is plenty to tell the type, and keeps the call short.
 CLASSIFY_CHARS = 6000
 PARSE_MAX_TOKENS = 8192
+# Why a step failed when every model's reply hit its token cap.
+CAPPED = "every model's reply hit the token cap"
 
 # The date validator 7 compares against; a function so tests can fix it.
 today = date.today
@@ -108,14 +110,24 @@ def transcribe(state: GraphState) -> dict:
 
     step = _step()
     step.set_prompt("extract_page", prompt("extract_page"))
-    reply = llm.chat(
-        transcription_messages(image, prompt("extract_page")),
-        max_tokens=MAX_TOKENS_PER_PAGE,
-        stop_marker=END_MARKER,
-    )
-    page = PageTranscription(
-        page=n, lines=lines_of(reply), text_layer=page_files.text_layer(path, n)
-    )
+    text_layer = page_files.text_layer(path, n)
+    try:
+        reply = llm.chat(
+            transcription_messages(image, prompt("extract_page")),
+            max_tokens=MAX_TOKENS_PER_PAGE,
+            stop_marker=END_MARKER,
+        )
+    except llm.OutputCappedError:
+        # The page is longer than a call can hold. It stays in the record
+        # with no lines, so its content can't be cited, and the document
+        # goes to review (signal LC-02) rather than failing outright.
+        step.fail(CAPPED)
+        page = PageTranscription(page=n, lines=[], text_layer=text_layer)
+        return {
+            "transcriptions": [page],
+            "capped_pages": [*state.get("capped_pages", []), n],
+        }
+    page = PageTranscription(page=n, lines=lines_of(reply), text_layer=text_layer)
     return {"transcriptions": [page]}
 
 
@@ -194,16 +206,21 @@ def parse(state: GraphState) -> dict:
 
     step = _step()
     step.set_prompt(name, prompt(name))
-    reply = llm.chat(
-        [
-            {"role": "system", "content": prompt(name)},
-            {"role": "user", "content": numbered_document(state["transcriptions"])},
-        ],
-        max_tokens=PARSE_MAX_TOKENS,
-        format=parse_output_schema(doc_type),
-        model_role=state.get("model_role", "primary"),
-    )
     attempts = state.get("parse_attempts", 0) + 1
+    try:
+        reply = llm.chat(
+            [
+                {"role": "system", "content": prompt(name)},
+                {"role": "user", "content": numbered_document(state["transcriptions"])},
+            ],
+            max_tokens=PARSE_MAX_TOKENS,
+            format=parse_output_schema(doc_type),
+            model_role=state.get("model_role", "primary"),
+        )
+    except llm.OutputCappedError:
+        # A cut-off reply is a parse that failed, like one off the schema.
+        step.fail(CAPPED)
+        return {"parse": None, "parse_error": CAPPED, "parse_attempts": attempts}
     try:
         parsed = model.model_validate_json(reply)
     except ValidationError as e:

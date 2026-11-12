@@ -78,6 +78,9 @@ class GraphState(TypedDict):
     # Numbered lines per page; each carries the PDF's own text for that
     # page (text_layer) when the file has one.
     transcriptions: NotRequired[Annotated[list[PageTranscription], merge_pages]]
+    # Pages whose transcription hit the token cap on every model; each is
+    # in `transcriptions` with no lines (signal LC-02).
+    capped_pages: NotRequired[list[int]]
 
     # parse and repair ----------------------------------------------------
     parse: NotRequired[LabReportParse | PrescriptionParse | None]

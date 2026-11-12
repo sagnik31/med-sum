@@ -66,6 +66,15 @@ class ModelOutputError(RuntimeError):
     """Neither model produced complete output."""
 
 
+class OutputCappedError(ModelOutputError):
+    """
+    No model produced complete output, and at least one replied but hit the
+    token cap: the content may be longer than a call can hold, which a
+    caller can route on (a page not fully transcribed, a parse cut off),
+    unlike every model being down.
+    """
+
+
 def model_for(role: ModelRole) -> str:
     """The configured model for a role."""
     return _MODELS[role]
@@ -97,6 +106,7 @@ def chat(
     request = {**options, "think": False, "structured_output": format is not None}
     sizes = _message_sizes(messages)
     failures = []
+    capped = False
     for role in roles:
         model = _MODELS[role]
         attempt = _Attempt()
@@ -126,6 +136,7 @@ def chat(
                                    "model_role": role}},
                 )  # fmt: skip
             return text
+        capped = True
         failures.append(f"{model}: output hit the {max_tokens}-token cap")
         logger.warning(
             "model %s hit the %d-token cap",
@@ -134,7 +145,8 @@ def chat(
             extra={"obs": {"event": "output_capped", "model": model,
                            "model_role": role}},
         )  # fmt: skip
-    raise ModelOutputError("No model produced complete output. " + "; ".join(failures))
+    error = OutputCappedError if capped else ModelOutputError
+    raise error("No model produced complete output. " + "; ".join(failures))
 
 
 class _Attempt:

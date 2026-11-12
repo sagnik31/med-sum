@@ -82,6 +82,35 @@ def test_error_names_each_model_and_why_it_failed(model_client):
     assert f"{llm.FALLBACK_MODEL}: refused" in message
 
 
+@pytest.mark.parametrize(
+    "primary, fallback, capped",
+    [
+        (("cut off", "length"), ("also cut off", "length"), True),
+        (("cut off", "length"), ConnectionError("refused"), True),
+        (ConnectionError("refused"), ("cut off", "length"), True),
+        (ConnectionError("refused"), ConnectionError("refused"), False),
+    ],
+    ids=["both-capped", "capped-then-down", "down-then-capped", "both-down"],
+)
+def test_a_cap_is_told_apart_from_every_model_being_down(
+    model_client, primary, fallback, capped
+):
+    model_client.replies[llm.PRIMARY_MODEL] = [primary]
+    model_client.replies[llm.FALLBACK_MODEL] = [fallback]
+
+    with pytest.raises(llm.ModelOutputError) as excinfo:
+        llm.chat(MESSAGES, max_tokens=50)
+
+    assert isinstance(excinfo.value, llm.OutputCappedError) is capped
+
+
+def test_a_capped_fallback_only_call_is_a_cap(model_client):
+    model_client.replies[llm.FALLBACK_MODEL] = [("cut off", "length")]
+
+    with pytest.raises(llm.OutputCappedError):
+        llm.chat(MESSAGES, max_tokens=50, model_role="fallback")
+
+
 def test_other_exceptions_are_not_swallowed(model_client):
     # Only model and transport errors trigger the fallback; a bug in the
     # request (or anything else) surfaces at once.
