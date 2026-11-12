@@ -30,6 +30,7 @@ SCORED_PROMPTS = [
     "classify_document",
     "parse_lab_report",
     "parse_prescription",
+    "repair_parse",
 ]
 MIN_EXAMPLE_CHARS = 8
 SCHEMA_WORDS = {

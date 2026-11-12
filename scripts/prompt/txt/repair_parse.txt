@@ -1,0 +1,10 @@
+Your previous reply has the problems listed below. Reply again with the whole JSON for the document, matching the schema, with these problems fixed.
+
+* Change only what a problem is about. Keep every other item and value as it was.
+* Every value is still copied exactly from the transcription, and every quote is still the text of the lines it cites.
+* When a value is not on the line it cites, find the line where it is printed and cite that line, or copy the value as it is printed on the cited line.
+* When a line holds a medicine that is missing, add that medicine, citing its line.
+* When a remark is not printed by the test it is on, give it the scope of where it is printed: the panel, or the document.
+* Never add, change or drop a value only to make a problem go away. If the transcription does not support a value, leave it out or use null.
+
+Problems:

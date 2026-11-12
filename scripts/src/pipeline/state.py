@@ -24,7 +24,8 @@ from typing import Annotated, Literal, NotRequired, TypedDict
 
 from pydantic import BaseModel, Field
 
-from record.common import Strict
+from pipeline.signals import SignalHit
+from record.common import Provenance, Strict
 from record.document import DocumentRecord, PageTranscription
 from record.printed import DocumentType, LabReportParse, PrescriptionParse
 from validators import Finding
@@ -92,10 +93,26 @@ class GraphState(TypedDict):
     # Parse attempts so far with the model in use (1 = the first parse).
     parse_attempts: NotRequired[int]
     model_role: NotRequired[ModelRole]
+    # The last reply as the model wrote it (None if it was cut off), which
+    # a repair shows the model again.
+    parse_reply: NotRequired[str | None]
+    # The step that produced the last parse that fit, and the role of the
+    # model that answered it: what the record's items are stamped with.
+    parse_provenance: NotRequired[Provenance | None]
+    parse_model_role: NotRequired[ModelRole | None]
+    # Repairs so far, over both models (signal OP-2).
+    repairs: NotRequired[int]
 
     # validate ------------------------------------------------------------
+    # The last record validated. A later parse that fails leaves it, so a
+    # run that gives up keeps the best record it had.
     record: NotRequired[DocumentRecord | None]
     findings: NotRequired[list[Finding]]
+    # Whether `record` was built from a parse (False: its pages alone).
+    record_parsed: NotRequired[bool]
+
+    # finish --------------------------------------------------------------
+    signals: NotRequired[list[SignalHit]]
 
     # render --------------------------------------------------------------
     # The insight page as the app shows it today (step 10 replaces it).

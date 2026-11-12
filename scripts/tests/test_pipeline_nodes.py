@@ -21,13 +21,15 @@ from extract_report_slm import END_MARKER, transcription_messages
 from observability import is_traced, start_run
 from pipeline import nodes
 from pipeline import pages as page_files
+from pipeline import store
 from pipeline.classify import Decision, decide, keyword_check
 from pipeline.prompts import FILES, prompt
 from pipeline.state import PageImage, initial_state, merge_pages
-from record.document import PageTranscription, numbered_document
+from record.common import ItemStatus
+from record.document import DocumentRecord, PageTranscription, numbered_document
 from record.printed import DocumentType, LabReportParse, PrescriptionParse
 from record.schemas import classifier_schema, parse_output_schema
-from validators import Severity
+from validators import Finding, Severity, Validator
 
 LAB, RX, OTHER = DocumentType.LAB_REPORT, DocumentType.PRESCRIPTION, DocumentType.OTHER
 TODAY = date(2026, 11, 9)
@@ -538,7 +540,10 @@ def test_a_parse_capped_on_every_model_fails_the_step_without_raising(
 
     out = nodes.parse(state)
 
-    assert out == {"parse": None, "parse_error": nodes.CAPPED, "parse_attempts": 1}
+    assert out == {
+        "parse": None, "parse_error": nodes.CAPPED, "parse_attempts": 1,
+        "parse_reply": None,
+    }  # fmt: skip
     [row] = step_rows(db, run)
     assert (row["status"], row["error"]) == ("failed", nodes.CAPPED)
 
@@ -641,6 +646,240 @@ def test_a_parsed_type_without_a_parse_cannot_be_validated(db, run):
 
     with pytest.raises(ValueError, match="no parse"):
         nodes.validate(state)
+
+
+def test_validate_after_every_parse_failed_keeps_the_pages_alone(db, run):
+    state = transcribed("d09")
+    state.update(doc_type=LAB, parse=None, parse_error="results: Field required")
+
+    out = nodes.validate(state)
+
+    assert out["record_parsed"] is False
+    assert out["record"].pages == state["transcriptions"]
+    assert out["record"].patient is None and out["record"].observations == []
+    assert out["findings"] == []
+
+
+def test_a_validated_parse_is_marked_as_parsed(db, run):
+    state = transcribed("d09")
+    state.update(doc_type=LAB, parse=parse_of(key("d09")))
+    assert nodes.validate(state)["record_parsed"] is True
+
+
+# -------------------------------------------------------------------
+# repair and fallback
+# -------------------------------------------------------------------
+def a_finding(**kw) -> Finding:
+    fields = {"validator": Validator.SOURCE_TEXT, "severity": Severity.ERROR,
+              "message": "value_text '99.9' is not on its cited lines"}  # fmt: skip
+    return Finding(**(fields | kw))
+
+
+def test_problems_are_the_error_findings_with_where_they_are():
+    state = {"parse": object(), "findings": [
+        a_finding(item_id="obs-1", field="value_text", page=1, lines=[16]),
+        a_finding(severity=Severity.FLAG, message="flag"),
+        a_finding(validator=Validator.MEDICINE_COVERAGE, item_id=None, page=1,
+                  lines=[9, 10], message="this line holds a medicine"),
+    ]}  # fmt: skip
+
+    assert nodes.problems(state) == [
+        "- obs-1 value_text page 1 line 16: value_text '99.9' is not on its cited lines",
+        "- page 1 line 9, 10: this line holds a medicine",
+    ]
+
+
+def test_problems_after_a_refused_reply_are_why_it_was_refused():
+    state = {"parse": None, "parse_error": "results: Field required\npatient: x"}
+    assert nodes.problems(state) == ["- results: Field required", "- patient: x"]
+
+
+def repair_state(doc_id="d09") -> dict:
+    state = transcribed(doc_id)
+    state.update(doc_type=LAB, parse=parse_of(key(doc_id)), parse_attempts=1,
+                 parse_reply='{"previous": "reply"}',
+                 findings=[a_finding(item_id="obs-1", field="value_text")])  # fmt: skip
+    return state
+
+
+def test_repair_shows_the_model_its_reply_and_the_problems(db, run, model_client):
+    state = repair_state()
+    model_client.replies[llm.PRIMARY_MODEL] = [reply_for("d09")]
+
+    out = nodes.repair(state)
+
+    assert out["parse"] == parse_of(key("d09"))
+    assert (out["parse_attempts"], out["repairs"]) == (2, 1)
+    messages = model_client.calls[0]["messages"]
+    assert messages[:2] == nodes._parse_messages(state, "parse_lab_report")
+    assert messages[2] == {"role": "assistant", "content": '{"previous": "reply"}'}
+    assert messages[3]["role"] == "user"
+    assert messages[3]["content"].startswith(prompt("repair_parse"))
+    assert messages[3]["content"].endswith("\n".join(nodes.problems(state)))
+    assert model_client.calls[0]["format"] == parse_output_schema(LAB)
+    [row] = step_rows(db, run)
+    assert (row["node"], row["status"]) == ("repair", "ok")
+    assert row["prompt_name"] == "parse_lab_report+repair_parse"
+    assert row["input"]["problems"] == 1 and row["input"]["attempt"] == 2
+    assert out["parse_provenance"].node == "repair"
+
+
+def test_repair_of_a_cut_off_reply_sends_no_previous_reply(db, run, model_client):
+    state = repair_state()
+    state.update(parse=None, parse_reply=None, parse_error=nodes.CAPPED)
+    model_client.replies[llm.PRIMARY_MODEL] = [reply_for("d09")]
+
+    nodes.repair(state)
+
+    roles = [m["role"] for m in model_client.calls[0]["messages"]]
+    assert roles == ["system", "user", "user"]
+
+
+def test_a_repair_that_still_breaks_the_schema_fails_without_raising(
+    db, run, model_client
+):
+    state = repair_state()
+    model_client.replies[llm.PRIMARY_MODEL] = ['{"patient": null}']
+
+    out = nodes.repair(state)
+
+    assert out["parse"] is None and out["parse_attempts"] == 2
+    assert out["parse_reply"] == '{"patient": null}'
+    assert step_rows(db, run)[0]["status"] == "failed"
+
+
+def test_repair_on_the_fallback_calls_only_the_fallback(db, run, model_client):
+    state = repair_state()
+    state["model_role"] = "fallback"
+    model_client.replies[llm.FALLBACK_MODEL] = [reply_for("d09")]
+
+    out = nodes.repair(state)
+
+    assert [c["model"] for c in model_client.calls] == [llm.FALLBACK_MODEL]
+    assert out["parse_model_role"] == "fallback"
+
+
+def test_nothing_to_repair_is_a_routing_bug(db, run, model_client):
+    state = repair_state()
+    state["findings"] = []
+
+    with pytest.raises(ValueError, match="nothing to repair"):
+        nodes.repair(state)
+    assert model_client.calls == []
+
+
+def test_fallback_switches_the_model_and_starts_its_budget(db, run):
+    out = nodes.use_fallback({"parse_attempts": 3, "model_role": "primary"})
+
+    assert out == {"model_role": "fallback", "parse_attempts": 0}
+    [row] = step_rows(db, run)
+    assert (row["node"], row["status"], row["input"]) == (
+        "fallback", "ok", {"attempts": 3}
+    )  # fmt: skip
+
+
+# -------------------------------------------------------------------
+# finish
+# -------------------------------------------------------------------
+def parsed_and_validated(run, model_client, doc_id: str, reply: str | None = None):
+    """The state after a real parse and validate step, for this run's document."""
+    state = transcribed(doc_id, expected_patient=expected_patient(doc_id))
+    state.update(
+        document_id=run.document_id, doc_type=DocumentType(DOCS[doc_id]["type"])
+    )
+    model_client.replies[llm.PRIMARY_MODEL] = [reply or reply_for(doc_id)]
+    state.update(nodes.parse(state))
+    state.update(nodes.validate(state))
+    return state
+
+
+def saved_record(db, run) -> dict:
+    with db.cursor() as cur:
+        cur.execute(
+            "SELECT record, run_id::text FROM document_records WHERE document_id = %s",
+            (run.document_id,),
+        )
+        return cur.fetchone()
+
+
+def test_finish_a_clean_document_is_verified_and_saved(db, run, model_client):
+    state = parsed_and_validated(run, model_client, "d09")
+
+    out = nodes.finish(state)
+
+    assert out["end_state"] == "verified"
+    assert not any(h.routes for h in out["signals"])
+    record = out["record"]
+    assert all(i.provenance.status is ItemStatus.VALIDATED for i in record.items())
+    assert record.document.provenance.node == "parse"
+    assert record.document.provenance.step_id == state["parse_provenance"].step_id
+    stored, run_id = saved_record(db, run)
+    assert run_id == run.id
+    assert DocumentRecord.model_validate(stored) == record
+    finish_row = step_rows(db, run)[-1]
+    assert finish_row["node"] == "finish"
+    assert finish_row["output"]["end_state"] == "verified"
+    # The state's record is left as validate made it.
+    assert state["record"].observations[0].provenance is None
+
+
+def test_finish_marks_a_wrong_patient_document_for_review(db, run, model_client):
+    state = parsed_and_validated(run, model_client, "d16")
+
+    out = nodes.finish(state)
+
+    assert out["end_state"] == "needs_review"
+    reasons = out["record"].document.provenance.low_confidence_reasons
+    assert reasons == [nodes.signals.SignalHit(signal="LC-13").reason]
+
+
+def test_finish_marks_an_error_left_after_every_try(db, run, model_client):
+    reply = json.loads(reply_for("d09"))
+    reply["results"][0]["value_text"] = "99.9"
+    state = parsed_and_validated(run, model_client, "d09", json.dumps(reply))
+
+    out = nodes.finish(state)
+
+    assert out["end_state"] == "needs_review"
+    first = out["record"].observations[0]
+    assert first.provenance.status is ItemStatus.LOW_CONFIDENCE
+    assert any(r.startswith("LC-04") for r in first.provenance.low_confidence_reasons)
+    assert out["record"].observations[1].provenance.status is ItemStatus.VALIDATED
+
+
+def test_finish_a_document_with_no_parse_is_stamped_by_the_finish_step(
+    db, run, model_client
+):
+    state = transcribed("d09")
+    state.update(document_id=run.document_id, doc_type=LAB, parse=None,
+                 parse_error="results: Field required")  # fmt: skip
+    state.update(nodes.validate(state))
+
+    out = nodes.finish(state)
+
+    assert out["end_state"] == "needs_review"
+    provenance = out["record"].document.provenance
+    assert provenance.node == "finish"
+    assert provenance.low_confidence_reasons == [
+        nodes.signals.SignalHit(signal="LC-08").reason
+    ]
+
+
+def test_finish_refuses_a_record_whose_items_trace_nowhere(db, run, model_client):
+    state = parsed_and_validated(run, model_client, "d09")
+    state["parse_provenance"] = state["parse_provenance"].model_copy(
+        update={"step_id": "00000000-0000-0000-0000-000000000000"}
+    )
+
+    with pytest.raises(store.ProvenanceGapError, match="not in pipeline_steps"):
+        nodes.finish(state)
+    assert saved_record(db, run) is None
+    assert step_rows(db, run)[-1]["status"] == "failed"
+
+
+def test_finish_without_a_record_is_a_routing_bug(db, run):
+    with pytest.raises(ValueError, match="no record"):
+        nodes.finish({"document_id": run.document_id})
 
 
 # -------------------------------------------------------------------
