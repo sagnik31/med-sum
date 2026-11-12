@@ -52,7 +52,9 @@ PROVIDER = "ollama"
 
 # Errors that send the request on to the fallback. Anything else is a bug
 # in the request (or elsewhere) and is raised at once, after being recorded.
-MODEL_ERRORS = (ollama.ResponseError, ConnectionError, httpx.TimeoutException)
+# httpx's TransportError covers timeouts and a refused or dropped connection:
+# a streamed call raises those as they are, not as ConnectionError.
+MODEL_ERRORS = (ollama.ResponseError, ConnectionError, httpx.TransportError)
 
 ModelRole = Literal["primary", "fallback"]
 _MODELS = {"primary": PRIMARY_MODEL, "fallback": FALLBACK_MODEL}

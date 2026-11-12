@@ -43,8 +43,10 @@ def test_calls_are_deterministic_streamed_and_capped(model_client):
         ollama.ResponseError("model not found", 404),
         ConnectionError("connection refused"),
         httpx.ReadTimeout("timed out"),
+        httpx.ConnectError("connection refused"),  # a streamed call, server down
+        httpx.RemoteProtocolError("server disconnected"),
     ],
-    ids=["response-error", "connection-error", "timeout"],
+    ids=["response-error", "connection-error", "timeout", "refused", "dropped"],
 )
 def test_falls_back_when_the_primary_fails(model_client, error):
     model_client.replies[llm.PRIMARY_MODEL] = [error]
