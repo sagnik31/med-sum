@@ -31,7 +31,7 @@ Medicines:
 
 Also copy, when written:
 
-* conditions: each diagnosis, provisional diagnosis, impression or history, with its kind. "K/C/O: Asthma, CKD" is two history conditions, "Asthma" and "CKD". Never infer a condition from a medicine.
+* conditions: each diagnosis, provisional diagnosis, impression or history, with its kind. "K/C/O: Asthma, CKD" is two history conditions, "Asthma" and "CKD". Never infer a condition from a medicine. A complaint or symptom the patient reports, such as a line starting "C/O:" or "Presenting complaint:", is not a condition: leave it out.
 * remarks: advice and comments, such as diet advice or follow-up instructions, each as its own remark with kind "advice" or "comment" and scope "document" (test_name and panel null). The text leaves out its label, such as "Advice:".
 * vitals: blood pressure, pulse, temperature, SpO2, weight, height or BMI, one item each, with name, value_text and unit. "BP 142/90 mmHg" is name "BP", value_text "142/90", unit "mmHg".
 * allergies: each allergy statement, including "NKDA" or "No known allergies".

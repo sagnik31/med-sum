@@ -5,7 +5,7 @@ The transcription is in the user message. Each page starts with "=== Page N ==="
 Copying:
 
 * Copy every value exactly as printed: same spelling, capitals, numbers, units and symbols. Never correct, convert, expand, compute or infer anything.
-* A value never includes its printed label. From "Patient Name: Mrs. Lalitha Venkatesh" the name is "Mrs. Lalitha Venkatesh". From "Reported On: 21/03/2023 11:15 AM" the report date is "21/03/2023 11:15 AM".
+* A value never includes its printed label (a clinician is the one exception; see details.clinicians). From "Patient Name: Mrs. Lalitha Venkatesh" the name is "Mrs. Lalitha Venkatesh". From "Reported On: 21/03/2023 11:15 AM" the report date is "21/03/2023 11:15 AM".
 * A value never includes Markdown: no "#" heading marks and no table bars.
 * Use null for anything that is not printed, and an empty list when there is nothing to list. Never make up a value.
 
@@ -39,6 +39,6 @@ Remarks:
 
 Also copy, when printed:
 
-* conditions: a diagnosis, provisional diagnosis, impression or history (such as "K/C/O: Asthma, CKD", which is two history conditions, "Asthma" and "CKD"). Never infer a condition from a result.
+* conditions: a diagnosis, provisional diagnosis, impression or history (such as "K/C/O: Asthma, CKD", which is two history conditions, "Asthma" and "CKD"). Never infer a condition from a result. A complaint or symptom the patient reports, such as a line starting "C/O:" or "Presenting complaint:", is not a condition: leave it out.
 * vitals: blood pressure, pulse, temperature, SpO2, weight, height or BMI, with name, value_text and unit.
 * allergies: each allergy statement, including "NKDA" or "No known allergies".
