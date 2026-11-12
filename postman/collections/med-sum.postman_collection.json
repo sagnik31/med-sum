@@ -398,6 +398,38 @@
                   }
                 ]
               }
+            },
+            {
+              "name": "Reprocess Document",
+              "id": "040951d7-d0c7-481b-b7bf-d3528e484849",
+              "request": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{backend_url}}/documents/:id/reprocess",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "documents",
+                    ":id",
+                    "reprocess"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "Document ID"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "X-Requested-With",
+                    "value": "med-sum",
+                    "type": "text"
+                  }
+                ]
+              }
             }
           ],
           "id": "b3039118-3f4c-42cd-b6c9-31ad13f8b8ba"
@@ -501,6 +533,39 @@
               "path": [
                 "internal",
                 "generate-insights"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reprocess Document (Internal)",
+          "id": "f08318b7-4fad-4b0a-9b44-d7a370924f06",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Internal-Token",
+                "value": "{{internal_api_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"document_id\": \"uuid-string\"\n}"
+            },
+            "url": {
+              "raw": "{{ai_service_url}}/internal/reprocess-document",
+              "host": [
+                "{{ai_service_url}}"
+              ],
+              "path": [
+                "internal",
+                "reprocess-document"
               ]
             }
           }

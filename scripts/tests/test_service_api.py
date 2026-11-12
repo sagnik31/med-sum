@@ -14,7 +14,7 @@ def scheduled(monkeypatch):
     requests = []
 
     def request(document_id, reprocess=False):
-        requests.append(document_id)
+        requests.append((document_id, reprocess) if reprocess else document_id)
         return "queued"
 
     monkeypatch.setattr(service, "request_document", request)
@@ -48,10 +48,23 @@ def test_a_document_job_is_scheduled_with_the_right_token(client, scheduled):
     assert scheduled == ["doc-1"]
 
 
+def test_a_reprocess_is_requested_as_one(client, scheduled):
+    response = client.post(
+        "/internal/reprocess-document",
+        json={"document_id": "doc-1"},
+        headers={"X-Internal-Token": TOKEN},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["result"] == "queued"
+    assert scheduled == [("doc-1", True)]
+
+
 @pytest.mark.parametrize(
     "path, body",
     [
         ("/internal/generate-insights", {"document_id": "doc-1"}),
+        ("/internal/reprocess-document", {"document_id": "doc-1"}),
         ("/internal/generate-user-insights", {"user_id": "user-1"}),
     ],
 )

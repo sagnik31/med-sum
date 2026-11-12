@@ -383,3 +383,25 @@ def test_the_worker_takes_queued_jobs_until_stopped(db, model_client):
 
     assert insight_row(db, doc)[0] == "verified"
     assert job_row(db, doc)["status"] == "done"
+
+
+def test_a_reprocess_is_a_new_run_whose_record_replaces_the_last(db, model_client):
+    doc = add_document(db)
+    jobs.enqueue(db, doc)
+    replies_for(model_client)
+    jobs.process(jobs.claim_next(db, "A"), "A")
+    first = job_row(db, doc)["run_id"]
+
+    assert jobs.enqueue(db, doc, reprocess=True) == "queued"
+    replies_for(model_client)
+    jobs.process(jobs.claim_next(db, "A"), "A")
+
+    second = job_row(db, doc)["run_id"]
+    assert second != first
+    assert insight_row(db, doc)[0] == "verified"
+    with db.cursor() as cur:
+        cur.execute("SELECT run_id::text FROM document_records WHERE document_id = %s",
+                    (doc,))  # fmt: skip
+        assert cur.fetchone() == (second,)
+        cur.execute("SELECT count(*) FROM pipeline_runs WHERE document_id = %s", (doc,))
+        assert cur.fetchone() == (2,)

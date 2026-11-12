@@ -317,7 +317,7 @@ func (s *Server) handleListDocuments(w http.ResponseWriter, r *http.Request) {
 // ----- Single document routes: /documents/{id} and /documents/{id}/insight -----
 
 func (s *Server) handleDocumentByID(w http.ResponseWriter, r *http.Request) {
-	// Path is /documents/{id} or /documents/{id}/insight
+	// Path is /documents/{id}, /documents/{id}/insight or /documents/{id}/reprocess
 	path := strings.TrimPrefix(r.URL.Path, "/documents/")
 	if path == "" {
 		w.WriteHeader(http.StatusNotFound)
@@ -347,6 +347,18 @@ func (s *Server) handleDocumentByID(w http.ResponseWriter, r *http.Request) {
 			}
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+		return
+	}
+
+	// /documents/{id}/reprocess: process again, from the start, as a new run
+	if len(parts) == 2 && parts[1] == "reprocess" {
+		if r.Method != http.MethodPost {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		if permit(w, r, authz.DocumentReprocess) {
+			s.handleReprocessDocument(w, r, docID)
 		}
 		return
 	}
@@ -502,6 +514,36 @@ func (s *Server) handleGenerateDocumentInsight(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	writeJSON(w, http.StatusAccepted, map[string]string{"status": "accepted", "document_id": docID})
+}
+
+// ----- Reprocess: POST /documents/{id}/reprocess -----
+
+// Processing again replaces the document's record with a new run's, for
+// when the pipeline has changed. A document with a job already queued or
+// running is left to it.
+func (s *Server) handleReprocessDocument(w http.ResponseWriter, r *http.Request, docID string) {
+	userID, ok := userIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+	doc, err := s.db.GetDocumentByIDAndUser(r.Context(), docID, userID)
+	if err != nil {
+		log.Printf("GetDocumentByIDAndUser error: %v", err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+	if doc == nil {
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+	err = s.callInsightsService(r.Context(), "/internal/reprocess-document", map[string]string{"document_id": docID})
+	if err != nil {
+		log.Printf("insights service error: %v", err)
+		http.Error(w, "insights service unavailable", http.StatusBadGateway)
+		return
+	}
 	writeJSON(w, http.StatusAccepted, map[string]string{"status": "accepted", "document_id": docID})
 }
 

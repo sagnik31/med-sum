@@ -1,7 +1,11 @@
 // src/pages/InsightPage.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { getInsight, triggerInsightGeneration } from "../api/client.js";
+import {
+  getInsight,
+  reprocessDocument,
+  triggerInsightGeneration,
+} from "../api/client.js";
 import HtmlFrame from "../components/HtmlFrame.jsx";
 
 // How often to check a document that is still being processed.
@@ -69,6 +73,17 @@ function InsightPage() {
     };
   }, [id, attempt]);
 
+  async function handleReprocess() {
+    setError("");
+    try {
+      await reprocessDocument(id);
+      setAttempt((n) => n + 1);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Failed to request reprocessing.");
+    }
+  }
+
   async function handleRetry() {
     setError("");
     try {
@@ -112,6 +127,12 @@ function InsightPage() {
           <div className="bg-slate-50 border border-slate-200 rounded-md">
             <HtmlFrame html={insight} title="Document insight" />
           </div>
+          <button
+            onClick={handleReprocess}
+            className="mt-2 text-sm text-blue-600 hover:underline font-medium"
+          >
+            Reprocess
+          </button>
         </div>
       )}
 

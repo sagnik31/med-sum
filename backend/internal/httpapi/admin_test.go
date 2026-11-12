@@ -63,6 +63,7 @@ func TestClinicalRoutesAreForbiddenToAdmins(t *testing.T) {
 		{http.MethodGet, "/documents"},
 		{http.MethodGet, "/documents/" + doc + "/insight"},
 		{http.MethodPost, "/documents/" + doc + "/insight"},
+		{http.MethodPost, "/documents/" + doc + "/reprocess"},
 		{http.MethodDelete, "/documents/" + doc},
 		{http.MethodGet, "/user/insights"},
 		{http.MethodPost, "/user/insights"},

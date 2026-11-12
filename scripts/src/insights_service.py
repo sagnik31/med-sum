@@ -6,6 +6,7 @@ Insights Generation Service (FastAPI)
 - Exposes:
     GET  /health
     POST /internal/generate-insights        (queue a document's job)
+    POST /internal/reprocess-document       (queue it again, as a new run)
     POST /internal/generate-user-insights   (background, per user)
 
 - Internal only: /internal/* requires the X-Internal-Token header to match
@@ -162,6 +163,23 @@ def generate_insights_endpoint(req: GenerateInsightsRequest):
         extra=_obs("job_requested", document_id=req.document_id),
     )
     result = request_document(req.document_id)
+    return {"status": "accepted", "document_id": req.document_id, "result": result}
+
+
+@app.post(
+    "/internal/reprocess-document", dependencies=[Depends(require_internal_token)]
+)
+def reprocess_document_endpoint(req: GenerateInsightsRequest):
+    """
+    Queue a document again even if it reached an end state, e.g. after the
+    pipeline changed: a new run, whose record replaces the last one. A
+    document with a job open is left to that job.
+    """
+    logger.info(
+        "document reprocess requested",
+        extra=_obs("job_requested", document_id=req.document_id, reprocess=True),
+    )
+    result = request_document(req.document_id, reprocess=True)
     return {"status": "accepted", "document_id": req.document_id, "result": result}
 
 

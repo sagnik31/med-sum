@@ -253,6 +253,65 @@ func TestGenerateInsightForwardsToTheAIService(t *testing.T) {
 	}
 }
 
+func TestReprocessForwardsToTheAIService(t *testing.T) {
+	e := newTestEnv(t)
+	me, auth := e.login("me@hospital.test")
+	doc := e.store.addDocument(me, "a.pdf")
+	e.store.insights[doc] = &db.Insight{DocumentID: doc, Status: "verified"}
+
+	rec := e.do(http.MethodPost, "/documents/"+doc+"/reprocess", auth, nil, "")
+
+	if rec.Code != http.StatusAccepted {
+		t.Fatalf("status = %d, want 202", rec.Code)
+	}
+	calls := e.ai.received()
+	if len(calls) != 1 || calls[0].Path != "/internal/reprocess-document" ||
+		calls[0].Token != testInternalToken || calls[0].Body["document_id"] != doc {
+		t.Errorf("AI calls = %+v", calls)
+	}
+}
+
+func TestReprocessHidesOtherUsersDocuments(t *testing.T) {
+	e := newTestEnv(t)
+	_, auth := e.login("me@hospital.test")
+	other, _ := e.login("other@hospital.test")
+	theirs := e.store.addDocument(other, "b.pdf")
+
+	rec := e.do(http.MethodPost, "/documents/"+theirs+"/reprocess", auth, nil, "")
+
+	if rec.Code != http.StatusNotFound {
+		t.Errorf("status = %d, want 404", rec.Code)
+	}
+	if len(e.ai.received()) != 0 {
+		t.Error("reprocessing was requested for another user's document")
+	}
+}
+
+func TestReprocessIsPostOnly(t *testing.T) {
+	e := newTestEnv(t)
+	me, auth := e.login("me@hospital.test")
+	doc := e.store.addDocument(me, "a.pdf")
+
+	rec := e.do(http.MethodGet, "/documents/"+doc+"/reprocess", auth, nil, "")
+
+	if rec.Code != http.StatusMethodNotAllowed {
+		t.Errorf("status = %d, want 405", rec.Code)
+	}
+}
+
+func TestReprocessReportsAnUnavailableAIService(t *testing.T) {
+	e := newTestEnv(t)
+	me, auth := e.login("me@hospital.test")
+	doc := e.store.addDocument(me, "a.pdf")
+	e.ai.status = http.StatusInternalServerError
+
+	rec := e.do(http.MethodPost, "/documents/"+doc+"/reprocess", auth, nil, "")
+
+	if rec.Code != http.StatusBadGateway {
+		t.Errorf("status = %d, want 502", rec.Code)
+	}
+}
+
 func TestGenerateInsightReportsAnUnavailableAIService(t *testing.T) {
 	for name, breakAI := range map[string]func(*fakeAI){
 		"error status": func(ai *fakeAI) { ai.status = http.StatusInternalServerError },

@@ -187,6 +187,12 @@ export function triggerInsightGeneration(documentId) {
   return apiRequest(`/documents/${documentId}/insight`, { method: "POST" });
 }
 
+// Process the document again from the start, as a new run (for when the
+// pipeline has changed). Poll its insight afterwards.
+export function reprocessDocument(documentId) {
+  return apiRequest(`/documents/${documentId}/reprocess`, { method: "POST" });
+}
+
 export function fetchUserInsights() {
   return apiRequest("/user/insights");
 }
