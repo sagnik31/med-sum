@@ -1,0 +1,351 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d24",
+    "type": "prescription",
+    "page_count": 1,
+    "has_text_layer": true,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 1,
+          "last_line": 1,
+          "quote": "# Heartline Cardiac Clinic"
+        },
+        "text": "Heartline Cardiac Clinic"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 3,
+            "last_line": 3,
+            "quote": "Dr. Farah Khan"
+          },
+          "text": "Dr. Farah Khan"
+        }
+      ],
+      "report_date": null,
+      "collection_date": null,
+      "prescription_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Date: 14 April 2025"
+        },
+        "text": "14 April 2025"
+      }
+    },
+    "derived": {
+      "report_date": null,
+      "collection_date": null,
+      "prescription_date": "2025-04-14",
+      "document_date": "2025-04-14",
+      "date_source": "prescription_date"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Heartline Cardiac Clinic",
+        "",
+        "Dr. Farah Khan",
+        "",
+        "MBBS, MD, DM (Cardiology)",
+        "",
+        "Baner, Pune 411045 | Reg. No.: MMC-2011/02/0003",
+        "",
+        "Date: 14 April 2025",
+        "",
+        "Name: Kabir Sethi | Age/Sex: 46/M | UHID: SH-100235",
+        "",
+        "BP: 132/84 mmHg; HR: 76 bpm",
+        "",
+        "Impression: Hypertension, better controlled",
+        "",
+        "## Medicines",
+        "",
+        "| Drug | Strength | Frequency | Duration | Remarks |",
+        "| --- | --- | --- | --- | --- |",
+        "| Tab. Telma-AM | 40/5 mg | OD | 30 days | Morning |",
+        "| Tab. Rosuvas | 20 mg | OD | 30 days | Night |",
+        "| Tab. Glycomet | 500 mg | BD | 30 days | After food |",
+        "| Cap. Omez | 20 mg | OD | 14 days | Before breakfast |",
+        "",
+        "Advice: Low-salt diet; walk 30 minutes a day.",
+        "",
+        "Next visit: 14 May 2025",
+        "",
+        "This is a computer-generated prescription.",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 11,
+          "last_line": 11,
+          "quote": "Name: Kabir Sethi | Age/Sex: 46/M | UHID: SH-100235"
+        },
+        "text": "Kabir Sethi"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 11,
+          "last_line": 11,
+          "quote": "Name: Kabir Sethi | Age/Sex: 46/M | UHID: SH-100235"
+        },
+        "text": "46"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 11,
+          "last_line": 11,
+          "quote": "Name: Kabir Sethi | Age/Sex: 46/M | UHID: SH-100235"
+        },
+        "text": "M"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 11,
+          "last_line": 11,
+          "quote": "Name: Kabir Sethi | Age/Sex: 46/M | UHID: SH-100235"
+        },
+        "text": "SH-100235"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [],
+  "medications": [
+    {
+      "id": "med-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 21,
+          "last_line": 21,
+          "quote": "| Tab. Telma-AM | 40/5 mg | OD | 30 days | Morning |"
+        },
+        "form": "Tab.",
+        "name": "Telma-AM",
+        "strength": "40/5 mg",
+        "dose": null,
+        "frequency": "OD",
+        "route": null,
+        "duration": "30 days",
+        "instructions": "Morning"
+      },
+      "derived": {
+        "schedule": {
+          "morning": null,
+          "noon": null,
+          "night": null,
+          "times_per_day": 1.0,
+          "as_needed": false
+        },
+        "duration_days": 30
+      }
+    },
+    {
+      "id": "med-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 22,
+          "last_line": 22,
+          "quote": "| Tab. Rosuvas | 20 mg | OD | 30 days | Night |"
+        },
+        "form": "Tab.",
+        "name": "Rosuvas",
+        "strength": "20 mg",
+        "dose": null,
+        "frequency": "OD",
+        "route": null,
+        "duration": "30 days",
+        "instructions": "Night"
+      },
+      "derived": {
+        "schedule": {
+          "morning": null,
+          "noon": null,
+          "night": null,
+          "times_per_day": 1.0,
+          "as_needed": false
+        },
+        "duration_days": 30
+      }
+    },
+    {
+      "id": "med-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 23,
+          "last_line": 23,
+          "quote": "| Tab. Glycomet | 500 mg | BD | 30 days | After food |"
+        },
+        "form": "Tab.",
+        "name": "Glycomet",
+        "strength": "500 mg",
+        "dose": null,
+        "frequency": "BD",
+        "route": null,
+        "duration": "30 days",
+        "instructions": "After food"
+      },
+      "derived": {
+        "schedule": {
+          "morning": null,
+          "noon": null,
+          "night": null,
+          "times_per_day": 2.0,
+          "as_needed": false
+        },
+        "duration_days": 30
+      }
+    },
+    {
+      "id": "med-4",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 24,
+          "last_line": 24,
+          "quote": "| Cap. Omez | 20 mg | OD | 14 days | Before breakfast |"
+        },
+        "form": "Cap.",
+        "name": "Omez",
+        "strength": "20 mg",
+        "dose": null,
+        "frequency": "OD",
+        "route": null,
+        "duration": "14 days",
+        "instructions": "Before breakfast"
+      },
+      "derived": {
+        "schedule": {
+          "morning": null,
+          "noon": null,
+          "night": null,
+          "times_per_day": 1.0,
+          "as_needed": false
+        },
+        "duration_days": 14
+      }
+    }
+  ],
+  "conditions": [
+    {
+      "id": "cond-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "Impression: Hypertension, better controlled"
+        },
+        "text": "Hypertension, better controlled",
+        "kind": "impression"
+      }
+    }
+  ],
+  "remarks": [
+    {
+      "id": "rem-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 26,
+          "last_line": 26,
+          "quote": "Advice: Low-salt diet; walk 30 minutes a day."
+        },
+        "text": "Low-salt diet; walk 30 minutes a day.",
+        "kind": "advice",
+        "scope": "document",
+        "test_name": null,
+        "panel": null
+      },
+      "derived": {
+        "observation_id": null
+      }
+    }
+  ],
+  "vitals": [
+    {
+      "id": "vit-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "BP: 132/84 mmHg; HR: 76 bpm"
+        },
+        "name": "BP",
+        "value_text": "132/84",
+        "unit": "mmHg"
+      },
+      "derived": {
+        "kind": "blood_pressure",
+        "value_num": null,
+        "systolic": 132.0,
+        "diastolic": 84.0
+      }
+    },
+    {
+      "id": "vit-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "BP: 132/84 mmHg; HR: 76 bpm"
+        },
+        "name": "HR",
+        "value_text": "76",
+        "unit": "bpm"
+      },
+      "derived": {
+        "kind": "pulse",
+        "value_num": 76.0,
+        "systolic": null,
+        "diastolic": null
+      }
+    }
+  ],
+  "allergies": [],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

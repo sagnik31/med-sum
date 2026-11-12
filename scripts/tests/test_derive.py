@@ -10,7 +10,14 @@ from datetime import date
 import pytest
 
 from dataset import content
-from dataset_records import DOC_IDS, PARSED_IDS, key, parse_of
+from dataset_records import (
+    HELD_OUT_IDS,
+    MAIN_IDS,
+    MAIN_PARSED_IDS,
+    PARSED_IDS,
+    key,
+    parse_of,
+)
 from derive import build_record
 from derive.build import allergy, remark, vital
 from derive.dates import document_dates, parse_date
@@ -49,11 +56,46 @@ def built_from_key(doc_id: str):
     )
 
 
-@pytest.mark.parametrize("doc_id", DOC_IDS)
+@pytest.mark.parametrize("doc_id", MAIN_IDS)
 def test_the_record_built_from_a_keys_printed_parts_is_the_key(doc_id):
     record, built = built_from_key(doc_id)
 
     assert built.model_dump(mode="json") == record.model_dump(mode="json")
+
+
+def _differences(a, b, path=""):
+    if isinstance(a, dict):
+        for k in sorted(set(a) | set(b)):
+            yield from _differences(a.get(k), b.get(k), f"{path}.{k}")
+    elif isinstance(a, list) and isinstance(b, list) and len(a) == len(b):
+        for i, (x, y) in enumerate(zip(a, b)):
+            yield from _differences(x, y, f"{path}[{i}]")
+    elif a != b:
+        yield path, a, b
+
+
+def test_where_the_code_derives_held_out_documents_differently():
+    """
+    The held-out documents are not used to change the code, so where the
+    code reads them differently from their keys is a measured gap, listed
+    here. When the code changes for another reason and closes one, this
+    list changes with it.
+    """
+    gaps = set()
+    for doc_id in HELD_OUT_IDS:
+        record, built = built_from_key(doc_id)
+        for path, got, expected in _differences(
+            built.model_dump(mode="json"), record.model_dump(mode="json")
+        ):
+            gaps.add((doc_id, path, got, expected))
+    assert gaps == {
+        # "Glycated Haemoglobin (HbA1c)": the name with its abbreviation.
+        ("d18", ".observations[5].derived.analyte", None, "hba1c"),
+        # "Allergy: None known".
+        ("d19", ".allergies[0].derived.no_known_allergies", False, True),
+        # "TSH (Ultrasensitive)": the name with its method.
+        ("d20", ".observations[1].derived.analyte", None, "tsh"),
+    }
 
 
 def test_the_keys_exercise_every_kind_of_derived_value():
@@ -218,7 +260,7 @@ def test_unknown_units_are_not_guessed():
 
 
 def test_every_dataset_unit_is_in_the_table():
-    for doc_id in PARSED_IDS:
+    for doc_id in MAIN_PARSED_IDS:
         for o in key(doc_id).observations:
             if o.printed.unit is not None:
                 assert lookup_unit(o.printed.unit), o.printed.unit

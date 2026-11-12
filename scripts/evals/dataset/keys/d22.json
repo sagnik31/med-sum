@@ -1,0 +1,397 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d22",
+    "type": "lab_report",
+    "page_count": 1,
+    "has_text_layer": false,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 1,
+          "last_line": 1,
+          "quote": "# CityCare Labs"
+        },
+        "text": "CityCare Labs"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 7,
+            "last_line": 7,
+            "quote": "Reg. No: CC-88412 | Referred by: Dr. Farah Khan"
+          },
+          "text": "Referred by: Dr. Farah Khan"
+        },
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 34,
+            "last_line": 34,
+            "quote": "Dr. Imran Shaikh, DCP"
+          },
+          "text": "Dr. Imran Shaikh, DCP"
+        }
+      ],
+      "report_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Collected: 2025-03-20 | Reported: 2025-03-20"
+        },
+        "text": "2025-03-20"
+      },
+      "collection_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Collected: 2025-03-20 | Reported: 2025-03-20"
+        },
+        "text": "2025-03-20"
+      },
+      "prescription_date": null
+    },
+    "derived": {
+      "report_date": "2025-03-20",
+      "collection_date": "2025-03-20",
+      "prescription_date": null,
+      "document_date": "2025-03-20",
+      "date_source": "report_date"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# CityCare Labs",
+        "",
+        "Wakad, Pune 411057",
+        "",
+        "Name: Mr. Kabir Sethi | Age/Sex: 46Y/M",
+        "",
+        "Reg. No: CC-88412 | Referred by: Dr. Farah Khan",
+        "",
+        "Collected: 2025-03-20 | Reported: 2025-03-20",
+        "",
+        "## RENAL FUNCTION",
+        "",
+        "| Parameter | Result | Units | Normal Range |",
+        "| --- | --- | --- | --- |",
+        "| Blood Urea | 44 ↑ | mg/dL | 15 - 40 |",
+        "| Serum Creatinine | 1.4 ↑ | mg/dL | 0.7 - 1.3 |",
+        "",
+        "## eGFR",
+        "",
+        "| Parameter | Result | Units | Normal Range |",
+        "| --- | --- | --- | --- |",
+        "| eGFR | 62 ↓ | mL/min/1.73m² | > 90 |",
+        "",
+        "Note: Calculated by the CKD-EPI 2021 equation.",
+        "",
+        "## ELECTROLYTES",
+        "",
+        "| Parameter | Result | Units | Normal Range |",
+        "| --- | --- | --- | --- |",
+        "| Sodium | 139 | mmol/L | 135 - 145 |",
+        "| Potassium | 4.6 | mmol/L | 3.5 - 5.1 |",
+        "| Chloride | 101 | mmol/L | 98 - 107 |",
+        "",
+        "Dr. Imran Shaikh, DCP",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 5,
+          "last_line": 5,
+          "quote": "Name: Mr. Kabir Sethi | Age/Sex: 46Y/M"
+        },
+        "text": "Mr. Kabir Sethi"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 5,
+          "last_line": 5,
+          "quote": "Name: Mr. Kabir Sethi | Age/Sex: 46Y/M"
+        },
+        "text": "46Y"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 5,
+          "last_line": 5,
+          "quote": "Name: Mr. Kabir Sethi | Age/Sex: 46Y/M"
+        },
+        "text": "M"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Reg. No: CC-88412 | Referred by: Dr. Farah Khan"
+        },
+        "text": "CC-88412"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [
+    {
+      "id": "obs-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "| Blood Urea | 44 ↑ | mg/dL | 15 - 40 |"
+        },
+        "panel": "RENAL FUNCTION",
+        "test_name": "Blood Urea",
+        "value_text": "44",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "15 - 40"
+        ],
+        "flag_printed": "↑"
+      },
+      "derived": {
+        "analyte": "urea",
+        "value_num": 44.0,
+        "ranges": [
+          {
+            "text": "15 - 40",
+            "low": 15.0,
+            "high": 40.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "high",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 16,
+          "last_line": 16,
+          "quote": "| Serum Creatinine | 1.4 ↑ | mg/dL | 0.7 - 1.3 |"
+        },
+        "panel": "RENAL FUNCTION",
+        "test_name": "Serum Creatinine",
+        "value_text": "1.4",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "0.7 - 1.3"
+        ],
+        "flag_printed": "↑"
+      },
+      "derived": {
+        "analyte": "creatinine",
+        "value_num": 1.4,
+        "ranges": [
+          {
+            "text": "0.7 - 1.3",
+            "low": 0.7,
+            "high": 1.3,
+            "label": null
+          }
+        ],
+        "flag_computed": "high",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 22,
+          "last_line": 22,
+          "quote": "| eGFR | 62 ↓ | mL/min/1.73m² | > 90 |"
+        },
+        "panel": "eGFR",
+        "test_name": "eGFR",
+        "value_text": "62",
+        "unit": "mL/min/1.73m²",
+        "reference_ranges": [
+          "> 90"
+        ],
+        "flag_printed": "↓"
+      },
+      "derived": {
+        "analyte": "egfr",
+        "value_num": 62.0,
+        "ranges": [
+          {
+            "text": "> 90",
+            "low": 90.0,
+            "high": null,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-4",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 30,
+          "last_line": 30,
+          "quote": "| Sodium | 139 | mmol/L | 135 - 145 |"
+        },
+        "panel": "ELECTROLYTES",
+        "test_name": "Sodium",
+        "value_text": "139",
+        "unit": "mmol/L",
+        "reference_ranges": [
+          "135 - 145"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "sodium",
+        "value_num": 139.0,
+        "ranges": [
+          {
+            "text": "135 - 145",
+            "low": 135.0,
+            "high": 145.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-5",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 31,
+          "last_line": 31,
+          "quote": "| Potassium | 4.6 | mmol/L | 3.5 - 5.1 |"
+        },
+        "panel": "ELECTROLYTES",
+        "test_name": "Potassium",
+        "value_text": "4.6",
+        "unit": "mmol/L",
+        "reference_ranges": [
+          "3.5 - 5.1"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "potassium",
+        "value_num": 4.6,
+        "ranges": [
+          {
+            "text": "3.5 - 5.1",
+            "low": 3.5,
+            "high": 5.1,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-6",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 32,
+          "last_line": 32,
+          "quote": "| Chloride | 101 | mmol/L | 98 - 107 |"
+        },
+        "panel": "ELECTROLYTES",
+        "test_name": "Chloride",
+        "value_text": "101",
+        "unit": "mmol/L",
+        "reference_ranges": [
+          "98 - 107"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "chloride",
+        "value_num": 101.0,
+        "ranges": [
+          {
+            "text": "98 - 107",
+            "low": 98.0,
+            "high": 107.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    }
+  ],
+  "medications": [],
+  "conditions": [],
+  "remarks": [
+    {
+      "id": "rem-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 24,
+          "last_line": 24,
+          "quote": "Note: Calculated by the CKD-EPI 2021 equation."
+        },
+        "text": "Calculated by the CKD-EPI 2021 equation.",
+        "kind": "comment",
+        "scope": "test",
+        "test_name": "eGFR",
+        "panel": "eGFR"
+      },
+      "derived": {
+        "observation_id": "obs-3"
+      }
+    }
+  ],
+  "vitals": [],
+  "allergies": [],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

@@ -482,11 +482,20 @@ def by_fault(check: FaultCheck) -> dict[str, dict]:
 
 def totals(check: FaultCheck) -> dict:
     rows = check.results
+    split = {d: e.get("split", "test") for d, e in documents().items()}
     return {
         "injected": len(rows),
         "flagged": wilson(sum(r.flagged for r in rows), len(rows)).as_dict(),
         "routed": sum(r.routed for r in rows),
         "on_target": sum(r.on_target for r in rows),
+        # Whether the checks catch as much on layouts they weren't built on.
+        "by_split": {
+            name: wilson(
+                sum(r.flagged for r in rows if split[r.doc_id] == name),
+                sum(1 for r in rows if split[r.doc_id] == name),
+            ).as_dict()
+            for name in sorted(set(split.values()))
+        },
     }
 
 
@@ -555,6 +564,8 @@ def render_markdown(report: dict) -> str:
         f"- **Clean documents ending as expected:** {right}/{len(report['clean'])}",
         f"- **Faults flagged (a new routing signal):** {_ci(t['flagged'])}",
         f"- **Flagged on the item the fault changed:** {t['on_target']}/{t['injected']}",
+        "- **Flagged, by split:** "
+        + "; ".join(f"{name} {_ci(c)}" for name, c in t["by_split"].items()),
         f"- **Gate:** {'pass' if not report['gate'] else 'FAIL'}",
         *(f"  - {f}" for f in report["gate"]),
         "",

@@ -1,0 +1,352 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d21",
+    "type": "prescription",
+    "page_count": 1,
+    "has_text_layer": false,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 1,
+          "last_line": 1,
+          "quote": "# Pillai Family Clinic"
+        },
+        "text": "Pillai Family Clinic"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 3,
+            "last_line": 3,
+            "quote": "Dr. Suresh Pillai"
+          },
+          "text": "Dr. Suresh Pillai"
+        }
+      ],
+      "report_date": null,
+      "collection_date": null,
+      "prescription_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Patient: Mrs. Nandini Bose, 36 F, UHID SH-100236 | Date: 15.04.2025"
+        },
+        "text": "15.04.2025"
+      }
+    },
+    "derived": {
+      "report_date": null,
+      "collection_date": null,
+      "prescription_date": "2025-04-15",
+      "document_date": "2025-04-15",
+      "date_source": "prescription_date"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Pillai Family Clinic",
+        "",
+        "Dr. Suresh Pillai",
+        "",
+        "MBBS, MD (Medicine)",
+        "",
+        "Model Colony, Pune 411016 | Reg. No.: MMC-2007/11/0004",
+        "",
+        "Patient: Mrs. Nandini Bose, 36 F, UHID SH-100236 | Date: 15.04.2025",
+        "",
+        "## Clinical notes",
+        "",
+        "C/O: tiredness, weight gain x 3 months",
+        "",
+        "BP: 122/80 mmHg | Pulse: 64/min | Wt: 71 kg",
+        "",
+        "H/o: PCOS",
+        "",
+        "Diagnosis: Hashimoto's thyroiditis",
+        "",
+        "## Rx",
+        "",
+        "1. Tab. Thyronorm 25 mcg — 1 tab — 1-0-0 — 8 weeks — Empty stomach",
+        "",
+        "2. Sachet Calcirol 60,000 IU — 1 sachet — Once a week — 8 weeks — With milk",
+        "",
+        "3. Tab. Folvite 5 mg — 1 tab — 0-1-0 — 8 weeks",
+        "",
+        "Advice: Repeat TSH after 8 weeks.",
+        "",
+        "Signature: Dr. Suresh Pillai",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Patient: Mrs. Nandini Bose, 36 F, UHID SH-100236 | Date: 15.04.2025"
+        },
+        "text": "Mrs. Nandini Bose"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Patient: Mrs. Nandini Bose, 36 F, UHID SH-100236 | Date: 15.04.2025"
+        },
+        "text": "36"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Patient: Mrs. Nandini Bose, 36 F, UHID SH-100236 | Date: 15.04.2025"
+        },
+        "text": "F"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Patient: Mrs. Nandini Bose, 36 F, UHID SH-100236 | Date: 15.04.2025"
+        },
+        "text": "SH-100236"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [],
+  "medications": [
+    {
+      "id": "med-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 23,
+          "last_line": 23,
+          "quote": "1. Tab. Thyronorm 25 mcg — 1 tab — 1-0-0 — 8 weeks — Empty stomach"
+        },
+        "form": "Tab.",
+        "name": "Thyronorm",
+        "strength": "25 mcg",
+        "dose": "1 tab",
+        "frequency": "1-0-0",
+        "route": null,
+        "duration": "8 weeks",
+        "instructions": "Empty stomach"
+      },
+      "derived": {
+        "schedule": {
+          "morning": 1.0,
+          "noon": 0.0,
+          "night": 0.0,
+          "times_per_day": 1.0,
+          "as_needed": false
+        },
+        "duration_days": 56
+      }
+    },
+    {
+      "id": "med-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 25,
+          "last_line": 25,
+          "quote": "2. Sachet Calcirol 60,000 IU — 1 sachet — Once a week — 8 weeks — With milk"
+        },
+        "form": "Sachet",
+        "name": "Calcirol",
+        "strength": "60,000 IU",
+        "dose": "1 sachet",
+        "frequency": "Once a week",
+        "route": null,
+        "duration": "8 weeks",
+        "instructions": "With milk"
+      },
+      "derived": {
+        "schedule": null,
+        "duration_days": 56
+      }
+    },
+    {
+      "id": "med-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 27,
+          "last_line": 27,
+          "quote": "3. Tab. Folvite 5 mg — 1 tab — 0-1-0 — 8 weeks"
+        },
+        "form": "Tab.",
+        "name": "Folvite",
+        "strength": "5 mg",
+        "dose": "1 tab",
+        "frequency": "0-1-0",
+        "route": null,
+        "duration": "8 weeks",
+        "instructions": null
+      },
+      "derived": {
+        "schedule": {
+          "morning": 0.0,
+          "noon": 1.0,
+          "night": 0.0,
+          "times_per_day": 1.0,
+          "as_needed": false
+        },
+        "duration_days": 56
+      }
+    }
+  ],
+  "conditions": [
+    {
+      "id": "cond-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "H/o: PCOS"
+        },
+        "text": "PCOS",
+        "kind": "history"
+      }
+    },
+    {
+      "id": "cond-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 19,
+          "last_line": 19,
+          "quote": "Diagnosis: Hashimoto's thyroiditis"
+        },
+        "text": "Hashimoto's thyroiditis",
+        "kind": "diagnosis"
+      }
+    }
+  ],
+  "remarks": [
+    {
+      "id": "rem-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 29,
+          "last_line": 29,
+          "quote": "Advice: Repeat TSH after 8 weeks."
+        },
+        "text": "Repeat TSH after 8 weeks.",
+        "kind": "advice",
+        "scope": "document",
+        "test_name": null,
+        "panel": null
+      },
+      "derived": {
+        "observation_id": null
+      }
+    }
+  ],
+  "vitals": [
+    {
+      "id": "vit-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "BP: 122/80 mmHg | Pulse: 64/min | Wt: 71 kg"
+        },
+        "name": "BP",
+        "value_text": "122/80",
+        "unit": "mmHg"
+      },
+      "derived": {
+        "kind": "blood_pressure",
+        "value_num": null,
+        "systolic": 122.0,
+        "diastolic": 80.0
+      }
+    },
+    {
+      "id": "vit-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "BP: 122/80 mmHg | Pulse: 64/min | Wt: 71 kg"
+        },
+        "name": "Pulse",
+        "value_text": "64",
+        "unit": "/min"
+      },
+      "derived": {
+        "kind": "pulse",
+        "value_num": 64.0,
+        "systolic": null,
+        "diastolic": null
+      }
+    },
+    {
+      "id": "vit-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "BP: 122/80 mmHg | Pulse: 64/min | Wt: 71 kg"
+        },
+        "name": "Wt",
+        "value_text": "71",
+        "unit": "kg"
+      },
+      "derived": {
+        "kind": "weight",
+        "value_num": 71.0,
+        "systolic": null,
+        "diastolic": null
+      }
+    }
+  ],
+  "allergies": [],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

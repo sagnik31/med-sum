@@ -1,58 +1,58 @@
 {
   "date_swap": {
-    "injected": 13,
-    "flagged": 13
-  },
-  "decimal_shift": {
-    "injected": 65,
-    "flagged": 65
-  },
-  "digit_swap": {
-    "injected": 40,
-    "flagged": 40
-  },
-  "dropped_medicine": {
-    "injected": 19,
-    "flagged": 19
-  },
-  "dropped_result": {
-    "injected": 79,
-    "flagged": 2
-  },
-  "frequency_change": {
-    "injected": 18,
-    "flagged": 18
-  },
-  "invented_medicine": {
-    "injected": 7,
-    "flagged": 7
-  },
-  "invented_result": {
-    "injected": 9,
-    "flagged": 9
-  },
-  "range_bound": {
-    "injected": 70,
-    "flagged": 23
-  },
-  "remark_moved": {
-    "injected": 2,
-    "flagged": 2
-  },
-  "strength_shift": {
     "injected": 16,
     "flagged": 16
   },
+  "decimal_shift": {
+    "injected": 91,
+    "flagged": 91
+  },
+  "digit_swap": {
+    "injected": 58,
+    "flagged": 58
+  },
+  "dropped_medicine": {
+    "injected": 30,
+    "flagged": 30
+  },
+  "dropped_result": {
+    "injected": 107,
+    "flagged": 3
+  },
+  "frequency_change": {
+    "injected": 28,
+    "flagged": 28
+  },
+  "invented_medicine": {
+    "injected": 10,
+    "flagged": 10
+  },
+  "invented_result": {
+    "injected": 13,
+    "flagged": 13
+  },
+  "range_bound": {
+    "injected": 98,
+    "flagged": 32
+  },
+  "remark_moved": {
+    "injected": 3,
+    "flagged": 3
+  },
+  "strength_shift": {
+    "injected": 26,
+    "flagged": 26
+  },
   "transcription_misread": {
-    "injected": 60,
-    "flagged": 46
+    "injected": 77,
+    "flagged": 55
   },
   "unit_swap": {
-    "injected": 72,
-    "flagged": 72
+    "injected": 100,
+    "flagged": 100
   },
   "wrong_patient": {
-    "injected": 15,
-    "flagged": 15
+    "injected": 22,
+    "flagged": 22
   }
 }

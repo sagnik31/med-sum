@@ -26,6 +26,8 @@ table { border-collapse: collapse; width: 100%; margin-bottom: 4pt; }
 th, td { border: 1px solid #555; padding: 2pt 4pt; text-align: left; }
 th { background-color: #e8eef4; }
 .nw { white-space: nowrap; }
+table.kv th, table.kv td { border: none; background-color: transparent; padding: 1pt 4pt; }
+table.cols, table.cols td.col { border: none; padding: 0 6pt 0 0; vertical-align: top; }
 """
 
 

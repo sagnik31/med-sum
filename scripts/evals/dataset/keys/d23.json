@@ -1,0 +1,482 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d23",
+    "type": "lab_report",
+    "page_count": 2,
+    "has_text_layer": false,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 1,
+          "last_line": 1,
+          "quote": "# Apex Pathology"
+        },
+        "text": "Apex Pathology"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 7,
+            "last_line": 7,
+            "quote": "Ref. Doctor: Dr. Suresh Pillai"
+          },
+          "text": "Ref. Doctor: Dr. Suresh Pillai"
+        },
+        {
+          "citation": {
+            "page": 2,
+            "first_line": 17,
+            "last_line": 17,
+            "quote": "Dr. Kiran Patwardhan, MD (Pathology)"
+          },
+          "text": "Dr. Kiran Patwardhan, MD (Pathology)"
+        }
+      ],
+      "report_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Report Date: 18/06/2025"
+        },
+        "text": "18/06/2025"
+      },
+      "collection_date": null,
+      "prescription_date": null
+    },
+    "derived": {
+      "report_date": "2025-06-18",
+      "collection_date": null,
+      "prescription_date": null,
+      "document_date": "2025-06-18",
+      "date_source": "report_date"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Apex Pathology",
+        "",
+        "Kalyani Nagar, Pune 411006",
+        "",
+        "Patient: Mrs. Nandini Bose | 36 Yrs / F | ID: AP-61930",
+        "",
+        "Ref. Doctor: Dr. Suresh Pillai",
+        "",
+        "Report Date: 18/06/2025",
+        "",
+        "## HAEMATOLOGY",
+        "",
+        "| Investigation | Observed Value | Flag | Biological Reference Interval | Units |",
+        "| --- | --- | --- | --- | --- |",
+        "| Haemoglobin | 11.9 | Low | 12.0 - 15.0 | g/dL |",
+        "| PCV | 36.8 |  | 36.0 - 46.0 | % |",
+        "| RBC Count | 4.3 |  | 3.8 - 4.8 | mill/cumm |",
+        "| MCV | 82 | Low | 83 - 101 | fL |",
+        "| MCH | 27.6 |  | 27.0 - 32.0 | pg |",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    },
+    {
+      "page": 2,
+      "lines": [
+        "Apex Pathology | Mrs. Nandini Bose | AP-61930 | Page 2 of 2",
+        "",
+        "## HAEMATOLOGY (contd.)",
+        "",
+        "| Investigation | Observed Value | Flag | Biological Reference Interval | Units |",
+        "| --- | --- | --- | --- | --- |",
+        "| Total WBC Count | 7,600 |  | 4,000 - 10,000 | /cumm |",
+        "| Platelet Count | 2,95,000 |  | 1,50,000 - 4,10,000 | /cumm |",
+        "",
+        "## THYROID PROFILE",
+        "",
+        "| Investigation | Observed Value | Flag | Biological Reference Interval | Units |",
+        "| --- | --- | --- | --- | --- |",
+        "| TSH | 2.9 |  | 0.35 - 4.94 | µIU/mL |",
+        "| Vitamin B12 | 180 | Low | 211 - 911 | pg/mL |",
+        "",
+        "Dr. Kiran Patwardhan, MD (Pathology)",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 5,
+          "last_line": 5,
+          "quote": "Patient: Mrs. Nandini Bose | 36 Yrs / F | ID: AP-61930"
+        },
+        "text": "Mrs. Nandini Bose"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 5,
+          "last_line": 5,
+          "quote": "Patient: Mrs. Nandini Bose | 36 Yrs / F | ID: AP-61930"
+        },
+        "text": "36 Yrs"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 5,
+          "last_line": 5,
+          "quote": "Patient: Mrs. Nandini Bose | 36 Yrs / F | ID: AP-61930"
+        },
+        "text": "F"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 5,
+          "last_line": 5,
+          "quote": "Patient: Mrs. Nandini Bose | 36 Yrs / F | ID: AP-61930"
+        },
+        "text": "AP-61930"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [
+    {
+      "id": "obs-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "| Haemoglobin | 11.9 | Low | 12.0 - 15.0 | g/dL |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "Haemoglobin",
+        "value_text": "11.9",
+        "unit": "g/dL",
+        "reference_ranges": [
+          "12.0 - 15.0"
+        ],
+        "flag_printed": "Low"
+      },
+      "derived": {
+        "analyte": "haemoglobin",
+        "value_num": 11.9,
+        "ranges": [
+          {
+            "text": "12.0 - 15.0",
+            "low": 12.0,
+            "high": 15.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 16,
+          "last_line": 16,
+          "quote": "| PCV | 36.8 |  | 36.0 - 46.0 | % |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "PCV",
+        "value_text": "36.8",
+        "unit": "%",
+        "reference_ranges": [
+          "36.0 - 46.0"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "pcv",
+        "value_num": 36.8,
+        "ranges": [
+          {
+            "text": "36.0 - 46.0",
+            "low": 36.0,
+            "high": 46.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "| RBC Count | 4.3 |  | 3.8 - 4.8 | mill/cumm |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "RBC Count",
+        "value_text": "4.3",
+        "unit": "mill/cumm",
+        "reference_ranges": [
+          "3.8 - 4.8"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "rbc_count",
+        "value_num": 4.3,
+        "ranges": [
+          {
+            "text": "3.8 - 4.8",
+            "low": 3.8,
+            "high": 4.8,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-4",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 18,
+          "last_line": 18,
+          "quote": "| MCV | 82 | Low | 83 - 101 | fL |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "MCV",
+        "value_text": "82",
+        "unit": "fL",
+        "reference_ranges": [
+          "83 - 101"
+        ],
+        "flag_printed": "Low"
+      },
+      "derived": {
+        "analyte": "mcv",
+        "value_num": 82.0,
+        "ranges": [
+          {
+            "text": "83 - 101",
+            "low": 83.0,
+            "high": 101.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-5",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 19,
+          "last_line": 19,
+          "quote": "| MCH | 27.6 |  | 27.0 - 32.0 | pg |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "MCH",
+        "value_text": "27.6",
+        "unit": "pg",
+        "reference_ranges": [
+          "27.0 - 32.0"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "mch",
+        "value_num": 27.6,
+        "ranges": [
+          {
+            "text": "27.0 - 32.0",
+            "low": 27.0,
+            "high": 32.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-6",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "| Total WBC Count | 7,600 |  | 4,000 - 10,000 | /cumm |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "Total WBC Count",
+        "value_text": "7,600",
+        "unit": "/cumm",
+        "reference_ranges": [
+          "4,000 - 10,000"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "wbc_count",
+        "value_num": 7600.0,
+        "ranges": [
+          {
+            "text": "4,000 - 10,000",
+            "low": 4000.0,
+            "high": 10000.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-7",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 8,
+          "last_line": 8,
+          "quote": "| Platelet Count | 2,95,000 |  | 1,50,000 - 4,10,000 | /cumm |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "Platelet Count",
+        "value_text": "2,95,000",
+        "unit": "/cumm",
+        "reference_ranges": [
+          "1,50,000 - 4,10,000"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "platelet_count",
+        "value_num": 295000.0,
+        "ranges": [
+          {
+            "text": "1,50,000 - 4,10,000",
+            "low": 150000.0,
+            "high": 410000.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-8",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 14,
+          "last_line": 14,
+          "quote": "| TSH | 2.9 |  | 0.35 - 4.94 | µIU/mL |"
+        },
+        "panel": "THYROID PROFILE",
+        "test_name": "TSH",
+        "value_text": "2.9",
+        "unit": "µIU/mL",
+        "reference_ranges": [
+          "0.35 - 4.94"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "tsh",
+        "value_num": 2.9,
+        "ranges": [
+          {
+            "text": "0.35 - 4.94",
+            "low": 0.35,
+            "high": 4.94,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-9",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "| Vitamin B12 | 180 | Low | 211 - 911 | pg/mL |"
+        },
+        "panel": "THYROID PROFILE",
+        "test_name": "Vitamin B12",
+        "value_text": "180",
+        "unit": "pg/mL",
+        "reference_ranges": [
+          "211 - 911"
+        ],
+        "flag_printed": "Low"
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": 180.0,
+        "ranges": [
+          {
+            "text": "211 - 911",
+            "low": 211.0,
+            "high": 911.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    }
+  ],
+  "medications": [],
+  "conditions": [],
+  "remarks": [],
+  "vitals": [],
+  "allergies": [],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

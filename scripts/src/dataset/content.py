@@ -16,6 +16,7 @@ from datetime import date
 
 from dataset.layout import (
     Allergy,
+    Columns,
     Condition,
     HeaderField,
     Heading,
@@ -28,11 +29,18 @@ from dataset.layout import (
     Vital,
     allergy_line,
     conditions_line,
+    fields_line,
     header,
+    header_table,
+    lab_lines,
     lab_panel,
+    lab_table_flag_in_value,
+    lab_table_ranges_first,
     remark_line,
     rng,
+    rx_lines,
     rx_table,
+    rx_table_strength,
     vitals_line,
 )
 
@@ -85,6 +93,9 @@ PATIENTS = [
     Patient("rohan", "Rohan Kulkarni", "M", date(1980, 8, 3), "SH-100232", "+919000000002"),
     Patient("fatima", "Fatima Shaikh", "F", date(1993, 1, 25), "SH-100233", "+919000000003"),
     Patient("arjun", "Arjun Menon", "M", date(1958, 11, 30), "SH-100234", "+919000000004"),
+    # Held out (d18-d24).
+    Patient("kabir", "Kabir Sethi", "M", date(1979, 3, 9), "SH-100235", "+919000000005"),
+    Patient("nandini", "Nandini Bose", "F", date(1988, 7, 21), "SH-100236", "+919000000006"),
 ]  # fmt: skip
 BY_KEY = {p.key: p for p in PATIENTS}
 
@@ -856,13 +867,352 @@ d17 = Doc(
     ]],
 )  # fmt: skip
 
-DOCUMENTS = [d01, d02, d03, d04, d05, d06, d07, d08, d09, d10, d11, d12, d13, d14, d15, d16, d17]  # fmt: skip
+# -------------------------------------------------------------------
+# Held-out documents (d18-d24): two more patients, printed in layouts the
+# documents above don't use: results as lines rather than a table, header
+# details in a key-value table or several to a line, the range before the
+# unit, flags as words or arrows, two columns, numbered medicine lines, the
+# strength in its own column, a table continued on the next page, dates
+# with the month in words. Never tune a prompt or a check on these; they
+# are reported apart (split held_out).
+# -------------------------------------------------------------------
+KABIR = BY_KEY["kabir"]
+NANDINI = BY_KEY["nandini"]
+HEARTLINE = "Heartline Cardiac Clinic"
+
+
+def doctor_letterhead(facility: str, name: str, degree: str, address: str) -> list:
+    return [
+        Title(facility, [HeaderField("details.facility", facility)]),
+        Line(name, [HeaderField("details.clinicians", name)]),
+        Line(degree),
+        Line(address),
+    ]
+
+
+def kabir_rx_patient(on: date) -> Line:
+    age = str(KABIR.age(on))
+    return fields_line(
+        f"Name: {KABIR.name} | Age/Sex: {age}/M | UHID: {KABIR.mrn}",
+        HeaderField("patient.name", KABIR.name),
+        HeaderField("patient.age", age),
+        HeaderField("patient.sex", "M"),
+        HeaderField("patient.patient_id", KABIR.mrn),
+    )
+
+
+d18 = Doc(
+    "d18", "kabir", "lab_report", "pdf", "a4",
+    cases=["results_as_lines", "header_fields_on_one_line", "flag_as_word",
+           "date_month_in_words", "test_name_variant", "multiple_ranges",
+           "one_sided_range", "document_remark"],
+    notes="Held out. Results printed one per line with the range in brackets, no "
+          "table; name, age and sex on one line; dates as '03 Mar 2025'.",
+    pages=[[
+        Title("Navjeevan Pathology Lab", [HeaderField("details.facility",
+                                                      "Navjeevan Pathology Lab")]),
+        Line("Shop 4, Aundh Road, Pune 411007"),
+        fields_line("Patient: Mr. Kabir Sethi | Age: 45 Yrs | Sex: Male",
+                    HeaderField("patient.name", "Mr. Kabir Sethi"),
+                    HeaderField("patient.age", "45 Yrs"),
+                    HeaderField("patient.sex", "Male")),
+        fields_line("Lab No: NJ/2025/03114 | Ref: Dr. Farah Khan",
+                    HeaderField("patient.patient_id", "NJ/2025/03114"),
+                    HeaderField("details.clinicians", "Ref: Dr. Farah Khan")),
+        fields_line("Sample Date: 03 Mar 2025 | Report Date: 03 Mar 2025",
+                    HeaderField("details.collection_date", "03 Mar 2025",
+                                date(2025, 3, 3)),
+                    HeaderField("details.report_date", "03 Mar 2025", date(2025, 3, 3))),
+        *lab_lines("LIPID PROFILE", [
+            LabTest("Total Cholesterol", "238", "mg/dL", CHOL_RANGES),
+            LabTest("Triglycerides", "210", "mg/dL", (Range("< 150", high=150),), "High"),
+            LabTest("HDL Cholesterol", "36", "mg/dL", (Range("> 40", low=40),), "Low"),
+            LabTest("LDL Cholesterol", "160", "mg/dL", LDL_RANGES, "High"),
+        ]),
+        *lab_lines("DIABETES SCREEN", [
+            LabTest("Fasting Plasma Glucose", "112", "mg/dL", (rng("70 - 100"),),
+                    "High"),
+            LabTest("Glycated Haemoglobin (HbA1c)", "6.1", "%", HBA1C_RANGES,
+                    analyte="hba1c"),
+        ]),
+        remark_line(Remark("Repeat lipid profile after 3 months on treatment.",
+                           "advice", "document"), "Advice"),
+        clinician("Dr. Prakash Menon, MD (Pathology)"),
+        Line("-- End of report --"),
+    ]],
+)  # fmt: skip
+
+d19 = Doc(
+    "d19", "kabir", "prescription", "png", "a5",
+    cases=["medicines_as_numbered_lines", "header_fields_on_one_line",
+           "two_diagnoses_one_line", "as_needed", "route_given",
+           "no_known_allergies", "vitals"],
+    notes="Held out. A clinic letterhead, the patient's details on one line, "
+          "and medicines as numbered lines instead of a table.",
+    pages=[[
+        *doctor_letterhead(HEARTLINE, "Dr. Farah Khan", "MBBS, MD, DM (Cardiology)",
+                           "Baner, Pune 411045 | Reg. No.: MMC-2011/02/0003"),
+        header("Date", "details.prescription_date", "05-03-2025", date(2025, 3, 5)),
+        kabir_rx_patient(date(2025, 3, 5)),
+        Line("BP: 148/94 mmHg | Pulse: 88/min | SpO2: 97%", [
+            Vital("BP", "148/94", "mmHg", "blood_pressure", systolic=148, diastolic=94),
+            Vital("Pulse", "88", "/min", "pulse", 88),
+            Vital("SpO2", "97", "%", "spo2", 97),
+        ]),
+        Line("Dx: Essential hypertension; Dyslipidaemia", [
+            Condition("Essential hypertension", "diagnosis"),
+            Condition("Dyslipidaemia", "diagnosis"),
+        ]),
+        allergy_line("Allergy", Allergy("None known", no_known_allergies=True)),
+        Heading("Rx"),
+        *rx_lines([
+            Medicine("Tab.", "Telma", "40 mg", "1 tab", "1-0-0", "x 30 days",
+                     "After breakfast", schedule=fixed(1, 0, 0), duration_days=30),
+            Medicine("Tab.", "Rosuvas", "10 mg", "1 tab", "0-0-1", "x 30 days",
+                     "After dinner", schedule=fixed(0, 0, 1), duration_days=30),
+            Medicine("Tab.", "Ecosprin", "75 mg", "1 tab", "0-1-0", "x 30 days",
+                     "After lunch", schedule=fixed(0, 1, 0), duration_days=30),
+            Medicine("Tab.", "Sorbitrate", "5 mg", "1 tab", "SOS", None,
+                     "If chest pain", route="sublingual", schedule=SOS),
+        ]),
+        remark_line(Remark("Review after 4 weeks with lipid profile.", "advice",
+                           "document"), "Advice"),
+        Line("Signature: Dr. Farah Khan"),
+    ]],
+)  # fmt: skip
+
+d20 = Doc(
+    "d20", "nandini", "lab_report", "pdf", "a4",
+    cases=["header_as_table", "range_before_unit", "flag_as_word",
+           "test_name_variant", "counts_in_other_units", "document_remark",
+           "one_sided_range"],
+    notes="Held out. Patient details in a key-value table; results as "
+          "Investigation | Observed Value | Flag | Biological Reference Interval | "
+          "Units.",
+    pages=[[
+        Title("Medilink Diagnostics", [HeaderField("details.facility",
+                                                   "Medilink Diagnostics")]),
+        Line("FC Road, Shivajinagar, Pune 411005"),
+        header_table([
+            [("Patient Name", HeaderField("patient.name", "Ms. Nandini Bose"),
+              "Ms. Nandini Bose"),
+             ("Sample ID", HeaderField("patient.patient_id", "MD-250412-077"),
+              "MD-250412-077")],
+            [("Age / Gender", [HeaderField("patient.age", "36 Years"),
+                               HeaderField("patient.sex", "Female")], "36 Years / Female"),
+             ("Referred By", HeaderField("details.clinicians", "Dr. Suresh Pillai"),
+              "Dr. Suresh Pillai")],
+            [("Collected", HeaderField("details.collection_date", "12/04/2025 09:05",
+                                       date(2025, 4, 12)), "12/04/2025 09:05"),
+             ("Reported", HeaderField("details.report_date", "12/04/2025 17:40",
+                                      date(2025, 4, 12)), "12/04/2025 17:40")],
+        ]),
+        *lab_table_ranges_first("THYROID FUNCTION TEST", [
+            LabTest("Free T4", "0.82", "ng/dL", (rng("0.70 - 1.48"),), analyte=None),
+            LabTest("TSH (Ultrasensitive)", "6.8", "µIU/mL", (rng("0.35 - 4.94"),),
+                    "High", analyte="tsh"),
+            LabTest("Anti-TPO Antibodies", "142", "IU/mL", (Range("< 34", high=34),),
+                    "High", analyte=None),
+        ]),
+        *lab_table_ranges_first("COMPLETE BLOOD COUNT", [
+            LabTest(HB, "11.1", "g/dL", (rng("12.0 - 15.0"),), "Low"),
+            LabTest("MCV", "78", "fL", (rng("83 - 101"),), "Low"),
+            LabTest("Total Leucocyte Count", "8.2", "10³/µL", (rng("4.0 - 10.0"),),
+                    converted=cumm(8200, "10³/µL")),
+            LabTest("Platelets", "3.10", "lakh/cumm", (rng("1.50 - 4.10"),),
+                    converted=cumm(310000, "lakh/cumm")),
+        ]),
+        Heading("INTERPRETATION"),
+        remark_line(Remark("Raised TSH with positive anti-TPO antibodies suggests "
+                           "autoimmune thyroiditis; clinical correlation advised.",
+                           "comment", "document")),
+        clinician("Dr. Ritu Saxena, MD (Pathology)"),
+    ]],
+)  # fmt: skip
+
+d21 = Doc(
+    "d21", "nandini", "prescription", "jpg", "a4",
+    cases=["two_column_layout", "header_fields_on_one_line", "weekly_frequency",
+           "duration_in_weeks", "history", "unused_complaint_line",
+           "date_with_dots"],
+    notes="Held out. Clinical notes in the left column, the medicines in the "
+          "right; the transcription reads the left column first.",
+    pages=[[
+        *doctor_letterhead("Pillai Family Clinic", "Dr. Suresh Pillai",
+                           "MBBS, MD (Medicine)",
+                           "Model Colony, Pune 411016 | Reg. No.: MMC-2007/11/0004"),
+        fields_line("Patient: Mrs. Nandini Bose, 36 F, UHID SH-100236 | Date: 15.04.2025",
+                    HeaderField("patient.name", "Mrs. Nandini Bose"),
+                    HeaderField("patient.age", "36"),
+                    HeaderField("patient.sex", "F"),
+                    HeaderField("patient.patient_id", "SH-100236"),
+                    HeaderField("details.prescription_date", "15.04.2025",
+                                date(2025, 4, 15))),
+        Columns(
+            left=[
+                Heading("Clinical notes"),
+                Line("C/O: tiredness, weight gain x 3 months"),
+                Line("BP: 122/80 mmHg | Pulse: 64/min | Wt: 71 kg", [
+                    Vital("BP", "122/80", "mmHg", "blood_pressure", systolic=122,
+                          diastolic=80),
+                    Vital("Pulse", "64", "/min", "pulse", 64),
+                    Vital("Wt", "71", "kg", "weight", 71),
+                ]),
+                conditions_line("H/o", [Condition("PCOS", "history")]),
+                conditions_line("Diagnosis", [
+                    Condition("Hashimoto's thyroiditis", "diagnosis")]),
+            ],
+            right=[
+                Heading("Rx"),
+                *rx_lines([
+                    Medicine("Tab.", "Thyronorm", "25 mcg", "1 tab", "1-0-0", "8 weeks",
+                             "Empty stomach", schedule=fixed(1, 0, 0),
+                             duration_days=56),
+                    Medicine("Sachet", "Calcirol", "60,000 IU", "1 sachet",
+                             "Once a week", "8 weeks", "With milk", duration_days=56),
+                    Medicine("Tab.", "Folvite", "5 mg", "1 tab", "0-1-0", "8 weeks",
+                             None, schedule=fixed(0, 1, 0), duration_days=56),
+                ]),
+            ],
+        ),
+        remark_line(Remark("Repeat TSH after 8 weeks.", "advice", "document"),
+                    "Advice"),
+        Line("Signature: Dr. Suresh Pillai"),
+    ]],
+)  # fmt: skip
+
+d22 = Doc(
+    "d22", "kabir", "lab_report", "png", "a4",
+    cases=["lab_report_as_image", "flag_as_arrow", "header_fields_on_one_line",
+           "iso_date", "test_remark", "one_sided_range"],
+    notes="Held out. A lab report uploaded as a picture (no text layer), flags as "
+          "arrows after the value, dates as 2025-03-20.",
+    pages=[[
+        Title("CityCare Labs", [HeaderField("details.facility", "CityCare Labs")]),
+        Line("Wakad, Pune 411057"),
+        fields_line("Name: Mr. Kabir Sethi | Age/Sex: 46Y/M",
+                    HeaderField("patient.name", "Mr. Kabir Sethi"),
+                    HeaderField("patient.age", "46Y"),
+                    HeaderField("patient.sex", "M")),
+        fields_line("Reg. No: CC-88412 | Referred by: Dr. Farah Khan",
+                    HeaderField("patient.patient_id", "CC-88412"),
+                    HeaderField("details.clinicians", "Referred by: Dr. Farah Khan")),
+        fields_line("Collected: 2025-03-20 | Reported: 2025-03-20",
+                    HeaderField("details.collection_date", "2025-03-20",
+                                date(2025, 3, 20)),
+                    HeaderField("details.report_date", "2025-03-20", date(2025, 3, 20))),
+        *lab_table_flag_in_value("RENAL FUNCTION", [
+            LabTest("Blood Urea", "44", "mg/dL", (rng("15 - 40"),), "↑"),
+            LabTest("Serum Creatinine", "1.4", "mg/dL", (rng("0.7 - 1.3"),), "↑"),
+        ]),
+        *lab_table_flag_in_value("eGFR", [
+            LabTest("eGFR", "62", "mL/min/1.73m²", (Range("> 90", low=90),), "↓"),
+        ]),
+        remark_line(Remark("Calculated by the CKD-EPI 2021 equation.", "comment",
+                           "test", test_name="eGFR", panel="eGFR"), "Note"),
+        *lab_table_flag_in_value("ELECTROLYTES", [
+            LabTest("Sodium", "139", "mmol/L", (rng("135 - 145"),)),
+            LabTest("Potassium", "4.6", "mmol/L", (rng("3.5 - 5.1"),)),
+            LabTest("Chloride", "101", "mmol/L", (rng("98 - 107"),)),
+        ]),
+        clinician("Dr. Imran Shaikh, DCP"),
+    ]],
+)  # fmt: skip
+
+d23 = Doc(
+    "d23", "nandini", "lab_report", "scan_pdf", "a4",
+    cases=["table_continued_on_next_page", "image_only_pdf", "range_before_unit",
+           "trend_two_values", "flag_as_word", "multi_page"],
+    notes="Held out. A scan whose haematology table runs onto page 2 under "
+          "'HAEMATOLOGY (contd.)'; the rows there still belong to HAEMATOLOGY. "
+          "Second TSH for Nandini (after d20).",
+    pages=[
+        [
+            Title("Apex Pathology", [HeaderField("details.facility", "Apex Pathology")]),
+            Line("Kalyani Nagar, Pune 411006"),
+            fields_line("Patient: Mrs. Nandini Bose | 36 Yrs / F | ID: AP-61930",
+                        HeaderField("patient.name", "Mrs. Nandini Bose"),
+                        HeaderField("patient.age", "36 Yrs"),
+                        HeaderField("patient.sex", "F"),
+                        HeaderField("patient.patient_id", "AP-61930")),
+            clinician("Ref. Doctor: Dr. Suresh Pillai"),
+            header("Report Date", "details.report_date", "18/06/2025",
+                   date(2025, 6, 18)),
+            *lab_table_ranges_first("HAEMATOLOGY", [
+                LabTest(HB, "11.9", "g/dL", (rng("12.0 - 15.0"),), "Low"),
+                LabTest("PCV", "36.8", "%", (rng("36.0 - 46.0"),)),
+                LabTest("RBC Count", "4.3", "mill/cumm", (rng("3.8 - 4.8"),)),
+                LabTest("MCV", "82", "fL", (rng("83 - 101"),), "Low"),
+                LabTest("MCH", "27.6", "pg", (rng("27.0 - 32.0"),)),
+            ]),
+        ],
+        [
+            Line("Apex Pathology | Mrs. Nandini Bose | AP-61930 | Page 2 of 2"),
+            *lab_table_ranges_first("HAEMATOLOGY (contd.)", [
+                LabTest("Total WBC Count", "7,600", "/cumm",
+                        (Range("4,000 - 10,000", 4000, 10000),), num=7600),
+                LabTest("Platelet Count", "2,95,000", "/cumm",
+                        (Range("1,50,000 - 4,10,000", 150000, 410000),), num=295000),
+            ], panel="HAEMATOLOGY"),
+            *lab_table_ranges_first("THYROID PROFILE", [
+                LabTest("TSH", "2.9", "µIU/mL", (rng("0.35 - 4.94"),)),
+                LabTest("Vitamin B12", "180", "pg/mL", (rng("211 - 911"),), "Low",
+                        analyte=None),
+            ]),
+            clinician("Dr. Kiran Patwardhan, MD (Pathology)"),
+        ],
+    ],
+)  # fmt: skip
+
+d24 = Doc(
+    "d24", "kabir", "prescription", "pdf", "a4",
+    cases=["e_prescription_text_layer", "strength_in_own_column",
+           "date_month_in_words", "named_frequency", "duration_in_days",
+           "unused_date_line", "vitals"],
+    notes="Held out. A typed e-prescription with a text layer; the strength in its "
+          "own column, dates with the month in words, and a 'Next visit' date "
+          "that is not the prescription date.",
+    pages=[[
+        *doctor_letterhead(HEARTLINE, "Dr. Farah Khan", "MBBS, MD, DM (Cardiology)",
+                           "Baner, Pune 411045 | Reg. No.: MMC-2011/02/0003"),
+        header("Date", "details.prescription_date", "14 April 2025", date(2025, 4, 14)),
+        kabir_rx_patient(date(2025, 4, 14)),
+        Line("BP: 132/84 mmHg; HR: 76 bpm", [
+            Vital("BP", "132/84", "mmHg", "blood_pressure", systolic=132, diastolic=84),
+            Vital("HR", "76", "bpm", "pulse", 76),
+        ]),
+        conditions_line("Impression", [
+            Condition("Hypertension, better controlled", "impression")]),
+        Heading("Medicines"),
+        rx_table_strength([
+            Medicine("Tab.", "Telma-AM", "40/5 mg", None, "OD", "30 days",
+                     "Morning", schedule=TIMES["OD"], duration_days=30),
+            Medicine("Tab.", "Rosuvas", "20 mg", None, "OD", "30 days", "Night",
+                     schedule=TIMES["OD"], duration_days=30),
+            Medicine("Tab.", "Glycomet", "500 mg", None, "BD", "30 days",
+                     "After food", schedule=TIMES["BD"], duration_days=30),
+            Medicine("Cap.", "Omez", "20 mg", None, "OD", "14 days",
+                     "Before breakfast", schedule=TIMES["OD"], duration_days=14),
+        ]),
+        remark_line(Remark("Low-salt diet; walk 30 minutes a day.", "advice",
+                           "document"), "Advice"),
+        Line("Next visit: 14 May 2025"),
+        Line("This is a computer-generated prescription."),
+    ]],
+)  # fmt: skip
+
+DOCUMENTS = [d01, d02, d03, d04, d05, d06, d07, d08, d09, d10, d11, d12, d13, d14, d15, d16, d17,
+             d18, d19, d20, d21, d22, d23, d24]  # fmt: skip
 
 # The order the loader uploads in: deliberately not document-date order
 # (bug 5), and patients interleaved.
 UPLOAD_ORDER = ["d04", "d07", "d12", "d16", "d01", "d06", "d09", "d13", "d02", "d17",
-                "d05", "d08", "d11", "d14", "d03", "d10", "d15"]  # fmt: skip
+                "d05", "d08", "d11", "d14", "d03", "d10", "d15",
+                "d22", "d20", "d24", "d18", "d23", "d19", "d21"]  # fmt: skip
 
 # Documents used while building and checking the prompts (every live check
 # so far ran on d02 and d09): reported apart as dev, never as test results.
 DEV_DOCUMENTS = ("d02", "d09")
+# Documents in layouts the others don't use, for measuring only: never look
+# at them while changing a prompt or a check.
+HELD_OUT_DOCUMENTS = ("d18", "d19", "d20", "d21", "d22", "d23", "d24")

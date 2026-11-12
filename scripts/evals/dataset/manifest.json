@@ -1,5 +1,5 @@
 {
-  "name": "med-sum synthetic v1",
+  "name": "med-sum synthetic v2",
   "description": "Fictional patients and documents for the extraction pipeline and its evals. See README.md.",
   "patients": [
     {
@@ -33,6 +33,22 @@
       "date_of_birth": "1958-11-30",
       "mrn": "SH-100234",
       "phone": "+919000000004"
+    },
+    {
+      "key": "kabir",
+      "name": "Kabir Sethi",
+      "sex": "M",
+      "date_of_birth": "1979-03-09",
+      "mrn": "SH-100235",
+      "phone": "+919000000005"
+    },
+    {
+      "key": "nandini",
+      "name": "Nandini Bose",
+      "sex": "F",
+      "date_of_birth": "1988-07-21",
+      "mrn": "SH-100236",
+      "phone": "+919000000006"
     }
   ],
   "documents": [
@@ -414,6 +430,180 @@
       "expected_signals": [
         "LC-14"
       ]
+    },
+    {
+      "id": "d18",
+      "patient": "kabir",
+      "type": "lab_report",
+      "file": "documents/d18_lab_report.pdf",
+      "content_type": "application/pdf",
+      "pages": 1,
+      "has_text_layer": true,
+      "document_date": "2025-03-03",
+      "key": "keys/d18.json",
+      "transcription": "transcriptions/d18.md",
+      "cases": [
+        "results_as_lines",
+        "header_fields_on_one_line",
+        "flag_as_word",
+        "date_month_in_words",
+        "test_name_variant",
+        "multiple_ranges",
+        "one_sided_range",
+        "document_remark"
+      ],
+      "notes": "Held out. Results printed one per line with the range in brackets, no table; name, age and sex on one line; dates as '03 Mar 2025'.",
+      "split": "held_out",
+      "expected_end_state": "verified",
+      "expected_signals": []
+    },
+    {
+      "id": "d19",
+      "patient": "kabir",
+      "type": "prescription",
+      "file": "documents/d19_prescription.png",
+      "content_type": "image/png",
+      "pages": 1,
+      "has_text_layer": false,
+      "document_date": "2025-03-05",
+      "key": "keys/d19.json",
+      "transcription": "transcriptions/d19.md",
+      "cases": [
+        "medicines_as_numbered_lines",
+        "header_fields_on_one_line",
+        "two_diagnoses_one_line",
+        "as_needed",
+        "route_given",
+        "no_known_allergies",
+        "vitals"
+      ],
+      "notes": "Held out. A clinic letterhead, the patient's details on one line, and medicines as numbered lines instead of a table.",
+      "split": "held_out",
+      "expected_end_state": "verified",
+      "expected_signals": []
+    },
+    {
+      "id": "d20",
+      "patient": "nandini",
+      "type": "lab_report",
+      "file": "documents/d20_lab_report.pdf",
+      "content_type": "application/pdf",
+      "pages": 1,
+      "has_text_layer": true,
+      "document_date": "2025-04-12",
+      "key": "keys/d20.json",
+      "transcription": "transcriptions/d20.md",
+      "cases": [
+        "header_as_table",
+        "range_before_unit",
+        "flag_as_word",
+        "test_name_variant",
+        "counts_in_other_units",
+        "document_remark",
+        "one_sided_range"
+      ],
+      "notes": "Held out. Patient details in a key-value table; results as Investigation | Observed Value | Flag | Biological Reference Interval | Units.",
+      "split": "held_out",
+      "expected_end_state": "verified",
+      "expected_signals": []
+    },
+    {
+      "id": "d21",
+      "patient": "nandini",
+      "type": "prescription",
+      "file": "documents/d21_prescription.jpg",
+      "content_type": "image/jpeg",
+      "pages": 1,
+      "has_text_layer": false,
+      "document_date": "2025-04-15",
+      "key": "keys/d21.json",
+      "transcription": "transcriptions/d21.md",
+      "cases": [
+        "two_column_layout",
+        "header_fields_on_one_line",
+        "weekly_frequency",
+        "duration_in_weeks",
+        "history",
+        "unused_complaint_line",
+        "date_with_dots"
+      ],
+      "notes": "Held out. Clinical notes in the left column, the medicines in the right; the transcription reads the left column first.",
+      "split": "held_out",
+      "expected_end_state": "verified",
+      "expected_signals": []
+    },
+    {
+      "id": "d22",
+      "patient": "kabir",
+      "type": "lab_report",
+      "file": "documents/d22_lab_report.png",
+      "content_type": "image/png",
+      "pages": 1,
+      "has_text_layer": false,
+      "document_date": "2025-03-20",
+      "key": "keys/d22.json",
+      "transcription": "transcriptions/d22.md",
+      "cases": [
+        "lab_report_as_image",
+        "flag_as_arrow",
+        "header_fields_on_one_line",
+        "iso_date",
+        "test_remark",
+        "one_sided_range"
+      ],
+      "notes": "Held out. A lab report uploaded as a picture (no text layer), flags as arrows after the value, dates as 2025-03-20.",
+      "split": "held_out",
+      "expected_end_state": "verified",
+      "expected_signals": []
+    },
+    {
+      "id": "d23",
+      "patient": "nandini",
+      "type": "lab_report",
+      "file": "documents/d23_lab_report.pdf",
+      "content_type": "application/pdf",
+      "pages": 2,
+      "has_text_layer": false,
+      "document_date": "2025-06-18",
+      "key": "keys/d23.json",
+      "transcription": "transcriptions/d23.md",
+      "cases": [
+        "table_continued_on_next_page",
+        "image_only_pdf",
+        "range_before_unit",
+        "trend_two_values",
+        "flag_as_word",
+        "multi_page"
+      ],
+      "notes": "Held out. A scan whose haematology table runs onto page 2 under 'HAEMATOLOGY (contd.)'; the rows there still belong to HAEMATOLOGY. Second TSH for Nandini (after d20).",
+      "split": "held_out",
+      "expected_end_state": "verified",
+      "expected_signals": []
+    },
+    {
+      "id": "d24",
+      "patient": "kabir",
+      "type": "prescription",
+      "file": "documents/d24_prescription.pdf",
+      "content_type": "application/pdf",
+      "pages": 1,
+      "has_text_layer": true,
+      "document_date": "2025-04-14",
+      "key": "keys/d24.json",
+      "transcription": "transcriptions/d24.md",
+      "cases": [
+        "e_prescription_text_layer",
+        "strength_in_own_column",
+        "date_month_in_words",
+        "named_frequency",
+        "duration_in_days",
+        "unused_date_line",
+        "vitals"
+      ],
+      "notes": "Held out. A typed e-prescription with a text layer; the strength in its own column, dates with the month in words, and a 'Next visit' date that is not the prescription date.",
+      "split": "held_out",
+      "expected_end_state": "verified",
+      "expected_signals": []
     }
   ],
   "upload_order": [
@@ -433,6 +623,13 @@
     "d14",
     "d03",
     "d10",
-    "d15"
+    "d15",
+    "d22",
+    "d20",
+    "d24",
+    "d18",
+    "d23",
+    "d19",
+    "d21"
   ]
 }

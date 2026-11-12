@@ -1,0 +1,443 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d18",
+    "type": "lab_report",
+    "page_count": 1,
+    "has_text_layer": true,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 1,
+          "last_line": 1,
+          "quote": "# Navjeevan Pathology Lab"
+        },
+        "text": "Navjeevan Pathology Lab"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 7,
+            "last_line": 7,
+            "quote": "Lab No: NJ/2025/03114 | Ref: Dr. Farah Khan"
+          },
+          "text": "Ref: Dr. Farah Khan"
+        },
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 29,
+            "last_line": 29,
+            "quote": "Dr. Prakash Menon, MD (Pathology)"
+          },
+          "text": "Dr. Prakash Menon, MD (Pathology)"
+        }
+      ],
+      "report_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Sample Date: 03 Mar 2025 | Report Date: 03 Mar 2025"
+        },
+        "text": "03 Mar 2025"
+      },
+      "collection_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Sample Date: 03 Mar 2025 | Report Date: 03 Mar 2025"
+        },
+        "text": "03 Mar 2025"
+      },
+      "prescription_date": null
+    },
+    "derived": {
+      "report_date": "2025-03-03",
+      "collection_date": "2025-03-03",
+      "prescription_date": null,
+      "document_date": "2025-03-03",
+      "date_source": "report_date"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Navjeevan Pathology Lab",
+        "",
+        "Shop 4, Aundh Road, Pune 411007",
+        "",
+        "Patient: Mr. Kabir Sethi | Age: 45 Yrs | Sex: Male",
+        "",
+        "Lab No: NJ/2025/03114 | Ref: Dr. Farah Khan",
+        "",
+        "Sample Date: 03 Mar 2025 | Report Date: 03 Mar 2025",
+        "",
+        "## LIPID PROFILE",
+        "",
+        "Total Cholesterol: 238 mg/dL (Ref: Desirable: < 200; Borderline: 200 - 239; High: >= 240)",
+        "",
+        "Triglycerides: 210 mg/dL (Ref: < 150) High",
+        "",
+        "HDL Cholesterol: 36 mg/dL (Ref: > 40) Low",
+        "",
+        "LDL Cholesterol: 160 mg/dL (Ref: Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160) High",
+        "",
+        "## DIABETES SCREEN",
+        "",
+        "Fasting Plasma Glucose: 112 mg/dL (Ref: 70 - 100) High",
+        "",
+        "Glycated Haemoglobin (HbA1c): 6.1 % (Ref: Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5)",
+        "",
+        "Advice: Repeat lipid profile after 3 months on treatment.",
+        "",
+        "Dr. Prakash Menon, MD (Pathology)",
+        "",
+        "-- End of report --",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 5,
+          "last_line": 5,
+          "quote": "Patient: Mr. Kabir Sethi | Age: 45 Yrs | Sex: Male"
+        },
+        "text": "Mr. Kabir Sethi"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 5,
+          "last_line": 5,
+          "quote": "Patient: Mr. Kabir Sethi | Age: 45 Yrs | Sex: Male"
+        },
+        "text": "45 Yrs"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 5,
+          "last_line": 5,
+          "quote": "Patient: Mr. Kabir Sethi | Age: 45 Yrs | Sex: Male"
+        },
+        "text": "Male"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Lab No: NJ/2025/03114 | Ref: Dr. Farah Khan"
+        },
+        "text": "NJ/2025/03114"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [
+    {
+      "id": "obs-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "Total Cholesterol: 238 mg/dL (Ref: Desirable: < 200; Borderline: 200 - 239; High: >= 240)"
+        },
+        "panel": "LIPID PROFILE",
+        "test_name": "Total Cholesterol",
+        "value_text": "238",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "Desirable: < 200",
+          "Borderline: 200 - 239",
+          "High: >= 240"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "cholesterol_total",
+        "value_num": 238.0,
+        "ranges": [
+          {
+            "text": "Desirable: < 200",
+            "low": null,
+            "high": 200.0,
+            "label": "Desirable"
+          },
+          {
+            "text": "Borderline: 200 - 239",
+            "low": 200.0,
+            "high": 239.0,
+            "label": "Borderline"
+          },
+          {
+            "text": "High: >= 240",
+            "low": 240.0,
+            "high": null,
+            "label": "High"
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "Triglycerides: 210 mg/dL (Ref: < 150) High"
+        },
+        "panel": "LIPID PROFILE",
+        "test_name": "Triglycerides",
+        "value_text": "210",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "< 150"
+        ],
+        "flag_printed": "High"
+      },
+      "derived": {
+        "analyte": "triglycerides",
+        "value_num": 210.0,
+        "ranges": [
+          {
+            "text": "< 150",
+            "low": null,
+            "high": 150.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "high",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "HDL Cholesterol: 36 mg/dL (Ref: > 40) Low"
+        },
+        "panel": "LIPID PROFILE",
+        "test_name": "HDL Cholesterol",
+        "value_text": "36",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "> 40"
+        ],
+        "flag_printed": "Low"
+      },
+      "derived": {
+        "analyte": "hdl_cholesterol",
+        "value_num": 36.0,
+        "ranges": [
+          {
+            "text": "> 40",
+            "low": 40.0,
+            "high": null,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-4",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 19,
+          "last_line": 19,
+          "quote": "LDL Cholesterol: 160 mg/dL (Ref: Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160) High"
+        },
+        "panel": "LIPID PROFILE",
+        "test_name": "LDL Cholesterol",
+        "value_text": "160",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "Optimal: < 100",
+          "Near optimal: 100 - 129",
+          "Borderline high: 130 - 159",
+          "High: >= 160"
+        ],
+        "flag_printed": "High"
+      },
+      "derived": {
+        "analyte": "ldl_cholesterol",
+        "value_num": 160.0,
+        "ranges": [
+          {
+            "text": "Optimal: < 100",
+            "low": null,
+            "high": 100.0,
+            "label": "Optimal"
+          },
+          {
+            "text": "Near optimal: 100 - 129",
+            "low": 100.0,
+            "high": 129.0,
+            "label": "Near optimal"
+          },
+          {
+            "text": "Borderline high: 130 - 159",
+            "low": 130.0,
+            "high": 159.0,
+            "label": "Borderline high"
+          },
+          {
+            "text": "High: >= 160",
+            "low": 160.0,
+            "high": null,
+            "label": "High"
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-5",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 23,
+          "last_line": 23,
+          "quote": "Fasting Plasma Glucose: 112 mg/dL (Ref: 70 - 100) High"
+        },
+        "panel": "DIABETES SCREEN",
+        "test_name": "Fasting Plasma Glucose",
+        "value_text": "112",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "70 - 100"
+        ],
+        "flag_printed": "High"
+      },
+      "derived": {
+        "analyte": "glucose_fasting",
+        "value_num": 112.0,
+        "ranges": [
+          {
+            "text": "70 - 100",
+            "low": 70.0,
+            "high": 100.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "high",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-6",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 25,
+          "last_line": 25,
+          "quote": "Glycated Haemoglobin (HbA1c): 6.1 % (Ref: Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5)"
+        },
+        "panel": "DIABETES SCREEN",
+        "test_name": "Glycated Haemoglobin (HbA1c)",
+        "value_text": "6.1",
+        "unit": "%",
+        "reference_ranges": [
+          "Normal: < 5.7",
+          "Prediabetes: 5.7 - 6.4",
+          "Diabetes: >= 6.5"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "hba1c",
+        "value_num": 6.1,
+        "ranges": [
+          {
+            "text": "Normal: < 5.7",
+            "low": null,
+            "high": 5.7,
+            "label": "Normal"
+          },
+          {
+            "text": "Prediabetes: 5.7 - 6.4",
+            "low": 5.7,
+            "high": 6.4,
+            "label": "Prediabetes"
+          },
+          {
+            "text": "Diabetes: >= 6.5",
+            "low": 6.5,
+            "high": null,
+            "label": "Diabetes"
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    }
+  ],
+  "medications": [],
+  "conditions": [],
+  "remarks": [
+    {
+      "id": "rem-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 27,
+          "last_line": 27,
+          "quote": "Advice: Repeat lipid profile after 3 months on treatment."
+        },
+        "text": "Repeat lipid profile after 3 months on treatment.",
+        "kind": "advice",
+        "scope": "document",
+        "test_name": null,
+        "panel": null
+      },
+      "derived": {
+        "observation_id": null
+      }
+    }
+  ],
+  "vitals": [],
+  "allergies": [],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

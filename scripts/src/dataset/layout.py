@@ -186,12 +186,15 @@ class Row:
 class Table:
     header: list[str]
     rows: list[Row]
+    header_items: list = field(default_factory=list)  # items printed in the header row
+    style: str = ""  # extra CSS class
 
     def markdown(self):
         def line(cells):
             return "| " + " | ".join(cells) + " |"
 
-        out = [(line(self.header), []), (line(["---"] * len(self.header)), [])]
+        out = [(line(self.header), self.header_items),
+               (line(["---"] * len(self.header)), [])]  # fmt: skip
         return out + [(line(r.cells), r.items) for r in self.rows]
 
     def html(self):
@@ -207,7 +210,32 @@ class Table:
             "<tr>" + "".join(cell("td", i, c) for i, c in enumerate(r.cells)) + "</tr>"
             for r in self.rows
         )
-        return f"<table><tr>{head}</tr>{body}</table>"
+        cls = f' class="{self.style}"' if self.style else ""
+        return f"<table{cls}><tr>{head}</tr>{body}</table>"
+
+
+@dataclass
+class Columns:
+    """
+    Two columns side by side. The expected transcription reads the left
+    column top to bottom, then the right one, as a person would. Columns
+    hold headings and lines only: PyMuPDF does not lay out a table inside
+    a table cell.
+    """
+
+    left: list
+    right: list
+
+    def markdown(self):
+        return [*page_markdown(self.left), ("", []), *page_markdown(self.right)]
+
+    def html(self):
+        return (
+            '<table class="cols"><tr>'
+            f'<td class="col" width="45%">{page_html(self.left)}</td>'
+            f'<td class="col" width="55%">{page_html(self.right)}</td>'
+            "</tr></table>"
+        )
 
 
 def page_markdown(blocks: list) -> list[tuple[str, list]]:
@@ -286,3 +314,125 @@ def rx_table(medicines: list[Medicine]) -> Table:
     return Table(
         ["#", "Medicine", "Dose", "Frequency", "Duration", "Instructions"], rows
     )
+
+
+# -------------------------------------------------------------------
+# Further layouts (the held-out documents)
+# -------------------------------------------------------------------
+def fields_line(text: str, *fields: HeaderField) -> Line:
+    """One printed line holding several header fields, e.g. name, age and sex."""
+    return Line(text, list(fields))
+
+
+def header_table(rows: list[list[tuple[str, object, str]]]) -> Table:
+    """
+    Header details as a borderless key-value table: each row is (label,
+    fields, printed value) pairs, fields a HeaderField, a list of them (one
+    cell holding age and sex) or None; the first row is the table's header
+    row.
+    """
+
+    def cells(row):
+        return [c for label, _, value in row for c in (label, value)]
+
+    def items(row):
+        out = []
+        for _, fields, _ in row:
+            out += fields if isinstance(fields, list) else [fields] if fields else []
+        return out
+
+    first, *rest = rows
+    return Table(cells(first), [Row(cells(r), items(r)) for r in rest],
+                 header_items=items(first), style="kv")  # fmt: skip
+
+
+def lab_lines(heading: str, tests: list[LabTest]) -> list:
+    """A panel printed as one line per result, no table: 'Test: value unit (Ref: ...) flag'."""
+    tests = [replace(t, panel=heading) for t in tests]
+    lines = []
+    for t in tests:
+        text = f"{t.name}: {t.value}" + (f" {t.unit}" if t.unit else "")
+        if t.ranges:
+            text += " (Ref: " + "; ".join(r.text for r in t.ranges) + ")"
+        if t.flag:
+            text += f" {t.flag}"
+        lines.append(Line(text, [t]))
+    return [Heading(heading), *lines]
+
+
+def lab_table_ranges_first(heading: str, tests: list[LabTest], *,
+                           panel: str | None = None) -> list:  # fmt: skip
+    """
+    Investigation | Observed Value | Flag | Biological Reference Interval |
+    Units: the range before the unit. `panel` names the panel when the
+    heading isn't its name (a table continued from the previous page).
+    """
+    tests = [replace(t, panel=panel or heading) for t in tests]
+    rows = [
+        Row(
+            [
+                t.name,
+                t.value,
+                t.flag or "",
+                "; ".join(r.text for r in t.ranges),
+                t.unit or "",
+            ],
+            [t],
+        )  # fmt: skip
+        for t in tests
+    ]
+    cols = ["Investigation", "Observed Value", "Flag",
+            "Biological Reference Interval", "Units"]  # fmt: skip
+    return [Heading(heading), Table(cols, rows)]
+
+
+def lab_table_flag_in_value(heading: str, tests: list[LabTest], *,
+                            panel: str | None = None) -> list:  # fmt: skip
+    """Parameter | Result | Units | Normal Range, the flag after the value."""
+    tests = [replace(t, panel=panel or heading) for t in tests]
+    rows = [
+        Row(
+            [
+                t.name,
+                f"{t.value} {t.flag}" if t.flag else t.value,
+                t.unit or "",
+                "; ".join(r.text for r in t.ranges),
+            ],
+            [t],
+        )  # fmt: skip
+        for t in tests
+    ]
+    return [
+        Heading(heading),
+        Table(["Parameter", "Result", "Units", "Normal Range"], rows),
+    ]
+
+
+def medicine_text(m: Medicine) -> str:
+    name = m.cell() + (f" ({m.route})" if m.route else "")
+    parts = [name, m.dose, m.frequency, m.duration, m.instructions]
+    return " — ".join(p for p in parts if p)
+
+
+def rx_lines(medicines: list[Medicine]) -> list[Line]:
+    """Medicines as numbered lines, no table."""
+    return [Line(f"{n}. {medicine_text(m)}", [m])
+            for n, m in enumerate(medicines, start=1)]  # fmt: skip
+
+
+def rx_table_strength(medicines: list[Medicine]) -> Table:
+    """Drug | Strength | Frequency | Duration | Remarks: the strength in its own column."""
+    rows = [
+        Row(
+            [
+                " ".join(p for p in (m.form, m.name) if p),
+                m.strength or "",
+                m.frequency or "",
+                m.duration or "",
+                m.instructions or "",
+            ],
+            [m],
+        )  # fmt: skip
+        for m in medicines
+    ]
+    return Table(["Drug", "Strength", "Frequency", "Duration", "Remarks"], rows)

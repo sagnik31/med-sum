@@ -15,7 +15,7 @@ import pytest
 
 import llm
 from dataset.build import DATASET_DIR
-from dataset_records import DOCS, PARSED_IDS, expected_patient, key, parse_of
+from dataset_records import DOCS, MAIN_PARSED_IDS, expected_patient, key, parse_of
 from db_rows import add_account
 from extract_report_slm import END_MARKER, transcription_messages
 from observability import is_traced, start_run
@@ -583,7 +583,7 @@ def test_a_document_of_type_other_is_not_parsed(db, run, model_client):
 # -------------------------------------------------------------------
 # validate
 # -------------------------------------------------------------------
-@pytest.mark.parametrize("doc_id", PARSED_IDS)
+@pytest.mark.parametrize("doc_id", MAIN_PARSED_IDS)
 def test_validating_a_dataset_key_s_parse_finds_no_errors_or_flags(db, run, doc_id):
     state = transcribed(doc_id, expected_patient=expected_patient(doc_id))
     state["doc_type"] = DocumentType(DOCS[doc_id]["type"])

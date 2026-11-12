@@ -1,0 +1,409 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d19",
+    "type": "prescription",
+    "page_count": 1,
+    "has_text_layer": false,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 1,
+          "last_line": 1,
+          "quote": "# Heartline Cardiac Clinic"
+        },
+        "text": "Heartline Cardiac Clinic"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 3,
+            "last_line": 3,
+            "quote": "Dr. Farah Khan"
+          },
+          "text": "Dr. Farah Khan"
+        }
+      ],
+      "report_date": null,
+      "collection_date": null,
+      "prescription_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Date: 05-03-2025"
+        },
+        "text": "05-03-2025"
+      }
+    },
+    "derived": {
+      "report_date": null,
+      "collection_date": null,
+      "prescription_date": "2025-03-05",
+      "document_date": "2025-03-05",
+      "date_source": "prescription_date"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Heartline Cardiac Clinic",
+        "",
+        "Dr. Farah Khan",
+        "",
+        "MBBS, MD, DM (Cardiology)",
+        "",
+        "Baner, Pune 411045 | Reg. No.: MMC-2011/02/0003",
+        "",
+        "Date: 05-03-2025",
+        "",
+        "Name: Kabir Sethi | Age/Sex: 45/M | UHID: SH-100235",
+        "",
+        "BP: 148/94 mmHg | Pulse: 88/min | SpO2: 97%",
+        "",
+        "Dx: Essential hypertension; Dyslipidaemia",
+        "",
+        "Allergy: None known",
+        "",
+        "## Rx",
+        "",
+        "1. Tab. Telma 40 mg — 1 tab — 1-0-0 — x 30 days — After breakfast",
+        "",
+        "2. Tab. Rosuvas 10 mg — 1 tab — 0-0-1 — x 30 days — After dinner",
+        "",
+        "3. Tab. Ecosprin 75 mg — 1 tab — 0-1-0 — x 30 days — After lunch",
+        "",
+        "4. Tab. Sorbitrate 5 mg (sublingual) — 1 tab — SOS — If chest pain",
+        "",
+        "Advice: Review after 4 weeks with lipid profile.",
+        "",
+        "Signature: Dr. Farah Khan",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 11,
+          "last_line": 11,
+          "quote": "Name: Kabir Sethi | Age/Sex: 45/M | UHID: SH-100235"
+        },
+        "text": "Kabir Sethi"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 11,
+          "last_line": 11,
+          "quote": "Name: Kabir Sethi | Age/Sex: 45/M | UHID: SH-100235"
+        },
+        "text": "45"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 11,
+          "last_line": 11,
+          "quote": "Name: Kabir Sethi | Age/Sex: 45/M | UHID: SH-100235"
+        },
+        "text": "M"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 11,
+          "last_line": 11,
+          "quote": "Name: Kabir Sethi | Age/Sex: 45/M | UHID: SH-100235"
+        },
+        "text": "SH-100235"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [],
+  "medications": [
+    {
+      "id": "med-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 21,
+          "last_line": 21,
+          "quote": "1. Tab. Telma 40 mg — 1 tab — 1-0-0 — x 30 days — After breakfast"
+        },
+        "form": "Tab.",
+        "name": "Telma",
+        "strength": "40 mg",
+        "dose": "1 tab",
+        "frequency": "1-0-0",
+        "route": null,
+        "duration": "x 30 days",
+        "instructions": "After breakfast"
+      },
+      "derived": {
+        "schedule": {
+          "morning": 1.0,
+          "noon": 0.0,
+          "night": 0.0,
+          "times_per_day": 1.0,
+          "as_needed": false
+        },
+        "duration_days": 30
+      }
+    },
+    {
+      "id": "med-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 23,
+          "last_line": 23,
+          "quote": "2. Tab. Rosuvas 10 mg — 1 tab — 0-0-1 — x 30 days — After dinner"
+        },
+        "form": "Tab.",
+        "name": "Rosuvas",
+        "strength": "10 mg",
+        "dose": "1 tab",
+        "frequency": "0-0-1",
+        "route": null,
+        "duration": "x 30 days",
+        "instructions": "After dinner"
+      },
+      "derived": {
+        "schedule": {
+          "morning": 0.0,
+          "noon": 0.0,
+          "night": 1.0,
+          "times_per_day": 1.0,
+          "as_needed": false
+        },
+        "duration_days": 30
+      }
+    },
+    {
+      "id": "med-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 25,
+          "last_line": 25,
+          "quote": "3. Tab. Ecosprin 75 mg — 1 tab — 0-1-0 — x 30 days — After lunch"
+        },
+        "form": "Tab.",
+        "name": "Ecosprin",
+        "strength": "75 mg",
+        "dose": "1 tab",
+        "frequency": "0-1-0",
+        "route": null,
+        "duration": "x 30 days",
+        "instructions": "After lunch"
+      },
+      "derived": {
+        "schedule": {
+          "morning": 0.0,
+          "noon": 1.0,
+          "night": 0.0,
+          "times_per_day": 1.0,
+          "as_needed": false
+        },
+        "duration_days": 30
+      }
+    },
+    {
+      "id": "med-4",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 27,
+          "last_line": 27,
+          "quote": "4. Tab. Sorbitrate 5 mg (sublingual) — 1 tab — SOS — If chest pain"
+        },
+        "form": "Tab.",
+        "name": "Sorbitrate",
+        "strength": "5 mg",
+        "dose": "1 tab",
+        "frequency": "SOS",
+        "route": "sublingual",
+        "duration": null,
+        "instructions": "If chest pain"
+      },
+      "derived": {
+        "schedule": {
+          "morning": null,
+          "noon": null,
+          "night": null,
+          "times_per_day": null,
+          "as_needed": true
+        },
+        "duration_days": null
+      }
+    }
+  ],
+  "conditions": [
+    {
+      "id": "cond-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "Dx: Essential hypertension; Dyslipidaemia"
+        },
+        "text": "Essential hypertension",
+        "kind": "diagnosis"
+      }
+    },
+    {
+      "id": "cond-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "Dx: Essential hypertension; Dyslipidaemia"
+        },
+        "text": "Dyslipidaemia",
+        "kind": "diagnosis"
+      }
+    }
+  ],
+  "remarks": [
+    {
+      "id": "rem-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 29,
+          "last_line": 29,
+          "quote": "Advice: Review after 4 weeks with lipid profile."
+        },
+        "text": "Review after 4 weeks with lipid profile.",
+        "kind": "advice",
+        "scope": "document",
+        "test_name": null,
+        "panel": null
+      },
+      "derived": {
+        "observation_id": null
+      }
+    }
+  ],
+  "vitals": [
+    {
+      "id": "vit-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "BP: 148/94 mmHg | Pulse: 88/min | SpO2: 97%"
+        },
+        "name": "BP",
+        "value_text": "148/94",
+        "unit": "mmHg"
+      },
+      "derived": {
+        "kind": "blood_pressure",
+        "value_num": null,
+        "systolic": 148.0,
+        "diastolic": 94.0
+      }
+    },
+    {
+      "id": "vit-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "BP: 148/94 mmHg | Pulse: 88/min | SpO2: 97%"
+        },
+        "name": "Pulse",
+        "value_text": "88",
+        "unit": "/min"
+      },
+      "derived": {
+        "kind": "pulse",
+        "value_num": 88.0,
+        "systolic": null,
+        "diastolic": null
+      }
+    },
+    {
+      "id": "vit-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "BP: 148/94 mmHg | Pulse: 88/min | SpO2: 97%"
+        },
+        "name": "SpO2",
+        "value_text": "97",
+        "unit": "%"
+      },
+      "derived": {
+        "kind": "spo2",
+        "value_num": 97.0,
+        "systolic": null,
+        "diastolic": null
+      }
+    }
+  ],
+  "allergies": [
+    {
+      "id": "alg-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "Allergy: None known"
+        },
+        "text": "None known",
+        "substance": null,
+        "reaction": null
+      },
+      "derived": {
+        "no_known_allergies": true
+      }
+    }
+  ],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

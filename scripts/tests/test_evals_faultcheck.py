@@ -126,7 +126,10 @@ def test_known_blind_spots_are_reported_not_hidden(check):
         for r in check.results
         if r.fault == "transcription_misread" and r.doc_id in image_only
     ]
-    assert misreads and not any(r.flagged for r in misreads)
+    # Nothing reads the page's text there, so LC-03 never fires; a misread
+    # is caught only when it moves the value across its range (LC-10).
+    assert misreads and not any("LC-03" in r.signals for r in misreads)
+    assert any(not r.flagged for r in misreads)
 
 
 # -------------------------------------------------------------------

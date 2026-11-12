@@ -1,0 +1,437 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d20",
+    "type": "lab_report",
+    "page_count": 1,
+    "has_text_layer": true,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 1,
+          "last_line": 1,
+          "quote": "# Medilink Diagnostics"
+        },
+        "text": "Medilink Diagnostics"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 7,
+            "last_line": 7,
+            "quote": "| Age / Gender | 36 Years / Female | Referred By | Dr. Suresh Pillai |"
+          },
+          "text": "Dr. Suresh Pillai"
+        },
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 31,
+            "last_line": 31,
+            "quote": "Dr. Ritu Saxena, MD (Pathology)"
+          },
+          "text": "Dr. Ritu Saxena, MD (Pathology)"
+        }
+      ],
+      "report_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 8,
+          "last_line": 8,
+          "quote": "| Collected | 12/04/2025 09:05 | Reported | 12/04/2025 17:40 |"
+        },
+        "text": "12/04/2025 17:40"
+      },
+      "collection_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 8,
+          "last_line": 8,
+          "quote": "| Collected | 12/04/2025 09:05 | Reported | 12/04/2025 17:40 |"
+        },
+        "text": "12/04/2025 09:05"
+      },
+      "prescription_date": null
+    },
+    "derived": {
+      "report_date": "2025-04-12",
+      "collection_date": "2025-04-12",
+      "prescription_date": null,
+      "document_date": "2025-04-12",
+      "date_source": "report_date"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Medilink Diagnostics",
+        "",
+        "FC Road, Shivajinagar, Pune 411005",
+        "",
+        "| Patient Name | Ms. Nandini Bose | Sample ID | MD-250412-077 |",
+        "| --- | --- | --- | --- |",
+        "| Age / Gender | 36 Years / Female | Referred By | Dr. Suresh Pillai |",
+        "| Collected | 12/04/2025 09:05 | Reported | 12/04/2025 17:40 |",
+        "",
+        "## THYROID FUNCTION TEST",
+        "",
+        "| Investigation | Observed Value | Flag | Biological Reference Interval | Units |",
+        "| --- | --- | --- | --- | --- |",
+        "| Free T4 | 0.82 |  | 0.70 - 1.48 | ng/dL |",
+        "| TSH (Ultrasensitive) | 6.8 | High | 0.35 - 4.94 | µIU/mL |",
+        "| Anti-TPO Antibodies | 142 | High | < 34 | IU/mL |",
+        "",
+        "## COMPLETE BLOOD COUNT",
+        "",
+        "| Investigation | Observed Value | Flag | Biological Reference Interval | Units |",
+        "| --- | --- | --- | --- | --- |",
+        "| Haemoglobin | 11.1 | Low | 12.0 - 15.0 | g/dL |",
+        "| MCV | 78 | Low | 83 - 101 | fL |",
+        "| Total Leucocyte Count | 8.2 |  | 4.0 - 10.0 | 10³/µL |",
+        "| Platelets | 3.10 |  | 1.50 - 4.10 | lakh/cumm |",
+        "",
+        "## INTERPRETATION",
+        "",
+        "Raised TSH with positive anti-TPO antibodies suggests autoimmune thyroiditis; clinical correlation advised.",
+        "",
+        "Dr. Ritu Saxena, MD (Pathology)",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 5,
+          "last_line": 5,
+          "quote": "| Patient Name | Ms. Nandini Bose | Sample ID | MD-250412-077 |"
+        },
+        "text": "Ms. Nandini Bose"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "| Age / Gender | 36 Years / Female | Referred By | Dr. Suresh Pillai |"
+        },
+        "text": "36 Years"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "| Age / Gender | 36 Years / Female | Referred By | Dr. Suresh Pillai |"
+        },
+        "text": "Female"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 5,
+          "last_line": 5,
+          "quote": "| Patient Name | Ms. Nandini Bose | Sample ID | MD-250412-077 |"
+        },
+        "text": "MD-250412-077"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [
+    {
+      "id": "obs-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 14,
+          "last_line": 14,
+          "quote": "| Free T4 | 0.82 |  | 0.70 - 1.48 | ng/dL |"
+        },
+        "panel": "THYROID FUNCTION TEST",
+        "test_name": "Free T4",
+        "value_text": "0.82",
+        "unit": "ng/dL",
+        "reference_ranges": [
+          "0.70 - 1.48"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": 0.82,
+        "ranges": [
+          {
+            "text": "0.70 - 1.48",
+            "low": 0.7,
+            "high": 1.48,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "| TSH (Ultrasensitive) | 6.8 | High | 0.35 - 4.94 | µIU/mL |"
+        },
+        "panel": "THYROID FUNCTION TEST",
+        "test_name": "TSH (Ultrasensitive)",
+        "value_text": "6.8",
+        "unit": "µIU/mL",
+        "reference_ranges": [
+          "0.35 - 4.94"
+        ],
+        "flag_printed": "High"
+      },
+      "derived": {
+        "analyte": "tsh",
+        "value_num": 6.8,
+        "ranges": [
+          {
+            "text": "0.35 - 4.94",
+            "low": 0.35,
+            "high": 4.94,
+            "label": null
+          }
+        ],
+        "flag_computed": "high",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 16,
+          "last_line": 16,
+          "quote": "| Anti-TPO Antibodies | 142 | High | < 34 | IU/mL |"
+        },
+        "panel": "THYROID FUNCTION TEST",
+        "test_name": "Anti-TPO Antibodies",
+        "value_text": "142",
+        "unit": "IU/mL",
+        "reference_ranges": [
+          "< 34"
+        ],
+        "flag_printed": "High"
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": 142.0,
+        "ranges": [
+          {
+            "text": "< 34",
+            "low": null,
+            "high": 34.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "high",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-4",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 22,
+          "last_line": 22,
+          "quote": "| Haemoglobin | 11.1 | Low | 12.0 - 15.0 | g/dL |"
+        },
+        "panel": "COMPLETE BLOOD COUNT",
+        "test_name": "Haemoglobin",
+        "value_text": "11.1",
+        "unit": "g/dL",
+        "reference_ranges": [
+          "12.0 - 15.0"
+        ],
+        "flag_printed": "Low"
+      },
+      "derived": {
+        "analyte": "haemoglobin",
+        "value_num": 11.1,
+        "ranges": [
+          {
+            "text": "12.0 - 15.0",
+            "low": 12.0,
+            "high": 15.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-5",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 23,
+          "last_line": 23,
+          "quote": "| MCV | 78 | Low | 83 - 101 | fL |"
+        },
+        "panel": "COMPLETE BLOOD COUNT",
+        "test_name": "MCV",
+        "value_text": "78",
+        "unit": "fL",
+        "reference_ranges": [
+          "83 - 101"
+        ],
+        "flag_printed": "Low"
+      },
+      "derived": {
+        "analyte": "mcv",
+        "value_num": 78.0,
+        "ranges": [
+          {
+            "text": "83 - 101",
+            "low": 83.0,
+            "high": 101.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-6",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 24,
+          "last_line": 24,
+          "quote": "| Total Leucocyte Count | 8.2 |  | 4.0 - 10.0 | 10³/µL |"
+        },
+        "panel": "COMPLETE BLOOD COUNT",
+        "test_name": "Total Leucocyte Count",
+        "value_text": "8.2",
+        "unit": "10³/µL",
+        "reference_ranges": [
+          "4.0 - 10.0"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "wbc_count",
+        "value_num": 8.2,
+        "ranges": [
+          {
+            "text": "4.0 - 10.0",
+            "low": 4.0,
+            "high": 10.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": {
+          "value": 8200.0,
+          "unit": "/cumm",
+          "from_unit": "10³/µL"
+        }
+      }
+    },
+    {
+      "id": "obs-7",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 25,
+          "last_line": 25,
+          "quote": "| Platelets | 3.10 |  | 1.50 - 4.10 | lakh/cumm |"
+        },
+        "panel": "COMPLETE BLOOD COUNT",
+        "test_name": "Platelets",
+        "value_text": "3.10",
+        "unit": "lakh/cumm",
+        "reference_ranges": [
+          "1.50 - 4.10"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "platelet_count",
+        "value_num": 3.1,
+        "ranges": [
+          {
+            "text": "1.50 - 4.10",
+            "low": 1.5,
+            "high": 4.1,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": {
+          "value": 310000.0,
+          "unit": "/cumm",
+          "from_unit": "lakh/cumm"
+        }
+      }
+    }
+  ],
+  "medications": [],
+  "conditions": [],
+  "remarks": [
+    {
+      "id": "rem-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 29,
+          "last_line": 29,
+          "quote": "Raised TSH with positive anti-TPO antibodies suggests autoimmune thyroiditis; clinical correlation advised."
+        },
+        "text": "Raised TSH with positive anti-TPO antibodies suggests autoimmune thyroiditis; clinical correlation advised.",
+        "kind": "comment",
+        "scope": "document",
+        "test_name": null,
+        "panel": null
+      },
+      "derived": {
+        "observation_id": null
+      }
+    }
+  ],
+  "vitals": [],
+  "allergies": [],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

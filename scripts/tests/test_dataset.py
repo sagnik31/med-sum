@@ -72,11 +72,22 @@ def test_rendering_is_deterministic(doc_id):
 # Size and shape (decisions 7, 8)
 # -------------------------------------------------------------------
 def test_the_dataset_has_the_agreed_size():
-    pages = sum(d["pages"] for d in DOCS.values())
+    """The agreed size is the main set's; the held-out set comes on top."""
+    main = [d for d in DOCS.values() if d["split"] != "held_out"]
+    held_out = [d for d in DOCS.values() if d["split"] == "held_out"]
+    pages = sum(d["pages"] for d in main)
 
-    assert 3 <= len(MANIFEST["patients"]) <= 4
-    assert 15 <= len(DOCS) <= 20
+    assert 3 <= len({d["patient"] for d in main}) <= 4
+    assert 15 <= len(main) <= 20
     assert 20 <= pages <= 35
+    assert 6 <= len(held_out) <= 8
+
+
+def test_held_out_documents_have_patients_of_their_own():
+    """So adding them changes nothing the main set's cases rely on."""
+    main = {d["patient"] for d in DOCS.values() if d["split"] != "held_out"}
+    held_out = {d["patient"] for d in DOCS.values() if d["split"] == "held_out"}
+    assert held_out and not held_out & main
 
 
 def test_every_patient_has_several_documents_across_dates():
@@ -172,7 +183,11 @@ def test_every_panel_is_a_heading_above_its_results(keys):
             page = record.pages[obs.printed.citation.page - 1]
             above = page.lines[: obs.printed.citation.first_line - 1]
             headings = [line for line in above if line.startswith("## ")]
-            assert headings and headings[-1] == f"## {obs.printed.panel}", doc_id
+            # A table continued on the next page may be headed "(contd.)".
+            assert headings and headings[-1] in (
+                f"## {obs.printed.panel}",
+                f"## {obs.printed.panel} (contd.)",
+            ), doc_id
 
 
 def test_test_remarks_point_at_their_observations(keys):
@@ -377,7 +392,7 @@ def test_expected_derived_values(test, num, flag):
 def test_the_dev_documents_are_d02_and_d09():
     dev = sorted(d for d, e in DOCS.items() if e["split"] == "dev")
     assert dev == ["d02", "d09"]
-    assert {e["split"] for e in DOCS.values()} == {"dev", "test"}
+    assert {e["split"] for e in DOCS.values()} == {"dev", "test", "held_out"}
 
 
 def test_expected_signals_are_routing_signals_and_set_the_end_state():
