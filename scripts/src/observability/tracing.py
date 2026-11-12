@@ -453,6 +453,7 @@ class Run:
             "completion_tokens": step.completion_tokens,
             "findings": step.finding_counts(),
             "error_type": step.error_type,
+            "reused_from_step": step.reused_from,
         }
         if not closed:
             # The run ended (and closed this step as failed) while it ran.
@@ -491,6 +492,7 @@ class Step:
         self.findings: list = []
         self.error: str | None = None
         self.error_type: str | None = None
+        self.reused_from: str | None = None
         self._input = _UNSET
         self._output = _UNSET
         self._model_complete = False
@@ -517,6 +519,15 @@ class Step:
     @property
     def has_output(self) -> bool:
         return self._output is not _UNSET
+
+    def reuse(self, step_id: str, *, model: str, role: str) -> None:
+        """
+        The step's output is an earlier step's, used again without a model
+        call: the step names that step's model, and stores no tokens.
+        """
+        self.model = model
+        self.model_role = role
+        self.reused_from = step_id
 
     def add_findings(self, findings) -> None:
         """Validator findings (Finding models or dicts), stored with the step."""

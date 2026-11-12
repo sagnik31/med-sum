@@ -52,6 +52,7 @@ LOG_FIELDS = frozenset(
         "completion_tokens",
         "findings",  # counts per severity, never the findings
         "error_type",
+        "reused_from_step",  # a transcribe step that used an earlier run's lines
         # A model's circuit breaker and quality counts (model_health).
         "failures",
         "breaker",

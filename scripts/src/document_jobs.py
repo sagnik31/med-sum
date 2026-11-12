@@ -216,8 +216,9 @@ def set_run(conn, job: Job, worker: str, run_id: str) -> None:
 def complete(conn, job: Job, worker: str, final: dict) -> None:
     """
     Store the run's result, in one transaction with ending the job: the
-    end state and insight page on insights, and the transcription in
-    documents.extracted_markdown (which the patient summary reads).
+    end state and insight page on insights, and the transcription as plain
+    text in documents.extracted_markdown (a copy for reading; a reprocess
+    reuses the transcribe steps of earlier runs, not this column).
     """
     with conn.transaction(), conn.cursor() as cur:
         _held(cur, job, worker,

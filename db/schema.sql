@@ -94,7 +94,7 @@ CREATE TABLE documents (
     storage_path       text NOT NULL,          -- absolute; never sent to clients
     uploaded_at        timestamptz NOT NULL DEFAULT now(),
     updated_at         timestamptz NOT NULL DEFAULT now(),
-    extracted_markdown text                    -- cached page transcriptions
+    extracted_markdown text                    -- the latest run's transcription, as plain text
 );
 CREATE INDEX documents_user_id_idx ON documents (user_id);
 

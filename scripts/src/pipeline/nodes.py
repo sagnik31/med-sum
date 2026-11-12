@@ -5,7 +5,9 @@ the current run (section 8.4).
 
     open        count the pages and describe each page image
     transcribe  one page per call: the vision model's numbered lines, with
-                the PDF's own text for that page when it has one
+                the PDF's own text for that page when it has one; a page
+                this document's earlier run read with the same model and
+                prompt (same image hash) is used again, with no model call
     classify    the document type: the model's label checked against
                 keywords (pipeline/classify.py)
     parse       the type's schema filled in from the transcription
@@ -33,6 +35,8 @@ comes next.
 from datetime import date
 
 from pydantic import ValidationError
+
+import psycopg
 
 import llm
 import model_health
@@ -105,6 +109,20 @@ def lines_of(reply: str) -> list[str]:
     return reply.split("\n") if reply.strip() else []
 
 
+def _earlier_transcription(state: GraphState, n: int, step):
+    """An earlier run's lines for page n, or None (also when the lookup fails)."""
+    try:
+        return store.earlier_transcription(
+            state["document_id"],
+            image_sha256=state["pages"][n - 1].sha256,
+            prompt_hash=step.prompt_hash,
+            model=llm.PRIMARY_MODEL,
+            run_id=step.run.id,
+        )
+    except psycopg.Error:
+        return None  # the page is read again
+
+
 @traced("transcribe", page=next_page, input_of=_transcribe_input)
 def transcribe(state: GraphState) -> dict:
     n = next_page(state)
@@ -118,6 +136,15 @@ def transcribe(state: GraphState) -> dict:
     step = _step()
     step.set_prompt("extract_page", prompt("extract_page"))
     text_layer = page_files.text_layer(path, n)
+    earlier = _earlier_transcription(state, n, step)
+    if earlier is not None:
+        # The same pixels, read by the same model with the same prompt in
+        # an earlier run: its lines are used again, with no model call.
+        step_id, lines = earlier
+        step.reuse(step_id, model=llm.PRIMARY_MODEL, role="primary")
+        page = PageTranscription(page=n, lines=lines, text_layer=text_layer)
+        step.set_output({"transcriptions": [page], "reused_from_step": step_id})
+        return {"transcriptions": [page]}
     try:
         reply = llm.chat(
             transcription_messages(image, prompt("extract_page")),

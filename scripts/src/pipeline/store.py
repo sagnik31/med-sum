@@ -48,3 +48,57 @@ def save_record(record: DocumentRecord, *, run_id: str, connect=connect) -> None
                     "run": run_id,
                 },
             )
+
+
+# -------------------------------------------------------------------
+# Transcriptions of earlier runs
+# -------------------------------------------------------------------
+_EARLIER = (
+    "SELECT s.id, s.model, s.model_role, s.output FROM pipeline_steps s"
+    " JOIN pipeline_runs r ON r.id = s.run_id"
+    " WHERE r.document_id = %(doc)s AND s.node = 'transcribe'"
+    " AND s.status = 'ok' AND s.model = %(model)s AND s.model_role = 'primary'"
+    " AND s.prompt_hash = %(prompt)s AND s.input -> 'image' ->> 'sha256' = %(sha)s"
+    " AND s.run_id <> %(run)s"
+    " ORDER BY s.ended_at DESC LIMIT 1"
+)
+
+
+def earlier_transcription(
+    document_id: str,
+    *,
+    image_sha256: str,
+    prompt_hash: str,
+    model: str,
+    run_id: str,
+    connect=connect,
+):
+    """
+    The latest earlier transcription of this page of this document by the
+    same model and prompt, as (step id, lines), or None. Only steps that
+    ended ok count, so a capped page or a fallback model's reading is read
+    again. The image hash ties it to the page's pixels, not its number.
+    """
+    with connect() as conn, conn.cursor() as cur:
+        cur.execute(
+            _EARLIER,
+            {
+                "doc": document_id,
+                "model": model,
+                "prompt": prompt_hash,
+                "sha": image_sha256,
+                "run": run_id,
+            },
+        )
+        row = cur.fetchone()
+    if row is None:
+        return None
+    step_id, _model, _role, output = row
+    try:
+        pages = (output or {}).get("transcriptions") or []
+        lines = pages[0]["lines"]
+    except (AttributeError, IndexError, KeyError, TypeError):
+        return None
+    if not isinstance(lines, list) or not all(isinstance(x, str) for x in lines):
+        return None
+    return str(step_id), lines
