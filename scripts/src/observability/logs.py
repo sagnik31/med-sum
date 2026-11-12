@@ -89,6 +89,12 @@ LOG_FIELDS = frozenset(
         "documents",
         "markdown_chars",
         "html_chars",
+        # The patient summary (summary/): counts and outcomes only.
+        "not_included",
+        "awaiting",
+        "overview",
+        "unknown_numbers",
+        "unknown_words",
         # Document jobs (document_jobs): ids and flags only.
         "job_id",
         "reprocess",

@@ -7,10 +7,14 @@ test_document_jobs.py.
 import pytest
 from fastapi.testclient import TestClient
 
-from config import PATIENT_SUMMARY_PROMPT_FILE
-import generate_insights_txt
+from bs4 import BeautifulSoup
+from psycopg.types.json import Jsonb
+
 import insights_service as service
+import llm
+from dataset_records import key
 from db_rows import add_account
+from test_service_logging import line_with
 
 TOKEN = "test-internal-token"
 
@@ -56,17 +60,22 @@ def upload(tmp_path):
     return path
 
 
-@pytest.fixture
-def stages(monkeypatch):
-    """Stub HTML generation; record what it received."""
-    calls = {"generate": []}
-
-    def fake_generate(markdown, prompt=None):
-        calls["generate"].append({"markdown": markdown, "prompt": prompt})
-        return "<html><body><h2>Summary</h2></body></html>"
-
-    monkeypatch.setattr(generate_insights_txt, "generate_insights_html", fake_generate)
-    return calls
+def add_processed(db, user_id, doc_id, uploaded_at, status="verified") -> str:
+    """A dataset document with its answer key stored as its record."""
+    doc = add_document(db, user_id, f"/x/{doc_id}", "text", uploaded_at)
+    record = key(doc_id).model_copy(deep=True)
+    record.document.document_id = doc
+    with db.cursor() as cur:
+        cur.execute(
+            "INSERT INTO insights (document_id, user_id, status) VALUES (%s, %s, %s)",
+            (doc, user_id, status),
+        )
+        cur.execute(
+            "INSERT INTO document_records (document_id, schema_version, record)"
+            " VALUES (%s, 1, %s)",
+            (doc, Jsonb(record.model_dump(mode="json"))),
+        )
+    return doc
 
 
 # -------------------------------------------------------------------
@@ -128,31 +137,56 @@ def test_a_stale_summary_job_is_taken_over(db, client, summary_jobs):
     assert request_summary(client, user).json() == {"status": "accepted"}
 
 
-def test_the_summary_covers_processed_documents_oldest_first(db, upload, stages):
+def test_the_summary_is_built_from_records_in_document_date_order(db, model_client):
     user = add_user(db)
     other = add_user(db, email="other@hospital.test")
-    add_document(db, user, upload, "newer report", "2025-03-05 10:00+05:30")
-    add_document(db, user, upload, "older report", "2024-11-20 10:00+05:30")
-    add_document(db, user, upload, None)  # not processed yet
-    add_document(db, other, upload, "another patient's report")
+    # d04 (2025-01-10) is uploaded before the 2024 documents.
+    add_processed(db, user, "d04", "2024-01-01 10:00+05:30")
+    add_processed(db, user, "d01", "2025-06-01 10:00+05:30")
+    add_processed(db, user, "d02", "2025-06-02 10:00+05:30", status="needs_review")
+    add_document(db, user, "/x/new", None)  # not processed yet
+    add_processed(db, other, "d09", "2025-06-03 10:00+05:30")
+    model_client.replies[llm.PRIMARY_MODEL] = ["The documents cover lab reports."]
 
     service.run_patient_summary(user)
 
-    sent = stages["generate"][0]
-    assert sent["markdown"] == (
-        "\n[REPORT 1 - 2024-11-20]\nolder report\n"
-        "\n[REPORT 2 - 2025-03-05]\nnewer report\n"
-        "\n[END OF REPORTS]\n"
-    )
-    with open(PATIENT_SUMMARY_PROMPT_FILE, encoding="utf-8") as f:
-        assert sent["prompt"] == f.read()
     html, status, error = summary_row(db, user)
+    assert (status, error) == ("completed", None)
+    soup = BeautifulSoup(html, "html.parser")
+    timeline = soup.select('[data-section="timeline"] tr')
+    assert [r.select("td")[1].get_text() for r in timeline] == [
+        "2024-06-14", "2024-06-20", "2025-01-10",
+    ]  # fmt: skip
+    assert soup.select_one('[data-warning="not_included"]') is not None
+    assert "Fatima" not in html  # another user's document
+    # The model read the computed facts, not the transcriptions.
+    [call] = model_client.calls
+    assert call["messages"][1]["content"].startswith("Documents: 3 (")
+    assert soup.select_one('[data-overview="shown"]').get_text() == (
+        "The documents cover lab reports."
+    )
+
+
+def test_a_rejected_overview_leaves_the_summary_complete_without_it(
+    db, model_client, json_log
+):
+    user = add_user(db)
+    add_processed(db, user, "d06", "2025-02-04 10:00+05:30")
+    model_client.replies[llm.PRIMARY_MODEL] = [
+        "Creatinine suggests acute kidney injury."
+    ]
+
+    service.run_patient_summary(user)
+
+    html, status, _ = summary_row(db, user)
     assert status == "completed"
-    assert "<h2>Summary</h2>" in html
-    assert error is None
+    assert "kidney injury" not in html
+    assert 'data-overview="rejected"' in html
+    left_out = line_with(json_log, "summary_overview_left_out")
+    assert (left_out["overview"], left_out["unknown_words"]) == ("rejected", 4)
 
 
-def test_a_summary_with_no_processed_documents_fails_with_a_reason(db, stages):
+def test_a_summary_with_no_processed_documents_fails_with_a_reason(db, model_client):
     user = add_user(db)
 
     service.run_patient_summary(user)
@@ -160,4 +194,4 @@ def test_a_summary_with_no_processed_documents_fails_with_a_reason(db, stages):
     html, status, error = summary_row(db, user)
     assert (html, status) == (None, "failed")
     assert error.startswith("No processed documents yet")
-    assert stages["generate"] == []
+    assert model_client.calls == []

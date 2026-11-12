@@ -236,42 +236,34 @@ def generate_user_insights_endpoint(
 
 
 def run_patient_summary(user_id: str) -> None:
-    """Background job: summarise every processed document of one user."""
+    """
+    Background job: the patient summary, built by code from the records of
+    every processed document of one user (summary/). Only the overview is
+    model-written, and it is shown only if it passes its check.
+    """
     logger.info(
         "patient summary started", extra=_obs("summary_started", user_id=user_id)
     )
     conn = get_db_connection()
     try:
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                SELECT extracted_markdown, uploaded_at
-                FROM documents
-                WHERE user_id = %s AND extracted_markdown IS NOT NULL AND extracted_markdown != ''
-                ORDER BY uploaded_at ASC
-                """,
-                (user_id,),
+        from datetime import datetime, timezone
+
+        from summary.build import build_summary, load_inputs
+
+        inputs = load_inputs(conn, user_id)
+        result = build_summary(inputs, now=datetime.now(timezone.utc))
+        if result.overview.outcome != "shown":
+            check = result.overview.check
+            logger.warning(
+                "patient summary overview left out",
+                extra=_obs(
+                    "summary_overview_left_out",
+                    user_id=user_id,
+                    overview=result.overview.outcome,
+                    unknown_numbers=check.unknown_numbers if check else None,
+                    unknown_words=check.unknown_words if check else None,
+                ),
             )
-            rows = cur.fetchall()
-
-        if not rows:
-            raise ValueError(
-                "No processed documents yet. Wait until at least one document is ready."
-            )
-
-        aggregated_markdown = ""
-        for i, (markdown, uploaded_at) in enumerate(rows):
-            date_str = (
-                uploaded_at.strftime("%Y-%m-%d") if uploaded_at else "Unknown Date"
-            )
-            aggregated_markdown += f"\n[REPORT {i + 1} - {date_str}]\n{markdown}\n"
-        aggregated_markdown += "\n[END OF REPORTS]\n"
-
-        from config import PATIENT_SUMMARY_PROMPT_FILE
-        from generate_insights_txt import generate_insights_html, load_text
-
-        prompt = load_text(PATIENT_SUMMARY_PROMPT_FILE)
-        html = generate_insights_html(aggregated_markdown, prompt=prompt)
 
         with conn.cursor() as cur:
             cur.execute(
@@ -282,12 +274,20 @@ def run_patient_summary(user_id: str) -> None:
                     patient_insights_updated_at = NOW()
                 WHERE id = %s
                 """,
-                (html, user_id),
+                (result.html, user_id),
             )
         conn.commit()
         logger.info(
             "patient summary completed",
-            extra=_obs("summary_completed", user_id=user_id, documents=len(rows)),
+            extra=_obs(
+                "summary_completed",
+                user_id=user_id,
+                documents=len(result.facts.documents),
+                not_included=result.facts.not_included,
+                awaiting=result.facts.awaiting,
+                overview=result.overview.outcome,
+                html_chars=len(result.html),
+            ),
         )
 
     except Exception as e:

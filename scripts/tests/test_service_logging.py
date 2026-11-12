@@ -14,7 +14,7 @@ from fastapi.testclient import TestClient
 
 import config
 import document_jobs
-import generate_insights_txt
+import summary.build
 import insights_service as service
 import llm
 from dataset.build import DATASET_DIR
@@ -146,10 +146,10 @@ def test_a_failed_patient_summary_logs_the_error_type_only(db, monkeypatch, json
             (user, SECRET),
         )
 
-    def fail(markdown, prompt=None):
+    def fail(inputs, **kwargs):
         raise RuntimeError(f"bad output about {SECRET}")
 
-    monkeypatch.setattr(generate_insights_txt, "generate_insights_html", fail)
+    monkeypatch.setattr(summary.build, "build_summary", fail)
 
     service.run_patient_summary(user)
 
