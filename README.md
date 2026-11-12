@@ -54,7 +54,7 @@ The cumulative patient summary is a separate background job, started from the Pa
 - **Recovery from crashed workers.** A job is claimed with a lease of 5 minutes, which a heartbeat renews every minute while the document runs. When a worker dies, its lease runs out and another worker takes the job over, carrying on from the graph's last checkpoint (kept in Postgres) instead of starting again. A job claimed three times without finishing is set aside, and every write a worker makes checks that it still holds the claim. The patient summary keeps its older lock: a summary with no progress for 30 minutes can be taken over by a new request.
 - **Untrusted model output is contained.** A document can carry text aimed at the model, so its output is treated as untrusted. The AI service strips scripts, styles, images, embeds, forms, event handlers and `javascript:` links from generated HTML. The UI shows it in a sandboxed iframe with scripts disabled and a content security policy that blocks every remote load, so the HTML cannot send data to another server.
 - **Bounded work.** Uploads must be PDF, JPG or PNG files whose content matches the extension, are capped at 20 MB and 20 PDF pages, and are stored under random file names. Model output is capped per page and per summary so a looping model cannot run forever, and a model call that sends nothing for 10 minutes is abandoned.
-- **Fallback model.** Both models read images and text. If `qwen3.5:4b` returns an error or hits the output cap, the same request goes to `gemma4:e2b`. If both fail, the job is marked `failed`, so cut-off output is never saved as a result.
+- **Fallback model and circuit breaker.** Both models read images and text. If `qwen3.5:4b` returns an error or hits the output cap, the same request goes to `gemma4:e2b`. If both fail, the job is marked `failed`, so cut-off output is never saved as a result. A model whose server errors or times out three times in a row is skipped for 15 minutes, so requests go straight to the other model; after that one call tries it again. With both skipped, a job fails at once with "No model available". A reply the pipeline can't use (off its schema, or failing the checks) is counted per model for diagnosis but doesn't trip the breaker. `GET /health` shows each model's state.
 
 ### Accounts and login
 
@@ -216,6 +216,7 @@ On PowerShell, set the same variables with `$env:NAME = "value"`.
 | `MEDSUM_FALLBACK_MODEL` | AI service | `gemma4:e2b` |
 | `MEDSUM_NUM_CTX` | AI service | `16384` (context window for each model call) |
 | `MEDSUM_WORKER` | AI service | `1`; `0` starts the service without its document worker (nothing queued is processed) |
+| `MEDSUM_BREAKER_FAILURES`, `MEDSUM_BREAKER_COOLDOWN_S` | AI service | `3`, `900`; consecutive model errors or timeouts that disable a model, and how long it stays disabled before it is tried again |
 | `MEDSUM_JOB_LEASE`, `MEDSUM_JOB_HEARTBEAT_S`, `MEDSUM_JOB_MAX_ATTEMPTS` | AI service | `5 minutes`, `60`, `3`; how long a claim lasts, how often it is renewed, and how many claims a job gets before it is set aside |
 | `MEDSUM_LOG_FILE` | AI service logs (`observability`) | `scripts/logs/medsum.jsonl`; JSON log lines (ids, events, timings) without patient content, also on stderr. Set up when the service starts |
 | `VITE_API_BASE_URL` | Frontend | `/api`, set in `frontend/.env.local`; the Vite dev server proxies it to the backend |
@@ -252,7 +253,7 @@ All backend routes except `/healthz`, `/auth/login`, `/auth/logout` and `/auth/s
 
 Document and summary routes need the clinician role and `/admin/*` the admin role; without it the answer is 403. Accounts in another organisation are answered with 404.
 
-The AI service exposes `GET /health` and three internal routes: `POST /internal/generate-insights` and `POST /internal/reprocess-document` queue a document, and `POST /internal/generate-user-insights` starts the patient summary. All three require an `X-Internal-Token` header.
+The AI service exposes `GET /health` (with each model's circuit-breaker state) and three internal routes: `POST /internal/generate-insights` and `POST /internal/reprocess-document` queue a document, and `POST /internal/generate-user-insights` starts the patient summary. All three require an `X-Internal-Token` header.
 
 A Postman collection is in [`postman/collections/`](postman/collections/med-sum.postman_collection.json). It uses the variables `backend_url`, `ai_service_url`, `email`, `password` and `internal_api_token`; Postman keeps the session cookie from the login request.
 
