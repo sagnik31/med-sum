@@ -9,6 +9,11 @@ Insights Generation Service (FastAPI)
     POST /internal/reprocess-document       (queue it again, as a new run)
     POST /internal/generate-user-insights   (background, per user)
 
+- Patient summaries: built on request, and rebuilt by the worker after a
+  document job ends when its uploader already has one and has no other
+  document queued or running (refresh_after_document), so a batch of
+  uploads rebuilds it once, at the end.
+
 - Internal only: /internal/* requires the X-Internal-Token header to match
   INTERNAL_API_TOKEN. No CORS, so browsers cannot call it; the Go backend
   checks access to the document and forwards requests here.
@@ -76,7 +81,7 @@ async def lifespan(app: FastAPI):
     worker = None
     if worker_enabled():
         checkpoints.setup()  # the checkpoint tables, created or migrated
-        worker = document_jobs.Worker()
+        worker = document_jobs.Worker(after_job=refresh_after_document)
         worker.start()
     app.state.worker = worker
     try:
@@ -207,8 +212,17 @@ def generate_user_insights_endpoint(
         extra=_obs("summary_requested", user_id=req.user_id),
     )
 
-    # Claim the job the same way as document insights: skip it while a live
-    # run is in progress, but take over one that has gone stale.
+    claimed = claim_patient_summary(req.user_id)
+    if claimed:
+        background_tasks.add_task(run_patient_summary, req.user_id)
+    return {"status": "accepted" if claimed else "already_processing"}
+
+
+def claim_patient_summary(user_id: str) -> bool:
+    """
+    Mark the user's summary processing, unless a live run has it: one that
+    has gone stale (STALE_PROCESSING_AFTER) is taken over.
+    """
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
@@ -223,16 +237,56 @@ def generate_user_insights_endpoint(
                        OR patient_insights_updated_at < NOW() - %s::interval)
                 RETURNING id
                 """,
-                (req.user_id, STALE_PROCESSING_AFTER),
+                (user_id, STALE_PROCESSING_AFTER),
             )
             claimed = cur.fetchone() is not None
         conn.commit()
     finally:
         conn.close()
+    return claimed
 
-    if claimed:
-        background_tasks.add_task(run_patient_summary, req.user_id)
-    return {"status": "accepted" if claimed else "already_processing"}
+
+# The uploader of a document, if they have a patient summary (asked for
+# at least once) and no document job left open.
+_SUMMARY_TO_REFRESH = """
+SELECT u.id FROM documents d JOIN users u ON u.id = d.user_id
+WHERE d.id = %s
+  AND u.patient_insights_status IS NOT NULL
+  AND NOT EXISTS (
+      SELECT 1 FROM jobs j JOIN documents o ON o.id = j.document_id
+      WHERE o.user_id = u.id AND j.status IN ('queued', 'running'))
+"""
+
+
+def refresh_after_document(job) -> None:
+    """
+    After a document job (the worker's after_job): rebuild the uploader's
+    patient summary, in this thread, if they already have one and no other
+    document of theirs is queued or running. A summary someone else is
+    building is left to that run.
+    """
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(_SUMMARY_TO_REFRESH, (job.document_id,))
+            row = cur.fetchone()
+    finally:
+        conn.close()
+    if row is None:
+        return
+    user_id = str(row[0])
+    if not claim_patient_summary(user_id):
+        logger.info(
+            "patient summary refresh skipped: one is being built",
+            extra=_obs("summary_refresh_skipped", user_id=user_id,
+                       document_id=job.document_id),
+        )  # fmt: skip
+        return
+    logger.info(
+        "patient summary refresh after a document",
+        extra=_obs("summary_refresh", user_id=user_id, document_id=job.document_id),
+    )
+    run_patient_summary(user_id)
 
 
 def run_patient_summary(user_id: str) -> None:

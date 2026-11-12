@@ -4,12 +4,15 @@ recording, with generation stubbed. Document jobs are in
 test_document_jobs.py.
 """
 
+import time
+
 import pytest
 from fastapi.testclient import TestClient
 
 from bs4 import BeautifulSoup
 from psycopg.types.json import Jsonb
 
+import document_jobs as jobs
 import insights_service as service
 import llm
 from dataset_records import key
@@ -197,3 +200,124 @@ def test_a_summary_with_no_processed_documents_fails_with_a_reason(db, model_cli
     assert (html, status) == (None, "failed")
     assert error.startswith("No processed documents yet")
     assert model_client.calls == []
+
+
+# -------------------------------------------------------------------
+# The summary rebuilt after a document
+# -------------------------------------------------------------------
+def set_summary(db, user_id, status, html="old summary", minutes_ago=0):
+    with db.cursor() as cur:
+        cur.execute(
+            "UPDATE users SET patient_insights = %s, patient_insights_status = %s,"
+            " patient_insights_updated_at = NOW() - make_interval(mins => %s)"
+            " WHERE id = %s",
+            (html, status, minutes_ago, user_id),
+        )
+
+
+def finished_job(doc) -> jobs.Job:
+    return jobs.Job(id="00000000-0000-0000-0000-000000000001", document_id=doc,
+                    attempts=1, run_id=None)  # fmt: skip
+
+
+@pytest.mark.parametrize("before", ["completed", "failed"])
+def test_a_finished_document_rebuilds_its_uploaders_summary(db, model_client, before):
+    user = add_user(db)
+    doc = add_processed(db, user, "d09", "2024-09-06 10:00+05:30")
+    set_summary(db, user, before)
+    model_client.replies[llm.PRIMARY_MODEL] = ["The latest report flags TSH."]
+
+    service.refresh_after_document(finished_job(doc))
+
+    html, status, _ = summary_row(db, user)
+    assert status == "completed"
+    assert html != "old summary" and "TSH" in html
+    assert len(model_client.calls) == 1
+
+
+def test_no_summary_is_built_for_a_user_who_never_asked_for_one(db, model_client):
+    user = add_user(db)
+    doc = add_processed(db, user, "d09", "2024-09-06 10:00+05:30")
+
+    service.refresh_after_document(finished_job(doc))
+
+    assert summary_row(db, user) == (None, None, None)
+    assert model_client.calls == []
+
+
+def test_the_summary_waits_for_the_users_last_open_document(db, model_client):
+    user = add_user(db)
+    doc = add_processed(db, user, "d09", "2024-09-06 10:00+05:30")
+    other = add_document(db, user, "/x/other")
+    jobs.enqueue(db, other)
+    set_summary(db, user, "completed")
+
+    service.refresh_after_document(finished_job(doc))
+
+    assert summary_row(db, user)[:2] == ("old summary", "completed")
+    assert model_client.calls == []
+
+
+def test_another_users_open_document_does_not_hold_it_back(db, model_client):
+    user, someone = add_user(db), add_user(db, "other@hospital.test")
+    doc = add_processed(db, user, "d09", "2024-09-06 10:00+05:30")
+    jobs.enqueue(db, add_document(db, someone, "/x/theirs"))
+    set_summary(db, user, "completed")
+    model_client.replies[llm.PRIMARY_MODEL] = ["The latest report flags TSH."]
+
+    service.refresh_after_document(finished_job(doc))
+
+    assert summary_row(db, user)[1] == "completed"
+    assert summary_row(db, user)[0] != "old summary"
+
+
+def test_a_summary_being_built_is_left_to_that_run(db, model_client, json_log):
+    user = add_user(db)
+    doc = add_processed(db, user, "d09", "2024-09-06 10:00+05:30")
+    set_summary(db, user, "processing", html=None)
+
+    service.refresh_after_document(finished_job(doc))
+
+    assert summary_row(db, user)[1] == "processing"
+    assert model_client.calls == []
+    assert line_with(json_log, "summary_refresh_skipped")["user_id"] == user
+
+
+def test_a_stale_summary_run_is_taken_over(db, model_client):
+    user = add_user(db)
+    doc = add_processed(db, user, "d09", "2024-09-06 10:00+05:30")
+    set_summary(db, user, "processing", html=None, minutes_ago=31)
+    model_client.replies[llm.PRIMARY_MODEL] = ["The latest report flags TSH."]
+
+    service.refresh_after_document(finished_job(doc))
+
+    assert summary_row(db, user)[1] == "completed"
+
+
+def test_the_worker_runs_its_after_job_once_per_job_and_survives_its_errors(
+    db, monkeypatch
+):
+    seen = []
+
+    def after(job):
+        seen.append(job.document_id)
+        raise RuntimeError("after-job bug")
+
+    monkeypatch.setattr(jobs, "process", lambda job, worker: None)
+    user = add_user(db)
+    docs = [add_document(db, user, f"/x/{n}") for n in range(2)]
+    claimed = [finished_job(d) for d in docs]
+    monkeypatch.setattr(
+        jobs, "claim_next", lambda conn, name: claimed.pop(0) if claimed else None
+    )
+    worker = jobs.Worker(poll_s=0.05, after_job=after)
+    worker.start()
+    try:
+        for _ in range(100):
+            if len(seen) == 2:
+                break
+            time.sleep(0.05)
+    finally:
+        worker.stop(timeout=5)
+
+    assert seen == docs

@@ -375,11 +375,17 @@ def process(job: Job, worker: str, *, build=None, heartbeat_s: float = HEARTBEAT
 # The worker
 # -------------------------------------------------------------------
 class Worker:
-    """One thread taking jobs in turn: one Ollama job at a time per process."""
+    """
+    One thread taking jobs in turn: one Ollama job at a time per process.
+    `after_job(job)`, if given, runs in the same thread after each job
+    (whatever its outcome), so work it starts doesn't compete with the next
+    document for the model; an error in it is logged, never raised.
+    """
 
-    def __init__(self, *, poll_s: float = POLL_S):
+    def __init__(self, *, poll_s: float = POLL_S, after_job=None):
         self.name = worker_id()
         self.poll_s = poll_s
+        self.after_job = after_job
         self.wake = threading.Event()
         self._stop = threading.Event()
         self._thread = threading.Thread(target=self._loop, name="document-jobs",
@@ -393,6 +399,16 @@ class Worker:
         self.wake.set()
         self._thread.join(timeout)
 
+    def _after(self, job: Job) -> None:
+        if self.after_job is None:
+            return
+        try:
+            self.after_job(job)
+        except Exception:
+            logger.exception("the work after a job failed",
+                             extra=_obs("after_job_error", job_id=job.id,
+                                        document_id=job.document_id))  # fmt: skip
+
     def _loop(self) -> None:
         while not self._stop.is_set():
             try:
@@ -400,6 +416,7 @@ class Worker:
                     job = claim_next(conn, self.name)
                 if job is not None:
                     process(job, self.name)
+                    self._after(job)
                     continue
             except Exception:
                 logger.exception("the job worker hit an error",
