@@ -95,3 +95,12 @@ def decide(model: DocumentType | None, keywords: DocumentType | None) -> Decisio
     if model is DocumentType.OTHER:
         return Decision(keywords, "model said other; keyword type")
     return Decision(DocumentType.OTHER, "model and keywords disagree")
+
+
+def disagree(model: DocumentType | None, keywords: DocumentType | None) -> bool:
+    """
+    Whether the model's label and the keyword check name different types
+    (signal LC-15): the wrong parse schema may be in use. No usable label,
+    or keywords with no opinion, is not a disagreement.
+    """
+    return model is not None and keywords is not None and model is not keywords

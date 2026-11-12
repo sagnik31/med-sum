@@ -366,7 +366,7 @@ def test_classify_uses_the_model_label_with_the_schema(db, run, model_client):
 
     out = nodes.classify(transcribed("d09"))
 
-    assert out == {"doc_type": LAB}
+    assert out == {"doc_type": LAB, "classify_disagree": False}
     call = model_client.calls[0]
     assert call["format"] == classifier_schema()
     assert call["messages"][0]["content"] == prompt("classify_document")
@@ -408,7 +408,7 @@ def test_without_a_usable_label_the_keywords_decide(
 
     out = nodes.classify(transcribed("d09"))
 
-    assert out == {"doc_type": expected}
+    assert out == {"doc_type": expected, "classify_disagree": False}
     [row] = step_rows(db, run)
     assert row["status"] == "ok"
     assert row["output"]["model_error"] == error
@@ -418,20 +418,29 @@ def test_without_a_usable_label_the_keywords_decide(
 def test_a_model_saying_other_gives_way_to_clear_keywords(db, run, model_client):
     model_client.replies[llm.PRIMARY_MODEL] = ['{"document_type": "other"}']
 
-    assert nodes.classify(transcribed("d02")) == {"doc_type": RX}
+    assert nodes.classify(transcribed("d02")) == {
+        "doc_type": RX,
+        "classify_disagree": True,
+    }
 
 
 def test_model_and_keywords_naming_different_types_is_other(db, run, model_client):
     model_client.replies[llm.PRIMARY_MODEL] = ['{"document_type": "prescription"}']
 
-    assert nodes.classify(transcribed("d09")) == {"doc_type": OTHER}
+    assert nodes.classify(transcribed("d09")) == {
+        "doc_type": OTHER,
+        "classify_disagree": True,
+    }
     assert step_rows(db, run)[0]["output"]["rule"] == "model and keywords disagree"
 
 
 def test_an_other_document_stays_other(db, run, model_client):
     model_client.replies[llm.PRIMARY_MODEL] = ['{"document_type": "other"}']
 
-    assert nodes.classify(transcribed("d17")) == {"doc_type": OTHER}
+    assert nodes.classify(transcribed("d17")) == {
+        "doc_type": OTHER,
+        "classify_disagree": False,
+    }
 
 
 # -------------------------------------------------------------------

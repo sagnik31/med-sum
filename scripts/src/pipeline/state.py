@@ -70,6 +70,8 @@ class GraphState(TypedDict):
 
     # classify ------------------------------------------------------------
     doc_type: NotRequired[DocumentType | None]
+    # The model's label and the keyword check named different types (LC-15).
+    classify_disagree: NotRequired[bool]
 
     # transcribe ----------------------------------------------------------
     # Pages in the file, which can be more than are transcribed (page cap).
