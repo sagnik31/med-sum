@@ -38,7 +38,11 @@ import ollama
 import model_health
 from config import FALLBACK_MODEL, NUM_CTX, PRIMARY_MODEL
 from observability import model_calls
-from observability.context import ModelCall, record_model_call
+from observability.context import (
+    ModelCall,
+    record_breaker_switch,
+    record_model_call,
+)
 
 logger = logging.getLogger("llm")
 
@@ -142,7 +146,8 @@ def chat(
             if not isinstance(e, MODEL_ERRORS):
                 model_health.abandoned(model)
                 raise
-            model_health.failed(model, role, e)
+            if model_health.failed(model, role, e):
+                _breaker_switched("model_disabled", model, role)
             failures.append(f"{model}: {e}")
             # The type only: the message stays in the exception for the caller.
             logger.warning(
@@ -154,7 +159,8 @@ def chat(
             )  # fmt: skip
             continue
         text, complete = _report(attempt, model, role, request, sizes, stop_marker)
-        model_health.succeeded(model, role)  # it answered, capped or not
+        if model_health.succeeded(model, role):  # it answered, capped or not
+            _breaker_switched("model_restored", model, role)
         if complete:
             if role == "fallback":
                 logger.warning(
@@ -215,6 +221,11 @@ def _stream(attempt, model, messages, options, format, verbose, stop_marker):
             printing = not (stop_marker and stop_marker in attempt.raw)
         if chunk.done:
             attempt.done = chunk
+
+
+def _breaker_switched(event: str, model: str, role: str) -> None:
+    """The breaker switched `model` off or on during this call: note it on the run."""
+    record_breaker_switch(event, model, role)
 
 
 def _report(attempt, model, role, request, sizes, stop_marker=None, error=None):

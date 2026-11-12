@@ -201,6 +201,17 @@ def test_op2_the_number_of_repairs():
     assert "OP-2" not in ids(collect(repairs=0))
 
 
+def test_op3_one_hit_per_breaker_switch_and_none_routes():
+    switches = [
+        {"event": "model_disabled", "model": "m", "model_role": "primary"},
+        {"event": "model_restored", "model": "m", "model_role": "primary"},
+    ]
+    hits = [h for h in collect(breaker_switches=switches) if h.signal == "OP-3"]
+    assert [h.details for h in hits] == switches
+    assert not any(h.routes for h in hits)
+    assert "OP-3" not in ids(collect())
+
+
 @pytest.mark.parametrize("doc_id", PARSED_IDS)
 def test_a_dataset_key_routes_only_where_the_dataset_says(doc_id):
     record = keyed_record(doc_id)

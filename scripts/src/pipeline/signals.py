@@ -170,11 +170,14 @@ def collect(
     classify_disagree: bool = False,
     record_model_role: str | None = None,
     repairs: int = 0,
+    breaker_switches: list[dict] = (),
 ) -> list[SignalHit]:
     """
     Every signal for a document at the end of its run, in a fixed order.
     `parsed` says whether the record was built from a parse (False for
     type other, and for a parsed type whose every parse attempt failed).
+    `breaker_switches` are the run's circuit breaker switches, one OP-3 hit
+    each ({event, model, model_role}, as observability's Run notes them).
     """
     hits: list[SignalHit] = []
     if record is not None:
@@ -199,6 +202,7 @@ def collect(
         hits.append(SignalHit(signal="OP-1"))
     if repairs:
         hits.append(SignalHit(signal="OP-2", details={"repairs": repairs}))
+    hits += [SignalHit(signal="OP-3", details=dict(s)) for s in breaker_switches]
     return hits
 
 

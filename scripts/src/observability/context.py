@@ -73,6 +73,16 @@ def record_model_call(call: ModelCall) -> None:
         step.add_model_call(call)
 
 
+def record_breaker_switch(event: str, model: str, role: str) -> None:
+    """
+    A circuit breaker switched a model off (model_disabled) or back on
+    (model_restored) during a call of the active run, if there is one.
+    """
+    run = current_run.get()
+    if run is not None:
+        run.note_breaker_switch(event, model, role)
+
+
 def current_ids() -> dict[str, str]:
     """
     Ids of the active run and step, for log lines. Ids and node names only;

@@ -424,13 +424,20 @@ def validate(state: GraphState) -> dict:
 # -------------------------------------------------------------------
 # The record marked with its signals (render and finish)
 # -------------------------------------------------------------------
+def _breaker_switches() -> list[dict]:
+    step = current_step()
+    return list(step.run.breaker_switches) if step is not None else []
+
+
 def marked_record(state: GraphState, provenance) -> tuple:
     """
     A copy of the state's record with provenance on every item and the
     section 8.8 signals applied (low confidence with reasons, or validated),
     the signals, and whether the record was parsed. `provenance` gives the
-    provenance for a record that wasn't parsed (called only then). Pure
-    apart from that call, so render shows exactly what finish saves.
+    provenance for a record that wasn't parsed (called only then). Apart
+    from that call it reads only the state and the run's breaker switches
+    (OP-3), and no model is called between render and finish, so render
+    shows exactly what finish saves.
     """
     record = state.get("record")
     if record is None:
@@ -446,6 +453,7 @@ def marked_record(state: GraphState, provenance) -> tuple:
         classify_disagree=state.get("classify_disagree", False),
         record_model_role=state.get("parse_model_role") if parsed else None,
         repairs=state.get("repairs", 0),
+        breaker_switches=_breaker_switches(),
     )
     stamp(record, state["parse_provenance"] if parsed else provenance())
     signals.apply(record, hits)

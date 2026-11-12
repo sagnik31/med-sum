@@ -202,9 +202,18 @@ class Run:
         self.ended = False
         self.end_state: str | None = None
         self.model_totals: dict = {}  # set when the run ends
+        # Circuit breaker switches during this run's model calls (signal
+        # OP-3), in order. Kept in memory, like the breaker itself.
+        self.breaker_switches: list[dict] = []
         self._lock = threading.Lock()  # parallel nodes share the connection
         self._started = time.monotonic()
         self._tokens: list = []
+
+    def note_breaker_switch(self, event: str, model: str, role: str) -> None:
+        with self._lock:
+            self.breaker_switches.append(
+                {"event": event, "model": model, "model_role": role}
+            )
 
     # Context manager -------------------------------------------------
     def __enter__(self) -> "Run":

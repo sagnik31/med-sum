@@ -13,6 +13,8 @@ from fastapi.testclient import TestClient
 import insights_service as service
 import llm
 import model_health
+from db_rows import add_account
+from observability import start_run
 from pipeline import nodes
 
 PRIMARY, FALLBACK = llm.PRIMARY_MODEL, llm.FALLBACK_MODEL
@@ -170,6 +172,50 @@ def test_after_the_cool_down_one_call_probes_and_a_success_closes_it(
 
     assert llm.chat(MESSAGES, max_tokens=10) == "back"
     assert state_of(PRIMARY) == "closed"
+
+
+@pytest.fixture
+def run(db):
+    """An open pipeline run on a fresh documents row."""
+    with db.cursor() as cur:
+        cur.execute(
+            "INSERT INTO documents (user_id, original_name, content_type, storage_path)"
+            " VALUES (%s, 'a.pdf', 'application/pdf', '/x') RETURNING id",
+            (add_account(db),),
+        )
+        document_id = str(cur.fetchone()[0])
+    with start_run(document_id, "test-breaker") as r:
+        yield r
+        if not r.ended:
+            r.finish("verified")
+
+
+def test_a_run_notes_each_switch_made_during_its_calls(model_client, clock, run):
+    fail_primary(model_client, 3)
+    clock(900)
+    model_client.replies[PRIMARY] = ["back"]
+    llm.chat(MESSAGES, max_tokens=10)
+
+    assert run.breaker_switches == [
+        {"event": "model_disabled", "model": PRIMARY, "model_role": "primary"},
+        {"event": "model_restored", "model": PRIMARY, "model_role": "primary"},
+    ]
+
+
+def test_a_run_notes_no_switch_when_the_breaker_stays_as_it_was(
+    model_client, clock, run
+):
+    fail_primary(model_client, 2)  # not yet open
+    model_client.replies[PRIMARY] = ["fine"]
+    llm.chat(MESSAGES, max_tokens=10)
+
+    assert run.breaker_switches == []
+
+
+def test_a_switch_outside_a_run_is_noted_nowhere(model_client, clock):
+    fail_primary(model_client, 3)  # no run open: nothing to note it on
+
+    assert state_of(PRIMARY) == "open"
 
 
 def test_a_failed_probe_opens_it_for_another_cool_down(model_client, clock):

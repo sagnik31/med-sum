@@ -96,18 +96,22 @@ def allow(model: str, role: str) -> bool:
         return False
 
 
-def succeeded(model: str, role: str) -> None:
-    """The model answered (complete or capped)."""
+def succeeded(model: str, role: str) -> bool:
+    """The model answered (complete or capped). True when this switched it back on."""
     with _lock:
         b = _get(model)
         restored = b.state != CLOSED
         b.state, b.failures, b.opened_at, b.probing = CLOSED, 0, None, False
         if restored:
             _log(logging.INFO, "model %s restored", "model_restored", model, role, b)
+        return restored
 
 
-def failed(model: str, role: str, error: BaseException) -> None:
-    """An infrastructure failure: the server errored or timed out."""
+def failed(model: str, role: str, error: BaseException) -> bool:
+    """
+    An infrastructure failure: the server errored or timed out. True when
+    this switched the model off.
+    """
     with _lock:
         b = _get(model)
         b.failures += 1
@@ -118,6 +122,8 @@ def failed(model: str, role: str, error: BaseException) -> None:
             b.state, b.opened_at, b.probing = OPEN, now(), False
             _log(logging.ERROR, "model %s disabled", "model_disabled", model, role,
                  b, error_type=b.last_error, cooldown_s=COOLDOWN_S)  # fmt: skip
+            return True
+        return False
 
 
 def abandoned(model: str) -> None:

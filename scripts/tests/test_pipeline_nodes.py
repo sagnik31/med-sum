@@ -824,6 +824,23 @@ def test_finish_a_clean_document_is_verified_and_saved(db, run, model_client):
     assert state["record"].observations[0].provenance is None
 
 
+def test_finish_raises_op3_for_the_runs_breaker_switches_without_routing(
+    db, run, model_client
+):
+    state = parsed_and_validated(run, model_client, "d09")
+    run.note_breaker_switch("model_disabled", llm.PRIMARY_MODEL, "primary")
+
+    out = nodes.finish(state)
+
+    assert out["end_state"] == "verified"  # operational: stored, not routed
+    [hit] = [h for h in out["signals"] if h.signal == "OP-3"]
+    assert hit.details == {
+        "event": "model_disabled", "model": llm.PRIMARY_MODEL, "model_role": "primary"
+    }  # fmt: skip
+    stored = step_rows(db, run)[-1]["output"]["signals"]
+    assert any(h["signal"] == "OP-3" for h in stored)
+
+
 def test_finish_marks_a_wrong_patient_document_for_review(db, run, model_client):
     state = parsed_and_validated(run, model_client, "d16")
 
