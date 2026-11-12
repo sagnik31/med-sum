@@ -94,6 +94,7 @@ LOG_FIELDS = frozenset(
         "not_included",
         "awaiting",
         "overview",
+        "attempts",
         "unknown_numbers",
         "unknown_words",
         # Document jobs (document_jobs): ids and flags only.

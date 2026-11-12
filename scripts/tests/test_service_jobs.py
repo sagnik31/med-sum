@@ -173,7 +173,8 @@ def test_a_rejected_overview_leaves_the_summary_complete_without_it(
     user = add_user(db)
     add_processed(db, user, "d06", "2025-02-04 10:00+05:30")
     model_client.replies[llm.PRIMARY_MODEL] = [
-        "Creatinine suggests acute kidney injury."
+        "Creatinine suggests acute kidney injury.",
+        "Creatinine suggests kidney injury.",  # the retry fails too
     ]
 
     service.run_patient_summary(user)
@@ -183,7 +184,8 @@ def test_a_rejected_overview_leaves_the_summary_complete_without_it(
     assert "kidney injury" not in html
     assert 'data-overview="rejected"' in html
     left_out = line_with(json_log, "summary_overview_left_out")
-    assert (left_out["overview"], left_out["unknown_words"]) == ("rejected", 4)
+    assert (left_out["overview"], left_out["unknown_words"]) == ("rejected", 3)
+    assert left_out["attempts"] == 2
 
 
 def test_a_summary_with_no_processed_documents_fails_with_a_reason(db, model_client):

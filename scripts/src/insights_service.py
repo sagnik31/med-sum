@@ -262,6 +262,7 @@ def run_patient_summary(user_id: str) -> None:
                     overview=result.overview.outcome,
                     unknown_numbers=check.unknown_numbers if check else None,
                     unknown_words=check.unknown_words if check else None,
+                    attempts=result.overview.attempts,
                 ),
             )
 

@@ -381,6 +381,10 @@ FATIMA_LINES = facts_text(build_facts(inputs(*PATIENTS["fatima"])))
         "The latest prescription lists Thyronorm and Uprise-D3.",
         "Hypothyroidism and Vitamin D deficiency are stated diagnoses.",
         "An allergy to Penicillin is recorded.",
+        # Values beside what they are, in the overview's own order.
+        "Vitamin D (25-OH) is 18.4 ng/mL, flagged L, on 2025-01-08.",
+        "The latest prescription, dated 2025-03-15, lists Thyronorm 50 mcg 1-0-0.",
+        "There are 4 documents.",
     ],
 )
 def test_an_overview_made_of_the_facts_passes(text):
@@ -403,8 +407,14 @@ def test_a_live_overview_of_one_report_passes():
     [
         ("TSH fell to 2.5.", 1, 0),  # a number not in the facts
         ("The latest prescription lists Eltroxin.", 0, 1),  # a medicine
-        # A test. ("4" is a number of the facts: numbers are checked as a set.)
-        ("Free T4 was not tested.", 0, 3),
+        # A test, though "4" is a number of the facts: "T4" is checked whole.
+        ("Free T4 was not tested.", 1, 2),
+        # A fact's value beside another test.
+        ("TSH was 18.4 ng/mL.", 1, 0),
+        # A fact's date for something it isn't the date of.
+        ("Hypothyroidism was stated on 2025-01-08.", 1, 0),
+        # A fact's count for something else.
+        ("There are 4 diagnoses.", 1, 0),
         ("Graves disease is stated.", 0, 2),  # a diagnosis
         ("TSH is improving.", 0, 1),  # a judgement
         ("Her thyroid is well controlled.", 0, 4),
@@ -429,11 +439,104 @@ def test_a_failed_check_leaves_the_overview_out_and_says_why():
     assert 'data-overview="rejected"' in html
 
 
+class Replies:
+    """A chat that answers from a list and keeps the messages it was sent."""
+
+    def __init__(self, *replies):
+        self.replies = list(replies)
+        self.sent = []
+
+    def __call__(self, messages, **_):
+        self.sent.append(messages)
+        reply = self.replies.pop(0)
+        if isinstance(reply, Exception):
+            raise reply
+        return reply
+
+
+def test_live_overviews_of_several_documents_pass():
+    # qwen3.5:4b's replies over the synthetic patients' records, live.
+    meera = facts_text(build_facts(inputs(*PATIENTS["meera"])))
+    assert check(
+        "The latest report from 2025-04-12 flags Haemoglobin 11.9 g/dL, MCV 81 fL"
+        " and Serum Ferritin 9.8 ng/mL as low, while RDW-CV 16.2 % is flagged"
+        " high. Diagnoses stated include Type 2 diabetes mellitus.",
+        meera,
+    ).ok
+    assert check(
+        "The patient has 4 documents dated from 2024-09-05 to 2025-03-15. The"
+        " latest report from 2025-01-08 flags Vitamin D (25-OH) at 18.4 ng/mL."
+        " TSH is listed as falling based on 2 reports from 2024-09-05 and"
+        " 2025-01-08. Diagnoses stated are Hypothyroidism from 2024-09-09 and"
+        " 2025-03-15.",
+        FATIMA_LINES,
+    ).ok
+
+
+def test_a_value_beside_the_wrong_item_in_a_list_fails():
+    meera = facts_text(build_facts(inputs(*PATIENTS["meera"])))
+    # 33.2 is PCV's, 2024-06-14 isn't a date of Haemoglobin's flagged value.
+    assert check("The latest report flags Haemoglobin 33.2 %.", meera).numbers == (
+        "33.2",
+    )
+    assert not check("Iron deficiency anaemia was stated on 2025-04-12.", meera).ok
+
+
+def test_the_check_needs_the_facts_as_facts_text_writes_them():
+    with pytest.raises(TypeError):
+        check("TSH is falling.", str(FATIMA_LINES))
+
+
+def test_a_rejected_overview_is_sent_back_once_with_what_failed():
+    facts = build_facts(inputs(*PATIENTS["fatima"]))
+    chat = Replies("TSH is improving at 2.5.", "TSH is falling, based on 2 reports.")
+
+    overview = write_overview(facts, "p", chat=chat)
+
+    assert (overview.outcome, overview.text, overview.attempts) == (
+        "shown", "TSH is falling, based on 2 reports.", 2
+    )  # fmt: skip
+    first, second = chat.sent
+    assert second[:2] == first
+    assert second[2] == {"role": "assistant", "content": "TSH is improving at 2.5."}
+    assert second[3]["role"] == "user"
+    assert "2.5" in second[3]["content"] and "improving" in second[3]["content"]
+
+
+def test_an_overview_that_fails_twice_is_left_out():
+    facts = build_facts(inputs(*PATIENTS["fatima"]))
+    chat = Replies("TSH is improving.", "TSH is worsening.")
+
+    overview = write_overview(facts, "p", chat=chat)
+
+    assert (overview.outcome, overview.text, overview.attempts) == ("rejected", None, 2)
+    assert overview.check.unknown_words == 1
+
+
+@pytest.mark.parametrize("retry", [ConnectionError("down"), "  "])
+def test_a_retry_with_no_answer_leaves_the_first_rejection(retry):
+    facts = build_facts(inputs(*PATIENTS["fatima"]))
+
+    overview = write_overview(facts, "p", chat=Replies("TSH is improving.", retry))
+
+    assert (overview.outcome, overview.text) == ("rejected", None)
+    assert overview.check.unknown_words == 1
+
+
+def test_a_passing_overview_is_not_sent_again():
+    facts = build_facts(inputs(*PATIENTS["fatima"]))
+    chat = Replies("TSH is falling.")
+
+    overview = write_overview(facts, "p", chat=chat)
+
+    assert (overview.outcome, overview.attempts, len(chat.sent)) == ("shown", 1, 1)
+
+
 def test_a_passing_overview_is_shown_escaped():
     facts = build_facts(inputs(*PATIENTS["fatima"]))
     overview = write_overview(facts, "p", chat=lambda *a, **k: "TSH is falling <b>")
 
-    assert overview.outcome == "rejected"  # "b" is not a word of the facts
+    assert overview.outcome == "rejected"  # "b" is not a word of the facts, twice
     overview = write_overview(facts, "p", chat=lambda *a, **k: "  TSH is\nfalling. ")
     assert (overview.outcome, overview.text) == ("shown", "TSH is falling.")
     html = summary_html(
