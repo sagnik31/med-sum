@@ -39,6 +39,7 @@ func TestProtectedRoutesNeedASession(t *testing.T) {
 		{http.MethodDelete, "/documents/" + unknownID},
 		{http.MethodGet, "/documents/" + unknownID + "/insight"},
 		{http.MethodPost, "/documents/" + unknownID + "/insight"},
+		{http.MethodGet, "/documents/" + unknownID + "/record"},
 		{http.MethodGet, "/user/insights"},
 		{http.MethodPost, "/user/insights"},
 	}

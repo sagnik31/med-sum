@@ -463,6 +463,32 @@
               }
             },
             {
+              "name": "Get Document Record",
+              "id": "83417c07-c36a-4a47-8169-487e2ec49bcd",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{backend_url}}/documents/:id/record",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "documents",
+                    ":id",
+                    "record"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "Document ID"
+                    }
+                  ]
+                },
+                "description": "The document's structured record as stored (printed and derived values, provenance, page transcriptions) and a flat list of its citations, each with the item's review status and low-confidence reasons. 404 for another user's document or before a record exists."
+              }
+            },
+            {
               "name": "Get Patient Summaries",
               "id": "f0c61940-4d09-468c-8a37-67f7b3a3b24e",
               "request": {

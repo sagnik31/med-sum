@@ -8,6 +8,7 @@ package db
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"os"
@@ -305,5 +306,37 @@ func TestGetInsightByDocumentID(t *testing.T) {
 	}
 	if ins.Status != "failed" || ins.ErrorMessage == nil || *ins.ErrorMessage != "model down" || ins.HTMLInsights != "" {
 		t.Errorf("insight = %+v", ins)
+	}
+}
+
+// ----- Records -----
+
+func TestGetDocumentRecord(t *testing.T) {
+	s := store(t)
+	ctx := context.Background()
+	me := mustUser(t, s, "me@hospital.test")
+	d := mustDocument(t, s, me.ID, "a.pdf")
+
+	rec, err := s.GetDocumentRecord(ctx, d.ID)
+	if err != nil || rec != nil {
+		t.Fatalf("before any record = %+v, %v; want nil, nil", rec, err)
+	}
+
+	_, err = s.pool.Exec(ctx, `
+INSERT INTO document_records (document_id, schema_version, record)
+VALUES ($1, 1, '{"schema_version": 1, "observations": [{"id": "obs-1"}]}')`, d.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rec, err = s.GetDocumentRecord(ctx, d.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if rec.DocumentID != d.ID || rec.SchemaVersion != 1 || rec.RunID != nil || rec.UpdatedAt.IsZero() {
+		t.Errorf("record row = %+v", rec)
+	}
+	var got map[string]any
+	if err := json.Unmarshal(rec.Record, &got); err != nil || got["schema_version"] != float64(1) {
+		t.Errorf("record = %s (%v)", rec.Record, err)
 	}
 }

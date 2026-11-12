@@ -247,6 +247,7 @@ All backend routes except `/healthz`, `/auth/login`, `/auth/logout` and `/auth/s
 | `DELETE` | `/documents/{id}` | Delete a document and its file |
 | `GET` | `/documents/{id}/insight` | Get the summary and its status (`not_started`, `processing`, `verified`, `needs_review`, `failed`) |
 | `POST` | `/documents/{id}/insight` | Start or retry processing |
+| `GET` | `/documents/{id}/record` | The document's structured record as stored: every printed and derived value, the page transcriptions, and each item's provenance. `citations` lists every value's page, lines and quoted text with its item's review status (`validated`, `low_confidence`, ...) and the reasons it was flagged. 404 before the document has a record |
 | `POST` | `/documents/{id}/reprocess` | Process the document again from the start, as a new run |
 | `GET` | `/user/insights` | Get the cumulative patient summary and its status (`none`, `processing`, `completed`, `failed`) |
 | `POST` | `/user/insights` | Start generating the cumulative patient summary |

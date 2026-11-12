@@ -57,6 +57,7 @@ type Store interface {
 	GetDocumentByIDAndUser(ctx context.Context, docID, userID string) (*db.Document, error)
 	DeleteDocumentByIDAndUser(ctx context.Context, docID, userID string) (storagePath string, shared bool, err error)
 	GetInsightByDocumentID(ctx context.Context, docID string) (*db.Insight, error)
+	GetDocumentRecord(ctx context.Context, docID string) (*db.DocumentRecord, error)
 }
 
 // Config is what the server needs besides its store.
@@ -317,7 +318,8 @@ func (s *Server) handleListDocuments(w http.ResponseWriter, r *http.Request) {
 // ----- Single document routes: /documents/{id} and /documents/{id}/insight -----
 
 func (s *Server) handleDocumentByID(w http.ResponseWriter, r *http.Request) {
-	// Path is /documents/{id}, /documents/{id}/insight or /documents/{id}/reprocess
+	// Path is /documents/{id}, /documents/{id}/insight, /documents/{id}/record
+	// or /documents/{id}/reprocess
 	path := strings.TrimPrefix(r.URL.Path, "/documents/")
 	if path == "" {
 		w.WriteHeader(http.StatusNotFound)
@@ -347,6 +349,18 @@ func (s *Server) handleDocumentByID(w http.ResponseWriter, r *http.Request) {
 			}
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+		return
+	}
+
+	// /documents/{id}/record: the structured record with its citations
+	if len(parts) == 2 && parts[1] == "record" {
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		if permit(w, r, authz.DocumentRead) {
+			s.handleGetDocumentRecord(w, r, docID)
 		}
 		return
 	}

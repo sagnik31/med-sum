@@ -56,6 +56,7 @@ type fakeStore struct {
 	tokens    map[string]*fakeToken
 	documents map[string]*db.Document
 	insights  map[string]*db.Insight
+	records   map[string]*db.DocumentRecord
 	summaries map[string]*db.PatientSummary
 	failWith  error // returned by every method when set
 }
@@ -72,6 +73,7 @@ func newFakeStore() *fakeStore {
 		tokens:    map[string]*fakeToken{},
 		documents: map[string]*db.Document{},
 		insights:  map[string]*db.Insight{},
+		records:   map[string]*db.DocumentRecord{},
 		summaries: map[string]*db.PatientSummary{},
 	}
 }
@@ -453,6 +455,19 @@ func (f *fakeStore) GetInsightByDocumentID(_ context.Context, docID string) (*db
 	}
 	if ins, ok := f.insights[docID]; ok {
 		copied := *ins
+		return &copied, nil
+	}
+	return nil, nil
+}
+
+func (f *fakeStore) GetDocumentRecord(_ context.Context, docID string) (*db.DocumentRecord, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return nil, f.failWith
+	}
+	if rec, ok := f.records[docID]; ok {
+		copied := *rec
 		return &copied, nil
 	}
 	return nil, nil
