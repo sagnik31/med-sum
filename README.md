@@ -1,10 +1,10 @@
 # Med-Sum
 
-Med-Sum turns medical documents into readable summaries. A patient uploads prescriptions, lab reports or discharge summaries as PDFs or images. A vision-language model extracts the clinical content page by page, and a smaller text model writes a structured summary for each document. The goal is a cumulative patient summary that a doctor can read before a visit.
+Med-Sum turns medical documents into checked, structured records that a doctor can read before a visit. Hospital staff upload lab reports and prescriptions as PDFs or images. A LangGraph pipeline has a local vision-language model transcribe each page and fill in a schema for the document's type; deterministic code then derives numbers, ranges, flags and dates, checks every value against the page it came from, and sends anything it can't confirm to review. Each document's page and the cumulative patient summary are built by code from those records, so every value shown is printed on a document and cites where.
 
 All model inference runs locally through [Ollama](https://ollama.com), so documents never leave the machine.
 
-> **Status:** an early-stage personal project. Staff accounts, sessions, roles and staff management are in place, but patient records and an audit log are not yet (see [Limitations](#limitations)), so do not use it with real patient data. Generated summaries can be wrong and are not medical advice.
+> **Status:** an early-stage personal project. Staff accounts, sessions, roles and staff management are in place, but patient records and an audit log are not yet (see [Limitations](#limitations)), so do not use it with real patient data. The models can misread a document, so extracted values can be wrong; nothing here is medical advice. The repository holds synthetic data only.
 
 ## Contents
 
@@ -32,9 +32,9 @@ flowchart LR
 
 The system has three services that share one PostgreSQL database:
 
-- **Frontend (React).** Login and password setup, document upload and listing, and a viewer for the generated summaries.
-- **Backend (Go).** The public API. It handles accounts, login sessions and uploads, checks that a document belongs to the caller, and forwards processing requests to the AI service.
-- **AI service (Python).** Runs the extraction and summarisation pipeline against local Ollama models.
+- **Frontend (React).** Login and password setup, staff management, document upload and listing with each document's status, and viewers for the document pages and the patient summary.
+- **Backend (Go).** The public API. It handles accounts, login sessions and uploads, checks that a document belongs to the caller, serves each document's record with its citations, and forwards processing requests to the AI service.
+- **AI service (Python).** Runs the document pipeline and the patient summary against local Ollama models, and builds both pages in code.
 
 When a document is uploaded, the Go API asks the AI service to queue it. A worker in the AI service takes queued documents one at a time and runs each through the document pipeline, a [LangGraph](https://langchain-ai.github.io/langgraph/) graph. The document list and summary pages update themselves while it runs:
 
@@ -81,8 +81,9 @@ The app is for hospital staff; patients have no accounts.
 |---|---|
 | Frontend | React 18, React Router, Vite, Tailwind CSS |
 | Backend | Go (`net/http`), pgx, argon2id passwords, server-side sessions |
-| AI service | Python, FastAPI, PyMuPDF, Ollama Python client |
-| Models | `qwen3.5:4b` (primary, extraction and summaries), `gemma4:e2b` (fallback) |
+| AI service | Python, FastAPI, PyMuPDF, psycopg 3, Ollama Python client |
+| Pipeline | LangGraph, with Postgres checkpoints; Pydantic record schemas |
+| Models | `qwen3.5:4b` (primary: transcription, classification, parsing, the summary's overview), `gemma4:e2b` (fallback) |
 | Database | PostgreSQL |
 
 ## Getting started
@@ -203,7 +204,7 @@ On PowerShell, set the same variables with `$env:NAME = "value"`.
 
 1. Open http://localhost:5173 and log in as `dev-clinician@med-sum.test` with your `MEDSUM_DEV_PASSWORD`.
 2. Upload a lab report or prescription as a PDF, JPG or PNG. Processing starts straight away; the document list shows its status and updates itself. On a CPU each page takes a few minutes.
-3. Open the document to read its summary once it shows **Ready**.
+3. Open the document once it shows **Verified** or **Needs review** to read the values extracted from it; a document that needs review says which values to check and why.
 4. Open **Patient summary** and choose **Generate summary** to combine every processed document.
 
 ## Configuration
@@ -287,8 +288,9 @@ scripts/
   src/pipeline/              the document graph: nodes, routing, low-confidence signals, checkpoints
   src/views/                 HTML built by code from records: the document page and the patient summary
   src/summary/               the patient summary: facts from the records, the overview and its check
-  src/extract_report_slm.py  page extraction from images
-  src/generate_insights_txt.py  summary generation
+  src/extract_report_slm.py  page transcription from images
+  src/generate_insights_txt.py  standalone model-written HTML from a transcription, and its sanitiser (prompt tuning only; the service doesn't use it)
+  src/model_health.py        the circuit breaker per model
   src/llm.py                 model calls with the primary and fallback model
   src/record/                the structured record of a document and the schemas the model fills in
   src/derive/                values computed from the printed text: numbers, ranges, flags, unit table, dose schedules, dates
@@ -297,8 +299,9 @@ scripts/
   src/reset_db.py            resets the development database and uploads
   schemas/                   those schemas exported as JSON (regenerate: `python -m record.schemas` in src/)
   src/dataset/               synthetic dataset generator and loader
+  src/evals/                 scoring of records and transcriptions against the answer keys, model choice, reports
   evals/dataset/             the generated dataset: fictional documents, answer keys, transcriptions
-  prompt/                prompts for extraction and summaries
+  prompt/                    prompts: page transcription, classify, parse per type, repair, the summary's overview
   tests/                 pytest suite (fixtures in conftest.py)
   requirements.in        direct dependencies; requirements.txt pins every package
   requirements-dev.in    test tools; requirements-dev.txt pins them
@@ -323,7 +326,7 @@ Checks and tests for each part:
 
 The tests never call a model: model calls are replaced with fakes, so Ollama need not be running. The database tests create a throwaway database (`med_sum_test_go` for Go, `med_sum_test_py` for Python) from `db/schema.sql`, and drop it afterwards; your `med_sum` database is not touched. The Go tests need `psql` on the `PATH`. Both connect as `postgres:postgres@localhost:5432` unless `MEDSUM_TEST_ADMIN_URL` says otherwise. When Postgres can't be reached they are skipped; set `MEDSUM_REQUIRE_DB=1` to make that a failure. `pytest -m "not db"` runs only the tests that need no database.
 
-The extraction and summary steps can also be run on their own, which is useful for tuning prompts. `python scripts/src/extract_report_slm.py [file]` transcribes a file (by default a synthetic lab report from `scripts/evals/dataset/`) and writes Markdown to `data/output/`; `python scripts/src/generate_insights_txt.py` turns that Markdown into HTML. The paths are set in `scripts/src/config.py`, and `data/` is not checked in.
+Page transcription can also be run on its own, which is useful for tuning the prompt: `python scripts/src/extract_report_slm.py [file]` transcribes a file (by default a synthetic lab report from `scripts/evals/dataset/`) and writes Markdown to `data/output/`. The paths are set in `scripts/src/config.py`, and `data/` is not checked in.
 
 ### Synthetic dataset
 
@@ -333,6 +336,10 @@ The extraction and summary steps can also be run on their own, which is useful f
 
 - **Authentication is not finished.** Accounts, sessions, roles and staff management work, but each account still sees only the documents it uploaded (patient records shared within an organisation come later), and there is no audit log and no second factor. The first admin of an organisation is created from the command line. Medical registration numbers are not verified. There is no email, so setup and reset links are handed over by whoever creates them.
 - **The patient summary is regenerated only on request**, not when a document finishes.
+- **Vision misreads are only caught where a PDF has a text layer.** A scan or photo has no independent text to compare the model's reading with, so a value read wrongly but consistently passes the checks.
+- **No medical codes or brand-to-generic mapping.** Medicines are kept as written (brands stay brands), and no LOINC, SNOMED or RxNorm codes are assigned: the local models aren't reliable enough to map them.
+- **Lab reports and prescriptions only.** Any other document is kept, transcribed and marked for review, but not parsed.
+- **Not yet evaluated.** A scorer and a synthetic dataset with answer keys exist, but the pipeline has not been measured on them across both models, and citations and clinician corrections are not yet on screen.
 - **The overview check is strict and literal.** It compares words, not meanings: numbers are checked as a set (a "4" anywhere in the facts lets a "4" through), and an ordinary word missing from its fixed list leaves the overview out. Its layout is a first draft.
 - **No container setup** yet, and no CI.
 
@@ -341,7 +348,6 @@ The extraction and summary steps can also be run on their own, which is useful f
 The next phase focuses on doctors and hospital groups:
 
 - Patient records with organisation-scoped access, an audit log and a second factor
-- Patient-controlled sharing of records with doctors
 - Citations shown on screen, and a review screen where a clinician confirms or corrects flagged values
 - An evaluation harness run on both models, with fault injection to measure the checks themselves
 
