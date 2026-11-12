@@ -42,7 +42,8 @@ When a document is uploaded, the Go API asks the AI service to queue it. A worke
 2. **Classify.** The model labels the document as a lab report, a prescription or something else, and a keyword check confirms the label. Anything else keeps its transcription and goes to review.
 3. **Parse.** The model fills in the schema for that type from the transcription. A reply that doesn't fit the schema is sent back with what was wrong, up to twice; then the fallback model gets three tries of its own.
 4. **Validate.** Code builds the record (numbers, ranges, flags, dates) and checks it against the transcription and the PDF text. Errors go back to the model for repair, like a reply that doesn't fit.
-5. **Finish.** The record is saved with what each value traces back to, and the HTML summary is written. A document ends `verified`, or `needs_review` when a low-confidence signal fired (a value the checks couldn't confirm, a cut-off page, a patient name that doesn't match the account, and others); the summary page then says which values to check. Anything that can't be recovered from ends `failed` with a message, and the user can retry from the UI.
+5. **Render.** Code builds the document's page from the record, with no model call: every value exactly as printed, values computed by code (the document date, a flag from the printed range, a unit conversion, doses a day) marked as derived, and nothing the record doesn't hold, so no "abnormal" or severity of its own. A value that awaits review shows why, in plain words.
+6. **Finish.** The record is saved with what each value traces back to. A document ends `verified`, or `needs_review` when a low-confidence signal fired (a value the checks couldn't confirm, a cut-off page, a patient name that doesn't match the account, and others); the document page then says which values to check. Anything that can't be recovered from ends `failed` with a message, and the user can retry from the UI.
 
 Each document's run, its steps, and the prompt and model used at each are stored in the database. **Reprocess** on the summary page runs the document again from the start, for when the pipeline has changed; the new run's record replaces the last.
 
@@ -52,7 +53,7 @@ The cumulative patient summary is a separate background job, started from the Pa
 
 - **The AI service is not exposed to the browser.** Only the Go API calls it, after checking that the document belongs to the user, and every call carries a shared secret.
 - **Recovery from crashed workers.** A job is claimed with a lease of 5 minutes, which a heartbeat renews every minute while the document runs. When a worker dies, its lease runs out and another worker takes the job over, carrying on from the graph's last checkpoint (kept in Postgres) instead of starting again. A job claimed three times without finishing is set aside, and every write a worker makes checks that it still holds the claim. The patient summary keeps its older lock: a summary with no progress for 30 minutes can be taken over by a new request.
-- **Untrusted model output is contained.** A document can carry text aimed at the model, so its output is treated as untrusted. The AI service strips scripts, styles, images, embeds, forms, event handlers and `javascript:` links from generated HTML. The UI shows it in a sandboxed iframe with scripts disabled and a content security policy that blocks every remote load, so the HTML cannot send data to another server.
+- **Untrusted model output is contained.** A document can carry text aimed at the model, so its output is treated as untrusted. The document page is built by code, and every printed value is escaped, so text that looks like HTML is shown as text. Where a model still writes HTML (the patient summary), the AI service strips scripts, styles, images, embeds, forms, event handlers and `javascript:` links from it. The UI shows it in a sandboxed iframe with scripts disabled and a content security policy that blocks every remote load, so the HTML cannot send data to another server.
 - **Bounded work.** Uploads must be PDF, JPG or PNG files whose content matches the extension, are capped at 20 MB and 20 PDF pages, and are stored under random file names. Model output is capped per page and per summary so a looping model cannot run forever, and a model call that sends nothing for 10 minutes is abandoned.
 - **Fallback model and circuit breaker.** Both models read images and text. If `qwen3.5:4b` returns an error or hits the output cap, the same request goes to `gemma4:e2b`. If both fail, the job is marked `failed`, so cut-off output is never saved as a result. A model whose server errors or times out three times in a row is skipped for 15 minutes, so requests go straight to the other model; after that one call tries it again. With both skipped, a job fails at once with "No model available". A reply the pipeline can't use (off its schema, or failing the checks) is counted per model for diagnosis but doesn't trip the breaker. `GET /health` shows each model's state.
 
@@ -278,6 +279,7 @@ scripts/
   src/insights_service.py    FastAPI service; starts the document worker
   src/document_jobs.py       the document job queue: claims, leases, the worker
   src/pipeline/              the document graph: nodes, routing, low-confidence signals, checkpoints
+  src/views/                 HTML built by code from records: the document page
   src/extract_report_slm.py  page extraction from images
   src/generate_insights_txt.py  summary generation
   src/llm.py                 model calls with the primary and fallback model
@@ -324,7 +326,7 @@ The extraction and summary steps can also be run on their own, which is useful f
 
 - **Authentication is not finished.** Accounts, sessions, roles and staff management work, but each account still sees only the documents it uploaded (patient records shared within an organisation come later), and there is no audit log and no second factor. The first admin of an organisation is created from the command line. Medical registration numbers are not verified. There is no email, so setup and reset links are handed over by whoever creates them.
 - **Patient summary ordering.** Reports are ordered by upload date, not by the date printed on them, and the summary is only regenerated on request.
-- **Summaries are model-written HTML.** Each document's values are stored as a checked, structured record, but the summary page is still written by the model from the transcription, not from that record.
+- **The patient summary is model-written HTML.** Each document's page is built from its checked record, but the cumulative patient summary is still written by the model from the transcriptions.
 - **No container setup** yet, and no CI.
 
 ## Roadmap

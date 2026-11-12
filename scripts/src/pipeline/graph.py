@@ -24,7 +24,7 @@ from pipeline.nodes import NODES
 from pipeline.state import GraphState
 
 # Stored on every run; change it when the graph's shape changes.
-GRAPH_VERSION = "document-graph-1"
+GRAPH_VERSION = "document-graph-2"
 
 # Node visits a run may make: up to 20 pages, two models of three parse
 # attempts each with their validations, and the fixed nodes, with room.

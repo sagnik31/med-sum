@@ -92,7 +92,6 @@ def replies_for(model_client, doc_id: str = "d02"):
         *["\n".join(p.lines) for p in key(doc_id).pages],
         json.dumps({"document_type": DOCS[doc_id]["type"]}),
         parse_of(key(doc_id)).model_dump_json(),
-        "<h2>Summary</h2>",
     ]
 
 
@@ -266,7 +265,7 @@ def test_a_job_runs_the_document_through_the_graph(db, model_client):
 
     status, html, error = insight_row(db, doc)
     assert (status, error) == ("verified", None)
-    assert "<h2>Summary</h2>" in html
+    assert "<h1>Prescription</h1>" in html
     row = job_row(db, doc)
     assert (row["status"], row["claimed_by"]) == ("done", None)
     with db.cursor() as cur:

@@ -18,7 +18,6 @@ FILES = {
     "parse_lab_report": PROMPT_DIR / "txt" / "parse_lab_report.txt",
     "parse_prescription": PROMPT_DIR / "txt" / "parse_prescription.txt",
     "repair_parse": PROMPT_DIR / "txt" / "repair_parse.txt",
-    "insight_prompt": Path(config.PROMPT_FILE),
 }
 
 PARSE_PROMPTS = {

@@ -30,6 +30,7 @@ from record.document import DocumentRecord, PageTranscription, numbered_document
 from record.printed import DocumentType, LabReportParse, PrescriptionParse
 from record.schemas import classifier_schema, parse_output_schema
 from validators import Finding, Severity, Validator
+from views.document import document_html
 
 LAB, RX, OTHER = DocumentType.LAB_REPORT, DocumentType.PRESCRIPTION, DocumentType.OTHER
 TODAY = date(2026, 11, 9)
@@ -885,21 +886,38 @@ def test_finish_without_a_record_is_a_routing_bug(db, run):
 # -------------------------------------------------------------------
 # render
 # -------------------------------------------------------------------
-def test_render_makes_the_insight_page_from_the_transcription(db, run, model_client):
-    state = transcribed("d09")
-    model_client.replies[llm.PRIMARY_MODEL] = [
-        "<h2>Summary</h2><script>alert(1)</script>"
-    ]
+def test_render_builds_the_view_from_the_record_without_a_model(db, run, model_client):
+    state = parsed_and_validated(run, model_client, "d09")
+    calls = len(model_client.calls)
 
     html = nodes.render(state)["insight_html"]
 
-    assert "<h2>Summary</h2>" in html and "<script>" not in html
-    call = model_client.calls[0]
-    assert call["messages"][0]["content"] == prompt("insight_prompt")
-    assert call["messages"][1]["content"] == nodes.plain_text(state["transcriptions"])
-    [row] = step_rows(db, run)
-    assert row["prompt_name"] == "insight_prompt"
-    assert row["input"] == {"pages": [1]}
+    assert len(model_client.calls) == calls
+    for o in state["record"].observations:
+        assert f'data-item="{o.id}"' in html
+        assert o.printed.test_name in html
+    [*_, row] = step_rows(db, run)
+    assert (row["node"], row["prompt_name"]) == ("render", None)
+    assert row["input"] == {
+        "pages": [1], "record_parsed": True, "findings": len(state["findings"])
+    }  # fmt: skip
+
+
+def test_render_shows_the_review_marks_finish_saves(db, run, model_client):
+    # A flag finding on the first result: render marks it as finish does.
+    state = parsed_and_validated(run, model_client, "d09")
+    state["findings"] = [
+        *state["findings"],
+        Finding(validator=Validator.FLAG_AGREEMENT, severity=Severity.FLAG,
+                message="flag differs", item_id="obs-1", field="flag_printed"),
+    ]  # fmt: skip
+
+    html = nodes.render(state)["insight_html"]
+    out = nodes.finish(state)
+
+    assert html == document_html(out["record"])
+    assert "Some values in this document await review" in html
+    assert "The printed flag differs from the flag computed from the range." in html
 
 
 # -------------------------------------------------------------------

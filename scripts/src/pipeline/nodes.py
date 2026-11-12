@@ -12,7 +12,7 @@ the current run (section 8.4).
     repair      the parse again, told what was wrong with its last reply
     fallback    switch to the fallback model once the primary's tries are used
     validate    the record built by code, and the validators' findings
-    render      the insight page the app shows today
+    render      the document view, built by code from the record
     finish      the low-confidence signals, the record saved, the end state
 
 What each step stores as its input is only what that node reads, with one
@@ -49,6 +49,7 @@ from record.printed import PARSE_MODELS, ClassifierOutput, DocumentType
 from record.schemas import classifier_schema, parse_output_schema
 from validators import Severity
 from validators import validate as run_validators
+from views.document import document_html
 
 CLASSIFY_MAX_TOKENS = 64
 # Characters of transcription the classifier reads: the first page or two
@@ -394,19 +395,55 @@ def validate(state: GraphState) -> dict:
 
 
 # -------------------------------------------------------------------
+# The record marked with its signals (render and finish)
+# -------------------------------------------------------------------
+def marked_record(state: GraphState, provenance) -> tuple:
+    """
+    A copy of the state's record with provenance on every item and the
+    section 8.8 signals applied (low confidence with reasons, or validated),
+    the signals, and whether the record was parsed. `provenance` gives the
+    provenance for a record that wasn't parsed (called only then). Pure
+    apart from that call, so render shows exactly what finish saves.
+    """
+    record = state.get("record")
+    if record is None:
+        raise ValueError("there is no record to finish")
+    record = record.model_copy(deep=True)
+    parsed = state.get("record_parsed", False)
+    hits = signals.collect(
+        doc_type=state.get("doc_type"),
+        record=record,
+        parsed=parsed,
+        findings=state.get("findings", []),
+        capped_pages=state.get("capped_pages", []),
+        classify_disagree=state.get("classify_disagree", False),
+        record_model_role=state.get("parse_model_role") if parsed else None,
+        repairs=state.get("repairs", 0),
+    )
+    stamp(record, state["parse_provenance"] if parsed else provenance())
+    signals.apply(record, hits)
+    return record, hits, parsed
+
+
+# -------------------------------------------------------------------
 # render
 # -------------------------------------------------------------------
-@traced("render", input_of=lambda s: {"pages": _page_numbers(s)})
-def render(state: GraphState) -> dict:
-    # Until step 10 renders the record in code: the insight page from the
-    # transcription, as the service has made it so far.
-    from generate_insights_txt import generate_insights_html
+def _render_input(state: GraphState) -> dict:
+    return {
+        "pages": _page_numbers(state),
+        "record_parsed": state.get("record_parsed", False),
+        "findings": len(state.get("findings", [])),
+    }
 
-    _step().set_prompt("insight_prompt", prompt("insight_prompt"))
-    html = generate_insights_html(
-        plain_text(state["transcriptions"]), prompt=prompt("insight_prompt")
-    )
-    return {"insight_html": html}
+
+@traced("render", input_of=_render_input)
+def render(state: GraphState) -> dict:
+    """
+    The document view, built by code from the record (views/document.py),
+    with the same review marks the finish node gives it. No model call.
+    """
+    record, _, parsed = marked_record(state, lambda: _step().provenance())
+    return {"insight_html": document_html(record, parsed=parsed)}
 
 
 # -------------------------------------------------------------------
@@ -437,24 +474,8 @@ def finish(state: GraphState) -> dict:
     verified. Every item must trace back to the step that produced it; a
     gap is a bug, so the record is not saved and the run fails.
     """
-    record = state.get("record")
-    if record is None:
-        raise ValueError("there is no record to finish")
-    record = record.model_copy(deep=True)
-    parsed = state.get("record_parsed", False)
-    hits = signals.collect(
-        doc_type=state.get("doc_type"),
-        record=record,
-        parsed=parsed,
-        findings=state.get("findings", []),
-        capped_pages=state.get("capped_pages", []),
-        classify_disagree=state.get("classify_disagree", False),
-        record_model_role=state.get("parse_model_role") if parsed else None,
-        repairs=state.get("repairs", 0),
-    )
     step = _step()
-    stamp(record, state["parse_provenance"] if parsed else step.provenance())
-    signals.apply(record, hits)
+    record, hits, _ = marked_record(state, step.provenance)
     store.save_record(record, run_id=step.run.id)
     end_state = "needs_review" if signals.needs_review(hits) else "verified"
     return {"record": record, "signals": hits, "end_state": end_state}

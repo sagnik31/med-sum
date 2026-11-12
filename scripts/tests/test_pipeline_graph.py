@@ -23,7 +23,6 @@ from record.document import DocumentRecord
 
 PRIMARY, FALLBACK = llm.PRIMARY_MODEL, llm.FALLBACK_MODEL
 TODAY = date(2026, 11, 9)
-INSIGHT = "<h2>Summary</h2>"
 
 
 @pytest.fixture(autouse=True)
@@ -121,7 +120,7 @@ def test_every_node_of_the_compiled_graph_is_traced():
 def test_a_clean_prescription_is_verified(db, document, model_client):
     state = document("d02")
     model_client.replies[PRIMARY] = [
-        *pages_of("d02"), classified("d02"), good_parse("d02"), INSIGHT,
+        *pages_of("d02"), classified("d02"), good_parse("d02"),
     ]  # fmt: skip
 
     final = run(state)
@@ -137,7 +136,11 @@ def test_a_clean_prescription_is_verified(db, document, model_client):
     record = saved(db, state["document_id"])
     assert record == final["record"]
     assert all(i.provenance.status is ItemStatus.VALIDATED for i in record.items())
-    assert INSIGHT in final["insight_html"]
+    # The view is built by code from the record: no model call after parse.
+    assert len(model_client.calls) == len(pages_of("d02")) + 2
+    assert model_client.replies[PRIMARY] == []
+    assert "<h1>Prescription</h1>" in final["insight_html"]
+    assert all(f'data-item="{i.id}"' in final["insight_html"] for i in record.items())
     # An image (no text layer) and lines no item uses: shown, never routed.
     assert {h.signal for h in final["signals"]} == {"LC-I1", "LC-I2"}
 
@@ -145,7 +148,7 @@ def test_a_clean_prescription_is_verified(db, document, model_client):
 def test_every_page_of_a_lab_report_is_transcribed(db, document, model_client):
     state = document("d01")
     model_client.replies[PRIMARY] = [
-        *pages_of("d01"), classified("d01"), good_parse("d01"), INSIGHT,
+        *pages_of("d01"), classified("d01"), good_parse("d01"),
     ]  # fmt: skip
 
     final = run(state)
@@ -160,7 +163,6 @@ def test_an_error_is_repaired(db, document, model_client):
     state = document("d09")
     model_client.replies[PRIMARY] = [
         *pages_of("d09"), classified("d09"), wrong_value("d09"), good_parse("d09"),
-        INSIGHT,
     ]  # fmt: skip
 
     final = run(state)
@@ -181,7 +183,7 @@ def test_the_fallback_takes_over_when_the_primary_s_tries_are_used(
     state = document("d09")
     model_client.replies[PRIMARY] = [
         *pages_of("d09"), classified("d09"),
-        *[wrong_value("d09")] * MAX_PARSE_ATTEMPTS, INSIGHT,
+        *[wrong_value("d09")] * MAX_PARSE_ATTEMPTS,
     ]  # fmt: skip
     model_client.replies[FALLBACK] = [good_parse("d09")]
 
@@ -199,7 +201,7 @@ def test_an_error_left_by_both_models_goes_to_review(db, document, model_client)
     state = document("d09")
     model_client.replies[PRIMARY] = [
         *pages_of("d09"), classified("d09"),
-        *[wrong_value("d09")] * MAX_PARSE_ATTEMPTS, INSIGHT,
+        *[wrong_value("d09")] * MAX_PARSE_ATTEMPTS,
     ]  # fmt: skip
     model_client.replies[FALLBACK] = [wrong_value("d09")] * MAX_PARSE_ATTEMPTS
 
@@ -218,7 +220,6 @@ def test_replies_that_never_fit_the_schema_leave_the_pages_for_review(
     state = document("d09")
     model_client.replies[PRIMARY] = [
         *pages_of("d09"), classified("d09"), *['{"patient":'] * MAX_PARSE_ATTEMPTS,
-        INSIGHT,
     ]  # fmt: skip
     model_client.replies[FALLBACK] = ['{"patient":'] * MAX_PARSE_ATTEMPTS
 
@@ -237,7 +238,7 @@ def test_a_later_failed_reply_keeps_the_last_record_validated(
     state = document("d09")
     model_client.replies[PRIMARY] = [
         *pages_of("d09"), classified("d09"), wrong_value("d09"),
-        *['{"patient":'] * (MAX_PARSE_ATTEMPTS - 1), INSIGHT,
+        *['{"patient":'] * (MAX_PARSE_ATTEMPTS - 1),
     ]  # fmt: skip
     model_client.replies[FALLBACK] = ['{"patient":'] * MAX_PARSE_ATTEMPTS
 
@@ -252,7 +253,7 @@ def test_a_later_failed_reply_keeps_the_last_record_validated(
 def test_a_document_of_type_other_goes_to_review_unparsed(db, document, model_client):
     state = document("d17")
     model_client.replies[PRIMARY] = [
-        *pages_of("d17"), '{"document_type": "other"}', INSIGHT,
+        *pages_of("d17"), '{"document_type": "other"}',
     ]  # fmt: skip
 
     final = run(state)
@@ -266,7 +267,7 @@ def test_a_document_of_type_other_goes_to_review_unparsed(db, document, model_cl
 def test_a_document_for_another_patient_goes_to_review(db, document, model_client):
     state = document("d16")
     model_client.replies[PRIMARY] = [
-        *pages_of("d16"), classified("d16"), good_parse("d16"), INSIGHT,
+        *pages_of("d16"), classified("d16"), good_parse("d16"),
     ]  # fmt: skip
 
     final = run(state)
