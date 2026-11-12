@@ -1,4 +1,4 @@
-"""The AI service's routes: internal token checks and job scheduling (no database)."""
+"""The AI service's routes: internal token checks and job requests (no database)."""
 
 import pytest
 from fastapi.testclient import TestClient
@@ -10,10 +10,15 @@ TOKEN = "test-internal-token"
 
 @pytest.fixture
 def scheduled(monkeypatch):
-    """Record document jobs instead of running them."""
-    jobs = []
-    monkeypatch.setattr(service, "run_insights_pipeline", jobs.append)
-    return jobs
+    """Record document requests instead of queueing them."""
+    requests = []
+
+    def request(document_id, reprocess=False):
+        requests.append(document_id)
+        return "queued"
+
+    monkeypatch.setattr(service, "request_document", request)
+    return requests
 
 
 @pytest.fixture
@@ -37,7 +42,9 @@ def test_a_document_job_is_scheduled_with_the_right_token(client, scheduled):
     )
 
     assert response.status_code == 200
-    assert response.json() == {"status": "accepted", "document_id": "doc-1"}
+    assert response.json() == {
+        "status": "accepted", "document_id": "doc-1", "result": "queued"
+    }  # fmt: skip
     assert scheduled == ["doc-1"]
 
 

@@ -39,8 +39,11 @@ _ROUTES = {
 }
 
 
-def build(checkpointer=None):
-    """The compiled graph; with a checkpointer, every node's state is saved."""
+def build(checkpointer=None, **compile_options):
+    """
+    The compiled graph; with a checkpointer, every node's state is saved.
+    `compile_options` go to LangGraph's compile (e.g. interrupt_before).
+    """
     builder = StateGraph(GraphState)
     for name, node in NODES.items():
         builder.add_node(name, node)
@@ -51,7 +54,7 @@ def build(checkpointer=None):
     builder.add_edge("fallback", "parse")
     builder.add_edge("render", "finish")
     builder.add_edge("finish", END)
-    return builder.compile(checkpointer=checkpointer)
+    return builder.compile(checkpointer=checkpointer, **compile_options)
 
 
 def run_document(

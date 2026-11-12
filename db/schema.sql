@@ -98,14 +98,15 @@ CREATE TABLE documents (
 );
 CREATE INDEX documents_user_id_idx ON documents (user_id);
 
--- The processing job of a document: at most one row per document. Its
--- status is what the API reports; no row means not started. updated_at is
--- the running job's heartbeat.
+-- Where a document's processing stands: at most one row per document, and
+-- its status is what the API reports; no row means not started. processing
+-- while a job is queued or running (see jobs), then the run's end state.
 CREATE TABLE insights (
     id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     document_id   uuid NOT NULL UNIQUE REFERENCES documents (id) ON DELETE CASCADE,
     user_id       uuid,
-    status        text NOT NULL DEFAULT 'pending',
+    status        text NOT NULL DEFAULT 'processing'
+                  CHECK (status IN ('processing', 'verified', 'needs_review', 'failed')),
     html_insights text,
     error_message text,
     created_at    timestamptz NOT NULL DEFAULT now(),
@@ -368,3 +369,33 @@ CREATE TABLE document_records (
     updated_at     timestamptz NOT NULL DEFAULT now(),
     CHECK ((record ->> 'schema_version')::integer = schema_version)
 );
+
+-- -------------------------------------------------------------------
+-- Document jobs: the queue the AI service's worker takes documents from,
+-- one job at a time. A worker claims a job for a lease and renews it while
+-- it runs; a job whose lease ran out (the worker died) is claimed again
+-- and resumes its run from the last checkpoint. Every write a worker makes
+-- for a job checks that it still holds the claim, so a worker that lost
+-- it can't overwrite the new owner's result. A job claimed more than the
+-- allowed number of times is parked, so a document that kills its worker
+-- can't loop.
+-- -------------------------------------------------------------------
+CREATE TABLE jobs (
+    id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    document_id uuid NOT NULL REFERENCES documents (id) ON DELETE CASCADE,
+    status      text NOT NULL DEFAULT 'queued'
+                CHECK (status IN ('queued', 'running', 'done', 'failed', 'parked')),
+    attempts    integer NOT NULL DEFAULT 0 CHECK (attempts >= 0),
+    claimed_by  text,
+    lease_until timestamptz,
+    -- The pipeline run of the current attempt, resumed after a takeover.
+    run_id      uuid REFERENCES pipeline_runs (id) ON DELETE SET NULL,
+    error       text,
+    created_at  timestamptz NOT NULL DEFAULT now(),
+    updated_at  timestamptz NOT NULL DEFAULT now(),
+    CHECK ((status = 'running') = (claimed_by IS NOT NULL AND lease_until IS NOT NULL))
+);
+-- At most one open job per document.
+CREATE UNIQUE INDEX jobs_open_document_idx ON jobs (document_id)
+    WHERE status IN ('queued', 'running');
+CREATE INDEX jobs_next_idx ON jobs (created_at) WHERE status IN ('queued', 'running');

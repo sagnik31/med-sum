@@ -5,24 +5,19 @@ Insights Generation Service (FastAPI)
 
 - Exposes:
     GET  /health
-    POST /internal/generate-insights        (background, per document)
+    POST /internal/generate-insights        (queue a document's job)
     POST /internal/generate-user-insights   (background, per user)
 
 - Internal only: /internal/* requires the X-Internal-Token header to match
   INTERNAL_API_TOKEN. No CORS, so browsers cannot call it; the Go backend
-  checks document ownership and forwards requests here.
+  checks access to the document and forwards requests here.
 
-- Flow:
-    1) Frontend calls Go: GET /documents/{id}/insight
-    2) If no insight -> frontend calls Go: POST /documents/{id}/insight,
-       which calls POST /internal/generate-insights { "document_id": "<id>" }
-    3) Frontend shows "insights are being generated" message
-
-Current behavior of the worker:
-    - Looks up the document's storage_path in the DB (an absolute path written by the backend)
-    - Extracts Markdown from page images, cached in documents.extracted_markdown
-    - Generates HTML insights from that Markdown
-    - Both steps use the primary model, with a fallback (see llm.py)
+- Documents: a request queues a job (document_jobs, the jobs table), and a
+  worker thread started with the app takes jobs one at a time and runs each
+  document through the pipeline graph (pipeline.graph): transcribe,
+  classify, parse with repair and the fallback model, validate, render.
+  The document ends verified or needs_review, or failed with its error.
+  MEDSUM_WORKER=0 starts the app without the worker (tests).
 
 - Logs: structured JSON lines on stderr and in config.LOG_FILE, set up when
   the app starts (observability.configure_logging). They carry ids, events
@@ -34,14 +29,15 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, BackgroundTasks, Depends, Header, HTTPException
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import psycopg
 
 import os
 
 import config
+import document_jobs
 from observability import configure_logging
+from pipeline import checkpoints
 
 
 # -------------------------------------------------------------------
@@ -62,6 +58,10 @@ def _obs(event: str, **fields) -> dict:
 INTERNAL_API_TOKEN = os.environ.get("INTERNAL_API_TOKEN", "")
 
 
+def worker_enabled() -> bool:
+    return os.environ.get("MEDSUM_WORKER", "1") != "0"
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     configure_logging(log_file=config.LOG_FILE)
@@ -71,7 +71,17 @@ async def lifespan(app: FastAPI):
             "INTERNAL_API_TOKEN is not set; /internal/* will reject all calls",
             extra=_obs("internal_token_missing"),
         )
-    yield
+    worker = None
+    if worker_enabled():
+        checkpoints.setup()  # the checkpoint tables, created or migrated
+        worker = document_jobs.Worker()
+        worker.start()
+    app.state.worker = worker
+    try:
+        yield
+    finally:
+        if worker is not None:
+            worker.stop(timeout=5)
 
 
 app = FastAPI(title="Insights Generation Service", lifespan=lifespan)
@@ -87,9 +97,8 @@ def require_internal_token(x_internal_token: str = Header(default="")) -> None:
         raise HTTPException(status_code=401, detail="invalid internal token")
 
 
-# A 'processing' job with no heartbeat for this long is treated as abandoned
-# and may be claimed again. Heartbeats happen before each PDF page and before
-# insight generation, each bounded by the token caps in the model modules.
+# A patient summary job 'processing' this long is treated as abandoned and
+# may be claimed again.
 STALE_PROCESSING_AFTER = "30 minutes"
 
 
@@ -121,206 +130,14 @@ def get_db_connection():
     return psycopg.connect(dsn)
 
 
-def touch_insight(conn, document_id: str) -> None:
-    """Heartbeat: bump updated_at so a live job is not mistaken for a stale one."""
-    with conn.cursor() as cur:
-        cur.execute(
-            "UPDATE insights SET updated_at = NOW() WHERE document_id = %s AND status = 'processing'",
-            (document_id,),
-        )
-    conn.commit()
-
-
-def mark_insight_failed(conn, document_id: str, message: str) -> None:
-    """Record a failed run so the UI can show it and a later request can retry."""
-    try:
-        conn.rollback()
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                UPDATE insights
-                SET status = 'failed', error_message = %s, updated_at = NOW()
-                WHERE document_id = %s
-                """,
-                (message, document_id),
-            )
-        conn.commit()
-    except Exception:
-        logger.exception(
-            "could not record the failed document job",
-            extra=_obs("job_failure_not_recorded", document_id=document_id),
-        )
-
-
-def run_insights_pipeline(document_id: str) -> None:
-    """
-    Background job that:
-      1. Looks up `storage_path` and `extracted_markdown` from DB.
-      2. If markdown missing -> runs VLM extraction & saves to DB.
-      3. If markdown exists -> skips VLM.
-      4. Generates HTML insights via generate_insights_html (SLM).
-      5. Saves the result to the DB.
-    """
-    logger.info(
-        "document job started", extra=_obs("job_started", document_id=document_id)
-    )
-
-    conn = get_db_connection()
-    claimed = False
-    try:
-        # 0. Claim the job: create a 'processing' row, or re-claim a 'failed'
-        #    one (retry) or a stale 'processing' one (worker died mid-job,
-        #    e.g. a --reload restart). Completed and live jobs are left alone.
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                INSERT INTO insights (document_id, user_id, status)
-                SELECT id, user_id, 'processing' FROM documents WHERE id = %s
-                ON CONFLICT (document_id) DO UPDATE
-                    SET status = 'processing', error_message = NULL, updated_at = NOW()
-                    WHERE insights.status = 'failed'
-                       OR (insights.status = 'processing'
-                           AND insights.updated_at < NOW() - %s::interval)
-                RETURNING id
-                """,
-                (document_id, STALE_PROCESSING_AFTER),
-            )
-            claimed = cur.fetchone() is not None
-            conn.commit()
-
-        if not claimed:
-            logger.info(
-                "document job not claimed: no such document, or it is already"
-                " completed or being processed",
-                extra=_obs("job_not_claimed", document_id=document_id),
-            )
-            return
-
-        # 1. Get file path and existing markdown
-        input_path = None
-        existing_markdown = None
-
-        with conn.cursor() as cur:
-            cur.execute(
-                "SELECT storage_path, extracted_markdown FROM documents WHERE id = %s",
-                (document_id,),
-            )
-            row = cur.fetchone()
-            if row:
-                input_path = row[0]
-                existing_markdown = row[1]
-
-        if not input_path:
-            logger.error(
-                "document has no stored file path",
-                extra=_obs("file_path_missing", document_id=document_id),
-            )
-            mark_insight_failed(conn, document_id, "Document has no stored file path.")
-            return
-
-        # The backend stores absolute paths. Older rows hold paths like
-        # "uploads/file.jpg", relative to backend/ (where it used to run).
-        if not os.path.isabs(input_path):
-            from config import PROJECT_ROOT
-
-            input_path = os.path.join(PROJECT_ROOT, "backend", input_path)
-
-        if not os.path.exists(input_path):
-            logger.error(
-                "uploaded file not found on disk",
-                extra=_obs("file_missing", document_id=document_id),
-            )
-            mark_insight_failed(conn, document_id, "Uploaded file not found on disk.")
-            return
-
-        # 2. Conditional Extraction
-        markdown = existing_markdown
-        if not markdown:
-            logger.info(
-                "no cached transcription; transcribing the pages",
-                extra=_obs("transcription_started", document_id=document_id),
-            )
-            # Run extraction only
-            from extract_report_slm import extract_markdown_from_file
-
-            markdown = extract_markdown_from_file(
-                input_path, on_page=lambda: touch_insight(conn, document_id)
-            )
-
-            # Save extracted markdown back to DB
-            try:
-                with conn.cursor() as cur:
-                    cur.execute(
-                        "UPDATE documents SET extracted_markdown = %s, updated_at = NOW() WHERE id = %s",
-                        (markdown, document_id),
-                    )
-                    conn.commit()
-                logger.info(
-                    "transcription saved",
-                    extra=_obs(
-                        "transcription_saved",
-                        document_id=document_id,
-                        markdown_chars=len(markdown),
-                    ),
-                )
-            except Exception:
-                # Logged by type only: the message could quote the document.
-                logger.exception(
-                    "could not save the transcription; going on without caching it",
-                    extra=_obs("transcription_not_saved", document_id=document_id),
-                )
-                conn.rollback()
-        else:
-            logger.info(
-                "using the cached transcription",
-                extra=_obs("transcription_cached", document_id=document_id),
-            )
-
-        # 3. Generate HTML Insights (SLM)
-        from generate_insights_txt import generate_insights_html
-
-        touch_insight(conn, document_id)
-
-        html = generate_insights_html(markdown)
-
-        logger.info(
-            "insight HTML generated",
-            extra=_obs(
-                "insights_generated",
-                document_id=document_id,
-                markdown_chars=len(markdown),
-                html_chars=len(html),
-            ),
-        )
-
-        # 4. Save to DB (Update)
-        with conn.cursor() as cur:
-            update_query = """
-                UPDATE insights
-                SET html_insights = %s, status = 'completed', updated_at = NOW()
-                WHERE document_id = %s
-            """
-            cur.execute(update_query, (html, document_id))
-            conn.commit()
-            logger.info(
-                "document job completed",
-                extra=_obs("job_completed", document_id=document_id),
-            )
-
-    except Exception as e:
-        # The message goes to the database only; the log gets its type.
-        logger.exception(
-            "document job failed", extra=_obs("job_failed", document_id=document_id)
-        )
-        if claimed:
-            mark_insight_failed(conn, document_id, str(e) or type(e).__name__)
-    finally:
-        if conn:
-            conn.close()
-
-    logger.info(
-        "document job finished", extra=_obs("job_finished", document_id=document_id)
-    )
+def request_document(document_id: str, *, reprocess: bool = False) -> str:
+    """Queue the document's job and wake the worker; see document_jobs.enqueue."""
+    with document_jobs.connect() as conn:
+        result = document_jobs.enqueue(conn, document_id, reprocess=reprocess)
+    worker = getattr(app.state, "worker", None)
+    if worker is not None:
+        worker.wake.set()
+    return result
 
 
 # -------------------------------------------------------------------
@@ -333,30 +150,19 @@ async def health():
 
 
 @app.post("/internal/generate-insights", dependencies=[Depends(require_internal_token)])
-async def generate_insights_endpoint(
-    req: GenerateInsightsRequest,
-    background_tasks: BackgroundTasks,
-):
+def generate_insights_endpoint(req: GenerateInsightsRequest):
     """
-    Trigger insight generation for a given document_id.
-
-    Called by the Go backend (POST /documents/{id}/insight) after it has
-    checked that the document belongs to the requesting user.
-
-    Returns quickly; work is done in the background task.
+    Queue processing for a document. Called by the Go backend after it has
+    checked access to the document. A document that already reached an
+    end state, or has a job open, is left as it is; `result` says which.
+    Plain `def`: the database call blocks, so FastAPI runs it in a thread.
     """
     logger.info(
         "document job requested",
         extra=_obs("job_requested", document_id=req.document_id),
     )
-
-    # Schedule background worker
-    background_tasks.add_task(run_insights_pipeline, req.document_id)
-
-    return JSONResponse(
-        status_code=200,
-        content={"status": "accepted", "document_id": req.document_id},
-    )
+    result = request_document(req.document_id)
+    return {"status": "accepted", "document_id": req.document_id, "result": result}
 
 
 @app.post(

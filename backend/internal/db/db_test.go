@@ -212,7 +212,7 @@ func TestListDocumentsByUser(t *testing.T) {
 	newer := mustDocument(t, s, me.ID, "b.pdf")
 	mustDocument(t, s, other.ID, "c.pdf")
 	_, _ = s.pool.Exec(ctx, "UPDATE documents SET uploaded_at = NOW() - interval '1 day' WHERE id = $1", older.ID)
-	setInsight(t, s, older.ID, "completed", nil)
+	setInsight(t, s, older.ID, "verified", nil)
 
 	docs, err := s.ListDocumentsByUser(ctx, me.ID)
 	if err != nil {
@@ -221,7 +221,7 @@ func TestListDocumentsByUser(t *testing.T) {
 	if len(docs) != 2 || docs[0].ID != newer.ID || docs[1].ID != older.ID {
 		t.Fatalf("listed %v, want newest first and only mine", ids(docs))
 	}
-	if docs[0].InsightStatus != "not_started" || docs[1].InsightStatus != "completed" {
+	if docs[0].InsightStatus != "not_started" || docs[1].InsightStatus != "verified" {
 		t.Errorf("insight statuses = %q, %q", docs[0].InsightStatus, docs[1].InsightStatus)
 	}
 }
@@ -259,7 +259,7 @@ func TestDeleteDocumentByIDAndUser(t *testing.T) {
 	alone := mustDocument(t, s, me.ID, "alone.pdf")
 	sharedA := mustDocument(t, s, me.ID, "shared.pdf")
 	mustDocument(t, s, me.ID, "shared.pdf")
-	setInsight(t, s, alone.ID, "completed", nil)
+	setInsight(t, s, alone.ID, "verified", nil)
 
 	path, shared, err := s.DeleteDocumentByIDAndUser(ctx, alone.ID, other.ID)
 	if err != nil || path != "" {

@@ -13,10 +13,12 @@ import pytest
 from fastapi.testclient import TestClient
 
 import config
-import extract_report_slm
+import document_jobs
 import generate_insights_txt
 import insights_service as service
 import llm
+from dataset.build import DATASET_DIR
+from dataset_records import DOCS
 from db_rows import add_account
 
 # Stands for document content: it must reach the database and never a log.
@@ -77,103 +79,62 @@ def test_importing_the_service_configures_no_logging(root_logger):
 # -------------------------------------------------------------------
 # Jobs
 # -------------------------------------------------------------------
-def add_document(db, path) -> str:
+def add_document(db) -> str:
     with db.cursor() as cur:
         cur.execute(
             "INSERT INTO documents (user_id, original_name, content_type, storage_path)"
-            " VALUES (%s, %s, 'application/pdf', %s) RETURNING id",
-            (add_account(db), f"{SECRET}.pdf", str(path)),
+            " VALUES (%s, %s, 'image/png', %s) RETURNING id",
+            (add_account(db), f"{SECRET}.png", str(DATASET_DIR / DOCS["d17"]["file"])),
         )
         return str(cur.fetchone()[0])
 
 
-@pytest.fixture
-def upload(tmp_path):
-    path = tmp_path / "report.pdf"
-    path.write_bytes(b"%PDF-1.7 fictional")
-    return path
+def run_one_job(db) -> str:
+    doc = add_document(db)
+    document_jobs.enqueue(db, doc)
+    document_jobs.process(document_jobs.claim_next(db, "worker-1"), "worker-1")
+    return doc
 
 
-def test_a_document_job_logs_its_events_without_content(
-    db, upload, monkeypatch, json_log
-):
-    monkeypatch.setattr(
-        extract_report_slm, "extract_markdown_from_file", lambda path, on_page: SECRET
-    )
-    monkeypatch.setattr(
-        generate_insights_txt,
-        "generate_insights_html",
-        lambda markdown: f"<p>{SECRET}</p>",
-    )
-    doc = add_document(db, upload)
+def test_a_document_job_logs_its_events_without_content(db, model_client, json_log):
+    model_client.replies[llm.PRIMARY_MODEL] = [
+        f"# Chest X-ray\n{SECRET}", '{"document_type": "other"}', f"<p>{SECRET}</p>",
+    ]  # fmt: skip
 
-    service.run_insights_pipeline(doc)
+    doc = run_one_job(db)
 
-    assert events_of(json_log) == [
-        "job_started",
-        "transcription_started",
-        "transcription_saved",
-        "insights_generated",
-        "job_completed",
-        "job_finished",
-    ]
-    generated = line_with(json_log, "insights_generated")
-    assert generated["document_id"] == doc
-    assert generated["markdown_chars"] == len(SECRET)
-    assert generated["html_chars"] == len(f"<p>{SECRET}</p>")
+    events = events_of(json_log)
+    assert events[:2] == ["job_queued", "job_claimed"]
+    assert events[-1] == "job_completed"
+    completed = line_with(json_log, "job_completed")
+    assert (completed["document_id"], completed["end_state"]) == (doc, "needs_review")
+    assert completed["job_id"] == line_with(json_log, "job_claimed")["job_id"]
     log = json_log.getvalue()
     assert SECRET not in log and "Asha" not in log
-    assert str(upload) not in log and upload.name not in log  # no file paths
+    assert DOCS["d17"]["file"].split("/")[-1] not in log  # no file paths
+    with db.cursor() as cur:  # the content is in the database
+        cur.execute("SELECT extracted_markdown FROM documents WHERE id = %s", (doc,))
+        assert SECRET in cur.fetchone()[0]
 
 
 def test_a_failed_document_job_logs_the_error_type_and_stores_the_message(
-    db, upload, monkeypatch, json_log
+    db, model_client, json_log
 ):
-    monkeypatch.setattr(
-        extract_report_slm, "extract_markdown_from_file", lambda path, on_page: SECRET
-    )
+    model_client.replies[llm.PRIMARY_MODEL] = [ConnectionError(f"lost {SECRET}")]
+    model_client.replies[llm.FALLBACK_MODEL] = [ConnectionError(f"lost {SECRET}")]
 
-    def fail(markdown):
-        raise ValueError(f"could not read {SECRET}")
-
-    monkeypatch.setattr(generate_insights_txt, "generate_insights_html", fail)
-    doc = add_document(db, upload)
-
-    service.run_insights_pipeline(doc)
+    doc = run_one_job(db)
 
     failed = line_with(json_log, "job_failed")
     assert failed["level"] == "ERROR"
-    assert failed["exc_type"] == "ValueError"
+    assert failed["exc_type"] == "ModelOutputError"
     assert failed["document_id"] == doc
     assert SECRET not in json_log.getvalue()
     with db.cursor() as cur:
         cur.execute("SELECT status, error_message FROM insights WHERE document_id = %s",
                     (doc,))  # fmt: skip
-        assert cur.fetchone() == ("failed", f"could not read {SECRET}")
-
-
-def test_a_transcription_that_cannot_be_saved_is_logged_and_the_job_goes_on(
-    db, upload, monkeypatch, json_log
-):
-    # NUL can't be stored in a text column, so the cache write fails.
-    monkeypatch.setattr(
-        extract_report_slm,
-        "extract_markdown_from_file",
-        lambda path, on_page: f"{SECRET}\x00",
-    )
-    monkeypatch.setattr(
-        generate_insights_txt, "generate_insights_html", lambda markdown: "<p>ok</p>"
-    )
-    doc = add_document(db, upload)
-
-    service.run_insights_pipeline(doc)
-
-    assert "transcription_not_saved" in events_of(json_log)
-    assert events_of(json_log)[-2:] == ["job_completed", "job_finished"]
-    assert SECRET not in json_log.getvalue()
-    with db.cursor() as cur:
-        cur.execute("SELECT status FROM insights WHERE document_id = %s", (doc,))
-        assert cur.fetchone() == ("completed",)
+        status, error = cur.fetchone()
+    assert status == "failed" and SECRET in error
 
 
 def test_a_failed_patient_summary_logs_the_error_type_only(db, monkeypatch, json_log):

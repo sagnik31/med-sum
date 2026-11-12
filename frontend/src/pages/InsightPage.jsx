@@ -33,9 +33,12 @@ function InsightPage() {
         const data = await getInsight(id);
         if (cancelled) return;
 
-        if (data?.status === "completed" && data.insights_html) {
+        if (
+          (data?.status === "verified" || data?.status === "needs_review") &&
+          data.insights_html
+        ) {
           setInsight(data.insights_html);
-          setStatus("ready");
+          setStatus(data.status === "needs_review" ? "needs_review" : "ready");
         } else if (data?.status === "failed") {
           setFailure(data.error_message || "Unknown error.");
           setStatus("failed");
@@ -94,7 +97,14 @@ function InsightPage() {
         </div>
       )}
 
-      {!loading && !error && status === "ready" && (
+      {!loading && !error && status === "needs_review" && (
+        <div className="mb-4 text-sm bg-amber-50 border border-amber-100 rounded-md px-3 py-2 text-amber-800">
+          Some values in this document were flagged for review by a clinician.
+          Check them against the source document before relying on them.
+        </div>
+      )}
+
+      {!loading && !error && (status === "ready" || status === "needs_review") && (
         <div className="mb-4">
           <h2 className="text-sm font-semibold text-slate-700 mb-2">
             Insight

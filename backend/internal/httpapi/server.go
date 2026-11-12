@@ -403,8 +403,8 @@ func (s *Server) handleDeleteDocument(w http.ResponseWriter, r *http.Request, do
 
 type insightResponse struct {
 	DocumentID   string  `json:"document_id"`
-	Status       string  `json:"status"`                  // "not_started" | "processing" | "completed" | "failed"
-	InsightsHTML *string `json:"insights_html,omitempty"` // present when completed
+	Status       string  `json:"status"`                  // "not_started" | "processing" | "verified" | "needs_review" | "failed"
+	InsightsHTML *string `json:"insights_html,omitempty"` // present when verified or needs_review
 	ErrorMessage *string `json:"error_message,omitempty"` // present when failed
 }
 
@@ -452,18 +452,25 @@ func (s *Server) handleGetDocumentInsight(w http.ResponseWriter, r *http.Request
 	// Map DB insight fields to API response
 	resp := insightResponse{
 		DocumentID:   docID,
-		Status:       ins.Status, // e.g. "completed", "failed"
+		Status:       ins.Status, // e.g. "verified", "failed"
 		InsightsHTML: nil,
 		ErrorMessage: nil,
 	}
 
-	if ins.Status == "completed" {
+	if insightEnded(ins.Status) {
 		resp.InsightsHTML = &ins.HTMLInsights
 	} else if ins.Status == "failed" && ins.ErrorMessage != nil {
 		resp.ErrorMessage = ins.ErrorMessage
 	}
 
 	writeJSON(w, http.StatusOK, resp)
+}
+
+// insightEnded reports whether a document's processing reached an end
+// state with a result to show: verified, or needs_review (some values
+// await a clinician's review; the page is shown with that warning).
+func insightEnded(status string) bool {
+	return status == "verified" || status == "needs_review"
 }
 
 // ----- Start insight generation: POST /documents/{id}/insight -----

@@ -85,7 +85,7 @@ func TestListShowsOnlyTheCallersDocuments(t *testing.T) {
 	other, _ := e.login("other@hospital.test")
 	mine := e.store.addDocument(me, "a.pdf")
 	e.store.addDocument(other, "b.pdf")
-	e.store.insights[mine] = &db.Insight{DocumentID: mine, Status: "completed"}
+	e.store.insights[mine] = &db.Insight{DocumentID: mine, Status: "verified"}
 
 	rec := e.do(http.MethodGet, "/documents", auth, nil, "")
 
@@ -93,8 +93,8 @@ func TestListShowsOnlyTheCallersDocuments(t *testing.T) {
 	if len(docs) != 1 || docs[0].ID != mine {
 		t.Fatalf("listed %+v, want only %s", docs, mine)
 	}
-	if docs[0].InsightStatus != "completed" {
-		t.Errorf("insight_status = %q, want completed", docs[0].InsightStatus)
+	if docs[0].InsightStatus != "verified" {
+		t.Errorf("insight_status = %q, want verified", docs[0].InsightStatus)
 	}
 	if strings.Contains(rec.Body.String(), "a.pdf") {
 		t.Error("response leaks the storage path")
@@ -185,7 +185,8 @@ func TestGetInsightReportsTheJobStatus(t *testing.T) {
 	}{
 		{"no job yet", nil, "not_started", false, false},
 		{"processing", &db.Insight{Status: "processing", HTMLInsights: "<p>old</p>"}, "processing", false, false},
-		{"completed", &db.Insight{Status: "completed", HTMLInsights: "<h2>Summary</h2>"}, "completed", true, false},
+		{"verified", &db.Insight{Status: "verified", HTMLInsights: "<h2>Summary</h2>"}, "verified", true, false},
+		{"needs review", &db.Insight{Status: "needs_review", HTMLInsights: "<h2>Summary</h2>"}, "needs_review", true, false},
 		{"failed", &db.Insight{Status: "failed", ErrorMessage: strPtr("model down")}, "failed", false, true},
 	}
 	for _, tt := range tests {
@@ -219,7 +220,7 @@ func TestInsightRoutesHideOtherUsersDocuments(t *testing.T) {
 	_, auth := e.login("me@hospital.test")
 	other, _ := e.login("other@hospital.test")
 	theirs := e.store.addDocument(other, "b.pdf")
-	e.store.insights[theirs] = &db.Insight{DocumentID: theirs, Status: "completed", HTMLInsights: "<p>private</p>"}
+	e.store.insights[theirs] = &db.Insight{DocumentID: theirs, Status: "verified", HTMLInsights: "<p>private</p>"}
 
 	for _, method := range []string{http.MethodGet, http.MethodPost} {
 		rec := e.do(method, "/documents/"+theirs+"/insight", auth, nil, "")

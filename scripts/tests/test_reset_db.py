@@ -45,7 +45,7 @@ def filled(db):
 EXPECTED_TABLES = {
     "organizations", "users", "sessions", "one_time_tokens", "documents",
     "insights", "pipeline_runs", "pipeline_steps", "pipeline_model_calls",
-    "document_records",
+    "document_records", "jobs",
 }  # fmt: skip
 
 

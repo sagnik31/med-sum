@@ -98,6 +98,12 @@ def _stream_chunks(text: str, done_reason: str, fields: dict):
 
 
 @pytest.fixture(autouse=True)
+def no_job_worker(monkeypatch):
+    """The service starts no job worker in tests; job tests run one themselves."""
+    monkeypatch.setenv("MEDSUM_WORKER", "0")
+
+
+@pytest.fixture(autouse=True)
 def model_client(monkeypatch) -> FakeModelClient:
     fake = FakeModelClient()
     monkeypatch.setattr(llm, "_client", fake)

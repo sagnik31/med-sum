@@ -83,6 +83,10 @@ LOG_FIELDS = frozenset(
         "documents",
         "markdown_chars",
         "html_chars",
+        # Document jobs (document_jobs): ids and flags only.
+        "job_id",
+        "reprocess",
+        "result",
     }
 )
 
