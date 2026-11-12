@@ -19,9 +19,13 @@ report can tell. Every run uses its own fresh database
 server of MEDSUM_EVAL_ADMIN_URL), never med_sum, and validator 7's today
 is fixed (faultcheck.TODAY) so live and replay agree.
 
-The report goes to scripts/evals/results/<label>/ (gitignored); a live run
-also adds one small entry to the committed results history
-(scripts/evals/history, evals/history.py).
+A live run is kept: its full report (report.json and report.md, every
+document's scores and field errors) goes to the committed
+scripts/evals/reports/<name>/, and one small entry with its counts to the
+committed results history (scripts/evals/history/<name>.json,
+evals/history.py), both under the same name. A replay, or a live run with
+--no-history, only reproduces or tries something, so its report goes to
+scripts/evals/results/<label>/ (gitignored). --out overrides either place.
 """
 
 import argparse
@@ -287,13 +291,27 @@ def main(argv: list[str] | None = None) -> int:
             print(f"{model}: {len(run.documents)} documents")
 
     report = build_report(label, runs, manifest(), outcomes=_as_dicts(outcomes))
-    out_dir = args.out or RESULTS_DIR / label
+    kept = args.live and not args.no_history
+    name = history.run_name(label, report["generated_at"])
+    out_dir = args.out or (history.REPORTS_DIR / name if kept else RESULTS_DIR / label)
     json_path, md_path = write_report(report, out_dir)
     print(f"wrote {json_path} and {md_path}")
-    if args.live and not args.no_history:
-        path = history.write_entry(history.entry(report, mode=mode, digests=digests))
-        print(f"history: {path}")
+    if kept:
+        data = history.entry(
+            report, mode=mode, digests=digests, report_path=_relative(out_dir)
+        )
+        print(f"history: {history.write_entry(data, history.HISTORY_DIR)}")
     return 0
+
+
+def _relative(path: Path) -> str | None:
+    """The report's place relative to scripts/evals, as the history keeps it;
+    None for a report written elsewhere (--out), so no machine path is
+    committed."""
+    try:
+        return path.resolve().relative_to(DATASET_DIR.parent.resolve()).as_posix()
+    except ValueError:
+        return None
 
 
 def _as_dicts(outcomes: dict[str, dict[str, Outcome]]) -> dict:

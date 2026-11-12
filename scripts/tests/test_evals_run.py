@@ -155,3 +155,62 @@ def test_replay_without_a_cassette_exits_with_re_record(tmp_path, monkeypatch, c
                         "--model", MODEL, "--out", str(tmp_path / "out")])  # fmt: skip
     assert code == 2
     assert "re-record" in capsys.readouterr().err
+
+
+class NoDatabase:
+    user_id = "u"
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        pass
+
+
+@pytest.fixture
+def no_model_run(tmp_path, monkeypatch):
+    """main() with the self-check standing in for the models, and scripts/evals
+    moved to tmp_path, so its report and history land there."""
+    from evals import history, selfcheck
+
+    def fake_run_model(model, doc_ids, **_):
+        outcomes = {d: runner.Outcome(**o) for d, o in selfcheck.selfcheck_outcomes().items()}  # fmt: skip
+        return selfcheck.selfcheck_run(), outcomes
+
+    monkeypatch.setattr(runner, "EvalDatabase", NoDatabase)
+    monkeypatch.setattr(runner, "run_model", fake_run_model)
+    monkeypatch.setattr(runner, "DATASET_DIR", tmp_path / "dataset")
+    monkeypatch.setattr(runner, "RESULTS_DIR", tmp_path / "results")
+    monkeypatch.setattr(history, "REPORTS_DIR", tmp_path / "reports")
+    monkeypatch.setattr(history, "HISTORY_DIR", tmp_path / "history")
+    return tmp_path
+
+
+def test_a_live_run_keeps_its_report_next_to_its_history_entry(no_model_run):
+    assert runner.main(["--live", "--model", MODEL, "--label", "baseline"]) == 0
+    (entry_path,) = (no_model_run / "history").glob("*.json")
+    entry = json.loads(entry_path.read_text(encoding="utf-8"))
+    report_dir = no_model_run / entry["report"]
+    assert entry["report"] == f"reports/{entry_path.stem}"
+    assert entry_path.stem.endswith("-baseline")
+    assert {p.name for p in report_dir.iterdir()} == {"report.json", "report.md"}
+    assert not (no_model_run / "results").exists()
+
+
+def test_a_run_that_is_not_kept_writes_to_the_ignored_results(no_model_run):
+    assert (
+        runner.main(["--live", "--no-history", "--model", MODEL, "--label", "try"]) == 0
+    )
+    assert (no_model_run / "results" / "try" / "report.md").exists()
+    assert not (no_model_run / "reports").exists()
+    assert not (no_model_run / "history").exists()
+
+
+def test_a_report_written_elsewhere_keeps_no_machine_path(
+    no_model_run, tmp_path_factory
+):
+    out = tmp_path_factory.mktemp("elsewhere")
+    assert runner.main(["--live", "--model", MODEL, "--out", str(out)]) == 0
+    (entry_path,) = (no_model_run / "history").glob("*.json")
+    assert json.loads(entry_path.read_text(encoding="utf-8"))["report"] is None
+    assert (out / "report.json").exists()

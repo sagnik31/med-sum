@@ -58,6 +58,21 @@ def test_entries_are_written_loaded_and_shown(entry, tmp_path):
     assert "21/24" in board
 
 
+def test_an_entry_names_its_report_and_the_board_shows_it(report, tmp_path):
+    data = history.entry(report, mode="live", report_path="reports/2026-11-12-live")
+    assert data["report"] == "reports/2026-11-12-live"
+    history.write_entry(data, tmp_path)
+    assert "| reports/2026-11-12-live |" in history.scoreboard(history.load(tmp_path))
+
+
+def test_a_run_name_has_its_day_once():
+    assert history.run_name("baseline", "2026-11-12T10:00:00Z") == "2026-11-12-baseline"
+    assert (
+        history.run_name("2026-11-12-live", "2026-11-12T10:00:00Z") == "2026-11-12-live"
+    )
+    assert history.run_name("qwen / v2", "2026-11-12T10:00:00Z") == "2026-11-12-qwen-v2"
+
+
 def test_a_report_can_be_read_as_an_entry(report, tmp_path):
     json_path, _ = write_report(report, tmp_path)
     read = history.read(json_path)
