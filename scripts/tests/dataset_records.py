@@ -5,15 +5,16 @@ patient each document was uploaded to.
 """
 
 import json
-from datetime import date
 from functools import cache
 
-import pymupdf
-
 from dataset.build import DATASET_DIR
-from record.document import DocumentRecord, PageTranscription
-from record.printed import PARSE_MODELS, DocumentType, LabReportParse, PrescriptionParse
-from validators import ExpectedPatient
+from evals.keys import expected_patient, parse_of, text_layers, with_text_layers
+from record.document import DocumentRecord
+
+__all__ = [
+    "DOCS", "DOC_IDS", "MANIFEST", "PARSED_IDS", "expected_patient", "key",
+    "keyed_record", "parse_of", "text_layers", "with_text_layers",
+]  # fmt: skip
 
 MANIFEST = json.loads((DATASET_DIR / "manifest.json").read_text(encoding="utf-8"))
 DOCS = {d["id"]: d for d in MANIFEST["documents"]}
@@ -31,59 +32,8 @@ def key(doc_id: str) -> DocumentRecord:
     return DocumentRecord.model_validate_json(_key_json(doc_id))
 
 
-def parse_of(record: DocumentRecord) -> LabReportParse | PrescriptionParse | None:
-    """The parse output that produces this record: its printed parts."""
-    doc_type = record.document.type
-    if doc_type not in PARSE_MODELS:
-        return None
-    common = {
-        "patient": record.patient.printed,
-        "details": record.document.printed,
-        "remarks": [r.printed for r in record.remarks],
-        "conditions": [c.printed for c in record.conditions],
-        "vitals": [v.printed for v in record.vitals],
-        "allergies": [a.printed for a in record.allergies],
-    }
-    if doc_type is DocumentType.LAB_REPORT:
-        return LabReportParse(
-            results=[o.printed for o in record.observations], **common
-        )
-    return PrescriptionParse(
-        medicines=[m.printed for m in record.medications], **common
-    )
-
-
-@cache
-def text_layers(doc_id: str) -> tuple[str, ...] | None:
-    """Each page's PDF text, for documents that have a text layer."""
-    if not DOCS[doc_id]["has_text_layer"]:
-        return None
-    with pymupdf.open(DATASET_DIR / DOCS[doc_id]["file"]) as pdf:
-        return tuple(page.get_text() for page in pdf)
-
-
-def with_text_layers(doc_id: str, pages: list[PageTranscription]) -> list:
-    layers = text_layers(doc_id)
-    if layers is None:
-        return pages
-    return [p.model_copy(update={"text_layer": t}) for p, t in zip(pages, layers)]
-
-
 def keyed_record(doc_id: str) -> DocumentRecord:
     """The answer key with the PDF's text layer on its pages, as the pipeline has it."""
     record = key(doc_id)
     record.pages = with_text_layers(doc_id, record.pages)
     return record
-
-
-def expected_patient(doc_id: str) -> ExpectedPatient:
-    """The patient a document was uploaded to, as the Phase B patient record has it."""
-    patient = next(
-        p for p in MANIFEST["patients"] if p["key"] == DOCS[doc_id]["patient"]
-    )
-    return ExpectedPatient(
-        name=patient["name"],
-        sex=patient["sex"],
-        date_of_birth=date.fromisoformat(patient["date_of_birth"]),
-        mrn=patient["mrn"],
-    )

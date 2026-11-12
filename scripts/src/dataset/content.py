@@ -66,6 +66,9 @@ class Doc:
     pages: list[list]
     cases: list[str] = field(default_factory=list)
     notes: str = ""
+    # The routing signals (LC-nn) the clean document raises: what it is built
+    # to send to review. None of them means it should end verified.
+    expected_signals: list[str] = field(default_factory=list)
 
     def page_blocks(self) -> list[list]:
         """Each page as printed: its blocks, then the synthetic-data footer."""
@@ -795,6 +798,7 @@ d14 = Doc(
 d15 = Doc(
     "d15", "arjun", "prescription", "png", "a5",
     cases=["undated", "duration_not_given"],
+    expected_signals=["LC-12"],
     notes="No date anywhere: the document is undated and is never used for "
           "ordering or trends.",
     pages=[[
@@ -814,6 +818,7 @@ d15 = Doc(
 d16 = Doc(
     "d16", "arjun", "lab_report", "scan_pdf", "a4",
     cases=["patient_mismatch", "image_only_pdf", "flag_beside_result"],
+    expected_signals=["LC-13"],
     notes="Uploaded to Arjun Menon but printed for a different person (name, age "
           "and ID differ): the patient-match check must flag it.",
     pages=[[
@@ -833,6 +838,7 @@ d16 = Doc(
 d17 = Doc(
     "d17", "arjun", "other", "pdf", "a4",
     cases=["classified_other"],
+    expected_signals=["LC-14"],
     notes="A chest X-ray report: not a supported type, so it is classified other, "
           "not parsed, and goes to needs_review.",
     pages=[[
@@ -856,3 +862,7 @@ DOCUMENTS = [d01, d02, d03, d04, d05, d06, d07, d08, d09, d10, d11, d12, d13, d1
 # (bug 5), and patients interleaved.
 UPLOAD_ORDER = ["d04", "d07", "d12", "d16", "d01", "d06", "d09", "d13", "d02", "d17",
                 "d05", "d08", "d11", "d14", "d03", "d10", "d15"]  # fmt: skip
+
+# Documents used while building and checking the prompts (every live check
+# so far ran on d02 and d09): reported apart as dev, never as test results.
+DEV_DOCUMENTS = ("d02", "d09")

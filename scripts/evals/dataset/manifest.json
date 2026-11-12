@@ -56,7 +56,10 @@
         "non_numeric_values",
         "multi_page"
       ],
-      "notes": "Health check-up. The CBC comment follows the table whose last row is the WBC count; it belongs to the panel, not to WBC (bug 1)."
+      "notes": "Health check-up. The CBC comment follows the table whose last row is the WBC count; it belongs to the panel, not to WBC (bug 1).",
+      "split": "test",
+      "expected_end_state": "verified",
+      "expected_signals": []
     },
     {
       "id": "d02",
@@ -77,7 +80,10 @@
         "medicine_without_strength",
         "unused_complaint_line"
       ],
-      "notes": "First visit after the June labs."
+      "notes": "First visit after the June labs.",
+      "split": "dev",
+      "expected_end_state": "verified",
+      "expected_signals": []
     },
     {
       "id": "d03",
@@ -99,7 +105,10 @@
         "multiple_ranges",
         "multi_page"
       ],
-      "notes": "A different lab, printed date only for collection. 'Suggest iron studies' is a pathologist's note under its own heading after the HbA1c section; it belongs to the document, not to HbA1c (bug 1)."
+      "notes": "A different lab, printed date only for collection. 'Suggest iron studies' is a pathologist's note under its own heading after the HbA1c section; it belongs to the document, not to HbA1c (bug 1).",
+      "split": "test",
+      "expected_end_state": "verified",
+      "expected_signals": []
     },
     {
       "id": "d04",
@@ -120,7 +129,10 @@
         "history",
         "uploaded_before_older_documents"
       ],
-      "notes": "Uploaded first although it is dated after the 2024 labs (bug 5: upload order is not document order)."
+      "notes": "Uploaded first although it is dated after the 2024 labs (bug 5: upload order is not document order).",
+      "split": "test",
+      "expected_end_state": "verified",
+      "expected_signals": []
     },
     {
       "id": "d05",
@@ -138,7 +150,10 @@
         "trend_two_values",
         "multi_page"
       ],
-      "notes": "Follow-up: second Haemoglobin, HbA1c and creatinine for trends."
+      "notes": "Follow-up: second Haemoglobin, HbA1c and creatinine for trends.",
+      "split": "test",
+      "expected_end_state": "verified",
+      "expected_signals": []
     },
     {
       "id": "d06",
@@ -158,7 +173,10 @@
         "document_remark",
         "multi_page"
       ],
-      "notes": "The only creatinine this patient has: one raised value must not become 'acute kidney injury' or a trend (bugs 2, 3). BUN sits in the kidney panel (bug 6)."
+      "notes": "The only creatinine this patient has: one raised value must not become 'acute kidney injury' or a trend (bugs 2, 3). BUN sits in the kidney panel (bug 6).",
+      "split": "test",
+      "expected_end_state": "verified",
+      "expected_signals": []
     },
     {
       "id": "d07",
@@ -178,7 +196,10 @@
         "bmi_and_height",
         "duration_in_months"
       ],
-      "notes": "Atorvastatin is prescribed but the patient has no lipid panel: the summary must not invent a lipid status (bug 7)."
+      "notes": "Atorvastatin is prescribed but the patient has no lipid panel: the summary must not invent a lipid status (bug 7).",
+      "split": "test",
+      "expected_end_state": "verified",
+      "expected_signals": []
     },
     {
       "id": "d08",
@@ -197,7 +218,10 @@
         "less_than_value",
         "one_sided_range"
       ],
-      "notes": "Liver and thyroid tests; no creatinine, so d06's stays the only one."
+      "notes": "Liver and thyroid tests; no creatinine, so d06's stays the only one.",
+      "split": "test",
+      "expected_end_state": "verified",
+      "expected_signals": []
     },
     {
       "id": "d09",
@@ -214,7 +238,10 @@
         "panel_remark",
         "trend_two_values"
       ],
-      "notes": "First TSH (raised)."
+      "notes": "First TSH (raised).",
+      "split": "dev",
+      "expected_end_state": "verified",
+      "expected_signals": []
     },
     {
       "id": "d10",
@@ -232,7 +259,10 @@
         "duration_in_weeks",
         "temperature"
       ],
-      "notes": "Started on levothyroxine after d09."
+      "notes": "Started on levothyroxine after d09.",
+      "split": "test",
+      "expected_end_state": "verified",
+      "expected_signals": []
     },
     {
       "id": "d11",
@@ -250,7 +280,10 @@
         "multiple_ranges",
         "printed_flag_without_computed_flag"
       ],
-      "notes": "Second TSH (now in range; 'falling' is allowed, 'improving' is not). Vitamin D has a printed L but several ranges, so no computed flag."
+      "notes": "Second TSH (now in range; 'falling' is allowed, 'improving' is not). Vitamin D has a printed L but several ranges, so no computed flag.",
+      "split": "test",
+      "expected_end_state": "verified",
+      "expected_signals": []
     },
     {
       "id": "d12",
@@ -268,7 +301,10 @@
         "duration_in_weeks",
         "uploaded_before_older_documents"
       ],
-      "notes": "A weekly dose has no daily schedule. Uploaded first (bug 5)."
+      "notes": "A weekly dose has no daily schedule. Uploaded first (bug 5).",
+      "split": "test",
+      "expected_end_state": "verified",
+      "expected_signals": []
     },
     {
       "id": "d13",
@@ -287,7 +323,10 @@
         "non_numeric_values",
         "multi_page"
       ],
-      "notes": "Lipid profile, HbA1c in the prediabetes band (no flag printed), urine."
+      "notes": "Lipid profile, HbA1c in the prediabetes band (no flag printed), urine.",
+      "split": "test",
+      "expected_end_state": "verified",
+      "expected_signals": []
     },
     {
       "id": "d14",
@@ -305,7 +344,10 @@
         "history",
         "no_known_allergies"
       ],
-      "notes": "Statin with a lipid panel on record (contrast with d07)."
+      "notes": "Statin with a lipid panel on record (contrast with d07).",
+      "split": "test",
+      "expected_end_state": "verified",
+      "expected_signals": []
     },
     {
       "id": "d15",
@@ -322,7 +364,12 @@
         "undated",
         "duration_not_given"
       ],
-      "notes": "No date anywhere: the document is undated and is never used for ordering or trends."
+      "notes": "No date anywhere: the document is undated and is never used for ordering or trends.",
+      "split": "test",
+      "expected_end_state": "needs_review",
+      "expected_signals": [
+        "LC-12"
+      ]
     },
     {
       "id": "d16",
@@ -340,7 +387,12 @@
         "image_only_pdf",
         "flag_beside_result"
       ],
-      "notes": "Uploaded to Arjun Menon but printed for a different person (name, age and ID differ): the patient-match check must flag it."
+      "notes": "Uploaded to Arjun Menon but printed for a different person (name, age and ID differ): the patient-match check must flag it.",
+      "split": "test",
+      "expected_end_state": "needs_review",
+      "expected_signals": [
+        "LC-13"
+      ]
     },
     {
       "id": "d17",
@@ -356,7 +408,12 @@
       "cases": [
         "classified_other"
       ],
-      "notes": "A chest X-ray report: not a supported type, so it is classified other, not parsed, and goes to needs_review."
+      "notes": "A chest X-ray report: not a supported type, so it is classified other, not parsed, and goes to needs_review.",
+      "split": "test",
+      "expected_end_state": "needs_review",
+      "expected_signals": [
+        "LC-14"
+      ]
     }
   ],
   "upload_order": [

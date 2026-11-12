@@ -13,6 +13,7 @@ import pytest
 from dataset import build, content
 from dataset.layout import LabTest, Range, rng
 from dataset.render import render
+from pipeline.signals import SIGNALS
 from record.document import DocumentRecord
 
 DATASET = build.DATASET_DIR
@@ -368,3 +369,19 @@ def test_rng_only_accepts_plain_ranges():
 def test_expected_derived_values(test, num, flag):
     assert test.value_num() == num
     assert test.flag_computed() == flag
+
+
+# -------------------------------------------------------------------
+# Split and expected end states
+# -------------------------------------------------------------------
+def test_the_dev_documents_are_d02_and_d09():
+    dev = sorted(d for d, e in DOCS.items() if e["split"] == "dev")
+    assert dev == ["d02", "d09"]
+    assert {e["split"] for e in DOCS.values()} == {"dev", "test"}
+
+
+def test_expected_signals_are_routing_signals_and_set_the_end_state():
+    for entry in DOCS.values():
+        assert all(SIGNALS[s].routes for s in entry["expected_signals"])
+        expected = "needs_review" if entry["expected_signals"] else "verified"
+        assert entry["expected_end_state"] == expected

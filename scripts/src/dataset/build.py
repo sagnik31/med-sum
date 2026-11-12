@@ -12,7 +12,7 @@ import json
 import sys
 from pathlib import Path
 
-from dataset.content import DOCUMENTS, PATIENTS, UPLOAD_ORDER, Doc
+from dataset.content import DEV_DOCUMENTS, DOCUMENTS, PATIENTS, UPLOAD_ORDER, Doc
 from dataset.keys import build_key, transcription_markdown
 from dataset.render import render
 
@@ -57,6 +57,9 @@ def _entry(doc: Doc, key) -> dict:
         "transcription": f"transcriptions/{doc.id}.md",
         "cases": doc.cases,
         "notes": doc.notes,
+        "split": "dev" if doc.id in DEV_DOCUMENTS else "test",
+        "expected_end_state": "needs_review" if doc.expected_signals else "verified",
+        "expected_signals": doc.expected_signals,
     }
 
 
@@ -115,6 +118,7 @@ def readme(data: dict) -> str:
     rows = "\n".join(
         f"| {d['id']} | {names[d['patient']]} | {d['type']} | "
         f"`{d['file'].split('/')[-1]}` | {d['pages']} | {d['document_date'] or 'undated'} | "
+        f"{d['split']} | {', '.join(d['expected_signals']) or 'verified'} | "
         f"{', '.join(d['cases'])} |"
         for d in data["documents"]
     )
@@ -136,6 +140,13 @@ transcription (`transcriptions/`). `manifest.json` lists them, with the cases
 each one exercises and the order the loader uploads them in
 (`python -m dataset.load`), which is deliberately not date order.
 
+Each entry also says how the clean document should end: `expected_signals` are
+the routing signals it is built to raise (an undated document, a patient
+mismatch, an unsupported type), and `expected_end_state` is `needs_review` when
+there are any, else `verified`. `split` is `dev` for the documents used while
+writing and checking the prompts (d02, d09) and `test` for the rest; eval
+reports keep them apart.
+
 ## Patients
 
 | Name | Sex | Date of birth | MRN | Login phone |
@@ -144,8 +155,8 @@ each one exercises and the order the loader uploads them in
 
 ## Documents
 
-| ID | Patient | Type | File | Pages | Date | Cases |
-| --- | --- | --- | --- | --- | --- | --- |
+| ID | Patient | Type | File | Pages | Date | Split | Expected | Cases |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
 {rows}
 
 {README_RULES}"""
