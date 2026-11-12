@@ -9,6 +9,7 @@ import pytest
 from dataset_records import DOC_IDS, MANIFEST, key
 from evals import selfcheck
 from evals.report import (
+    REPORT_VERSION,
     DocumentResult,
     ModelRun,
     build_report,
@@ -59,7 +60,7 @@ def test_the_report_is_json_and_names_its_run():
     r = json.loads(json.dumps(report(perfect_run())))
     assert r["label"] == "test" and r["dataset"] == MANIFEST["name"]
     assert r["generated_at"] == "2026-11-09T12:00:00+00:00"
-    assert r["report_version"] == 1
+    assert r["report_version"] == REPORT_VERSION
     assert list(r["models"]) == ["qwen"]
 
 

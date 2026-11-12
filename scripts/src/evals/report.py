@@ -4,6 +4,13 @@ model that was run, with the model choice (choose.py), the headline
 numbers, a breakdown by the manifest's cases (the section 6 bugs and the
 dataset's other situations) and by document, and the errors worth reading.
 
+Given each document's outcome (its end state and routing signals), it also
+scores routing against the manifest's expected end state, and gives the
+risk-coverage line: the share of documents that ended verified (no
+clinician looks at them), and the unsafe errors inside that share. Counts
+carry Wilson intervals (stats.py), and the dev documents (manifest
+`split`) are reported apart from the test documents.
+
 Pure code: it takes the scores, it doesn't run anything. The JSON holds
 everything, including every field error; the Markdown is for reading and
 lists only unsafe errors and missed or invented items.
@@ -17,9 +24,10 @@ from pathlib import Path
 
 from evals.choose import Candidate, choose_primary
 from evals.score import DocumentScore, summarise
+from evals.stats import wilson
 from evals.transcription import TranscriptionScore, summarise_transcriptions
 
-REPORT_VERSION = 1
+REPORT_VERSION = 2
 
 
 @dataclass
@@ -49,9 +57,16 @@ def build_report(
     runs: list[ModelRun],
     manifest: dict,
     generated_at: datetime | None = None,
+    outcomes: dict[str, dict[str, dict]] | None = None,
 ) -> dict:
-    """Everything the report says, as JSON-ready data."""
+    """
+    Everything the report says, as JSON-ready data. `outcomes` (model ->
+    document -> {end_state, signals, record_model_role, error}) adds
+    routing and risk coverage; without it those are left out.
+    """
     generated_at = generated_at or datetime.now(timezone.utc)
+    outcomes = outcomes or {}
+    entries = {d["id"]: d for d in manifest["documents"]}
     cases = _cases(manifest)
     models, candidates = {}, []
     for run in runs:
@@ -64,6 +79,8 @@ def build_report(
             "summary": total.as_dict(),
             "transcription": trans.as_dict() if trans else None,
             "cases": {case: _case_row(run, ids) for case, ids in sorted(cases.items())},
+            "splits": _splits(run, entries),
+            "routing": _routing(run, entries, outcomes.get(run.model)),
             "documents": [
                 {
                     "record": d.record.as_dict(),
@@ -71,6 +88,7 @@ def build_report(
                         d.transcription.as_dict() if d.transcription else None
                     ),
                     "seconds": d.seconds,
+                    "outcome": outcomes.get(run.model, {}).get(d.document_id),
                 }
                 for d in sorted(run.documents, key=lambda d: d.document_id)
             ],
@@ -100,6 +118,68 @@ def _cases(manifest: dict) -> dict[str, set[str]]:
         for case in doc.get("cases", []):
             cases.setdefault(case, set()).add(doc["id"])
     return cases
+
+
+def _unsafe(total) -> dict:
+    return wilson(total.unsafe, total.clinical_items).as_dict()
+
+
+def _split_of(entries: dict[str, dict], doc_id: str) -> str:
+    return entries.get(doc_id, {}).get("split", "test")
+
+
+def _splits(run: ModelRun, entries: dict[str, dict]) -> dict[str, dict]:
+    out = {}
+    for split in sorted({_split_of(entries, d.document_id) for d in run.documents}):
+        docs = [d for d in run.documents if _split_of(entries, d.document_id) == split]
+        total = summarise(d.record for d in docs)
+        transcribed = [d.transcription for d in docs if d.transcription]
+        trans = summarise_transcriptions(transcribed) if transcribed else None
+        out[split] = {
+            "documents": total.documents,
+            "field_f1": total.all_fields.f1,
+            "unsafe": _unsafe(total),
+            "value_recall": trans.values.value if trans else None,
+        }
+    return out
+
+
+def _routing(run: ModelRun, entries: dict[str, dict], outcomes: dict | None):
+    """End states against the manifest, and the risk-coverage line."""
+    if not outcomes:
+        return None
+    rows, verified = [], []
+    for d in sorted(run.documents, key=lambda d: d.document_id):
+        o = outcomes.get(d.document_id)
+        if o is None:
+            continue
+        entry = entries.get(d.document_id, {})
+        expected = entry.get("expected_end_state")
+        expected_signals = sorted(entry.get("expected_signals", []))
+        rows.append({
+            "document": d.document_id,
+            "expected_end_state": expected,
+            "end_state": o["end_state"],
+            "expected_signals": expected_signals,
+            "signals": o["signals"],
+            "end_state_right": o["end_state"] == expected,
+            "signals_right": o["signals"] == expected_signals,
+            "record_model_role": o.get("record_model_role"),
+            "error": o.get("error"),
+        })  # fmt: skip
+        if o["end_state"] == "verified":
+            verified.append(d)
+    n = len(rows)
+    in_verified = summarise(d.record for d in verified)
+    return {
+        "end_state_right": wilson(sum(r["end_state_right"] for r in rows), n).as_dict(),
+        "signals_right": wilson(sum(r["signals_right"] for r in rows), n).as_dict(),
+        "auto_verified": wilson(len(verified), n).as_dict(),
+        "unsafe_in_verified": _unsafe(in_verified),
+        "fallback_records": sum(r["record_model_role"] == "fallback" for r in rows),
+        "failed": sum(r["end_state"] == "failed" for r in rows),
+        "documents": rows,
+    }
 
 
 def _case_row(run: ModelRun, ids: set[str]) -> dict:
@@ -139,6 +219,44 @@ def render_markdown(report: dict) -> str:
 
     out += ["", "## Overview", ""]
     out += _table(["Metric", *names], _overview_rows(models, names))
+
+    if any(models[n]["routing"] for n in names):
+        out += ["", "## Routing and risk coverage", ""]
+        out.append(
+            "Auto-verified documents reach no clinician; the unsafe errors "
+            "inside them are what the safety net let through."
+        )
+        out += [""] + _table(["Metric", *names], _routing_rows(models, names))
+        wrong = [
+            f"- `{n}` {r['document']}: {r['end_state']} {r['signals']}, expected "
+            f"{r['expected_end_state']} {r['expected_signals']}"
+            for n in names
+            for r in (models[n]["routing"] or {}).get("documents", [])
+            if not r["end_state_right"]
+        ]
+        if wrong:
+            out += ["", "Documents ending in the wrong state:", "", *wrong]
+
+    splits = sorted({s for n in names for s in models[n]["splits"]})
+    if len(splits) > 1:
+        out += ["", "## By split", ""]
+        out.append(
+            "Dev documents were used while writing and checking the prompts; "
+            "the test documents were not."
+        )
+        rows = []
+        for split in splits:
+            for n in names:
+                row = models[n]["splits"].get(split)
+                if row is None:
+                    continue
+                rows.append([
+                    split, f"`{n}`", str(row["documents"]), _pct(row["field_f1"]),
+                    _interval(row["unsafe"]), _pct(row["value_recall"]),
+                ])  # fmt: skip
+        out += [""] + _table(
+            ["Split", "Model", "Docs", "Field F1", "Unsafe", "Value recall"], rows
+        )
 
     out += ["", "## By case", ""]
     out.append(
@@ -224,9 +342,8 @@ def _overview_rows(models: dict, names: list[str]) -> list[list[str]]:
         row("Frequency exactness", lambda m: _ratio(s(m)["frequency"])),
         row(
             "Unsafe errors",
-            lambda m: (
-                f"{s(m)['unsafe']} of "
-                f"{s(m)['clinical_items']} ({_pct(s(m)['unsafe_rate'])})"
+            lambda m: _interval(
+                wilson(s(m)["unsafe"], s(m)["clinical_items"]).as_dict()
             ),
         ),
         row("Invented items", lambda m: str(s(m)["hallucinated"])),
@@ -244,6 +361,26 @@ def _overview_rows(models: dict, names: list[str]) -> list[list[str]]:
         row("Unreadable lines", lambda m: str(t(m)["unreadable"]) if t(m) else "-"),
         row("Median time per document", lambda m: _seconds(m["seconds_per_document"])),
     ]
+
+
+def _routing_rows(models: dict, names: list[str]) -> list[list[str]]:
+    def row(label, get):
+        cells = [get(models[n]["routing"]) if models[n]["routing"] else "-"
+                 for n in names]  # fmt: skip
+        return [label, *cells]
+
+    return [
+        row("End state right", lambda r: _interval(r["end_state_right"])),
+        row("Signals as expected", lambda r: _interval(r["signals_right"])),
+        row("Auto-verified", lambda r: _interval(r["auto_verified"])),
+        row("Unsafe errors in verified", lambda r: _interval(r["unsafe_in_verified"])),
+        row("Records by the fallback", lambda r: str(r["fallback_records"])),
+        row("Failed runs", lambda r: str(r["failed"])),
+    ]
+
+
+def _interval(d: dict) -> str:
+    return wilson(d["hits"], d["total"]).text() if d["total"] else "-"
 
 
 def _error_lines(documents: list[dict]) -> list[str]:
