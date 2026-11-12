@@ -289,7 +289,6 @@ scripts/
   src/views/                 HTML built by code from records: the document page and the patient summary
   src/summary/               the patient summary: facts from the records, the overview and its check
   src/extract_report_slm.py  page transcription from images
-  src/generate_insights_txt.py  standalone model-written HTML from a transcription, and its sanitiser (prompt tuning only; the service doesn't use it)
   src/model_health.py        the circuit breaker per model
   src/llm.py                 model calls with the primary and fallback model
   src/record/                the structured record of a document and the schemas the model fills in
@@ -310,7 +309,7 @@ postman/                 API collection
 
 ## Development
 
-Install the Python test tools (pytest and [Ruff](https://docs.astral.sh/ruff/)) into the AI service's virtual environment:
+Install the Python test tools (pytest, [Ruff](https://docs.astral.sh/ruff/) and Beautiful Soup, which the tests use to read the generated pages) into the AI service's virtual environment:
 
 ```bash
 cd scripts && pip install -r requirements.txt -r requirements-dev.txt

@@ -1,7 +1,6 @@
 # Direct dependencies of the AI service. requirements.txt pins every package;
 # regenerate it after editing this file:
 #   uv pip compile requirements.in --universal --python-version 3.10 -o requirements.txt
-beautifulsoup4
 fastapi
 httpx
 # LangGraph runs the document pipeline; its Postgres checkpointer needs psycopg 3
