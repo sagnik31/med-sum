@@ -36,19 +36,22 @@ The system has three services that share one PostgreSQL database:
 - **Backend (Go).** The public API. It handles accounts, login sessions and uploads, checks that a document belongs to the caller, and forwards processing requests to the AI service.
 - **AI service (Python).** Runs the extraction and summarisation pipeline against local Ollama models.
 
-When a document is uploaded, the pipeline runs as a background job. The document list and summary pages update themselves while it runs:
+When a document is uploaded, the Go API asks the AI service to queue it. A worker in the AI service takes queued documents one at a time and runs each through the document pipeline, a [LangGraph](https://langchain-ai.github.io/langgraph/) graph. The document list and summary pages update themselves while it runs:
 
-1. **Claim the job.** A row in `insights` with status `processing` acts as a lock, so the same document is never processed twice at once.
-2. **Extract.** PDFs are rendered to images with PyMuPDF, and `qwen3.5:4b` transcribes each page into Markdown. The result is cached on the document, so retries skip this step.
-3. **Summarise.** The same model turns the Markdown into an HTML summary, which is saved with status `completed`.
-4. **Record failures.** Any error marks the job `failed` with a message, and the user can retry from the UI.
+1. **Transcribe.** PDFs are rendered to images with PyMuPDF, and `qwen3.5:4b` transcribes each page into numbered lines, alongside the PDF's own text where it has one.
+2. **Classify.** The model labels the document as a lab report, a prescription or something else, and a keyword check confirms the label. Anything else keeps its transcription and goes to review.
+3. **Parse.** The model fills in the schema for that type from the transcription. A reply that doesn't fit the schema is sent back with what was wrong, up to twice; then the fallback model gets three tries of its own.
+4. **Validate.** Code builds the record (numbers, ranges, flags, dates) and checks it against the transcription and the PDF text. Errors go back to the model for repair, like a reply that doesn't fit.
+5. **Finish.** The record is saved with what each value traces back to, and the HTML summary is written. A document ends `verified`, or `needs_review` when a low-confidence signal fired (a value the checks couldn't confirm, a cut-off page, a patient name that doesn't match the account, and others); the summary page then says which values to check. Anything that can't be recovered from ends `failed` with a message, and the user can retry from the UI.
+
+Each document's run, its steps, and the prompt and model used at each are stored in the database. **Reprocess** on the summary page runs the document again from the start, for when the pipeline has changed; the new run's record replaces the last.
 
 The cumulative patient summary is a separate background job, started from the Patient summary page. It combines the extracted Markdown of every processed document.
 
 ### Design notes
 
 - **The AI service is not exposed to the browser.** Only the Go API calls it, after checking that the document belongs to the user, and every call carries a shared secret.
-- **Recovery from crashed workers.** The worker updates a heartbeat before each page. A job with no heartbeat for 30 minutes can be taken over by a new request.
+- **Recovery from crashed workers.** A job is claimed with a lease of 5 minutes, which a heartbeat renews every minute while the document runs. When a worker dies, its lease runs out and another worker takes the job over, carrying on from the graph's last checkpoint (kept in Postgres) instead of starting again. A job claimed three times without finishing is set aside, and every write a worker makes checks that it still holds the claim. The patient summary keeps its older lock: a summary with no progress for 30 minutes can be taken over by a new request.
 - **Untrusted model output is contained.** A document can carry text aimed at the model, so its output is treated as untrusted. The AI service strips scripts, styles, images, embeds, forms, event handlers and `javascript:` links from generated HTML. The UI shows it in a sandboxed iframe with scripts disabled and a content security policy that blocks every remote load, so the HTML cannot send data to another server.
 - **Bounded work.** Uploads must be PDF, JPG or PNG files whose content matches the extension, are capped at 20 MB and 20 PDF pages, and are stored under random file names. Model output is capped per page and per summary so a looping model cannot run forever, and a model call that sends nothing for 10 minutes is abandoned.
 - **Fallback model.** Both models read images and text. If `qwen3.5:4b` returns an error or hits the output cap, the same request goes to `gemma4:e2b`. If both fail, the job is marked `failed`, so cut-off output is never saved as a result.
@@ -212,6 +215,8 @@ On PowerShell, set the same variables with `$env:NAME = "value"`.
 | `MEDSUM_PRIMARY_MODEL` | AI service | `qwen3.5:4b` |
 | `MEDSUM_FALLBACK_MODEL` | AI service | `gemma4:e2b` |
 | `MEDSUM_NUM_CTX` | AI service | `16384` (context window for each model call) |
+| `MEDSUM_WORKER` | AI service | `1`; `0` starts the service without its document worker (nothing queued is processed) |
+| `MEDSUM_JOB_LEASE`, `MEDSUM_JOB_HEARTBEAT_S`, `MEDSUM_JOB_MAX_ATTEMPTS` | AI service | `5 minutes`, `60`, `3`; how long a claim lasts, how often it is renewed, and how many claims a job gets before it is set aside |
 | `MEDSUM_LOG_FILE` | AI service logs (`observability`) | `scripts/logs/medsum.jsonl`; JSON log lines (ids, events, timings) without patient content, also on stderr. Set up when the service starts |
 | `VITE_API_BASE_URL` | Frontend | `/api`, set in `frontend/.env.local`; the Vite dev server proxies it to the backend |
 | `MEDSUM_API_TARGET` | Frontend (Vite proxy) | `http://localhost:8080` |
@@ -239,14 +244,15 @@ All backend routes except `/healthz`, `/auth/login`, `/auth/logout` and `/auth/s
 | `GET` | `/documents` | List the user's documents, newest first, each with its `insight_status` |
 | `POST` | `/documents` | Upload a PDF, JPG or PNG (multipart field `file`, max 20 MB) and start processing it |
 | `DELETE` | `/documents/{id}` | Delete a document and its file |
-| `GET` | `/documents/{id}/insight` | Get the summary and its status (`not_started`, `processing`, `completed`, `failed`) |
-| `POST` | `/documents/{id}/insight` | Start or retry summary generation |
+| `GET` | `/documents/{id}/insight` | Get the summary and its status (`not_started`, `processing`, `verified`, `needs_review`, `failed`) |
+| `POST` | `/documents/{id}/insight` | Start or retry processing |
+| `POST` | `/documents/{id}/reprocess` | Process the document again from the start, as a new run |
 | `GET` | `/user/insights` | Get the cumulative patient summary and its status (`none`, `processing`, `completed`, `failed`) |
 | `POST` | `/user/insights` | Start generating the cumulative patient summary |
 
 Document and summary routes need the clinician role and `/admin/*` the admin role; without it the answer is 403. Accounts in another organisation are answered with 404.
 
-The AI service exposes `GET /health` and two internal routes, `POST /internal/generate-insights` and `POST /internal/generate-user-insights`. Both require an `X-Internal-Token` header.
+The AI service exposes `GET /health` and three internal routes: `POST /internal/generate-insights` and `POST /internal/reprocess-document` queue a document, and `POST /internal/generate-user-insights` starts the patient summary. All three require an `X-Internal-Token` header.
 
 A Postman collection is in [`postman/collections/`](postman/collections/med-sum.postman_collection.json). It uses the variables `backend_url`, `ai_service_url`, `email`, `password` and `internal_api_token`; Postman keeps the session cookie from the login request.
 
@@ -267,7 +273,9 @@ frontend/
   src/auth/              the logged-in account (AuthProvider), permissions and the route guard
   src/pages/             login, set password, account, staff, documents, document summary, patient summary
 scripts/
-  src/insights_service.py    FastAPI service and background job handling
+  src/insights_service.py    FastAPI service; starts the document worker
+  src/document_jobs.py       the document job queue: claims, leases, the worker
+  src/pipeline/              the document graph: nodes, routing, low-confidence signals, checkpoints
   src/extract_report_slm.py  page extraction from images
   src/generate_insights_txt.py  summary generation
   src/llm.py                 model calls with the primary and fallback model
@@ -313,9 +321,8 @@ The extraction and summary steps can also be run on their own, which is useful f
 ## Limitations
 
 - **Authentication is not finished.** Accounts, sessions, roles and staff management work, but each account still sees only the documents it uploaded (patient records shared within an organisation come later), and there is no audit log and no second factor. The first admin of an organisation is created from the command line. Medical registration numbers are not verified. There is no email, so setup and reset links are handed over by whoever creates them.
-- **One extraction prompt.** Lab reports and prescriptions share one prompt; the document type is not detected yet.
 - **Patient summary ordering.** Reports are ordered by upload date, not by the date printed on them, and the summary is only regenerated on request.
-- **Summaries are model-written HTML.** Values are not yet stored as structured data or checked against the source document.
+- **Summaries are model-written HTML.** Each document's values are stored as a checked, structured record, but the summary page is still written by the model from the transcription, not from that record.
 - **No container setup** yet, and no CI.
 
 ## Roadmap
@@ -324,9 +331,8 @@ The next phase focuses on doctors and hospital groups:
 
 - Patient records with organisation-scoped access, an audit log and a second factor
 - Patient-controlled sharing of records with doctors
-- Structured clinical data (lab values, medications, diagnoses) instead of HTML only
+- Summaries built from the structured record (lab values, medications, diagnoses) instead of model-written HTML
 - Timelines, trends and flags for abnormal values
-- Choosing the extraction prompt by document type
 
 ## License
 
