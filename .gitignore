@@ -10,9 +10,6 @@ data/
 scripts/logs/
 
 # docs/ is committed (architecture decision records in docs/adr/).
-# These two local files stay out of git until they are deleted.
-docs/auth-plan.md
-docs/handoff-agentic-pipeline.md
 
 # Eval reports (generated)
 scripts/evals/results/
