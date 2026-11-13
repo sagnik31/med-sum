@@ -83,7 +83,7 @@ def test_a_multi_line_citation_is_accepted():
 
 
 # -------------------------------------------------------------------
-# Remarks (decision 25)
+# Remarks
 # -------------------------------------------------------------------
 def remark(**overrides) -> dict:
     return {
@@ -160,7 +160,7 @@ def test_a_lab_report_parse_has_no_medicines_and_a_prescription_no_results():
 
 
 # -------------------------------------------------------------------
-# Classification (decision 18)
+# Classification
 # -------------------------------------------------------------------
 def test_the_classifier_picks_from_the_fixed_labels():
     assert {label.value for label in CLASSIFIER_LABELS} == {

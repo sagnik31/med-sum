@@ -1,5 +1,5 @@
 """
-Document type: the model's label, checked against keywords (decision 18).
+Document type: the model's label, checked against keywords. See docs/adr/0002-two-model-steps.md.
 
 The keyword check counts which signals of a lab report and of a
 prescription appear in the transcription. It names a type only when that

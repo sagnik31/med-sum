@@ -1,5 +1,5 @@
 """
-Derived values (decisions 10-13, 26): numbers, ranges, computed flags, the
+Derived values (docs/adr/0003-printed-and-derived-values.md): numbers, ranges, computed flags, the
 unit table, dose schedules, durations, dates, and the record built from a
 parse output. The answer keys, whose derived values were written by hand,
 are the oracle.
@@ -238,7 +238,7 @@ def test_low_above_high_is_parsed_as_printed():
 
 
 # -------------------------------------------------------------------
-# Computed flags (decisions 11, 26)
+# Computed flags: only when exactly one range applies
 # -------------------------------------------------------------------
 def flag(value, *ranges, unit=None):
     result = compute_flag(value, [parse_range(r) for r in ranges], unit)
@@ -277,7 +277,7 @@ def test_a_range_printed_in_another_unit_gives_no_flag():
 
 
 # -------------------------------------------------------------------
-# The unit table (decision 12)
+# The unit table
 # -------------------------------------------------------------------
 @pytest.mark.parametrize(
     "spelling, symbol",
@@ -423,7 +423,7 @@ def test_parse_duration(text, days):
 
 
 # -------------------------------------------------------------------
-# Dates (decision 13)
+# Dates
 # -------------------------------------------------------------------
 @pytest.mark.parametrize(
     "text, expected",
@@ -476,7 +476,7 @@ def details(report=None, collection=None, prescription=None):
         (details("soon"), None, "undated"),
     ],
 )
-def test_the_document_date_follows_decision_13(printed, on, source):
+def test_the_document_date_follows_the_date_rule(printed, on, source):
     dates = document_dates(printed)
 
     assert dates.document_date == on

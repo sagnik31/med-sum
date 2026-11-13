@@ -1,7 +1,7 @@
 """
-Reset the development database and the uploaded files (step 6 of the
-plan). The database holds synthetic data only (decision 16), so a schema
-change is applied by resetting, not migrating.
+Reset the development database and the uploaded files. The database holds
+synthetic data only, so a schema change is applied by resetting, not
+migrating. See docs/adr/0008-patient-data-protection.md.
 
 From scripts/src:
 

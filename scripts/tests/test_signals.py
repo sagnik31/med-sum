@@ -44,7 +44,7 @@ def finding(validator, severity, item_id=None, field=None):
 # -------------------------------------------------------------------
 # The catalogue
 # -------------------------------------------------------------------
-def test_the_catalogue_is_the_list_of_section_8_8():
+def test_the_catalogue_is_the_documented_list():
     routing = {f"LC-{n:02}" for n in range(1, 19)}
     info = {"LC-I1", "LC-I2", "LC-I3"}
     assert {s for s, v in SIGNALS.items() if v.kind is Kind.ROUTING} == routing

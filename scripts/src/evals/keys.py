@@ -77,7 +77,7 @@ def with_text_layers(
 
 
 def patient_of(key: str, dataset_dir: Path = DATASET_DIR) -> ExpectedPatient:
-    """A dataset patient, by key, as the Phase B patient record has it."""
+    """A dataset patient, by key, with the details a patient record holds."""
     patient = next(p for p in manifest(dataset_dir)["patients"] if p["key"] == key)
     return ExpectedPatient(
         name=patient["name"],

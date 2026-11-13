@@ -69,7 +69,7 @@ check, and `test` for the rest; eval reports keep them apart.
 - **Citations** point at lines of the expected transcription (`transcriptions/`,
   and `pages` in each key). A model's line numbers won't match, so compare
   citations by their quoted text.
-- **Remarks** (decision 25): directly under a single-test panel, a remark belongs
+- **Remarks** (by position only, never by meaning): directly under a single-test panel, a remark belongs
   to that test; after a table of several tests, to the panel; under its own
   heading or elsewhere, to the document.
 - **Conditions:** one item per condition, even when several share a line

@@ -1,9 +1,10 @@
 """
-Validator 9 (open question 5, on its default): the patient printed on the
+Validator 9: the patient printed on the
 document is the patient it was uploaded to. Each detail that is known on
 both sides is compared; a mismatch flags the document for a clinician.
 
-Until Phase B a patient is a login with only a full name, so the caller
+Until patients are records of their own, a patient is a login with only a
+full name, so the caller
 passes whatever it knows; details it doesn't know are not compared.
 """
 

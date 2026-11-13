@@ -207,7 +207,7 @@ def test_a_citation_quoting_another_line_is_wrong():
 
 
 # -------------------------------------------------------------------
-# Remark attribution (bug 1 of the plan: remarks on the wrong tests)
+# Remark attribution (remarks put on the wrong tests)
 # -------------------------------------------------------------------
 def test_a_panel_remark_attached_to_its_last_test_is_misattributed():
     pred = key("d01")

@@ -1,6 +1,6 @@
 """
-Pipeline runs and steps (section 8.4): one pipeline_runs row per run, one
-pipeline_steps row per node attempt.
+Pipeline runs and steps: one pipeline_runs row per run, one
+pipeline_steps row per node attempt. See docs/adr/0006-durable-traceable-runs.md.
 
 The names follow OpenTelemetry so an exporter can be added later: a run is
 a trace (pipeline_runs.trace_id), a step is a span whose span id is its
@@ -699,5 +699,5 @@ def traced(node: str, *, input_of=None, output_of=None, page=None, attempt=None)
 
 
 def is_traced(fn) -> bool:
-    """Whether `fn` was wrapped by traced(); step 8 checks every graph node."""
+    """Whether `fn` was wrapped by traced(); a test checks every graph node."""
     return getattr(fn, "__medsum_node__", None) is not None

@@ -16,7 +16,7 @@ from record.schemas import (
 
 PARSE_TYPES = ["lab_report", "prescription"]
 
-# Values that code computes; the model is never asked for them (decisions 10-13).
+# Values that code computes; the model is never asked for them.
 DERIVED_FIELDS = {
     "value_num",
     "flag_computed",

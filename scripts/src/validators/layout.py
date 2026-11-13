@@ -34,7 +34,8 @@ def _lines_between(
 
 
 # -------------------------------------------------------------------
-# 5: remarks sit by what they're on (decision 25)
+# 5: remarks sit by what they're on: a remark belongs to a test only on its
+# row or directly under it (see docs/adr/0003-printed-and-derived-values.md)
 # -------------------------------------------------------------------
 def check_remark_placement(record: DocumentRecord) -> list[Finding]:
     """
@@ -257,7 +258,7 @@ def check_result_coverage(record: DocumentRecord) -> list[Finding]:
 
 
 # -------------------------------------------------------------------
-# 8: coverage (decision 39)
+# 8: coverage: printed lines no item uses, so nothing is lost silently
 # -------------------------------------------------------------------
 _BOILERPLATE = [
     re.compile(r"\bpage\s+\d+\s*(?:of|/)\s*\d+\b", re.IGNORECASE),
@@ -322,7 +323,7 @@ def _is_table_furniture(lines: list[str], n: int) -> bool:
 
 
 def check_coverage(record: DocumentRecord) -> list[Finding]:
-    """Never a failure on its own: the list is shown in review (decision 39)."""
+    """Never a failure on its own: the list is shown in review."""
     return [
         Finding(
             validator=Validator.COVERAGE,

@@ -1,9 +1,9 @@
 -- med-sum database schema: the whole of it, in one file.
 --
--- The database holds synthetic data only (decision 16), so the schema is
--- changed in place, with no migrations: change this file, then reset the
--- database (`python -m reset_db --yes` from scripts/src). The test suites
--- build their throwaway databases from this file too.
+-- The database holds synthetic data only, so the schema is changed in
+-- place, with no migrations: change this file, then reset the database
+-- (`python -m reset_db --yes` from scripts/src). The test suites build
+-- their throwaway databases from this file too. See docs/adr/0008-patient-data-protection.md.
 --
 -- Plain SQL with no psql commands, so it loads through psql or a driver.
 -- Needs PostgreSQL 13+ (gen_random_uuid() is built in).
@@ -121,7 +121,7 @@ CREATE TABLE insights (
 CREATE INDEX insights_status_idx ON insights (status);
 
 -- -------------------------------------------------------------------
--- Pipeline runs and steps (section 8.4 of the plan): what produced what.
+-- Pipeline runs and steps: what produced what. See docs/adr/0006-durable-traceable-runs.md.
 -- Field names follow OpenTelemetry (trace, span, parent span), so a real
 -- exporter can be added later. Inputs and outputs hold patient content:
 -- they stay here, never in logs.
@@ -415,8 +415,8 @@ FROM pipeline_model_calls c
 GROUP BY c.model;
 
 -- -------------------------------------------------------------------
--- The structured record of a document (section 8.1): one JSONB value per
--- document, with its schema version (decision 15). Reprocessing replaces
+-- The structured record of a document: one JSONB value per document,
+-- with its schema version (see docs/adr/0003-printed-and-derived-values.md). Reprocessing replaces
 -- it; earlier runs' outputs stay in pipeline_steps. Clinician corrections
 -- are inside the record, next to the values they correct.
 -- -------------------------------------------------------------------

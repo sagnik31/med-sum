@@ -68,9 +68,10 @@ def series(facts, analyte):
 
 
 # -------------------------------------------------------------------
-# Section 6, bug 1: remarks attached to the wrong tests
+# The early model summaries' mistakes, one test each.
+# Remarks attached to the wrong tests
 # -------------------------------------------------------------------
-def test_bug1_remarks_stay_on_what_they_are_printed_on():
+def test_remarks_stay_on_what_they_are_printed_on():
     _, _, soup = page(inputs(*PATIENTS["meera"]))
     remarks = soup.select('[data-section="remarks"] li')
 
@@ -87,9 +88,9 @@ def test_bug1_remarks_stay_on_what_they_are_printed_on():
 
 
 # -------------------------------------------------------------------
-# Bug 2: a diagnosis invented from a single value
+# A diagnosis invented from a single value
 # -------------------------------------------------------------------
-def test_bug2_a_single_creatinine_never_becomes_a_diagnosis():
+def test_a_single_creatinine_never_becomes_a_diagnosis():
     facts, html, _ = page(inputs(*PATIENTS["rohan"]))
 
     assert "kidney injury" not in html.lower() and "AKI" not in html
@@ -102,9 +103,9 @@ def test_bug2_a_single_creatinine_never_becomes_a_diagnosis():
 
 
 # -------------------------------------------------------------------
-# Bug 3: "worsening" from a single data point
+# "worsening" from a single data point
 # -------------------------------------------------------------------
-def test_bug3_one_value_has_no_trend():
+def test_one_value_has_no_trend():
     facts, html, _ = page(inputs(*PATIENTS["rohan"]))
 
     creatinine = series(facts, "creatinine")
@@ -114,9 +115,9 @@ def test_bug3_one_value_has_no_trend():
 
 
 # -------------------------------------------------------------------
-# Bug 4: a confidence label from one report
+# A confidence label from one report
 # -------------------------------------------------------------------
-def test_bug4_no_confidence_labels_only_counts_of_reports():
+def test_no_confidence_labels_only_counts_of_reports():
     facts, _, soup = page(inputs(*PATIENTS["fatima"]))
 
     tsh = soup.select_one('[data-series="analyte:tsh"]')
@@ -129,9 +130,9 @@ def test_bug4_no_confidence_labels_only_counts_of_reports():
 
 
 # -------------------------------------------------------------------
-# Bug 5: upload order taken for the timeline
+# Upload order taken for the timeline
 # -------------------------------------------------------------------
-def test_bug5_documents_are_ordered_by_their_own_date_not_upload():
+def test_documents_are_ordered_by_their_own_date_not_upload():
     # d04 (2025-01-10) is uploaded before the 2024 documents.
     facts, _, soup = page(inputs("d04", "d01", "d02", "d03", "d05"))
 
@@ -149,9 +150,9 @@ def test_bug5_documents_are_ordered_by_their_own_date_not_upload():
 
 
 # -------------------------------------------------------------------
-# Bug 6: tests filed under an organ system
+# Tests filed under an organ system
 # -------------------------------------------------------------------
-def test_bug6_tests_stay_under_their_printed_panel():
+def test_tests_stay_under_their_printed_panel():
     facts, _, soup = page(inputs(*PATIENTS["rohan"]))
 
     [bun] = [s for s in facts.labs if "BUN" in s.name]
@@ -170,9 +171,9 @@ def test_bug6_tests_stay_under_their_printed_panel():
 
 
 # -------------------------------------------------------------------
-# Bug 7: lipid status guessed from a statin
+# Lipid status guessed from a statin
 # -------------------------------------------------------------------
-def test_bug7_a_statin_without_a_lipid_panel_gives_no_lipid_facts():
+def test_a_statin_without_a_lipid_panel_gives_no_lipid_facts():
     facts, html, _ = page(inputs(*PATIENTS["rohan"]))
     lines = facts_text(facts)
 

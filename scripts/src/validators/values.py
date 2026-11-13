@@ -107,7 +107,8 @@ def check_range_bounds(record: DocumentRecord) -> list[Finding]:
 
 
 # -------------------------------------------------------------------
-# 4: printed flag against computed flag (decision 11)
+# 4: printed flag against computed flag; the document is never corrected,
+# a disagreement goes to a clinician (see docs/adr/0003-printed-and-derived-values.md)
 # -------------------------------------------------------------------
 ABNORMAL = "abnormal"  # a printed flag with no direction, such as "*"
 PRINTED_FLAGS = {

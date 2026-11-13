@@ -66,7 +66,7 @@
         "non_numeric_values",
         "multi_page"
       ],
-      "notes": "Health check-up. The CBC comment follows the table whose last row is the WBC count; it belongs to the panel, not to WBC (bug 1).",
+      "notes": "Health check-up. The CBC comment follows the table whose last row is the WBC count; it belongs to the panel, not to WBC.",
       "split": "test",
       "expected_end_state": "verified",
       "expected_signals": []
@@ -115,7 +115,7 @@
         "multiple_ranges",
         "multi_page"
       ],
-      "notes": "A different lab, printed date only for collection. 'Suggest iron studies' is a pathologist's note under its own heading after the HbA1c section; it belongs to the document, not to HbA1c (bug 1).",
+      "notes": "A different lab, printed date only for collection. 'Suggest iron studies' is a pathologist's note under its own heading after the HbA1c section; it belongs to the document, not to HbA1c.",
       "split": "test",
       "expected_end_state": "verified",
       "expected_signals": []
@@ -139,7 +139,7 @@
         "history",
         "uploaded_before_older_documents"
       ],
-      "notes": "Uploaded first although it is dated after the 2024 labs (bug 5: upload order is not document order).",
+      "notes": "Uploaded first although it is dated after the 2024 labs (upload order is not document order).",
       "split": "test",
       "expected_end_state": "verified",
       "expected_signals": []
@@ -183,7 +183,7 @@
         "document_remark",
         "multi_page"
       ],
-      "notes": "The only creatinine this patient has: one raised value must not become 'acute kidney injury' or a trend (bugs 2, 3). BUN sits in the kidney panel (bug 6).",
+      "notes": "The only creatinine this patient has: one raised value must not become 'acute kidney injury' or a trend. BUN sits in the kidney panel, not under an organ system.",
       "split": "test",
       "expected_end_state": "verified",
       "expected_signals": []
@@ -206,7 +206,7 @@
         "bmi_and_height",
         "duration_in_months"
       ],
-      "notes": "Atorvastatin is prescribed but the patient has no lipid panel: the summary must not invent a lipid status (bug 7).",
+      "notes": "Atorvastatin is prescribed but the patient has no lipid panel: the summary must not invent a lipid status.",
       "split": "test",
       "expected_end_state": "verified",
       "expected_signals": []
@@ -311,7 +311,7 @@
         "duration_in_weeks",
         "uploaded_before_older_documents"
       ],
-      "notes": "A weekly dose has no daily schedule. Uploaded first (bug 5).",
+      "notes": "A weekly dose has no daily schedule. Uploaded first, before older documents.",
       "split": "test",
       "expected_end_state": "verified",
       "expected_signals": []

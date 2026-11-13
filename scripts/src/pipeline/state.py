@@ -127,7 +127,7 @@ class GraphState(TypedDict):
     signals: NotRequired[list[SignalHit]]
 
     # render --------------------------------------------------------------
-    # The insight page as the app shows it today (step 10 replaces it).
+    # The document page, built by code from the record.
     insight_html: NotRequired[str | None]
 
     # end -----------------------------------------------------------------

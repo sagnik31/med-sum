@@ -1,6 +1,6 @@
 """
-db/schema.sql: the pipeline tables (section 8.4) and the record table
-(section 8.1) hold what they should and refuse what they shouldn't.
+db/schema.sql: the pipeline tables and the record table hold what they
+should and refuse what they shouldn't.
 """
 
 import json

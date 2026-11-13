@@ -1,5 +1,5 @@
 """
-The validators of section 8.3. Every clean answer key must pass (no false
+The validators. Every clean answer key must pass (no false
 alarms); a targeted change to a key must fail the validator meant to catch
 it, and only that one where it matters. No model is called: the keys stand
 in for the parse output, and the expected transcriptions for the
@@ -283,7 +283,7 @@ def test_medicines_vitals_allergies_and_conditions_are_checked():
 
 
 # -------------------------------------------------------------------
-# 2: the PDF text layer (decision 40)
+# 2: the PDF text layer
 # -------------------------------------------------------------------
 def test_a_misread_shared_by_transcription_and_parse_is_caught_by_the_text_layer():
     # The vision step read 10.4 as 10.5; the parse copied it faithfully.
@@ -522,7 +522,7 @@ def test_an_unreadable_range_with_numbers_is_noted():
 
 
 # -------------------------------------------------------------------
-# 4: printed flag against computed flag (decision 11)
+# 4: printed flag against computed flag
 # -------------------------------------------------------------------
 @pytest.mark.parametrize(
     "printed, direction",
@@ -565,7 +565,7 @@ def test_an_unknown_printed_flag_is_noted_not_flagged():
 
 
 # -------------------------------------------------------------------
-# 5: remark placement (decision 25, section 6 bug 1)
+# 5: remark placement
 # -------------------------------------------------------------------
 def rescope(record, starts, scope, test_name=None, panel=None):
     p = remark(record, starts).printed
@@ -614,7 +614,7 @@ def test_a_remark_on_a_test_or_panel_that_isnt_there():
 
 def test_a_comment_right_under_the_last_row_passes_on_test_or_panel():
     # The limit of a layout check: d01's CBC comment is directly under the
-    # WBC row, so reading it as on WBC (bug 1) is the parse step's call.
+    # WBC row, so reading it as on WBC is the parse step's call.
     record = rescope(keyed_record("d01"), "Microcytic", "test", "Total WBC Count",
                      "COMPLETE BLOOD COUNT")  # fmt: skip
 
@@ -853,7 +853,7 @@ def rebuilt_with_lines(record: DocumentRecord, from_line: int, shift: int = 1):
 
 
 # -------------------------------------------------------------------
-# 8: coverage (decision 39)
+# 8: coverage
 # -------------------------------------------------------------------
 def unused_text(record):
     return [record.pages[p - 1].lines[n - 1] for p, n in unused_lines(record)]
@@ -890,7 +890,7 @@ def test_coverage_is_never_more_than_info():
 
 
 # -------------------------------------------------------------------
-# 9: patient match (question 5)
+# 9: patient match
 # -------------------------------------------------------------------
 @pytest.mark.parametrize(
     "printed, expected, match",

@@ -4,7 +4,7 @@ stored record format (record.document.DocumentRecord), without provenance.
 
 Citations point at the expected transcription. Line numbers are only
 meaningful against that transcription; a harness compares citations by
-their quoted text (decision 38).
+their quoted text. See docs/adr/0009-measured-evals.md.
 """
 
 from dataset.content import ANALYTES, Doc
@@ -21,7 +21,8 @@ from dataset.layout import (
 )
 from record.document import DocumentRecord
 
-# Which header date the document date comes from, in order (decision 13).
+# Which header date the document date comes from, in order: the report date,
+# else the collection date, else the prescription date. See docs/adr/0003-printed-and-derived-values.md.
 DATE_RULES = ("report_date", "collection_date", "prescription_date")
 
 

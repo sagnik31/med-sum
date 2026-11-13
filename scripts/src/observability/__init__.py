@@ -1,5 +1,5 @@
 """
-Observability for the document pipeline (section 8.4 of the plan): runs and
+Observability for the document pipeline (see docs/adr/0006-durable-traceable-runs.md): runs and
 steps in pipeline_runs / pipeline_steps, provenance links from record items
 to their steps, and structured JSON logs without patient content.
 """

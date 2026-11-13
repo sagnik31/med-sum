@@ -1,10 +1,11 @@
 """
 Numbers, reference ranges and computed flags, parsed from printed text.
 
-A number is parsed only when the text is a number and nothing else
-(decision 10): "2,45,000" is 245000, but "< 0.5", "2-4", "Nil" and "1,5"
-have no number. Every printed range is kept; a flag is computed only when
-exactly one range clearly applies (decisions 11, 26).
+A number is parsed only when the text is a number and nothing else:
+"2,45,000" is 245000, but "< 0.5", "2-4", "Nil" and "1,5" have no
+number. Every printed range is kept; a flag is computed only when exactly
+one range clearly applies, and the printed flag is never overwritten.
+See docs/adr/0003-printed-and-derived-values.md.
 """
 
 import re

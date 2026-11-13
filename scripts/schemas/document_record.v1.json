@@ -192,7 +192,7 @@
       "type": "object"
     },
     "DateSource": {
-      "description": "Which rule chose the document date (decision 13).",
+      "description": "Which rule chose the document date: report, else collection, else prescription date.",
       "enum": [
         "report_date",
         "collection_date",
@@ -1198,7 +1198,7 @@
     },
     "PrintedRemark": {
       "additionalProperties": false,
-      "description": "A remark, note or piece of advice. It belongs to a test only when it is\nprinted on that test's row or directly under it; otherwise to the panel\nor the whole document (decision 25).",
+      "description": "A remark, note or piece of advice. It belongs to a test only when it is\nprinted on that test's row or directly under it; otherwise to the panel\nor the whole document. Never by what it says.",
       "properties": {
         "citation": {
           "$ref": "#/$defs/Citation"

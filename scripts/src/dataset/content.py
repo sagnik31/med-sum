@@ -1,13 +1,16 @@
 """
-The synthetic patients and their documents (decisions 4-9, 38, 39).
+The synthetic patients and their documents. See docs/adr/0009-measured-evals.md.
 
 Everything is fictional: patients, doctors, laboratories and hospital.
 Every page says so in its footer. Documents are clean and printed (no
-scans, handwriting or noise; decision 4), in English with Indian
+scans, handwriting or noise; those are a later, harder set), in English with Indian
 conventions (mg/dL, dd/mm/yyyy, 1-0-1, BD, SOS, brand names).
 
-Each document lists the `cases` it exercises, including the accuracy bugs
-of section 6 of the plan that clean documents can show. The content is
+Each document lists the `cases` it exercises, including the mistakes the
+first model-written summaries made that clean documents can show (a remark
+moved onto the wrong test, a diagnosis or trend from one value, a confidence
+label, upload order taken for the timeline, tests filed by organ system, a
+lipid status guessed from a statin). The content is
 written out by hand, not drawn at random, so it is the same on every build.
 """
 
@@ -101,7 +104,7 @@ PATIENTS = [
 ]  # fmt: skip
 BY_KEY = {p.key: p for p in PATIENTS}
 
-# Analyte keys the answer keys expect (the unit table of step 5 uses them).
+# Analyte keys the answer keys expect (derive's unit table uses them).
 # Tests not listed (urine routine and the like) have no analyte.
 ANALYTES = {
     "Haemoglobin": "haemoglobin",
@@ -326,7 +329,7 @@ d01 = Doc(
            "indian_digit_grouping", "test_remark", "non_numeric_values",
            "multi_page"],
     notes="Health check-up. The CBC comment follows the table whose last row is "
-          "the WBC count; it belongs to the panel, not to WBC (bug 1).",
+          "the WBC count; it belongs to the panel, not to WBC.",
     pages=[
         [
             *sunrise_header(MEERA, "Mrs. Meera Iyer", "SD-24-061407", "Dr. Anil Deshpande",
@@ -430,7 +433,7 @@ d03 = Doc(
            "multi_page"],
     notes="A different lab, printed date only for collection. 'Suggest iron studies' "
           "is a pathologist's note under its own heading after the HbA1c section; it "
-          "belongs to the document, not to HbA1c (bug 1).",
+          "belongs to the document, not to HbA1c.",
     pages=[
         [
             *kaveri_header("Meera Iyer", "57 Y", "F", "KCL-118842", "Dr. Anil Deshpande",
@@ -467,8 +470,8 @@ d04 = Doc(
     "d04", "meera", "prescription", "jpg", "a5",
     cases=["jpeg", "as_needed", "duration_in_months", "impression", "history",
            "uploaded_before_older_documents"],
-    notes="Uploaded first although it is dated after the 2024 labs (bug 5: "
-          "upload order is not document order).",
+    notes="Uploaded first although it is dated after the 2024 labs (upload "
+          "order is not document order).",
     pages=[[
         *rx_header("rao", MEERA, ("10/01/2025", date(2025, 1, 10))),
         vitals_line([
@@ -545,8 +548,8 @@ d06 = Doc(
     cases=["single_creatinine", "bun_in_kidney_panel", "one_sided_range",
            "document_remark", "multi_page"],
     notes="The only creatinine this patient has: one raised value must not become "
-          "'acute kidney injury' or a trend (bugs 2, 3). BUN sits in the kidney "
-          "panel (bug 6).",
+          "'acute kidney injury' or a trend. BUN sits in the kidney panel, not "
+          "under an organ system.",
     pages=[
         [
             *hospital_lab_header(ROHAN, "Dr. Anil Deshpande",
@@ -582,7 +585,7 @@ d07 = Doc(
     cases=["statin_without_lipid_panel", "drug_allergy", "provisional_diagnosis",
            "bmi_and_height", "duration_in_months"],
     notes="Atorvastatin is prescribed but the patient has no lipid panel: the "
-          "summary must not invent a lipid status (bug 7).",
+          "summary must not invent a lipid status.",
     pages=[[
         *rx_header("deshpande", ROHAN, ("10/02/2025", date(2025, 2, 10))),
         vitals_line([
@@ -717,7 +720,7 @@ d11 = Doc(
 d12 = Doc(
     "d12", "fatima", "prescription", "png", "a5",
     cases=["weekly_frequency", "duration_in_weeks", "uploaded_before_older_documents"],
-    notes="A weekly dose has no daily schedule. Uploaded first (bug 5).",
+    notes="A weekly dose has no daily schedule. Uploaded first, before older documents.",
     pages=[[
         *rx_header("rao", FATIMA, ("15/03/2025", date(2025, 3, 15))),
         vitals_line([
@@ -1820,7 +1823,7 @@ DOCUMENTS = [d01, d02, d03, d04, d05, d06, d07, d08, d09, d10, d11, d12, d13, d1
              d18, d19, d20, d21, d22, d23, d24, d25]  # fmt: skip
 
 # The order the loader uploads in: deliberately not document-date order
-# (bug 5), and patients interleaved.
+# (the summary must order by printed date), and patients interleaved.
 UPLOAD_ORDER = ["d04", "d07", "d12", "d16", "d01", "d06", "d09", "d13", "d02", "d17",
                 "d05", "d08", "d11", "d14", "d03", "d10", "d15",
                 "d22", "d20", "d24", "d18", "d23", "d19", "d21", "d25"]  # fmt: skip

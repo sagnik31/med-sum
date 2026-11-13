@@ -1,5 +1,5 @@
 """
-The synthetic eval dataset (step 4 of the plan): fictional patients and
+The synthetic eval dataset (see docs/adr/0009-measured-evals.md): fictional patients and
 documents, rendered to the files that get uploaded, with an answer key and
 an expected transcription for each.
 

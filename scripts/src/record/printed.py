@@ -5,7 +5,7 @@ steps.
 Everything here is text exactly as printed, each item with its citation.
 Nothing is derived: numbers, dates, flags from ranges, unit conversions and
 dose schedules are computed by code afterwards (document.py), never by the
-model (decisions 10-12).
+model. See docs/adr/0003-printed-and-derived-values.md.
 
 Conventions, for the small models that fill these in (via Ollama's
 JSON-schema `format`):
@@ -32,7 +32,7 @@ class DocumentType(str, Enum):
     IMAGING_REPORT = "imaging_report"
 
 
-# The fixed label list the classifier picks from (decision 18).
+# The fixed label list the classifier picks from. See docs/adr/0002-two-model-steps.md.
 CLASSIFIER_LABELS = (
     DocumentType.LAB_REPORT,
     DocumentType.PRESCRIPTION,
@@ -111,7 +111,7 @@ class PrintedRemark(Strict):
     """
     A remark, note or piece of advice. It belongs to a test only when it is
     printed on that test's row or directly under it; otherwise to the panel
-    or the whole document (decision 25).
+    or the whole document. Never by what it says.
     """
 
     citation: Citation

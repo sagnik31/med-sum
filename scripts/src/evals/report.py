@@ -1,8 +1,9 @@
 """
 Eval results as JSON and Markdown: one report per eval run, covering every
 model that was run, with the model choice (choose.py), the headline
-numbers, a breakdown by the manifest's cases (the section 6 bugs and the
-dataset's other situations) and by document, and the errors worth reading.
+numbers, a breakdown by the manifest's cases (the early summaries' mistakes
+and the dataset's other situations) and by document, and the errors worth
+reading.
 
 Given each document's outcome (its end state and routing signals), it also
 scores routing against the manifest's expected end state, and gives the

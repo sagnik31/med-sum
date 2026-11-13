@@ -13,14 +13,14 @@ each returning the next node's name.
     render -> finish -> end
 
 retry: a repair while the model in use has attempts left (MAX_PARSE_ATTEMPTS:
-the first parse and two repairs, decision 19); then the fallback model, once,
+the first parse and two repairs); then the fallback model, once,
 with the same budget; then give up. Giving up keeps the last record that was
 validated; if there is none, validate builds a record of the pages alone,
 and the document goes to review (signal LC-08).
 
 Only error findings (validators 1, 5 and 6) send a parse back: a flag is
 about the document itself, which a re-parse can't change, so it goes to a
-clinician at once (section 8.8).
+clinician at once. See docs/adr/0002-two-model-steps.md and docs/adr/0004-deterministic-checks-decide-routing.md.
 """
 
 from pipeline import parts
@@ -28,7 +28,7 @@ from pipeline.state import GraphState
 from record.printed import PARSE_MODELS
 from validators import Severity
 
-# The first parse plus up to two repairs, per model (decision 19).
+# The first parse plus up to two repairs, per model.
 MAX_PARSE_ATTEMPTS = 3
 
 

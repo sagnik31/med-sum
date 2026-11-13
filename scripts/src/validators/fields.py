@@ -14,7 +14,7 @@ from record.document import DocumentRecord
 class Place(Enum):
     ON_LINES = "on its cited lines"
     # A panel name is the heading above its row; a remark's test name may be
-    # the row above it (step 4 of the plan found this).
+    # the row above it (the synthetic dataset showed both).
     ON_OR_ABOVE = "on or above its cited lines"
 
 

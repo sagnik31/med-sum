@@ -1,6 +1,7 @@
 """
-What a validator reports. Findings are stored per run (section 8.4), so
-they hold patient content and stay in the database: never log them.
+What a validator reports. Findings are stored per run, on the step that
+ran the validators. They quote document text, so they are masked before
+they are stored and never logged. See docs/adr/0004-deterministic-checks-decide-routing.md and docs/adr/0008-patient-data-protection.md.
 """
 
 from enum import Enum
@@ -9,7 +10,7 @@ from record.common import Strict
 
 
 class Validator(str, Enum):
-    """The checks of section 8.3, numbered as there."""
+    """The checks, numbered as in their ADR."""
 
     SOURCE_TEXT = "source_text"  # 1: each value is on its cited line
     TEXT_LAYER = "text_layer"  # 2: each value is in the PDF's own text
@@ -26,7 +27,7 @@ class Validator(str, Enum):
 
 class Severity(str, Enum):
     """
-    How the pipeline (step 8) acts on a finding:
+    How the pipeline acts on a finding:
     - error: the parse output may be wrong, so a repair (re-parse with the
       findings in the prompt) can fix it;
     - flag: the document itself is in doubt (its printed flag disagrees,

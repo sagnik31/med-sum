@@ -1,7 +1,7 @@
 """
 The pipeline's nodes. Each takes the graph state and returns only the keys
 it changes, and each is wrapped in `traced`, so every call is a step of
-the current run (section 8.4).
+the current run. See docs/adr/0006-durable-traceable-runs.md.
 
     open        count the pages and describe each page image
     transcribe  one page per call: the vision model's numbered lines, with
@@ -703,7 +703,7 @@ def _breaker_switches() -> list[dict]:
 def marked_record(state: GraphState, provenance) -> tuple:
     """
     A copy of the state's record with provenance on every item and the
-    section 8.8 signals applied (low confidence with reasons, or validated),
+    low-confidence signals applied (low confidence with reasons, or validated),
     the signals, and whether the record was parsed. `provenance` gives the
     provenance for a record that wasn't parsed (called only then). Apart
     from that call it reads only the state and the run's breaker switches
@@ -799,7 +799,7 @@ def _finish_output(result: dict) -> dict:
 @traced("finish", input_of=_finish_input, output_of=_finish_output)
 def finish(state: GraphState) -> dict:
     """
-    The document's signals (section 8.8), its record marked with them and
+    The document's signals (docs/adr/0004-deterministic-checks-decide-routing.md), its record marked with them and
     saved, and its end state: needs_review when any signal routes, else
     verified. Every item must trace back to the step that produced it; a
     gap is a bug, so the record is not saved and the run fails.

@@ -13,7 +13,7 @@ success here: the model answered.
 Quality failures (a parse that doesn't fit its schema, or that the
 validators find errors in) are counted per model and logged, for
 diagnosis, and never trip the breaker: they say nothing about whether the
-server is up (decision 46).
+server is up. See docs/adr/0005-local-models-with-fallback.md.
 
 State lives in memory, per process, behind one lock: the worker thread
 and request threads share it. Log events model_disabled, model_probe and

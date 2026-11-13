@@ -1,5 +1,7 @@
 """
-Printed dates, and which one is the document's date (decision 13).
+Printed dates, and which one is the document's date: the report date, else
+the collection date, else the prescription date; with none, the document is
+undated. See docs/adr/0003-printed-and-derived-values.md.
 
 Dates are read day first, as Indian documents print them: 05/09/2024 is
 5 September. A two-digit year is not read, since its century would be a
@@ -45,7 +47,7 @@ def parse_date(text: str | None) -> date | None:
     return None
 
 
-# The order decision 13 picks the document date in.
+# The order the document date is picked in.
 DATE_RULES = (
     DateSource.REPORT_DATE,
     DateSource.COLLECTION_DATE,

@@ -69,7 +69,7 @@ def test_rendering_is_deterministic(doc_id):
 
 
 # -------------------------------------------------------------------
-# Size and shape (decisions 7, 8)
+# Size and shape
 # -------------------------------------------------------------------
 def test_the_dataset_has_the_agreed_size():
     """The agreed size is the main set's; the held-out set comes on top."""
@@ -220,7 +220,7 @@ def test_test_remarks_point_at_their_observations(keys):
     "doc_id", [d for d in sorted(DOCS) if DOCS[d]["has_text_layer"]]
 )
 def test_values_are_in_the_pdf_text_layer(doc_id, keys):
-    # Validator 2 (decision 40) compares extracted values with the PDF's text.
+    # Validator 2 compares extracted values with the PDF's text layer.
     record = keys[doc_id]
     with pymupdf.open(DATASET / DOCS[doc_id]["file"]) as pdf:
         texts = [normalise(page.get_text()) for page in pdf]
@@ -247,7 +247,7 @@ def test_types_have_the_items_they_should(keys):
     [("d01", "report_date"), ("d03", "collection_date"), ("d08", "report_date"),
      ("d02", "prescription_date"), ("d15", "undated"), ("d17", "undated")],
 )  # fmt: skip
-def test_the_document_date_follows_decision_13(doc_id, source, keys):
+def test_the_document_date_follows_the_date_rule(doc_id, source, keys):
     assert keys[doc_id].document.derived.date_source.value == source
 
 
@@ -255,18 +255,18 @@ def test_the_document_date_follows_decision_13(doc_id, source, keys):
 # The listed cases are really in the data
 # -------------------------------------------------------------------
 REQUIRED_CASES = {
-    "panel_remark_after_last_row",  # bug 1
-    "document_remark_after_single_test",  # bug 1
-    "single_creatinine",  # bugs 2, 3
-    "bun_in_kidney_panel",  # bug 6
-    "statin_without_lipid_panel",  # bug 7
-    "uploaded_before_older_documents",  # bug 5
-    "trend_two_values",  # decision 31
-    "multiple_ranges",  # decision 26
-    "patient_mismatch",  # question 5
-    "undated",  # decision 13
-    "classified_other",  # decision 1
-    "image_only_pdf",  # decisions 24, 40
+    "panel_remark_after_last_row",  # a remark moved onto a test
+    "document_remark_after_single_test",  # a remark moved onto a test
+    "single_creatinine",  # a diagnosis or trend from one value
+    "bun_in_kidney_panel",  # tests filed by organ system
+    "statin_without_lipid_panel",  # a lipid status guessed from a statin
+    "uploaded_before_older_documents",  # upload order taken for the timeline
+    "trend_two_values",  # "rising" / "falling" need two values
+    "multiple_ranges",  # no flag unless one range applies
+    "patient_mismatch",  # validator 9
+    "undated",  # the date rule finds no date
+    "classified_other",  # kept and sent to review, not parsed
+    "image_only_pdf",  # no text layer to check a misread against
 }
 
 

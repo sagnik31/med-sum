@@ -105,7 +105,7 @@ def test_a_remark_cannot_point_at_an_unknown_observation():
 
 
 def test_a_panel_remark_cannot_be_pinned_on_a_test():
-    # Decision 25: a remark is attached to a test only when it is on its row.
+    # A remark is attached to a test only when it is on its row or right under it.
     data = cbc_record()
     data["remarks"][0]["derived"] = {"observation_id": "obs-1"}
 
@@ -144,7 +144,7 @@ def test_items_lists_every_kind_in_a_fixed_order():
 
 
 # -------------------------------------------------------------------
-# Document date (decision 13)
+# Document date
 # -------------------------------------------------------------------
 @pytest.mark.parametrize(
     "dates",

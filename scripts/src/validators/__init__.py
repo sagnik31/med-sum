@@ -1,5 +1,5 @@
 """
-The validators of section 8.3: deterministic checks of a built record,
+The validators (see docs/adr/0004-deterministic-checks-decide-routing.md): deterministic checks of a built record,
 never the model. Each returns findings (findings.py) for the pipeline to
 store per run and route on: errors go to repair, flags to a clinician,
 info to the review screen.
@@ -48,7 +48,7 @@ def validate(
     today: date | None = None,
 ) -> list[Finding]:
     """
-    Every validator, in the order of section 8.3. A document of a type
+    Every validator, in the order they are numbered. A document of a type
     that isn't parsed (other) has nothing to check.
     """
     if record.document.type not in PARSE_MODELS:

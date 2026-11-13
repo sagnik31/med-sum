@@ -1,6 +1,6 @@
 """
-The stored record of one document (section 8.1 of the plan): a JSONB value
-with a schema version.
+The stored record of one document: a JSONB value with a schema version.
+See docs/adr/0003-printed-and-derived-values.md.
 
 Each clinical item keeps three things apart:
 - `printed`: what the model read, verbatim, with its citation (printed.py);
@@ -8,7 +8,8 @@ Each clinical item keeps three things apart:
 - `provenance` and `corrections`: what produced it, and any clinician edits.
 
 The names follow FHIR resources so a later mapping is easy, but this is not
-FHIR and carries no codes (decision 14).
+FHIR and carries no codes: a small model's mapping to codes would be
+wrong now and then while looking authoritative. See docs/adr/0001-extract-and-display.md.
 
 The validators here only enforce what code is responsible for (unique IDs,
 remark links, page numbering, the chosen date). Whether the model's
@@ -186,7 +187,7 @@ class PatientDetails(Strict):
 # The document and its pages
 # -------------------------------------------------------------------
 class DateSource(str, Enum):
-    """Which rule chose the document date (decision 13)."""
+    """Which rule chose the document date: report, else collection, else prescription date."""
 
     REPORT_DATE = "report_date"
     COLLECTION_DATE = "collection_date"

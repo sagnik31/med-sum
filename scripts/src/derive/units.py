@@ -1,5 +1,5 @@
 """
-The unit table (decision 12): how units are spelt, which test is which
+The unit table (see docs/adr/0003-printed-and-derived-values.md): how units are spelt, which test is which
 analyte, and the fixed conversions between units of the same analyte.
 
 Conversion is done here, in code, never by the model. A converted value is
