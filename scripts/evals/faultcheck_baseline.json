@@ -33,7 +33,7 @@
   },
   "range_bound": {
     "injected": 98,
-    "flagged": 32
+    "flagged": 98
   },
   "remark_moved": {
     "injected": 3,
@@ -45,7 +45,7 @@
   },
   "transcription_misread": {
     "injected": 77,
-    "flagged": 55
+    "flagged": 57
   },
   "unit_swap": {
     "injected": 100,

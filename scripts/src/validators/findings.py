@@ -14,6 +14,7 @@ class Validator(str, Enum):
     SOURCE_TEXT = "source_text"  # 1: each value is on its cited line
     TEXT_LAYER = "text_layer"  # 2: each value is in the PDF's own text
     UNITS_RANGES = "units_ranges"  # 3: units and ranges are consistent
+    RANGE_BOUND = "range_bound"  # 3b: a value is not one of its own range's bounds
     FLAG_AGREEMENT = "flag_agreement"  # 4: printed flag vs computed flag
     REMARK_PLACEMENT = "remark_placement"  # 5: a remark sits by what it's on
     MEDICINE_COVERAGE = "medicine_coverage"  # 6: no medicine invented or dropped

@@ -1,16 +1,20 @@
 """
-Validators 3, 4 and 7: units and ranges, printed against computed flags,
-and dates. They check what the document says, so what they find is a flag
-for a clinician, not something a re-parse can fix.
+Validators 3, 4 and 7: units and ranges (with the range-bound check),
+printed against computed flags, and dates. They check what the document
+says, so what they find is a flag for a clinician, not something a
+re-parse can fix.
 """
+
+import re
 
 from datetime import date
 
 from derive.dates import parse_date
-from derive.numbers import has_digits, parse_range, same_unit
+from derive.numbers import has_digits, parse_number, parse_range, same_unit
 from derive.units import convertible, lookup_analyte
 from record.document import ComputedFlag, DocumentRecord
 from validators.findings import Finding, Severity, Validator
+from validators.text import cited_lines, contains, normalise
 
 
 # -------------------------------------------------------------------
@@ -55,6 +59,50 @@ def check_units_ranges(record: DocumentRecord) -> list[Finding]:
             elif not fits:
                 add(Severity.FLAG, f"unit {p.unit!r} does not fit {p.test_name} "
                     f"(expected a unit like {analyte.unit!r})", o, "unit")  # fmt: skip
+    return findings
+
+
+# -------------------------------------------------------------------
+# 3b: a value read from its own range
+# -------------------------------------------------------------------
+# A number in a range's text: "15 - 40", "< 150", "Up to 1,50,000".
+_BOUND = re.compile(r"\d[\d,]*(?:\.\d+)?")
+
+
+def check_range_bounds(record: DocumentRecord) -> list[Finding]:
+    """
+    A result whose value is one of its own printed range bounds, while its
+    row prints that number nowhere but inside the range, was most likely
+    read from the range, not from the result cell: validators 1 and 2 pass
+    it (the number is on the line), and only a printed flag could catch it.
+    A value that really equals a bound ("40" with "15 - 40") is printed in
+    its own cell as well, so it isn't flagged. A flag, not an error: a
+    clinician reads the row, since a re-parse would read it the same way.
+    """
+    findings = []
+    for o in record.observations:
+        p = o.printed
+        if not p.reference_ranges or parse_number(p.value_text) is None:
+            continue
+        value = normalise(p.value_text)
+        bounds = {b for r in p.reference_ranges for b in _BOUND.findall(normalise(r))}
+        if value not in bounds:
+            continue
+        lines = cited_lines(record, p.citation)
+        if lines is None:  # validator 1 reports the citation
+            continue
+        rest = normalise(" ".join(lines))
+        for part in (*p.reference_ranges, p.test_name, p.unit):
+            if part:
+                rest = rest.replace(normalise(part), " ", 1)
+        if not contains(rest, value):
+            findings.append(Finding(
+                validator=Validator.RANGE_BOUND, severity=Severity.FLAG,
+                message=f"value_text {p.value_text!r} is a bound of its own "
+                        "reference range and is printed nowhere else on its row: "
+                        "it may have been read from the range",
+                item_id=o.id, field="value_text", page=p.citation.page,
+                lines=[p.citation.first_line]))  # fmt: skip
     return findings
 
 

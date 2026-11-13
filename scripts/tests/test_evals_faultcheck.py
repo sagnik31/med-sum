@@ -99,7 +99,7 @@ def test_every_fault_is_injected_somewhere(check):
     "fault",
     ["digit_swap", "decimal_shift", "unit_swap", "strength_shift", "frequency_change",
      "invented_result", "invented_medicine", "dropped_medicine", "wrong_patient",
-     "date_swap", "remark_moved"],
+     "date_swap", "remark_moved", "range_bound"],
 )  # fmt: skip
 def test_these_faults_are_always_flagged(check, fault):
     rows = [r for r in check.results if r.fault == fault]
@@ -113,14 +113,20 @@ def test_a_value_change_is_flagged_on_the_item_it_changed(check):
 
 def test_known_blind_spots_are_reported_not_hidden(check):
     """
-    A range bound taken for the value passes validators 1 and 2 (it is on
-    the row), a dropped lab row is info only, and a misread on a page
-    without a text layer has nothing to disagree with. When one of these
-    is fixed, this test changes with it.
+    A dropped lab row is info only, and a misread on a page without a text
+    layer has nothing to disagree with. When one of these is fixed, this
+    test changes with it. (A range bound taken for the value was the third
+    until the range-bound check; a misread printed in another row of a
+    text-layer page was caught only per page until validator 2 went per row.)
     """
     missed = {r.fault for r in check.results if not r.flagged}
-    assert {"range_bound", "dropped_result"} <= missed
+    assert "dropped_result" in missed
     image_only = [d for d, e in documents().items() if not e["has_text_layer"]]
+    assert all(
+        r.flagged
+        for r in check.results
+        if r.fault == "transcription_misread" and r.doc_id not in image_only
+    )
     misreads = [
         r
         for r in check.results
@@ -181,7 +187,7 @@ def test_the_report_lists_counts_intervals_and_misses(check):
     md = fc.render_markdown(report)
     assert "| Fault | Injected | Flagged |" in md
     assert "95% CI" in md
-    assert "- **range_bound**" in md
+    assert "- **dropped_result**" in md
     assert "**Gate:** pass" in md
 
 

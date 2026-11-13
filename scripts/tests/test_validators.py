@@ -29,6 +29,7 @@ from validators.text import contains
 from validators.values import (
     check_dates,
     check_flag_agreement,
+    check_range_bounds,
     check_units_ranges,
     read_printed_flag,
 )
@@ -314,6 +315,144 @@ def test_the_text_layer_is_compared_with_ligatures_expanded_and_spacing_ignored(
     )
 
     assert check_text_layer(record) == []
+
+
+def misread(record: DocumentRecord, test_name: str, old: str, new: str):
+    """The vision step read `old` as `new` in a result cell; the parse copied it."""
+    o = obs(record, test_name)
+    c = o.printed.citation
+    set_line(record, c.page, c.first_line, c.quote.replace(f"| {old} |", f"| {new} |"))
+    o.printed.value_text = new
+    return o
+
+
+def test_a_misread_printed_in_another_row_is_caught_per_row():
+    # "1.7" is on the page, inside the next row's "mL/min/1.73m²", so a
+    # page-wide search found it; it is not in the creatinine row.
+    record = keyed_record("d06")
+    creatinine = misread(record, "Serum Creatinine", "1.6", "1.7")
+
+    assert check_source_text(record) == []
+    findings = check_text_layer(record)
+    assert problems(findings) == {("text_layer", creatinine.id, "value_text")}
+    assert "its row" in findings[0].message
+
+
+def test_each_field_of_a_row_is_checked_in_that_row():
+    # A unit printed on the page, but in other rows, and a flag that isn't
+    # printed. (A one-letter flag would be found inside "mg/dL": the text
+    # layer is compared without token edges, so short values are weak here.)
+    record = keyed_record("d06")
+    urea = obs(record, "Blood Urea")
+    c = urea.printed.citation
+    set_line(
+        record, c.page, c.first_line, "| Blood Urea | 46 | Low | mmol/L | 15 - 40 |"
+    )
+    urea.printed.flag_printed = "Low"
+    urea.printed.unit = "mmol/L"
+
+    assert check_source_text(record) == []
+    assert problems(check_text_layer(record)) == {
+        ("text_layer", urea.id, "flag_printed"),
+        ("text_layer", urea.id, "unit"),
+    }
+
+
+def test_a_row_is_found_wherever_its_name_is_printed():
+    # The text layer prints the name twice; the value is in the second row.
+    record = keyed_record("d06")
+    # The text layer names the test first in a note at the top of the page,
+    # far from its row; the row is found at its second mention.
+    record.pages[0].text_layer = (
+        "Blood Urea repeated on request" + chr(10) + (record.pages[0].text_layer)
+    )
+
+    assert check_text_layer(record) == []
+
+
+def test_a_name_missing_from_the_text_layer_is_flagged_and_its_row_checked_on_the_page():
+    record = keyed_record("d06")
+    urea = obs(record, "Blood Urea")
+    c = urea.printed.citation
+    set_line(record, c.page, c.first_line, c.quote.replace("Blood Urea", "Blood Uria"))
+    urea.printed.test_name = "Blood Uria"
+
+    assert problems(check_text_layer(record)) == {("text_layer", urea.id, "test_name")}
+
+
+def test_a_row_keeps_working_when_the_text_layer_splits_and_spaces_it():
+    record = keyed_record("d06")
+    nl = chr(10)
+    layer = record.pages[0].text_layer
+    record.pages[0].text_layer = layer.replace(nl, f" {nl} ")
+
+    assert check_text_layer(record) == []
+
+
+@pytest.mark.parametrize(
+    "doc_id", [d for d in DOC_IDS if keyed_record(d).document.has_text_layer]
+)
+def test_every_clean_text_layer_document_passes_per_row(doc_id):
+    assert check_text_layer(keyed_record(doc_id)) == []
+
+
+# -------------------------------------------------------------------
+# 3b: a value read from its own range
+# -------------------------------------------------------------------
+def test_a_value_taken_from_its_range_is_flagged():
+    record = keyed_record("d06")
+    urea = obs(record, "Blood Urea")  # | Blood Urea | 46 | H | mg/dL | 15 - 40 |
+    urea.printed.value_text = "15"
+
+    findings = check_range_bounds(record)
+    assert problems(findings) == {("range_bound", urea.id, "value_text")}
+    assert findings[0].severity is Severity.FLAG
+    # Validators 1 and 2 can't see it: "15" is on the line and in the text layer.
+    assert check_source_text(record) == [] and check_text_layer(record) == []
+
+
+@pytest.mark.parametrize("bound", ["15", "40"])
+def test_a_value_really_equal_to_a_bound_is_printed_in_its_own_cell(bound):
+    record = keyed_record("d06")
+    urea = misread(record, "Blood Urea", "46", bound)
+
+    assert check_range_bounds(record) == []
+    assert urea.printed.value_text == bound
+
+
+@pytest.mark.parametrize(
+    "value, ranges, row, flagged",
+    [
+        ("150", ["< 150"], "| Triglycerides | 210 | H | mg/dL | < 150 |", True),
+        ("1,50,000", ["1,50,000 - 4,50,000"],
+         "| Platelets | 2,45,000 | | /cumm | 1,50,000 - 4,50,000 |", True),
+        ("4.5", ["Up to 4.5"], "| TSH | 6.1 | H | µIU/mL | Up to 4.5 |", True),
+        # The bound is printed twice in the range only.
+        ("100", ["70 - 100", "Fasting: < 100"],
+         "| Glucose | 92 | | mg/dL | 70 - 100; Fasting: < 100 |", True),
+        # Not a bound: some other number of the row.
+        ("210", ["< 150"], "| Triglycerides | 210 | H | mg/dL | < 150 |", False),
+        # No number to compare.
+        ("Positive", ["Negative"], "| HBsAg | Positive | | | Negative |", False),
+        # Printed in its own cell as well.
+        ("150", ["< 150"], "| Triglycerides | 150 | | mg/dL | < 150 |", False),
+    ],
+)  # fmt: skip
+def test_range_bounds(value, ranges, row, flagged):
+    record = keyed_record("d06")
+    urea = obs(record, "Blood Urea")
+    c = urea.printed.citation
+    set_line(record, c.page, c.first_line, row)
+    urea.printed.value_text = value
+    urea.printed.reference_ranges = ranges
+    urea.printed.test_name = row.split("|")[1].strip()
+
+    assert bool(check_range_bounds(record)) is flagged
+
+
+@pytest.mark.parametrize("doc_id", DOC_IDS)
+def test_no_clean_key_has_a_value_read_from_its_range(doc_id):
+    assert check_range_bounds(keyed_record(doc_id)) == []
 
 
 # -------------------------------------------------------------------
