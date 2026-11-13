@@ -151,7 +151,7 @@ def test_a_failed_patient_summary_logs_the_error_type_only(db, monkeypatch, json
 
     monkeypatch.setattr(summary.build, "build_summary", fail)
 
-    service.run_patient_summary(user)
+    service.run_patient_summary(user, service.claim_patient_summary(user))
 
     assert events_of(json_log) == ["summary_started", "summary_failed"]
     assert line_with(json_log, "summary_failed")["user_id"] == user

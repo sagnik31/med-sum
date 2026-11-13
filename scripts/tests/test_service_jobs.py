@@ -93,8 +93,17 @@ def client(monkeypatch):
 @pytest.fixture
 def summary_jobs(monkeypatch):
     jobs = []
-    monkeypatch.setattr(service, "run_patient_summary", jobs.append)
+    monkeypatch.setattr(
+        service, "run_patient_summary", lambda user, claim: jobs.append(user)
+    )
     return jobs
+
+
+def run_summary(user_id):
+    """Claim the user's summary, as the endpoint does, and build it."""
+    claim = service.claim_patient_summary(user_id)
+    assert claim is not None
+    service.run_patient_summary(user_id, claim)
 
 
 def request_summary(client, user_id):
@@ -151,7 +160,7 @@ def test_the_summary_is_built_from_records_in_document_date_order(db, model_clie
     add_processed(db, other, "d09", "2025-06-03 10:00+05:30")
     model_client.replies[llm.PRIMARY_MODEL] = ["The documents cover lab reports."]
 
-    service.run_patient_summary(user)
+    run_summary(user)
 
     html, status, error = summary_row(db, user)
     assert (status, error) == ("completed", None)
@@ -180,7 +189,7 @@ def test_a_rejected_overview_leaves_the_summary_complete_without_it(
         "Creatinine suggests kidney injury.",  # the retry fails too
     ]
 
-    service.run_patient_summary(user)
+    run_summary(user)
 
     html, status, _ = summary_row(db, user)
     assert status == "completed"
@@ -194,12 +203,81 @@ def test_a_rejected_overview_leaves_the_summary_complete_without_it(
 def test_a_summary_with_no_processed_documents_fails_with_a_reason(db, model_client):
     user = add_user(db)
 
-    service.run_patient_summary(user)
+    run_summary(user)
 
     html, status, error = summary_row(db, user)
     assert (html, status) == (None, "failed")
     assert error.startswith("No processed documents yet")
     assert model_client.calls == []
+
+
+def take_over(db, user_id):
+    """Another run claims the summary, as after STALE_PROCESSING_AFTER."""
+    with db.cursor() as cur:
+        cur.execute(
+            "UPDATE users SET patient_insights_updated_at ="
+            " patient_insights_updated_at - interval '31 minutes' WHERE id = %s",
+            (user_id,),
+        )
+    newer = service.claim_patient_summary(user_id)
+    assert newer is not None
+    return newer
+
+
+def test_a_run_that_lost_its_claim_does_not_write_its_summary(
+    db, model_client, monkeypatch, json_log
+):
+    user = add_user(db)
+    add_processed(db, user, "d09", "2024-09-06 10:00+05:30")
+    model_client.replies[llm.PRIMARY_MODEL] = ["The latest report flags TSH."]
+    old = service.claim_patient_summary(user)
+    real_build = service_build()
+
+    def slow_build(inputs, **kwargs):
+        take_over(db, user)  # the run went quiet and was taken over meanwhile
+        return real_build(inputs, **kwargs)
+
+    monkeypatch.setattr("summary.build.build_summary", slow_build)
+
+    service.run_patient_summary(user, old)
+
+    assert summary_row(db, user) == (None, "processing", None)
+    assert line_with(json_log, "summary_claim_lost")["user_id"] == user
+
+
+def test_a_run_that_lost_its_claim_does_not_mark_the_newer_one_failed(
+    db, model_client, json_log
+):
+    user = add_user(db)  # no processed documents: the run fails
+    old = service.claim_patient_summary(user)
+    take_over(db, user)
+
+    service.run_patient_summary(user, old)
+
+    assert summary_row(db, user) == (None, "processing", None)
+    assert line_with(json_log, "summary_claim_lost")["user_id"] == user
+
+
+def test_the_run_holding_the_claim_still_writes_after_a_late_one_gave_up(
+    db, model_client
+):
+    user = add_user(db)
+    add_processed(db, user, "d09", "2024-09-06 10:00+05:30")
+    model_client.replies[llm.PRIMARY_MODEL] = ["The latest report flags TSH."] * 2
+    old = service.claim_patient_summary(user)
+    newer = take_over(db, user)
+    service.run_patient_summary(user, old)  # refused
+
+    service.run_patient_summary(user, newer)
+
+    html, status, _ = summary_row(db, user)
+    assert status == "completed" and "TSH" in html
+
+
+def service_build():
+    from summary import build
+
+    return build.build_summary
 
 
 # -------------------------------------------------------------------

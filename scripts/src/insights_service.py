@@ -33,6 +33,7 @@ Insights Generation Service (FastAPI)
 import hmac
 import logging
 from contextlib import asynccontextmanager
+from datetime import datetime, timezone
 
 from fastapi import FastAPI, BackgroundTasks, Depends, Header, HTTPException
 from pydantic import BaseModel
@@ -43,6 +44,7 @@ import os
 import config
 import document_jobs
 import model_health
+from document_jobs import LostClaim
 from observability import configure_logging
 from pipeline import checkpoints
 
@@ -212,16 +214,21 @@ def generate_user_insights_endpoint(
         extra=_obs("summary_requested", user_id=req.user_id),
     )
 
-    claimed = claim_patient_summary(req.user_id)
-    if claimed:
-        background_tasks.add_task(run_patient_summary, req.user_id)
-    return {"status": "accepted" if claimed else "already_processing"}
+    claim = claim_patient_summary(req.user_id)
+    if claim is not None:
+        background_tasks.add_task(run_patient_summary, req.user_id, claim)
+    return {"status": "accepted" if claim is not None else "already_processing"}
 
 
-def claim_patient_summary(user_id: str) -> bool:
+def claim_patient_summary(user_id: str) -> datetime | None:
     """
     Mark the user's summary processing, unless a live run has it: one that
     has gone stale (STALE_PROCESSING_AFTER) is taken over.
+
+    Returns the claim (the patient_insights_updated_at it set), or None when
+    a live run holds it. Nothing else writes that column while a run is
+    processing, so the timestamp identifies this claim: a takeover sets a
+    new one, at least STALE_PROCESSING_AFTER later.
     """
     conn = get_db_connection()
     try:
@@ -235,15 +242,15 @@ def claim_patient_summary(user_id: str) -> bool:
                 WHERE id = %s
                   AND (patient_insights_status IS DISTINCT FROM 'processing'
                        OR patient_insights_updated_at < NOW() - %s::interval)
-                RETURNING id
+                RETURNING patient_insights_updated_at
                 """,
                 (user_id, STALE_PROCESSING_AFTER),
             )
-            claimed = cur.fetchone() is not None
+            row = cur.fetchone()
         conn.commit()
     finally:
         conn.close()
-    return claimed
+    return None if row is None else row[0]
 
 
 # The uploader of a document, if they have a patient summary (asked for
@@ -275,7 +282,8 @@ def refresh_after_document(job) -> None:
     if row is None:
         return
     user_id = str(row[0])
-    if not claim_patient_summary(user_id):
+    claim = claim_patient_summary(user_id)
+    if claim is None:
         logger.info(
             "patient summary refresh skipped: one is being built",
             extra=_obs("summary_refresh_skipped", user_id=user_id,
@@ -286,22 +294,49 @@ def refresh_after_document(job) -> None:
         "patient summary refresh after a document",
         extra=_obs("summary_refresh", user_id=user_id, document_id=job.document_id),
     )
-    run_patient_summary(user_id)
+    run_patient_summary(user_id, claim)
 
 
-def run_patient_summary(user_id: str) -> None:
+# The summary's result and failure are written only while the run still holds
+# its claim: a run that went quiet for STALE_PROCESSING_AFTER and was taken
+# over must not overwrite the newer run's summary or mark it failed. Same
+# rule as document jobs (document_jobs: every write conditional on the claim).
+_FINISH_SUMMARY = """
+UPDATE users
+SET patient_insights = %(html)s,
+    patient_insights_status = 'completed',
+    patient_insights_updated_at = NOW()
+WHERE id = %(user_id)s
+  AND patient_insights_status = 'processing'
+  AND patient_insights_updated_at = %(claim)s
+"""
+
+_FAIL_SUMMARY = """
+UPDATE users
+SET patient_insights_status = 'failed',
+    patient_insights_error = %(error)s,
+    patient_insights_updated_at = NOW()
+WHERE id = %(user_id)s
+  AND patient_insights_status = 'processing'
+  AND patient_insights_updated_at = %(claim)s
+"""
+
+
+def run_patient_summary(user_id: str, claim: datetime) -> None:
     """
     Background job: the patient summary, built by code from the records of
     every processed document of one user (summary/). Only the overview is
     model-written, and it is shown only if it passes its check.
+
+    `claim` is what claim_patient_summary returned. If another run has taken
+    the claim over by the time this one ends, it writes nothing and logs
+    summary_claim_lost.
     """
     logger.info(
         "patient summary started", extra=_obs("summary_started", user_id=user_id)
     )
     conn = get_db_connection()
     try:
-        from datetime import datetime, timezone
-
         from summary.build import build_summary, load_inputs
 
         inputs = load_inputs(conn, user_id)
@@ -322,15 +357,11 @@ def run_patient_summary(user_id: str) -> None:
 
         with conn.cursor() as cur:
             cur.execute(
-                """
-                UPDATE users
-                SET patient_insights = %s,
-                    patient_insights_status = 'completed',
-                    patient_insights_updated_at = NOW()
-                WHERE id = %s
-                """,
-                (result.html, user_id),
+                _FINISH_SUMMARY,
+                {"html": result.html, "user_id": user_id, "claim": claim},
             )
+            if cur.rowcount == 0:
+                raise LostClaim(f"patient summary claim for {user_id} was taken over")
         conn.commit()
         logger.info(
             "patient summary completed",
@@ -345,6 +376,12 @@ def run_patient_summary(user_id: str) -> None:
             ),
         )
 
+    except LostClaim:
+        conn.rollback()
+        logger.warning(
+            "patient summary claim lost; result not written",
+            extra=_obs("summary_claim_lost", user_id=user_id),
+        )
     except Exception as e:
         logger.exception(
             "patient summary failed", extra=_obs("summary_failed", user_id=user_id)
@@ -353,16 +390,17 @@ def run_patient_summary(user_id: str) -> None:
             conn.rollback()
             with conn.cursor() as cur:
                 cur.execute(
-                    """
-                    UPDATE users
-                    SET patient_insights_status = 'failed',
-                        patient_insights_error = %s,
-                        patient_insights_updated_at = NOW()
-                    WHERE id = %s
-                    """,
-                    (str(e) or type(e).__name__, user_id),
-                )
+                    _FAIL_SUMMARY,
+                    {"error": str(e) or type(e).__name__, "user_id": user_id,
+                     "claim": claim},
+                )  # fmt: skip
+                lost = cur.rowcount == 0
             conn.commit()
+            if lost:
+                logger.warning(
+                    "patient summary claim lost; failure not written",
+                    extra=_obs("summary_claim_lost", user_id=user_id),
+                )
         except Exception:
             logger.exception(
                 "could not record the failed patient summary",
