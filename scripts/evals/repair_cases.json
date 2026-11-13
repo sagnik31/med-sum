@@ -1,0 +1,8121 @@
+{
+ "version": 1,
+ "about": "Repair eval cases: one injected fault each (python -m evals.repair_cases)",
+ "cases": [
+  {
+   "id": "d01-digit_swap-1",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:64da3405abc9af38",
+   "subset": null
+  },
+  {
+   "id": "d01-decimal_shift-1",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:2f3e16aaa56a65c5",
+   "subset": "core"
+  },
+  {
+   "id": "d01-unit_swap-1",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:fa137c744a1040ca",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-1",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:0697247ab160b2b4",
+   "subset": null
+  },
+  {
+   "id": "d01-decimal_shift-2",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:abf7489cd6414f6d",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_swap-2",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d5c96a5a573d7e02",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-2",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:d9afabcb830ae54d",
+   "subset": null
+  },
+  {
+   "id": "d01-decimal_shift-3",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:b4fe183415c9ed29",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_swap-3",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:6f6f70ba1b69e9e1",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-3",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:0331ed1dedd84627",
+   "subset": null
+  },
+  {
+   "id": "d01-digit_swap-2",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:25a1928ad84d817f",
+   "subset": null
+  },
+  {
+   "id": "d01-decimal_shift-4",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:e344795ee330769e",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_swap-4",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:437b435d9d195d4f",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-4",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:021711a1ac3cebdb",
+   "subset": null
+  },
+  {
+   "id": "d01-digit_swap-3",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:e8a898f7d90a7bb3",
+   "subset": null
+  },
+  {
+   "id": "d01-decimal_shift-5",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:13eead938278141c",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_swap-5",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:9f7eb768f0405622",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-5",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:77d2a584eb43db46",
+   "subset": null
+  },
+  {
+   "id": "d01-digit_swap-4",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:ad1a888c90801e8d",
+   "subset": null
+  },
+  {
+   "id": "d01-decimal_shift-6",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:98748ab46828612b",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_swap-6",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:5d6e3d1cc1d2a11b",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-6",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:cc3734c74d3b0a5c",
+   "subset": null
+  },
+  {
+   "id": "d01-digit_swap-5",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-7",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:9ca764defcdfec97",
+   "subset": null
+  },
+  {
+   "id": "d01-decimal_shift-7",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-7",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:95b3dce7b463491d",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_swap-7",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-7",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:93c6427c9b7563e7",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-7",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:99f3c58751cbfbdd",
+   "subset": null
+  },
+  {
+   "id": "d01-digit_swap-6",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-8",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:c84f18b8ec088e5c",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_swap-8",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-8",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:6546e0d5d23dc7de",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-8",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:3f51a013503aaf95",
+   "subset": null
+  },
+  {
+   "id": "d01-digit_swap-7",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-9",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:09a408f7fe56f500",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_swap-9",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-9",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:c37d50f53784e19c",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-9",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:de031a51119d26f5",
+   "subset": null
+  },
+  {
+   "id": "d01-decimal_shift-8",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-10",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:185460d5999b7beb",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_swap-10",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-10",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:949c4035d693de0d",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-10",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "remark_placement",
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:9ba6d801a3286715",
+   "subset": null
+  },
+  {
+   "id": "d01-digit_swap-8",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-11",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:f9c5d1b21fde0108",
+   "subset": null
+  },
+  {
+   "id": "d01-decimal_shift-9",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-11",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:6128a19ff95dda3f",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_swap-11",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-11",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:05a67bc4a619b289",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-11",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:68d801d03c3de955",
+   "subset": null
+  },
+  {
+   "id": "d01-digit_swap-9",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-12",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:b91c68e3768cbe2f",
+   "subset": null
+  },
+  {
+   "id": "d01-decimal_shift-10",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-12",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:ff3608a3adad1fee",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_swap-12",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-12",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:64d6f06fe1ea0b63",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-12",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:2fded0dfafaaf86b",
+   "subset": null
+  },
+  {
+   "id": "d01-digit_swap-10",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-13",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:da8a43ecdb065b8b",
+   "subset": null
+  },
+  {
+   "id": "d01-decimal_shift-11",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-13",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:824e9cba75e0e449",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_swap-13",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-13",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:e9a889810c84dd55",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-13",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:3947e0ce19d56242",
+   "subset": null
+  },
+  {
+   "id": "d01-decimal_shift-12",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-14",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:dcb0fd81e5db3a31",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_swap-14",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-14",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:4d548680042f2337",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-14",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:e5fa46c012666ecc",
+   "subset": null
+  },
+  {
+   "id": "d01-digit_swap-11",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-15",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:b215b751dcb9d762",
+   "subset": null
+  },
+  {
+   "id": "d01-decimal_shift-13",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-15",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d7edad9d0aaf4679",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_swap-15",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-15",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:e884526f57bacd63",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-15",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:46f059441d17d0b7",
+   "subset": null
+  },
+  {
+   "id": "d01-decimal_shift-14",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-16",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:cf760caf36483ee8",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_swap-16",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-16",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:ff332aa29675029f",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-16",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:a6ba884b265e2906",
+   "subset": null
+  },
+  {
+   "id": "d01-digit_swap-12",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-17",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:db64f58c129a2bdd",
+   "subset": null
+  },
+  {
+   "id": "d01-decimal_shift-15",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-17",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:0e017e332388c120",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_swap-17",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-17",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:88a19539229d24a8",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-17",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:3fa216ef953ec0d7",
+   "subset": null
+  },
+  {
+   "id": "d01-digit_swap-13",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-18",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:2b4c29fc7d49a4df",
+   "subset": null
+  },
+  {
+   "id": "d01-decimal_shift-16",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-18",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:74c9bbca40b6774d",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_swap-18",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-18",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:ef79e55c1eae1e05",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-18",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:c09629a0cbfe43a7",
+   "subset": null
+  },
+  {
+   "id": "d01-decimal_shift-17",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-19",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:36204a14e31fbbdb",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_swap-19",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-19",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:21e6a03c92ba037f",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-19",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:bc0651226d674e1b",
+   "subset": null
+  },
+  {
+   "id": "d01-decimal_shift-18",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-20",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:ca2a468ba75a8f0c",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_swap-20",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-20",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:903c89440e059dc2",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-20",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:e2f47bc2dd8540b9",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-21",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:ddf1adf9670c12cf",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-22",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:541037c0da6f1854",
+   "subset": null
+  },
+  {
+   "id": "d01-digit_swap-14",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-23",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:2bdebaaf0d90902b",
+   "subset": null
+  },
+  {
+   "id": "d01-decimal_shift-19",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-23",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:8749bec54ecf182f",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-23",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:f1c81ed6e2006c2f",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-24",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:31f8cf6cc811e5ab",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-25",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:b4a2abef8a293fed",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_swap-21",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-26",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:78d8bbbcc19d3a9c",
+   "subset": null
+  },
+  {
+   "id": "d01-dropped_result-26",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:fba4e38034c4e2d5",
+   "subset": null
+  },
+  {
+   "id": "d01-invented_result-1",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "invented_result",
+   "target": "obs-27",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:dce9664979d98aac",
+   "subset": null
+  },
+  {
+   "id": "d01-remark_moved-1",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "remark_moved",
+   "target": "rem-2",
+   "errors": [
+    "remark_placement"
+   ],
+   "fingerprint": "sha256:35955901d50b15d9",
+   "subset": "core"
+  },
+  {
+   "id": "d02-strength_shift-1",
+   "doc_id": "d02",
+   "split": "dev",
+   "fault": "strength_shift",
+   "target": "med-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:8dd08041b0da20fe",
+   "subset": null
+  },
+  {
+   "id": "d02-frequency_change-1",
+   "doc_id": "d02",
+   "split": "dev",
+   "fault": "frequency_change",
+   "target": "med-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:5d8448e3a8aa8117",
+   "subset": null
+  },
+  {
+   "id": "d02-dropped_medicine-1",
+   "doc_id": "d02",
+   "split": "dev",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:987002774ff8516b",
+   "subset": null
+  },
+  {
+   "id": "d02-strength_shift-2",
+   "doc_id": "d02",
+   "split": "dev",
+   "fault": "strength_shift",
+   "target": "med-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:df39881bcb2010eb",
+   "subset": null
+  },
+  {
+   "id": "d02-frequency_change-2",
+   "doc_id": "d02",
+   "split": "dev",
+   "fault": "frequency_change",
+   "target": "med-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:f71b7dd95e0d8f74",
+   "subset": null
+  },
+  {
+   "id": "d02-dropped_medicine-2",
+   "doc_id": "d02",
+   "split": "dev",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:d972620a57d05ea4",
+   "subset": null
+  },
+  {
+   "id": "d02-frequency_change-3",
+   "doc_id": "d02",
+   "split": "dev",
+   "fault": "frequency_change",
+   "target": "med-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:31df9566c9793d7a",
+   "subset": null
+  },
+  {
+   "id": "d02-dropped_medicine-3",
+   "doc_id": "d02",
+   "split": "dev",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:b1f2f7248dc0ec45",
+   "subset": null
+  },
+  {
+   "id": "d02-invented_medicine-1",
+   "doc_id": "d02",
+   "split": "dev",
+   "fault": "invented_medicine",
+   "target": "med-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d7e88513334ee1a6",
+   "subset": null
+  },
+  {
+   "id": "d03-decimal_shift-1",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:32c375663d6c3de9",
+   "subset": null
+  },
+  {
+   "id": "d03-unit_swap-1",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:e3c24812c5a5d863",
+   "subset": null
+  },
+  {
+   "id": "d03-dropped_result-1",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:52a83e0b0efb83c5",
+   "subset": null
+  },
+  {
+   "id": "d03-decimal_shift-2",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:240f7c1e69f55e3d",
+   "subset": null
+  },
+  {
+   "id": "d03-unit_swap-2",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:9a105db0688a7962",
+   "subset": null
+  },
+  {
+   "id": "d03-dropped_result-2",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:46d04f6892fc5e27",
+   "subset": null
+  },
+  {
+   "id": "d03-digit_swap-1",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:a8bc2465f2f491e2",
+   "subset": "core"
+  },
+  {
+   "id": "d03-decimal_shift-3",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:00976411c5ce54df",
+   "subset": null
+  },
+  {
+   "id": "d03-unit_swap-3",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:a090a7bc47e3def6",
+   "subset": null
+  },
+  {
+   "id": "d03-dropped_result-3",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:5a040e2a499d9753",
+   "subset": null
+  },
+  {
+   "id": "d03-digit_swap-2",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:e27cd4bb1e29f9a8",
+   "subset": null
+  },
+  {
+   "id": "d03-decimal_shift-4",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:afc8622369d86b2e",
+   "subset": null
+  },
+  {
+   "id": "d03-unit_swap-4",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:8e641e178d291916",
+   "subset": null
+  },
+  {
+   "id": "d03-dropped_result-4",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:377914ea9eb9189b",
+   "subset": null
+  },
+  {
+   "id": "d03-decimal_shift-5",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:6d177a64bacf148b",
+   "subset": null
+  },
+  {
+   "id": "d03-unit_swap-5",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:68580c9b6fa1fdbd",
+   "subset": null
+  },
+  {
+   "id": "d03-dropped_result-5",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "remark_placement",
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:3c11f221c342dcf3",
+   "subset": null
+  },
+  {
+   "id": "d03-digit_swap-3",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:8004dc4560f75347",
+   "subset": null
+  },
+  {
+   "id": "d03-decimal_shift-6",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:3fed3cef5d9668c0",
+   "subset": null
+  },
+  {
+   "id": "d03-unit_swap-6",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:a476537bf7e9345e",
+   "subset": null
+  },
+  {
+   "id": "d03-dropped_result-6",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:b5effaf8c1c4fd85",
+   "subset": null
+  },
+  {
+   "id": "d03-invented_result-1",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "invented_result",
+   "target": "obs-7",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:27c3d8fa544e79e6",
+   "subset": null
+  },
+  {
+   "id": "d03-remark_moved-1",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "remark_moved",
+   "target": "rem-1",
+   "errors": [
+    "remark_placement"
+   ],
+   "fingerprint": "sha256:e92061e1dab4ef48",
+   "subset": null
+  },
+  {
+   "id": "d04-frequency_change-1",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "frequency_change",
+   "target": "med-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:f1c3dca675c03bbe",
+   "subset": null
+  },
+  {
+   "id": "d04-dropped_medicine-1",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:cca7166ccde8a9ad",
+   "subset": null
+  },
+  {
+   "id": "d04-strength_shift-1",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "strength_shift",
+   "target": "med-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:7db35b0dd1f97543",
+   "subset": null
+  },
+  {
+   "id": "d04-frequency_change-2",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "frequency_change",
+   "target": "med-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:02cd5623ea4bc0a5",
+   "subset": null
+  },
+  {
+   "id": "d04-dropped_medicine-2",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:2c6847fd0f079fd4",
+   "subset": null
+  },
+  {
+   "id": "d04-frequency_change-3",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "frequency_change",
+   "target": "med-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:0e62e48bebed438c",
+   "subset": null
+  },
+  {
+   "id": "d04-dropped_medicine-3",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:7ef10cf8ad6c8b77",
+   "subset": null
+  },
+  {
+   "id": "d04-strength_shift-2",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "strength_shift",
+   "target": "med-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:01c996bb9cd1af61",
+   "subset": null
+  },
+  {
+   "id": "d04-frequency_change-4",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "frequency_change",
+   "target": "med-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:2f0b0e32dabba716",
+   "subset": null
+  },
+  {
+   "id": "d04-dropped_medicine-4",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:291b97ef9fafe976",
+   "subset": null
+  },
+  {
+   "id": "d04-strength_shift-3",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "strength_shift",
+   "target": "med-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:94e1213d6875d424",
+   "subset": null
+  },
+  {
+   "id": "d04-frequency_change-5",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "frequency_change",
+   "target": "med-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:83bc0c71b2e41b70",
+   "subset": null
+  },
+  {
+   "id": "d04-dropped_medicine-5",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:7f44e6ca56aef5a6",
+   "subset": null
+  },
+  {
+   "id": "d04-invented_medicine-1",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "invented_medicine",
+   "target": "med-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:fd424d4a76d0ef9d",
+   "subset": null
+  },
+  {
+   "id": "d04-date_swap-1",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "date_swap",
+   "target": "document",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:79bfd525f0b54ae3",
+   "subset": "core"
+  },
+  {
+   "id": "d05-decimal_shift-1",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:7c5c3e8b49b9a73a",
+   "subset": null
+  },
+  {
+   "id": "d05-unit_swap-1",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:365486945fab4bef",
+   "subset": null
+  },
+  {
+   "id": "d05-dropped_result-1",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:e3906af44151a9d8",
+   "subset": "core"
+  },
+  {
+   "id": "d05-digit_swap-1",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:abf7c9e325771edf",
+   "subset": null
+  },
+  {
+   "id": "d05-decimal_shift-2",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:286bbf1c4a5ad1e1",
+   "subset": null
+  },
+  {
+   "id": "d05-unit_swap-2",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:ed543a1c87feb770",
+   "subset": null
+  },
+  {
+   "id": "d05-dropped_result-2",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:d78b3e1f50b7a43d",
+   "subset": null
+  },
+  {
+   "id": "d05-digit_swap-2",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:63901d65b09cd7dc",
+   "subset": null
+  },
+  {
+   "id": "d05-unit_swap-3",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:ae5cf1c31f3d4645",
+   "subset": null
+  },
+  {
+   "id": "d05-dropped_result-3",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:10b9b621a3c7c0c5",
+   "subset": null
+  },
+  {
+   "id": "d05-digit_swap-3",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:e87dfdf3c233fae3",
+   "subset": null
+  },
+  {
+   "id": "d05-decimal_shift-3",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:3765c40ada70cb98",
+   "subset": null
+  },
+  {
+   "id": "d05-unit_swap-4",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:a9a224638b46bd9c",
+   "subset": null
+  },
+  {
+   "id": "d05-dropped_result-4",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:dcf2476ec967c198",
+   "subset": null
+  },
+  {
+   "id": "d05-digit_swap-4",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:24b4d72e5014b883",
+   "subset": null
+  },
+  {
+   "id": "d05-decimal_shift-4",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:64a05dc8dc2de2e9",
+   "subset": null
+  },
+  {
+   "id": "d05-unit_swap-5",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d64d6b0bbc1bd9b4",
+   "subset": null
+  },
+  {
+   "id": "d05-dropped_result-5",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:07a50d1109448e70",
+   "subset": null
+  },
+  {
+   "id": "d05-decimal_shift-5",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:8a352a84688e09a7",
+   "subset": null
+  },
+  {
+   "id": "d05-unit_swap-6",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:409b237f269d4dcc",
+   "subset": null
+  },
+  {
+   "id": "d05-dropped_result-6",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:7e666e003797a2c6",
+   "subset": null
+  },
+  {
+   "id": "d05-decimal_shift-6",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-7",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:70a1ab8747cca94f",
+   "subset": null
+  },
+  {
+   "id": "d05-unit_swap-7",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-7",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:fdb3b997f612da65",
+   "subset": null
+  },
+  {
+   "id": "d05-dropped_result-7",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:e997db7deea9d7b3",
+   "subset": null
+  },
+  {
+   "id": "d05-decimal_shift-7",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-8",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:4f91fd9201b2b31b",
+   "subset": null
+  },
+  {
+   "id": "d05-unit_swap-8",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-8",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:74e943cde4490505",
+   "subset": null
+  },
+  {
+   "id": "d05-dropped_result-8",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:df9f4b5a5a2d2d6d",
+   "subset": null
+  },
+  {
+   "id": "d05-decimal_shift-8",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-9",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:bc32d2050e68d276",
+   "subset": null
+  },
+  {
+   "id": "d05-unit_swap-9",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-9",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d0793b33b40c4b56",
+   "subset": null
+  },
+  {
+   "id": "d05-dropped_result-9",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:317fc2d0549ffad6",
+   "subset": null
+  },
+  {
+   "id": "d05-invented_result-1",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "invented_result",
+   "target": "obs-10",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:f5a4e7aafe1c0d30",
+   "subset": null
+  },
+  {
+   "id": "d05-date_swap-1",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "date_swap",
+   "target": "document",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:87dfd4ba3706bd73",
+   "subset": null
+  },
+  {
+   "id": "d05-date_swap-2",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "date_swap",
+   "target": "document",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:053e95c2b6ced6cb",
+   "subset": null
+  },
+  {
+   "id": "d06-digit_swap-1",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:6662a944a40fd64c",
+   "subset": null
+  },
+  {
+   "id": "d06-decimal_shift-1",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:c2bda2776a0bb530",
+   "subset": null
+  },
+  {
+   "id": "d06-unit_swap-1",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:047937eadb9a0ea3",
+   "subset": null
+  },
+  {
+   "id": "d06-dropped_result-1",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:d4674f8d8feb3e0d",
+   "subset": null
+  },
+  {
+   "id": "d06-digit_swap-2",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:7df5ebaa0fc99dfe",
+   "subset": null
+  },
+  {
+   "id": "d06-decimal_shift-2",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:f6f7f1a781abc9b9",
+   "subset": null
+  },
+  {
+   "id": "d06-unit_swap-2",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:c30f0d80d159e6ec",
+   "subset": null
+  },
+  {
+   "id": "d06-dropped_result-2",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:bacfbb630ba0ab49",
+   "subset": null
+  },
+  {
+   "id": "d06-decimal_shift-3",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:024a657dd9138576",
+   "subset": null
+  },
+  {
+   "id": "d06-unit_swap-3",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:a0245e39152c519e",
+   "subset": null
+  },
+  {
+   "id": "d06-dropped_result-3",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:6c8f2ff86f4dc609",
+   "subset": null
+  },
+  {
+   "id": "d06-digit_swap-3",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:fd416a3d3e341b86",
+   "subset": null
+  },
+  {
+   "id": "d06-decimal_shift-4",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:db831936156c0a11",
+   "subset": null
+  },
+  {
+   "id": "d06-unit_swap-4",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:a1f88d2360141874",
+   "subset": null
+  },
+  {
+   "id": "d06-dropped_result-4",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:a582323c4710b1e5",
+   "subset": null
+  },
+  {
+   "id": "d06-decimal_shift-5",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:6f1234c65e060aeb",
+   "subset": null
+  },
+  {
+   "id": "d06-unit_swap-5",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:e343cefc76b1f6c6",
+   "subset": null
+  },
+  {
+   "id": "d06-dropped_result-5",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:65c307b7b1cfd7e3",
+   "subset": null
+  },
+  {
+   "id": "d06-digit_swap-4",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:1e076742fc60cecc",
+   "subset": null
+  },
+  {
+   "id": "d06-decimal_shift-6",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:f4455a440eec0365",
+   "subset": null
+  },
+  {
+   "id": "d06-unit_swap-6",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:25db6f8df7482c5d",
+   "subset": null
+  },
+  {
+   "id": "d06-dropped_result-6",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:8df53c5dc03fc003",
+   "subset": null
+  },
+  {
+   "id": "d06-decimal_shift-7",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-7",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d9927b194836e9ed",
+   "subset": null
+  },
+  {
+   "id": "d06-unit_swap-7",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-7",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:23fd91e83533f9cc",
+   "subset": null
+  },
+  {
+   "id": "d06-dropped_result-7",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:ff75b4a608db8ded",
+   "subset": null
+  },
+  {
+   "id": "d06-digit_swap-5",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-8",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:0d4f0b9aef350b77",
+   "subset": null
+  },
+  {
+   "id": "d06-decimal_shift-8",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-8",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:7777fab4a25b47a0",
+   "subset": null
+  },
+  {
+   "id": "d06-unit_swap-8",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-8",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:600ba3f3be2c5d1a",
+   "subset": null
+  },
+  {
+   "id": "d06-dropped_result-8",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:716711161d585e61",
+   "subset": null
+  },
+  {
+   "id": "d06-digit_swap-6",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-9",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:586e986a17718e6e",
+   "subset": null
+  },
+  {
+   "id": "d06-decimal_shift-9",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-9",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:da90b502ca1a6ffc",
+   "subset": null
+  },
+  {
+   "id": "d06-unit_swap-9",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-9",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:24c19bc80fdb393e",
+   "subset": null
+  },
+  {
+   "id": "d06-dropped_result-9",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:f698a62a02028758",
+   "subset": null
+  },
+  {
+   "id": "d06-invented_result-1",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "invented_result",
+   "target": "obs-10",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:ee3e1951d80b2865",
+   "subset": "core"
+  },
+  {
+   "id": "d06-date_swap-1",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "date_swap",
+   "target": "document",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:4828d5ce1e4d98cd",
+   "subset": null
+  },
+  {
+   "id": "d06-date_swap-2",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "date_swap",
+   "target": "document",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:af2ef586f5337968",
+   "subset": null
+  },
+  {
+   "id": "d07-strength_shift-1",
+   "doc_id": "d07",
+   "split": "test",
+   "fault": "strength_shift",
+   "target": "med-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:607187889f29b450",
+   "subset": null
+  },
+  {
+   "id": "d07-frequency_change-1",
+   "doc_id": "d07",
+   "split": "test",
+   "fault": "frequency_change",
+   "target": "med-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:4e140be1308db27d",
+   "subset": null
+  },
+  {
+   "id": "d07-dropped_medicine-1",
+   "doc_id": "d07",
+   "split": "test",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:894a0f62e2682844",
+   "subset": "core"
+  },
+  {
+   "id": "d07-strength_shift-2",
+   "doc_id": "d07",
+   "split": "test",
+   "fault": "strength_shift",
+   "target": "med-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d4ba04ab177b0ea7",
+   "subset": null
+  },
+  {
+   "id": "d07-frequency_change-2",
+   "doc_id": "d07",
+   "split": "test",
+   "fault": "frequency_change",
+   "target": "med-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:ef89d1e206b426df",
+   "subset": null
+  },
+  {
+   "id": "d07-dropped_medicine-2",
+   "doc_id": "d07",
+   "split": "test",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:80fedeba9c9c21af",
+   "subset": null
+  },
+  {
+   "id": "d07-strength_shift-3",
+   "doc_id": "d07",
+   "split": "test",
+   "fault": "strength_shift",
+   "target": "med-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:484aa6b6da4ef823",
+   "subset": null
+  },
+  {
+   "id": "d07-frequency_change-3",
+   "doc_id": "d07",
+   "split": "test",
+   "fault": "frequency_change",
+   "target": "med-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:75330adddb18fac8",
+   "subset": null
+  },
+  {
+   "id": "d07-dropped_medicine-3",
+   "doc_id": "d07",
+   "split": "test",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:f6f890824abbf39c",
+   "subset": null
+  },
+  {
+   "id": "d07-invented_medicine-1",
+   "doc_id": "d07",
+   "split": "test",
+   "fault": "invented_medicine",
+   "target": "med-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:5345c57f8651f1ac",
+   "subset": null
+  },
+  {
+   "id": "d07-date_swap-1",
+   "doc_id": "d07",
+   "split": "test",
+   "fault": "date_swap",
+   "target": "document",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:8d146cec4ee0f7c0",
+   "subset": null
+  },
+  {
+   "id": "d08-decimal_shift-1",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:cf9d80c3ddc892eb",
+   "subset": null
+  },
+  {
+   "id": "d08-unit_swap-1",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:f36fb9a3679430b4",
+   "subset": "core"
+  },
+  {
+   "id": "d08-dropped_result-1",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:30450aca0ff01f49",
+   "subset": null
+  },
+  {
+   "id": "d08-decimal_shift-2",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:15207e58a1fd8109",
+   "subset": null
+  },
+  {
+   "id": "d08-unit_swap-2",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:c15fdf884689872b",
+   "subset": null
+  },
+  {
+   "id": "d08-dropped_result-2",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:a25e8055d2eb9eab",
+   "subset": null
+  },
+  {
+   "id": "d08-digit_swap-1",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d0d8b5cfdfb6f050",
+   "subset": null
+  },
+  {
+   "id": "d08-decimal_shift-3",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:6b9741227146b089",
+   "subset": null
+  },
+  {
+   "id": "d08-unit_swap-3",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:38c1c827f6787bab",
+   "subset": null
+  },
+  {
+   "id": "d08-dropped_result-3",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:4bda6877b8c26fc6",
+   "subset": null
+  },
+  {
+   "id": "d08-digit_swap-2",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:afa29fc38e4ab8cd",
+   "subset": null
+  },
+  {
+   "id": "d08-decimal_shift-4",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:e92fbb3bcfed0001",
+   "subset": null
+  },
+  {
+   "id": "d08-unit_swap-4",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:316e835e315e217b",
+   "subset": null
+  },
+  {
+   "id": "d08-dropped_result-4",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:fffb5910573daa46",
+   "subset": null
+  },
+  {
+   "id": "d08-digit_swap-3",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:c3a47433c01cd104",
+   "subset": null
+  },
+  {
+   "id": "d08-decimal_shift-5",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:764e8a832077ca50",
+   "subset": null
+  },
+  {
+   "id": "d08-unit_swap-5",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:b386aa5f646a231d",
+   "subset": null
+  },
+  {
+   "id": "d08-dropped_result-5",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:5d249af23ad056ce",
+   "subset": null
+  },
+  {
+   "id": "d08-decimal_shift-6",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:296e8312d19f1270",
+   "subset": null
+  },
+  {
+   "id": "d08-unit_swap-6",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:7fccb04128f0f926",
+   "subset": null
+  },
+  {
+   "id": "d08-dropped_result-6",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:662d88497560daed",
+   "subset": null
+  },
+  {
+   "id": "d08-decimal_shift-7",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-7",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:022169aa8faf3383",
+   "subset": null
+  },
+  {
+   "id": "d08-unit_swap-7",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-7",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:75db10fe79cd4b19",
+   "subset": null
+  },
+  {
+   "id": "d08-dropped_result-7",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:582a1c305edcc2d5",
+   "subset": null
+  },
+  {
+   "id": "d08-decimal_shift-8",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-8",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:e26e181b0960efd6",
+   "subset": null
+  },
+  {
+   "id": "d08-unit_swap-8",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-8",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:4521f6ea5923b495",
+   "subset": null
+  },
+  {
+   "id": "d08-dropped_result-8",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:e2259cd161a30176",
+   "subset": null
+  },
+  {
+   "id": "d08-unit_swap-9",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-9",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:c6c8725ed9560f99",
+   "subset": null
+  },
+  {
+   "id": "d08-dropped_result-9",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:2bb029fe73ddb5d9",
+   "subset": null
+  },
+  {
+   "id": "d08-invented_result-1",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "invented_result",
+   "target": "obs-10",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:4a80d2d3d6df679f",
+   "subset": null
+  },
+  {
+   "id": "d09-decimal_shift-1",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "decimal_shift",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:7b7b871ea69a1212",
+   "subset": null
+  },
+  {
+   "id": "d09-unit_swap-1",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "unit_swap",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:4ed6a1f7113b758a",
+   "subset": null
+  },
+  {
+   "id": "d09-dropped_result-1",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:e438186c17d1525c",
+   "subset": null
+  },
+  {
+   "id": "d09-decimal_shift-2",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "decimal_shift",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:e0bebfddf98dd2cb",
+   "subset": null
+  },
+  {
+   "id": "d09-unit_swap-2",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "unit_swap",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:16c4b34d09255f9a",
+   "subset": null
+  },
+  {
+   "id": "d09-dropped_result-2",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:aa58dd39d2ee3c2d",
+   "subset": null
+  },
+  {
+   "id": "d09-decimal_shift-3",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "decimal_shift",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:c09284551e0882f7",
+   "subset": null
+  },
+  {
+   "id": "d09-unit_swap-3",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "unit_swap",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:179397e5fbae7a57",
+   "subset": null
+  },
+  {
+   "id": "d09-dropped_result-3",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:3641bbafdcf26bb3",
+   "subset": null
+  },
+  {
+   "id": "d09-digit_swap-1",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "digit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:11799617e8f1c5d4",
+   "subset": null
+  },
+  {
+   "id": "d09-decimal_shift-4",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "decimal_shift",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:622b6ab01243c6bb",
+   "subset": null
+  },
+  {
+   "id": "d09-unit_swap-4",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "unit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:0617ba35daca0ab3",
+   "subset": null
+  },
+  {
+   "id": "d09-dropped_result-4",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:297a26c57eacba58",
+   "subset": null
+  },
+  {
+   "id": "d09-digit_swap-2",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "digit_swap",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:ccb65a8e6b36d0c4",
+   "subset": null
+  },
+  {
+   "id": "d09-unit_swap-5",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "unit_swap",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:fd4141ac3d22d785",
+   "subset": null
+  },
+  {
+   "id": "d09-dropped_result-5",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:0997ad261b801ddc",
+   "subset": null
+  },
+  {
+   "id": "d09-digit_swap-3",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "digit_swap",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d3770aa4d100a26d",
+   "subset": null
+  },
+  {
+   "id": "d09-unit_swap-6",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "unit_swap",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:a33b9c926bc922fc",
+   "subset": null
+  },
+  {
+   "id": "d09-dropped_result-6",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:66eb4dab68f37d7d",
+   "subset": null
+  },
+  {
+   "id": "d09-invented_result-1",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "invented_result",
+   "target": "obs-7",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:e2d84065802d1576",
+   "subset": null
+  },
+  {
+   "id": "d09-date_swap-1",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "date_swap",
+   "target": "document",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:98ae8b169ab31c99",
+   "subset": null
+  },
+  {
+   "id": "d09-date_swap-2",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "date_swap",
+   "target": "document",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:dcabd7c1c20b1de4",
+   "subset": null
+  },
+  {
+   "id": "d10-strength_shift-1",
+   "doc_id": "d10",
+   "split": "test",
+   "fault": "strength_shift",
+   "target": "med-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:8f4c9cc8653124c6",
+   "subset": null
+  },
+  {
+   "id": "d10-frequency_change-1",
+   "doc_id": "d10",
+   "split": "test",
+   "fault": "frequency_change",
+   "target": "med-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:0e253259f7466a94",
+   "subset": "core"
+  },
+  {
+   "id": "d10-dropped_medicine-1",
+   "doc_id": "d10",
+   "split": "test",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:baf48f7508698602",
+   "subset": null
+  },
+  {
+   "id": "d10-invented_medicine-1",
+   "doc_id": "d10",
+   "split": "test",
+   "fault": "invented_medicine",
+   "target": "med-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:91a0280c0eb3923a",
+   "subset": null
+  },
+  {
+   "id": "d11-decimal_shift-1",
+   "doc_id": "d11",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:f6c4a233ea0873ce",
+   "subset": null
+  },
+  {
+   "id": "d11-unit_swap-1",
+   "doc_id": "d11",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:7936f8d4a3cf5ff8",
+   "subset": null
+  },
+  {
+   "id": "d11-dropped_result-1",
+   "doc_id": "d11",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:6919715a7f4321c8",
+   "subset": null
+  },
+  {
+   "id": "d11-digit_swap-1",
+   "doc_id": "d11",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:287126f08046fad9",
+   "subset": null
+  },
+  {
+   "id": "d11-decimal_shift-2",
+   "doc_id": "d11",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:026db12b5b174e04",
+   "subset": null
+  },
+  {
+   "id": "d11-unit_swap-2",
+   "doc_id": "d11",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:570acc9c52867e08",
+   "subset": null
+  },
+  {
+   "id": "d11-dropped_result-2",
+   "doc_id": "d11",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:161b660387a868a7",
+   "subset": null
+  },
+  {
+   "id": "d11-invented_result-1",
+   "doc_id": "d11",
+   "split": "test",
+   "fault": "invented_result",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:c13d8e92d1aa12d7",
+   "subset": null
+  },
+  {
+   "id": "d11-date_swap-1",
+   "doc_id": "d11",
+   "split": "test",
+   "fault": "date_swap",
+   "target": "document",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:411af0b6c94d6765",
+   "subset": null
+  },
+  {
+   "id": "d11-date_swap-2",
+   "doc_id": "d11",
+   "split": "test",
+   "fault": "date_swap",
+   "target": "document",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:b720f49720bbb22c",
+   "subset": null
+  },
+  {
+   "id": "d12-strength_shift-1",
+   "doc_id": "d12",
+   "split": "test",
+   "fault": "strength_shift",
+   "target": "med-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:943b6146b6643a01",
+   "subset": null
+  },
+  {
+   "id": "d12-frequency_change-1",
+   "doc_id": "d12",
+   "split": "test",
+   "fault": "frequency_change",
+   "target": "med-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:99679fe15c376be0",
+   "subset": null
+  },
+  {
+   "id": "d12-dropped_medicine-1",
+   "doc_id": "d12",
+   "split": "test",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:f417face9b17a150",
+   "subset": null
+  },
+  {
+   "id": "d12-strength_shift-2",
+   "doc_id": "d12",
+   "split": "test",
+   "fault": "strength_shift",
+   "target": "med-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:5e35e3032e624844",
+   "subset": null
+  },
+  {
+   "id": "d12-dropped_medicine-2",
+   "doc_id": "d12",
+   "split": "test",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:2e2e5afae16e80f3",
+   "subset": null
+  },
+  {
+   "id": "d12-invented_medicine-1",
+   "doc_id": "d12",
+   "split": "test",
+   "fault": "invented_medicine",
+   "target": "med-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:93e2a67e6850f902",
+   "subset": "core"
+  },
+  {
+   "id": "d13-digit_swap-1",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:80e94525b523f408",
+   "subset": null
+  },
+  {
+   "id": "d13-decimal_shift-1",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:b5590239691a589d",
+   "subset": null
+  },
+  {
+   "id": "d13-unit_swap-1",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:ce8b4a147acc7cc2",
+   "subset": null
+  },
+  {
+   "id": "d13-dropped_result-1",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:d0651a375914e2b6",
+   "subset": null
+  },
+  {
+   "id": "d13-digit_swap-2",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:403af21f7bd05e74",
+   "subset": null
+  },
+  {
+   "id": "d13-decimal_shift-2",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:79cb9a5df5273a84",
+   "subset": null
+  },
+  {
+   "id": "d13-unit_swap-2",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:ccc4d04b1a78a882",
+   "subset": null
+  },
+  {
+   "id": "d13-dropped_result-2",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:7a38286e2661eddc",
+   "subset": null
+  },
+  {
+   "id": "d13-digit_swap-3",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d3280d3540964eb1",
+   "subset": null
+  },
+  {
+   "id": "d13-decimal_shift-3",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:749ec835ed15a391",
+   "subset": null
+  },
+  {
+   "id": "d13-unit_swap-3",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:203a3baea3a377bb",
+   "subset": null
+  },
+  {
+   "id": "d13-dropped_result-3",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:d117b95106af8218",
+   "subset": null
+  },
+  {
+   "id": "d13-digit_swap-4",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:38bef505bb4a0efd",
+   "subset": null
+  },
+  {
+   "id": "d13-decimal_shift-4",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:e9b104a9fcb8f077",
+   "subset": null
+  },
+  {
+   "id": "d13-unit_swap-4",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:626bfa2759d59ac8",
+   "subset": null
+  },
+  {
+   "id": "d13-dropped_result-4",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:f6be8306a7ac87aa",
+   "subset": null
+  },
+  {
+   "id": "d13-decimal_shift-5",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:f2234fe6c14a8a5c",
+   "subset": null
+  },
+  {
+   "id": "d13-unit_swap-5",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:afe8cfb326ab7003",
+   "subset": null
+  },
+  {
+   "id": "d13-dropped_result-5",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:7a5484bc9c234fc3",
+   "subset": null
+  },
+  {
+   "id": "d13-dropped_result-6",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:320bdd89052a1db3",
+   "subset": null
+  },
+  {
+   "id": "d13-dropped_result-7",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:177501d1a2cfd243",
+   "subset": null
+  },
+  {
+   "id": "d13-unit_swap-6",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-8",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d3e74ee49a9d684a",
+   "subset": null
+  },
+  {
+   "id": "d13-dropped_result-8",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:c99b0c535343dca7",
+   "subset": null
+  },
+  {
+   "id": "d13-decimal_shift-6",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-9",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:e9584cd4cf379c85",
+   "subset": null
+  },
+  {
+   "id": "d13-unit_swap-7",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-9",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:6c6be9b1ca3c7a5b",
+   "subset": null
+  },
+  {
+   "id": "d13-dropped_result-9",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:0540951096721069",
+   "subset": null
+  },
+  {
+   "id": "d13-invented_result-1",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "invented_result",
+   "target": "obs-10",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:482fa4537da6ba2f",
+   "subset": null
+  },
+  {
+   "id": "d13-date_swap-1",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "date_swap",
+   "target": "document",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:70cb5bacf5ed25fa",
+   "subset": null
+  },
+  {
+   "id": "d13-date_swap-2",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "date_swap",
+   "target": "document",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:df62b3f7ebf284c8",
+   "subset": null
+  },
+  {
+   "id": "d14-strength_shift-1",
+   "doc_id": "d14",
+   "split": "test",
+   "fault": "strength_shift",
+   "target": "med-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:994e677defe04931",
+   "subset": "core"
+  },
+  {
+   "id": "d14-frequency_change-1",
+   "doc_id": "d14",
+   "split": "test",
+   "fault": "frequency_change",
+   "target": "med-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:0f224fa8299b3ca0",
+   "subset": null
+  },
+  {
+   "id": "d14-dropped_medicine-1",
+   "doc_id": "d14",
+   "split": "test",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:2844cc101807b65e",
+   "subset": null
+  },
+  {
+   "id": "d14-strength_shift-2",
+   "doc_id": "d14",
+   "split": "test",
+   "fault": "strength_shift",
+   "target": "med-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:c02b1512558c84c7",
+   "subset": null
+  },
+  {
+   "id": "d14-frequency_change-2",
+   "doc_id": "d14",
+   "split": "test",
+   "fault": "frequency_change",
+   "target": "med-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:181fad7b7465effc",
+   "subset": null
+  },
+  {
+   "id": "d14-dropped_medicine-2",
+   "doc_id": "d14",
+   "split": "test",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:6e134499751b00cb",
+   "subset": null
+  },
+  {
+   "id": "d14-strength_shift-3",
+   "doc_id": "d14",
+   "split": "test",
+   "fault": "strength_shift",
+   "target": "med-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:55e54599a1bb304b",
+   "subset": null
+  },
+  {
+   "id": "d14-frequency_change-3",
+   "doc_id": "d14",
+   "split": "test",
+   "fault": "frequency_change",
+   "target": "med-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:2e2468fe165ba324",
+   "subset": null
+  },
+  {
+   "id": "d14-dropped_medicine-3",
+   "doc_id": "d14",
+   "split": "test",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:6d2fbe22d6e19945",
+   "subset": null
+  },
+  {
+   "id": "d14-invented_medicine-1",
+   "doc_id": "d14",
+   "split": "test",
+   "fault": "invented_medicine",
+   "target": "med-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:17f08d7140488419",
+   "subset": null
+  },
+  {
+   "id": "d14-date_swap-1",
+   "doc_id": "d14",
+   "split": "test",
+   "fault": "date_swap",
+   "target": "document",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:908ca2a637056af0",
+   "subset": null
+  },
+  {
+   "id": "d15-strength_shift-1",
+   "doc_id": "d15",
+   "split": "test",
+   "fault": "strength_shift",
+   "target": "med-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:7c052fa209dec621",
+   "subset": null
+  },
+  {
+   "id": "d15-frequency_change-1",
+   "doc_id": "d15",
+   "split": "test",
+   "fault": "frequency_change",
+   "target": "med-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:1e49310faaf00b2d",
+   "subset": null
+  },
+  {
+   "id": "d15-dropped_medicine-1",
+   "doc_id": "d15",
+   "split": "test",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:c6affcda65150e1b",
+   "subset": null
+  },
+  {
+   "id": "d15-strength_shift-2",
+   "doc_id": "d15",
+   "split": "test",
+   "fault": "strength_shift",
+   "target": "med-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:4398800cb1e954a9",
+   "subset": null
+  },
+  {
+   "id": "d15-frequency_change-2",
+   "doc_id": "d15",
+   "split": "test",
+   "fault": "frequency_change",
+   "target": "med-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:7a1ae72d6faa234f",
+   "subset": null
+  },
+  {
+   "id": "d15-dropped_medicine-2",
+   "doc_id": "d15",
+   "split": "test",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:f5b64a1a76d9a58d",
+   "subset": null
+  },
+  {
+   "id": "d15-invented_medicine-1",
+   "doc_id": "d15",
+   "split": "test",
+   "fault": "invented_medicine",
+   "target": "med-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:0ab7da40110b796b",
+   "subset": null
+  },
+  {
+   "id": "d16-digit_swap-1",
+   "doc_id": "d16",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:661373385a79846e",
+   "subset": null
+  },
+  {
+   "id": "d16-decimal_shift-1",
+   "doc_id": "d16",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:862c1b52be397926",
+   "subset": null
+  },
+  {
+   "id": "d16-unit_swap-1",
+   "doc_id": "d16",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:684d3481a868e95c",
+   "subset": null
+  },
+  {
+   "id": "d16-dropped_result-1",
+   "doc_id": "d16",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:d6717165e2e15a7c",
+   "subset": null
+  },
+  {
+   "id": "d16-decimal_shift-2",
+   "doc_id": "d16",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:7701543c0b453fb7",
+   "subset": null
+  },
+  {
+   "id": "d16-unit_swap-2",
+   "doc_id": "d16",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:54747d86a72964ad",
+   "subset": null
+  },
+  {
+   "id": "d16-dropped_result-2",
+   "doc_id": "d16",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:c5ef3b6e2a5fa7aa",
+   "subset": null
+  },
+  {
+   "id": "d16-digit_swap-2",
+   "doc_id": "d16",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:1122bc8427513cdd",
+   "subset": null
+  },
+  {
+   "id": "d16-decimal_shift-3",
+   "doc_id": "d16",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:7f5cb602f24d7ac6",
+   "subset": null
+  },
+  {
+   "id": "d16-unit_swap-3",
+   "doc_id": "d16",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:f0d3b1a987c2a93d",
+   "subset": null
+  },
+  {
+   "id": "d16-dropped_result-3",
+   "doc_id": "d16",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:8a757d08fb239d6a",
+   "subset": null
+  },
+  {
+   "id": "d16-invented_result-1",
+   "doc_id": "d16",
+   "split": "test",
+   "fault": "invented_result",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:7375cef298c3800b",
+   "subset": null
+  },
+  {
+   "id": "d18-digit_swap-1",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "digit_swap",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:5c365ab7a2d15e6c",
+   "subset": null
+  },
+  {
+   "id": "d18-decimal_shift-1",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:def4c48048a99bdb",
+   "subset": "extended"
+  },
+  {
+   "id": "d18-unit_swap-1",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:f9e476bfbe38ab7a",
+   "subset": "extended"
+  },
+  {
+   "id": "d18-digit_swap-2",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "digit_swap",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:75329b4e533a53c9",
+   "subset": null
+  },
+  {
+   "id": "d18-decimal_shift-2",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:f6012097554f95a4",
+   "subset": null
+  },
+  {
+   "id": "d18-unit_swap-2",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:5e446dd2791b847b",
+   "subset": null
+  },
+  {
+   "id": "d18-digit_swap-3",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "digit_swap",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d459997a913d1a4d",
+   "subset": null
+  },
+  {
+   "id": "d18-decimal_shift-3",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:56346bef6708af3e",
+   "subset": null
+  },
+  {
+   "id": "d18-unit_swap-3",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:aba14330c046fb56",
+   "subset": null
+  },
+  {
+   "id": "d18-digit_swap-4",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "digit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:3ee45e2c47f66afc",
+   "subset": null
+  },
+  {
+   "id": "d18-decimal_shift-4",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:7501ee8467fef1cb",
+   "subset": null
+  },
+  {
+   "id": "d18-unit_swap-4",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:64cf4bfdf5d09455",
+   "subset": null
+  },
+  {
+   "id": "d18-digit_swap-5",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "digit_swap",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:4556f5690221771d",
+   "subset": null
+  },
+  {
+   "id": "d18-decimal_shift-5",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:416a1deca306943e",
+   "subset": null
+  },
+  {
+   "id": "d18-unit_swap-5",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:1ccc8d07b90079bb",
+   "subset": null
+  },
+  {
+   "id": "d18-decimal_shift-6",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d04053bb1e267f98",
+   "subset": null
+  },
+  {
+   "id": "d18-unit_swap-6",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:ba1c204c34a15519",
+   "subset": null
+  },
+  {
+   "id": "d18-invented_result-1",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "invented_result",
+   "target": "obs-7",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:7406862ff57ec274",
+   "subset": null
+  },
+  {
+   "id": "d19-strength_shift-1",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "strength_shift",
+   "target": "med-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:ba042e2b5a66814a",
+   "subset": "extended"
+  },
+  {
+   "id": "d19-frequency_change-1",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "frequency_change",
+   "target": "med-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:fd2a31fbaf4f0d88",
+   "subset": null
+  },
+  {
+   "id": "d19-dropped_medicine-1",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:291ab7c71e6b3760",
+   "subset": null
+  },
+  {
+   "id": "d19-strength_shift-2",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "strength_shift",
+   "target": "med-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:2909fcb076aa3773",
+   "subset": null
+  },
+  {
+   "id": "d19-frequency_change-2",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "frequency_change",
+   "target": "med-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d447676922239ab9",
+   "subset": null
+  },
+  {
+   "id": "d19-dropped_medicine-2",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:d322951a8237d84c",
+   "subset": null
+  },
+  {
+   "id": "d19-strength_shift-3",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "strength_shift",
+   "target": "med-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:31bb023b7e341a07",
+   "subset": null
+  },
+  {
+   "id": "d19-frequency_change-3",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "frequency_change",
+   "target": "med-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:ca5c4e1d8fdd8473",
+   "subset": null
+  },
+  {
+   "id": "d19-dropped_medicine-3",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:262d1b2fb7c8d40e",
+   "subset": null
+  },
+  {
+   "id": "d19-strength_shift-4",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "strength_shift",
+   "target": "med-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:8e5a6b1127eb674c",
+   "subset": null
+  },
+  {
+   "id": "d19-frequency_change-4",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "frequency_change",
+   "target": "med-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:fdf321f7f931907d",
+   "subset": null
+  },
+  {
+   "id": "d19-dropped_medicine-4",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:5c34b0d623587bc1",
+   "subset": null
+  },
+  {
+   "id": "d19-invented_medicine-1",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "invented_medicine",
+   "target": "med-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:5b17a75e8345b991",
+   "subset": "extended"
+  },
+  {
+   "id": "d19-date_swap-1",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "date_swap",
+   "target": "document",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:76bc098e21757d55",
+   "subset": "extended"
+  },
+  {
+   "id": "d20-digit_swap-1",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "digit_swap",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:96eb615bbec91feb",
+   "subset": "extended"
+  },
+  {
+   "id": "d20-decimal_shift-1",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:95299e8bf6d1069d",
+   "subset": null
+  },
+  {
+   "id": "d20-unit_swap-1",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:67a748bfba859032",
+   "subset": null
+  },
+  {
+   "id": "d20-dropped_result-1",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:aec38a19192d6170",
+   "subset": null
+  },
+  {
+   "id": "d20-decimal_shift-2",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:8368bf6402357b39",
+   "subset": null
+  },
+  {
+   "id": "d20-unit_swap-2",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:12d0c9f57d986bdd",
+   "subset": null
+  },
+  {
+   "id": "d20-dropped_result-2",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:38a3b450ae84a1d4",
+   "subset": null
+  },
+  {
+   "id": "d20-digit_swap-2",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "digit_swap",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:83ef236adbf320b4",
+   "subset": null
+  },
+  {
+   "id": "d20-decimal_shift-3",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:a003c8a8eeddfd67",
+   "subset": null
+  },
+  {
+   "id": "d20-unit_swap-3",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:4bafb40b12adf39d",
+   "subset": null
+  },
+  {
+   "id": "d20-dropped_result-3",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:0ff9b31c8fbc91f9",
+   "subset": null
+  },
+  {
+   "id": "d20-decimal_shift-4",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:0ba527c5c70491bd",
+   "subset": null
+  },
+  {
+   "id": "d20-unit_swap-4",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:9a05718c0142b7a7",
+   "subset": null
+  },
+  {
+   "id": "d20-dropped_result-4",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:fd7a365e62c559e3",
+   "subset": null
+  },
+  {
+   "id": "d20-digit_swap-3",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "digit_swap",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:e944f11e1122b367",
+   "subset": null
+  },
+  {
+   "id": "d20-decimal_shift-5",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:71a0cf11ed7e4379",
+   "subset": null
+  },
+  {
+   "id": "d20-unit_swap-5",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:f0b5f4b1710b43da",
+   "subset": null
+  },
+  {
+   "id": "d20-dropped_result-5",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:690207cfe4e8601f",
+   "subset": null
+  },
+  {
+   "id": "d20-decimal_shift-6",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:84aa6f62167f5437",
+   "subset": null
+  },
+  {
+   "id": "d20-unit_swap-6",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:0a1b87e12b52862a",
+   "subset": null
+  },
+  {
+   "id": "d20-dropped_result-6",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:3b48bf9127224a06",
+   "subset": null
+  },
+  {
+   "id": "d20-digit_swap-4",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "digit_swap",
+   "target": "obs-7",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:8ea763df17fd9cb8",
+   "subset": null
+  },
+  {
+   "id": "d20-decimal_shift-7",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-7",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:2547c3ea8f66d7e5",
+   "subset": null
+  },
+  {
+   "id": "d20-unit_swap-7",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-7",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:a8d9f0710effb38b",
+   "subset": null
+  },
+  {
+   "id": "d20-dropped_result-7",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:8f6f1f164ed2f768",
+   "subset": null
+  },
+  {
+   "id": "d20-invented_result-1",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "invented_result",
+   "target": "obs-8",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:62db145bb5c1ecc9",
+   "subset": null
+  },
+  {
+   "id": "d20-date_swap-1",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "date_swap",
+   "target": "document",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:979a387433378120",
+   "subset": null
+  },
+  {
+   "id": "d20-date_swap-2",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "date_swap",
+   "target": "document",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:e333cffdea83673c",
+   "subset": null
+  },
+  {
+   "id": "d21-strength_shift-1",
+   "doc_id": "d21",
+   "split": "held_out",
+   "fault": "strength_shift",
+   "target": "med-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:07072ecda6c8661d",
+   "subset": null
+  },
+  {
+   "id": "d21-frequency_change-1",
+   "doc_id": "d21",
+   "split": "held_out",
+   "fault": "frequency_change",
+   "target": "med-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d0ca339f5a8fb673",
+   "subset": null
+  },
+  {
+   "id": "d21-dropped_medicine-1",
+   "doc_id": "d21",
+   "split": "held_out",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:861b7626f23674ae",
+   "subset": "extended"
+  },
+  {
+   "id": "d21-dropped_medicine-2",
+   "doc_id": "d21",
+   "split": "held_out",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:6cfd4b4676151635",
+   "subset": null
+  },
+  {
+   "id": "d21-strength_shift-2",
+   "doc_id": "d21",
+   "split": "held_out",
+   "fault": "strength_shift",
+   "target": "med-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:edf7fc62e9425eac",
+   "subset": null
+  },
+  {
+   "id": "d21-frequency_change-2",
+   "doc_id": "d21",
+   "split": "held_out",
+   "fault": "frequency_change",
+   "target": "med-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:2114619bc951a8c4",
+   "subset": null
+  },
+  {
+   "id": "d21-dropped_medicine-3",
+   "doc_id": "d21",
+   "split": "held_out",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:081c1bb0ddc40f01",
+   "subset": null
+  },
+  {
+   "id": "d21-invented_medicine-1",
+   "doc_id": "d21",
+   "split": "held_out",
+   "fault": "invented_medicine",
+   "target": "med-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:2c2aeef311aa3d52",
+   "subset": null
+  },
+  {
+   "id": "d22-decimal_shift-1",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:13182da7982b7c0c",
+   "subset": null
+  },
+  {
+   "id": "d22-unit_swap-1",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:1545fb51ddfd4ce8",
+   "subset": null
+  },
+  {
+   "id": "d22-dropped_result-1",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:5b0b753c14db60d1",
+   "subset": "extended"
+  },
+  {
+   "id": "d22-decimal_shift-2",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:cdd4cf35e68a212f",
+   "subset": null
+  },
+  {
+   "id": "d22-unit_swap-2",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:b184421e9d965bce",
+   "subset": null
+  },
+  {
+   "id": "d22-dropped_result-2",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:6020f05c323caa4f",
+   "subset": null
+  },
+  {
+   "id": "d22-digit_swap-1",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "digit_swap",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:987265e508a9a347",
+   "subset": null
+  },
+  {
+   "id": "d22-decimal_shift-3",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:10d1ea53e8696306",
+   "subset": null
+  },
+  {
+   "id": "d22-unit_swap-3",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:49e504ac32ad55a1",
+   "subset": null
+  },
+  {
+   "id": "d22-dropped_result-3",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "remark_placement",
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:b23272ab40687c3d",
+   "subset": null
+  },
+  {
+   "id": "d22-digit_swap-2",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "digit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:610c3a8df883a2a5",
+   "subset": null
+  },
+  {
+   "id": "d22-decimal_shift-4",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:8c1f5d6b1a7932e1",
+   "subset": null
+  },
+  {
+   "id": "d22-unit_swap-4",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:47255a9991785767",
+   "subset": null
+  },
+  {
+   "id": "d22-dropped_result-4",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:11b4e7309e9af127",
+   "subset": null
+  },
+  {
+   "id": "d22-decimal_shift-5",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:098776803c2bb187",
+   "subset": null
+  },
+  {
+   "id": "d22-unit_swap-5",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:aa3ea6b6c6f9be1f",
+   "subset": null
+  },
+  {
+   "id": "d22-dropped_result-5",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:fa307772cb790681",
+   "subset": null
+  },
+  {
+   "id": "d22-digit_swap-3",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "digit_swap",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:9625919554244e0d",
+   "subset": null
+  },
+  {
+   "id": "d22-decimal_shift-6",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:9ffd147ffd1afba4",
+   "subset": null
+  },
+  {
+   "id": "d22-unit_swap-6",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:359c66fae971ceaa",
+   "subset": null
+  },
+  {
+   "id": "d22-dropped_result-6",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:fcc6f326ce815c32",
+   "subset": null
+  },
+  {
+   "id": "d22-invented_result-1",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "invented_result",
+   "target": "obs-7",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:a785aedcead93f87",
+   "subset": null
+  },
+  {
+   "id": "d22-remark_moved-1",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "remark_moved",
+   "target": "rem-1",
+   "errors": [
+    "remark_placement"
+   ],
+   "fingerprint": "sha256:b4367b83875d6cbb",
+   "subset": "extended"
+  },
+  {
+   "id": "d23-decimal_shift-1",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:7ab948df427bff83",
+   "subset": null
+  },
+  {
+   "id": "d23-unit_swap-1",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:f25625ed149252cc",
+   "subset": null
+  },
+  {
+   "id": "d23-dropped_result-1",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:b3273fc681c17262",
+   "subset": null
+  },
+  {
+   "id": "d23-digit_swap-1",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "digit_swap",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:03a2992be2e584e0",
+   "subset": null
+  },
+  {
+   "id": "d23-decimal_shift-2",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:3cdff3515f19c6dc",
+   "subset": null
+  },
+  {
+   "id": "d23-unit_swap-2",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:3602cb52ad171386",
+   "subset": null
+  },
+  {
+   "id": "d23-dropped_result-2",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:010ce3f3144bcc8a",
+   "subset": null
+  },
+  {
+   "id": "d23-decimal_shift-3",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:04faa13205148918",
+   "subset": null
+  },
+  {
+   "id": "d23-unit_swap-3",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:4f2543ab9143ae0c",
+   "subset": null
+  },
+  {
+   "id": "d23-dropped_result-3",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:a05bab83ac650d97",
+   "subset": null
+  },
+  {
+   "id": "d23-digit_swap-2",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "digit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:c062699f563d4752",
+   "subset": null
+  },
+  {
+   "id": "d23-decimal_shift-4",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:ad4180fd6ff22c9b",
+   "subset": null
+  },
+  {
+   "id": "d23-unit_swap-4",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:889c79fc005a7fe3",
+   "subset": null
+  },
+  {
+   "id": "d23-dropped_result-4",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:e2d62aadf8eeb29c",
+   "subset": null
+  },
+  {
+   "id": "d23-digit_swap-3",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "digit_swap",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:e8e20e5133a20c48",
+   "subset": null
+  },
+  {
+   "id": "d23-decimal_shift-5",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:1b19ecc814b0a253",
+   "subset": null
+  },
+  {
+   "id": "d23-unit_swap-5",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:3252b1d9697c2250",
+   "subset": null
+  },
+  {
+   "id": "d23-dropped_result-5",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:fc8f23dab93c87b3",
+   "subset": null
+  },
+  {
+   "id": "d23-digit_swap-4",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "digit_swap",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:1a2f26589ff33635",
+   "subset": null
+  },
+  {
+   "id": "d23-unit_swap-6",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:09e6120976e7e397",
+   "subset": null
+  },
+  {
+   "id": "d23-dropped_result-6",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:393956a6071e3699",
+   "subset": null
+  },
+  {
+   "id": "d23-digit_swap-5",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "digit_swap",
+   "target": "obs-7",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:2beeaa8aca470c24",
+   "subset": null
+  },
+  {
+   "id": "d23-unit_swap-7",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-7",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:93155f3ee7e46190",
+   "subset": null
+  },
+  {
+   "id": "d23-dropped_result-7",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:c23a7bc64756af9e",
+   "subset": null
+  },
+  {
+   "id": "d23-decimal_shift-6",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-8",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:a1c23ee983373119",
+   "subset": null
+  },
+  {
+   "id": "d23-unit_swap-8",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-8",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:0b5a3d1255f531b9",
+   "subset": null
+  },
+  {
+   "id": "d23-dropped_result-8",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:00464dd1b79e8cd6",
+   "subset": null
+  },
+  {
+   "id": "d23-digit_swap-6",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "digit_swap",
+   "target": "obs-9",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:89cc8036e6180bd1",
+   "subset": null
+  },
+  {
+   "id": "d23-decimal_shift-7",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "decimal_shift",
+   "target": "obs-9",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:47b7f13062ffa477",
+   "subset": null
+  },
+  {
+   "id": "d23-unit_swap-9",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "unit_swap",
+   "target": "obs-9",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:f734e218c2b8379f",
+   "subset": null
+  },
+  {
+   "id": "d23-dropped_result-9",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:96cb966de18acf07",
+   "subset": null
+  },
+  {
+   "id": "d23-invented_result-1",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "invented_result",
+   "target": "obs-10",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:1f33b1fc13be492b",
+   "subset": "extended"
+  },
+  {
+   "id": "d24-strength_shift-1",
+   "doc_id": "d24",
+   "split": "held_out",
+   "fault": "strength_shift",
+   "target": "med-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:c89a6a1073b29e59",
+   "subset": null
+  },
+  {
+   "id": "d24-frequency_change-1",
+   "doc_id": "d24",
+   "split": "held_out",
+   "fault": "frequency_change",
+   "target": "med-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:1a2badcfb6d97168",
+   "subset": "extended"
+  },
+  {
+   "id": "d24-dropped_medicine-1",
+   "doc_id": "d24",
+   "split": "held_out",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:97385bead7332b99",
+   "subset": null
+  },
+  {
+   "id": "d24-strength_shift-2",
+   "doc_id": "d24",
+   "split": "held_out",
+   "fault": "strength_shift",
+   "target": "med-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:2c607037daf37502",
+   "subset": null
+  },
+  {
+   "id": "d24-frequency_change-2",
+   "doc_id": "d24",
+   "split": "held_out",
+   "fault": "frequency_change",
+   "target": "med-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:5e44d4f4f524100c",
+   "subset": null
+  },
+  {
+   "id": "d24-dropped_medicine-2",
+   "doc_id": "d24",
+   "split": "held_out",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:40ed7a8e50e66940",
+   "subset": null
+  },
+  {
+   "id": "d24-strength_shift-3",
+   "doc_id": "d24",
+   "split": "held_out",
+   "fault": "strength_shift",
+   "target": "med-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:48c18783c8c37b9d",
+   "subset": null
+  },
+  {
+   "id": "d24-frequency_change-3",
+   "doc_id": "d24",
+   "split": "held_out",
+   "fault": "frequency_change",
+   "target": "med-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d3161d6dcf663a91",
+   "subset": null
+  },
+  {
+   "id": "d24-dropped_medicine-3",
+   "doc_id": "d24",
+   "split": "held_out",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:578f1d17ca427ad7",
+   "subset": null
+  },
+  {
+   "id": "d24-strength_shift-4",
+   "doc_id": "d24",
+   "split": "held_out",
+   "fault": "strength_shift",
+   "target": "med-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:fc22f9846f784d93",
+   "subset": null
+  },
+  {
+   "id": "d24-frequency_change-4",
+   "doc_id": "d24",
+   "split": "held_out",
+   "fault": "frequency_change",
+   "target": "med-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:9bd62b238ee0d4a7",
+   "subset": null
+  },
+  {
+   "id": "d24-dropped_medicine-4",
+   "doc_id": "d24",
+   "split": "held_out",
+   "fault": "dropped_medicine",
+   "target": null,
+   "errors": [
+    "medicine_coverage"
+   ],
+   "fingerprint": "sha256:8aa0af83b6b7e2fc",
+   "subset": null
+  },
+  {
+   "id": "d24-invented_medicine-1",
+   "doc_id": "d24",
+   "split": "held_out",
+   "fault": "invented_medicine",
+   "target": "med-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:f4b5f9ecc0744654",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-1",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:3d9407a5c63ff311",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-1",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:21021ad72472e0e0",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-1",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-1",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:9401ed6509307569",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-1",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:85c72a19598e63f3",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-2",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:9c84cc0d4a5b1dcc",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-2",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:76dbb067b0b4f694",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-2",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:c1047c804792773b",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-2",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:8b8c6a82e88b85a7",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-3",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:519946ab24f73d40",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-3",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:7160875180601049",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-3",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:36b6b3d2b8a9e173",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-3",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:6c7fb0c884c6d89d",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-4",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:58fdcc6c4a1c6bf1",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-4",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:51fb33d88967f95a",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-4",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:412502bf5daa627f",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-4",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:c2267b6e40ed7a49",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-5",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:7aa3585383bd3d7c",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-5",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-5",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:9266060c4dbb2e05",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-5",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:81671ee919ea9d62",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-5",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:804f82d2518c253d",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-6",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:8c3d0bc55d71d8a7",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-6",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-6",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:e2f692fb5b1d8fbc",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-6",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:bc01f792324361bf",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-6",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-7",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:1e1059943aef3f59",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-7",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-7",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:4b9140baff66b9f0",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-7",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-7",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:533e7209a5ae9864",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-7",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:6c781b78dcdec454",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-7",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-8",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:f3b3c7a4b19f4c70",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-8",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-8",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:1b0706bf2279fb7c",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-8",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:37f7679832136f24",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-8",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-9",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:755eb7898607c272",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-9",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-9",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:f97ceb9e89dc797d",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-9",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:07ae3fb7daf803eb",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-9",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-10",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:2e7835c6c256e2d3",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-8",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-10",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:672ec15b2125df1f",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-10",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-10",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:596ab90af4267c86",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-10",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:477b34366155b71b",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-10",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-11",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:c213e510f6462b6f",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-9",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-11",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:124f1795544546d4",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-11",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-11",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:f83558c2e5f8ed06",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-11",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:ae19e7b62d977812",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-10",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-12",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:bd74ab70cbaa3c8e",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-12",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-12",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:738965e78c604b1e",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-12",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:c38a910af0db29a3",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-11",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-13",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:e6dc4631a697f2a3",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-13",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-13",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:c8571bd453ad47f6",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-13",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:4425f226c42403d9",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-12",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-14",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:9d77526d4bb3bea2",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-14",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-14",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:493b6c288dadd1aa",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-14",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:23144a30ac159212",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-11",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-15",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:aeb59549088de67a",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-13",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-15",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:b4e0146a002f3e38",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-15",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-15",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:987f90c6ed1cfb88",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-15",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:c110cc12a5f4300c",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-12",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-16",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:a92dab69c41beeb2",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-14",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-16",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:9672c51fc9eda335",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-16",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-16",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:b0bbf3120bb0408e",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-16",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:eb2e5a276d6174b2",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-15",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-17",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:c758d5ac2d74c2fc",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-17",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-17",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:998a0f33f49b87ff",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-17",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:cc3a3df2464cf5e0",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-13",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-18",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:acaac7b9f3a5b813",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-16",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-18",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:7e5d93efee27b389",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-18",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-18",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:59b31f8f428bad44",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-18",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:9dcdab9ff91e4b09",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-14",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-19",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:c80e63e72960dc19",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-17",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-19",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:a265bce7b92195c0",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-19",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-19",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:4bc7a772e350e50b",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-19",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:c2dd68b65da1f2bb",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-15",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-20",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:b5e143446380ddea",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-18",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-20",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:116b35256f6b75d4",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-20",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-20",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:28f47247910e3d5b",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-20",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:25f8d3d5d36e56f0",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-16",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-21",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d9d4f618a623e5a7",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-19",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-21",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:59c2418177c0a6cc",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-21",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-21",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:5b76bee14b575a70",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-21",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:72470de46f257215",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-17",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-22",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:2f85180c198febf1",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-20",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-22",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:99c85eed78ce05ac",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-22",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-22",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:58ab8996a8cd330c",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-22",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:61c129936a64854f",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-18",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-23",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:5c3cbc3965b03767",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-21",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-23",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:75c339d24ad0d96e",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-23",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-23",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:31cf0edc67de00f9",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-23",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:f2cb294bde20cfae",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-19",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-24",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:c248c28aa5c7bcd0",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-22",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-24",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:bf640345dbcb23de",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-24",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-24",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:7b739199525b0e1e",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-24",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:64622c2352b03f0e",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-23",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-25",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:ee4a95e42df4cab3",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-25",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-25",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:ab102c0f9d74ab9a",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-25",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:1bf5ada09f65e77b",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-24",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-26",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:12670a2a48c13a18",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-26",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-26",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:ca61b466c5c209c4",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-26",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:0cdb01a17768b954",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-20",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-27",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:4876309da5a637ed",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-25",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-27",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:431bfc361ce3b5c2",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-27",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-27",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:940cfc1d24105489",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-27",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:87aeadfaf75f894d",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-26",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-28",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:839b7f6a67062051",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-28",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-28",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:c8d0cbf62723bbbf",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-28",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:77a37e4d6ee070f1",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-27",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-29",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:b5b4c0df4700979c",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-29",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-29",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d5cc1675b36a9d9f",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-29",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:8f4872eeb776b3f2",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-28",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-30",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:eba08261fd36bdcf",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-30",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-30",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:011bb553cbd24b9e",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-30",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:d487ad1f32861de3",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-21",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-31",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:72f95dc6ebfae94d",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-29",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-31",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:15cf00cc9e5214fc",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-31",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-31",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:a0800e340c3d2c80",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-31",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:53bc12d7fb2f2ab2",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-22",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-32",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:93b5aeb15f64e80c",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-30",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-32",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:245f924e37d74a5e",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-32",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-32",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:a8fc2acb8c560e0e",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-32",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:35b10651d3b0d242",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-31",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-33",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:7be37a99b91d22e9",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-33",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-33",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:ca2c4934b7c53dc7",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-33",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:b9d5e3f3c6a983be",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-23",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-34",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:a1da6bde786c5bcd",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-32",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-34",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:058f53a75f767239",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-34",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-34",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:29fcb6a522dc1b43",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-34",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:fca718d6d7099035",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-33",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-35",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:8dd356ad1983d082",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-35",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-35",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:8ab6fe8d94a121ad",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-35",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:78e633033c09e975",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-34",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-36",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:acd4b9be2d5046b8",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-36",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-36",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:59bd621ecf717c4f",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-36",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:e7902b720a75d088",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-35",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-37",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:07cbada147134c48",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-37",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-37",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:1dc42765e1ca2ed0",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-37",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:8ac400b30ca08f5a",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-36",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-38",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:a09db2f1605a31c1",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-38",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:7bb05886badf51af",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-24",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-39",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:0eb3a2b5429a5bd2",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-37",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-39",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:efe5c2555b82b107",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-38",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-39",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:0d62111bdb60223f",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-39",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:820c24c0c2c2ab30",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-38",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-40",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d63734176787c224",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-39",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-40",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:2a9c543e0a8f398c",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-40",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:4b97330685adf608",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-25",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-41",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:33f4eca812764616",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-39",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-41",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:adac37567d3cd506",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-40",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-41",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:5cc70a7951bba9fd",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-41",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:165018c4191f2b60",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-40",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-42",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:222870b05880f8e6",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-41",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-42",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:b9b9e669bb181319",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-42",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:3960751bd1eb8574",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-41",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-43",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:84755a2cf709726e",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-42",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-43",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:dd689a95b2e21c44",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-43",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:93f34c1bdb5b420d",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-42",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-44",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:5c46c8e37e50ff6b",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-43",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-44",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:93a5c63b27e55fce",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-44",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:a6fbc66f0f022578",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-43",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-45",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:357bf4ca679d91d9",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-44",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-45",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:51c959fb4a99ed84",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-45",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:d636b3bde844e26c",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-44",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-46",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:46dcaf19cccd7dad",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-45",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-46",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d76c9d7ddfb572d1",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-46",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:451d2f4e4526f5f3",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-45",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-47",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:6ee9c04fb6fc882d",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-46",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-47",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:9505efacd782787c",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-47",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:08e0c85f6a74180b",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-26",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-48",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:0cce3d6e012c502a",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-46",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-48",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:4eb93bd580f9083d",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-47",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-48",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d174cebbe1a85182",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-48",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:ccd8e83421e01757",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-27",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-49",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:120ccd995192803a",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-47",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-49",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:1a74aa6bab76bff1",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-48",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-49",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:814117cd5f531fcb",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-49",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:d1652a93a21cf782",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-28",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-50",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:b9001497b750e00e",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-48",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-50",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:30ba3b2e76edde19",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-49",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-50",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:8fd6d2f6baed440b",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-50",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:7e5e3f8510a78011",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-29",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-51",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:9d7f52779af00d9e",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-49",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-51",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:7d1a062dc681bff9",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-50",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-51",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:c56239813df81d7c",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-51",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:a7c2c0179fe40b7a",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-30",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-52",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:28f467f9c5acbce7",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-50",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-52",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:bb7d7ed039858b44",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-51",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-52",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:fd78458af9e6b97a",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-52",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:c09e94dccafb084d",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-31",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-53",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:0713a09250ac5522",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-51",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-53",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:16f75edf6c6eb172",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-52",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-53",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:8e0f8707142b26ae",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-53",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:ea18e535b90571ee",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-52",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-54",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:f35920cd11da5902",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-53",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-54",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:3879bd678990a502",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-54",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:3e289e4228bf408e",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-55",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:dc5b3d4d7a83f8ab",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-56",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:05f70c8a51fc8346",
+   "subset": null
+  },
+  {
+   "id": "d25-digit_swap-32",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "digit_swap",
+   "target": "obs-57",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:31e3b30c2ad68776",
+   "subset": null
+  },
+  {
+   "id": "d25-decimal_shift-53",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "decimal_shift",
+   "target": "obs-57",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:4e7cf72260ff65f2",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-57",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:e1e5d2ce56a549cf",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-58",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:59127df57fc2dadc",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-59",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:c907b45e880debe3",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_swap-54",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_swap",
+   "target": "obs-60",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:1f4d10c0f49289c5",
+   "subset": null
+  },
+  {
+   "id": "d25-dropped_result-60",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "dropped_result",
+   "target": null,
+   "errors": [
+    "result_coverage"
+   ],
+   "fingerprint": "sha256:9642fc9424114208",
+   "subset": null
+  },
+  {
+   "id": "d25-invented_result-1",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "invented_result",
+   "target": "obs-61",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d6f234f9de1a237f",
+   "subset": null
+  }
+ ]
+}

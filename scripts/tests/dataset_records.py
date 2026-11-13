@@ -8,7 +8,13 @@ import json
 from functools import cache
 
 from dataset.build import DATASET_DIR
-from evals.keys import expected_patient, parse_of, text_layers, with_text_layers
+from evals.keys import (
+    expected_patient,
+    parse_of,
+    split_parse,
+    text_layers,
+    with_text_layers,
+)
 from pipeline import parts
 from record.document import DocumentRecord
 
@@ -45,35 +51,6 @@ def keyed_record(doc_id: str) -> DocumentRecord:
     record = key(doc_id)
     record.pages = with_text_layers(doc_id, record.pages)
     return record
-
-
-def _held(part, value) -> bool:
-    c = value.citation
-    return part.holds(c.page, c.first_line)
-
-
-def split_parse(parse, plan):
-    """
-    A whole-document parse cut into the parse each part would give: every
-    value and item in the part whose lines it cites. parts.merge of the
-    pieces is the parse again (a test checks it over the dataset).
-    """
-    pieces = []
-    for part in plan:
-        piece = parse.model_copy(deep=True)
-        for holder in (piece.patient, piece.details):
-            for name in type(holder).model_fields:
-                value = getattr(holder, name)
-                if isinstance(value, list):
-                    setattr(holder, name, [v for v in value if _held(part, v)])
-                elif value is not None and not _held(part, value):
-                    setattr(holder, name, None)
-        for name in type(piece).model_fields:
-            if name not in ("patient", "details"):
-                items = [v for v in getattr(piece, name) if _held(part, v)]
-                setattr(piece, name, items)
-        pieces.append(piece)
-    return pieces
 
 
 def part_replies(doc_id: str) -> list[str]:
