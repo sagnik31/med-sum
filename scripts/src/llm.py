@@ -21,6 +21,9 @@ A caller can start at the fallback (`model_role="fallback"`), e.g. when the
 graph re-runs a parse the primary kept getting wrong; there is then no
 model after it. `format` is Ollama's structured output: a JSON schema the
 reply is constrained to.
+
+chat_with_tools() is one turn of a tool-using exchange: the model may answer
+with tool calls (Ollama's `tools`), which the caller runs and sends back.
 """
 
 import base64
@@ -29,9 +32,10 @@ import logging
 import os
 import struct
 import time
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 import httpx
 import ollama
@@ -228,6 +232,98 @@ def chat(
     raise error("No model produced complete output. " + "; ".join(failures))
 
 
+@dataclass(frozen=True)
+class ToolCall:
+    """
+    A tool call as the model sent it. `arguments` is whatever the model
+    wrote, unchecked: the caller validates it against the tool's schema
+    (Ollama parses it from the model's text and does not enforce the schema).
+    """
+
+    name: str
+    arguments: Any
+
+
+@dataclass(frozen=True)
+class ToolTurn:
+    """One model turn in a tool-using exchange: its text and its tool calls."""
+
+    model: str
+    model_role: ModelRole
+    content: str
+    tool_calls: tuple[ToolCall, ...]
+    prompt_tokens: int | None = None
+    completion_tokens: int | None = None
+    wall_ms: int | None = None
+
+
+def chat_with_tools(
+    messages: list[dict],
+    *,
+    tools: list[dict],
+    max_tokens: int,
+    model_role: ModelRole = "primary",
+) -> ToolTurn:
+    """
+    One turn of a tool-using exchange on the model of `model_role` only.
+
+    Unlike chat(), there is no fallback within the call: an exchange's
+    earlier turns (and the tool results sent back) belong to one model, so
+    the caller decides whether to start over on the other model. The cloud
+    guard and the circuit breaker apply as in chat(). `tools` are Ollama's
+    function specs ({"type": "function", "function": {...}}). The call is
+    recorded as a ModelCall like any other, with the offered tools' names in
+    its request.
+
+    Raises ModelUnavailableError when the model is skipped (disabled or not
+    allowed this content), OutputCappedError when it hit the cap, and
+    ModelOutputError when it failed.
+    """
+    if model_role not in _MODELS:
+        raise ValueError(f"unknown model role {model_role!r}")
+    model = _MODELS[model_role]
+    options = {**GENERATION_OPTIONS, "num_ctx": NUM_CTX, "num_predict": max_tokens}
+    request = {
+        **options,
+        "think": False,
+        "structured_output": False,
+        "tools": sorted(t["function"]["name"] for t in tools),
+    }
+    sizes = _message_sizes(messages)
+    refused = cloud_refusal(messages) if is_cloud(model) else None
+    if refused:
+        raise ModelUnavailableError(f"{model}: not called, {refused}")
+    if not model_health.allow(model, model_role):
+        raise ModelUnavailableError(
+            f"{model}: not called, disabled after repeated failures"
+        )
+    attempt = _Attempt()
+    try:
+        _stream(attempt, model, messages, options, None, tools)
+    except Exception as e:
+        _report(attempt, model, model_role, request, sizes, error=e)
+        if not isinstance(e, MODEL_ERRORS):
+            model_health.abandoned(model)
+            raise
+        if model_health.failed(model, model_role, e):
+            _breaker_switched("model_disabled", model, model_role)
+        raise ModelOutputError(f"{model}: {type(e).__name__}") from e
+    text, complete = _report(attempt, model, model_role, request, sizes)
+    if model_health.succeeded(model, model_role):
+        _breaker_switched("model_restored", model, model_role)
+    if not complete:
+        raise OutputCappedError(f"{model}: output hit the {max_tokens}-token cap")
+    return ToolTurn(
+        model,
+        model_role,
+        text,
+        tuple(attempt.tool_calls),
+        prompt_tokens=_count(attempt.done, "prompt_eval_count"),
+        completion_tokens=_count(attempt.done, "eval_count"),
+        wall_ms=_ms_since(attempt.started),
+    )
+
+
 class _Attempt:
     """What one round trip has seen so far; filled in while it streams."""
 
@@ -237,16 +333,20 @@ class _Attempt:
         self.first_token_ms: int | None = None
         self.raw = ""  # everything streamed, before cutting at a stop marker
         self.done = None  # the final chunk, which carries counts and timings
+        self.tool_calls: list[ToolCall] = []  # gathered from every chunk
 
 
-def _stream(attempt, model, messages, options, format):
+def _stream(attempt, model, messages, options, format, tools=None):
     """
     Read the whole streamed reply into `attempt`, up to Ollama's final
     chunk: only that chunk carries the token counts and timings, so the
     stream is read to the end even after a stop marker appears. Nothing is
     printed: the reply holds patient data, which never goes to the console.
+    With `tools`, Ollama may send tool calls in any chunk; all are kept.
     """
     extra = {"format": format} if format is not None else {}
+    if tools is not None:
+        extra["tools"] = tools
     for chunk in _client.chat(
         model=model,
         messages=messages,
@@ -256,9 +356,14 @@ def _stream(attempt, model, messages, options, format):
         **extra,
     ):
         token = chunk.message.content or ""
-        if token and attempt.first_token_ms is None:
+        calls = getattr(chunk.message, "tool_calls", None) or []
+        if (token or calls) and attempt.first_token_ms is None:
             attempt.first_token_ms = _ms_since(attempt.started)
         attempt.raw += token
+        attempt.tool_calls.extend(
+            ToolCall(name=c.function.name, arguments=c.function.arguments)
+            for c in calls
+        )
         if chunk.done:
             attempt.done = chunk
 

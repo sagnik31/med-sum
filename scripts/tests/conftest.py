@@ -41,8 +41,9 @@ class FakeModelClient:
     `replies[model]` is a list consumed in order. Each reply is the reply
     text (finishes normally), a (text, done_reason) pair, a (text,
     done_reason, fields) triple whose fields (token counts, durations) go
-    on the final chunk, or an exception to raise. Every call is recorded in
-    `calls`. `list()` answers from `digests` (model -> digest), or raises
+    on the final chunk, a ToolReply (tool calls, sent on the last chunk as
+    Ollama does), or an exception to raise. Every call is recorded in
+    `calls`, with its `tools` when it offered any. `list()` answers from `digests` (model -> digest), or raises
     `list_error` if it is set.
     """
 
@@ -60,38 +61,64 @@ class FakeModelClient:
         models = [SimpleNamespace(model=m, digest=d) for m, d in self.digests.items()]
         return SimpleNamespace(models=models)
 
-    def chat(self, *, model, messages, stream, think, options, format=None):
-        self.calls.append(
-            {
-                "model": model,
-                "messages": messages,
-                "stream": stream,
-                "think": think,
-                "options": options,
-                "format": format,
-            }
-        )
+    def chat(self, *, model, messages, stream, think, options, format=None, **kw):
+        call = {
+            "model": model,
+            "messages": messages,
+            "stream": stream,
+            "think": think,
+            "options": options,
+            "format": format,
+        }
+        if kw.keys() - {"tools"}:
+            raise AssertionError(f"unexpected chat arguments {sorted(kw)}")
+        if "tools" in kw:
+            call["tools"] = kw["tools"]
+        self.calls.append(call)
         queue = self.replies.get(model)
         if not queue:
             raise AssertionError(f"unexpected call to model {model!r}")
         reply = queue.pop(0)
         if isinstance(reply, BaseException):
             raise reply
+        if isinstance(reply, ToolReply):
+            return _stream_chunks(
+                reply.text, reply.done_reason, reply.fields, reply.tool_calls
+            )
         if not isinstance(reply, tuple):
             reply = (reply, "stop")
         text, done_reason, *fields = reply
         return _stream_chunks(text, done_reason, fields[0] if fields else {})
 
 
-def _stream_chunks(text: str, done_reason: str, fields: dict):
+class ToolReply:
+    """
+    A fake reply with tool calls: `calls` are (name, arguments) pairs, the
+    arguments as the model would send them (a dict, or anything else to
+    test a malformed call).
+    """
+
+    def __init__(self, *calls, text="", done_reason="stop", fields=None):
+        self.tool_calls = [
+            SimpleNamespace(function=SimpleNamespace(name=n, arguments=a))
+            for n, a in calls
+        ]
+        self.text = text
+        self.done_reason = done_reason
+        self.fields = fields or {}
+
+
+def _stream_chunks(text: str, done_reason: str, fields: dict, tool_calls=None):
     """Yield `text` a few characters at a time, like a streamed reply."""
     pieces = [text[i : i + 5] for i in range(0, len(text), 5)] or [""]
     for piece in pieces[:-1]:
         yield SimpleNamespace(
-            message=SimpleNamespace(content=piece), done=False, done_reason=None
+            message=SimpleNamespace(content=piece, tool_calls=None),
+            done=False,
+            done_reason=None,
         )
     yield SimpleNamespace(
-        message=SimpleNamespace(content=pieces[-1]),
+        message=SimpleNamespace(content=pieces[-1], tool_calls=tool_calls),
         done=True,
         done_reason=done_reason,
         **fields,
