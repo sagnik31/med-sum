@@ -3,7 +3,7 @@ The document pipeline as one LangGraph graph: the nodes of
 pipeline/nodes.py joined by the routing of pipeline/routing.py.
 
     open -> transcribe (once per page) -> classify
-    classify -> parse -> validate -> render -> finish -> end
+    classify -> parse (once per part) -> validate -> render -> finish -> end
     classify -> validate                (type other: its pages only)
     parse, repair -> repair | fallback  (the reply was refused or cut off)
     validate -> repair | fallback       (error findings)
@@ -24,16 +24,20 @@ from pipeline.nodes import NODES
 from pipeline.state import GraphState
 
 # Stored on every run; change it when the graph's shape changes.
-GRAPH_VERSION = "document-graph-2"
+GRAPH_VERSION = "document-graph-3"
 
-# Node visits a run may make: up to 20 pages, two models of three parse
-# attempts each with their validations, and the fixed nodes, with room.
-RECURSION_LIMIT = 100
+# Node visits a run may make: up to 20 pages, each model's round of parse
+# parts (a page or less each), three attempts per model with their
+# validations, and the fixed nodes, with room.
+RECURSION_LIMIT = 300
 
 _ROUTES = {
     "transcribe": (routing.after_transcribe, ["transcribe", "classify"]),
     "classify": (routing.after_classify, ["parse", "validate"]),
-    "parse": (routing.after_parse, ["validate", "repair", "fallback", "render"]),
+    "parse": (
+        routing.after_parse,
+        ["parse", "validate", "repair", "fallback", "render"],
+    ),
     "repair": (routing.after_parse, ["validate", "repair", "fallback", "render"]),
     "validate": (routing.after_validate, ["render", "repair", "fallback", "validate"]),
 }

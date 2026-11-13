@@ -15,10 +15,17 @@ import pytest
 
 import llm
 from dataset.build import DATASET_DIR
-from dataset_records import DOCS, MAIN_PARSED_IDS, expected_patient, key, parse_of
+from dataset_records import (
+    DOCS,
+    MAIN_PARSED_IDS,
+    expected_patient,
+    key,
+    parse_of,
+    part_replies,
+)
 from db_rows import add_account
 from observability import is_traced, start_run
-from pipeline import nodes
+from pipeline import nodes, parts
 from pipeline import pages as page_files
 from pipeline import store
 from pipeline.classify import Decision, decide, keyword_check
@@ -31,7 +38,8 @@ from pipeline.prompts import (
 )
 from pipeline.state import PageImage, initial_state, merge_pages
 from record.common import ItemStatus
-from record.document import DocumentRecord, PageTranscription, numbered_document
+from pipeline.parts import PartResult
+from record.document import DocumentRecord, PageTranscription
 from record.printed import DocumentType, LabReportParse, PrescriptionParse
 from record.schemas import classifier_schema, parse_output_schema
 from validators import Finding, Severity, Validator
@@ -69,7 +77,8 @@ def run(db):
 def step_rows(db, run) -> list[dict]:
     with db.cursor() as cur:
         cur.execute(
-            "SELECT node, page, status, model, model_role, prompt_name, prompt_hash,"
+            "SELECT node, page, attempt, status, model, model_role, prompt_name,"
+            " prompt_hash,"
             " input, output, findings, error FROM pipeline_steps"
             " WHERE run_id = %s ORDER BY seq",
             (run.id,),
@@ -477,25 +486,32 @@ def test_parse_fills_the_type_s_schema(db, run, model_client, doc_id, schema):
     assert out["parse_attempts"] == 1
     call = model_client.calls[0]
     assert call["format"] == parse_output_schema(state["doc_type"])
-    assert call["messages"][1]["content"] == numbered_document(state["transcriptions"])
+    [part] = nodes.parse_parts(state)  # a one-page document is one part
+    assert call["messages"][1]["content"] == parts.part_text(
+        state["transcriptions"], part
+    )
     assert call["options"]["num_predict"] == nodes.PARSE_MAX_TOKENS
     [row] = step_rows(db, run)
     assert row["status"] == "ok"
+    assert (row["page"], row["attempt"]) == (1, 1)
     assert row["prompt_name"] == f"parse_{state['doc_type'].value}"
     assert row["input"] == {
         "doc_type": state["doc_type"].value, "model_role": "primary",
         "attempt": 1, "pages": [p.page for p in state["transcriptions"]],
+        "part": part.model_dump(mode="json"), "parts": 1,
     }  # fmt: skip
+    assert row["output"]["merged"] is True
+    assert out["part_provenance"][0].step_id == out["parse_provenance"].step_id
 
 
 def test_parse_on_the_fallback_calls_only_the_fallback(db, run, model_client):
     state = transcribed("d09")
-    state.update(doc_type=LAB, model_role="fallback", parse_attempts=3)
+    state.update(doc_type=LAB, model_role="fallback", parse_attempts=0)
     model_client.replies[llm.FALLBACK_MODEL] = [reply_for("d09")]
 
     out = nodes.parse(state)
 
-    assert out["parse_attempts"] == 4
+    assert out["parse_attempts"] == 1
     assert [c["model"] for c in model_client.calls] == [llm.FALLBACK_MODEL]
     row = step_rows(db, run)[0]
     assert (row["model"], row["model_role"]) == (llm.FALLBACK_MODEL, "fallback")
@@ -536,7 +552,8 @@ def test_a_reply_that_breaks_the_schema_fails_the_step_without_raising(
     [row] = step_rows(db, run)
     assert row["status"] == "failed"
     assert row["error"] == out["parse_error"]
-    assert row["output"] == {"reply": reply}
+    [answered] = row["output"]["part_results"]
+    assert (answered["reply"], row["output"]["merged"]) == (reply, False)
 
 
 def test_a_parse_capped_on_every_model_fails_the_step_without_raising(
@@ -549,10 +566,11 @@ def test_a_parse_capped_on_every_model_fails_the_step_without_raising(
 
     out = nodes.parse(state)
 
-    assert out == {
-        "parse": None, "parse_error": nodes.CAPPED, "parse_attempts": 1,
-        "parse_reply": None,
-    }  # fmt: skip
+    assert (out["parse"], out["parse_error"], out["parse_attempts"]) == (
+        None, nodes.CAPPED, 1
+    )  # fmt: skip
+    [part] = out["part_results"]
+    assert (part.reply, part.error) == (None, nodes.CAPPED)
     [row] = step_rows(db, run)
     assert (row["status"], row["error"]) == ("failed", nodes.CAPPED)
 
@@ -685,7 +703,7 @@ def a_finding(**kw) -> Finding:
 
 
 def test_problems_are_the_error_findings_with_where_they_are():
-    state = {"parse": object(), "findings": [
+    state = {**transcribed("d09"), "doc_type": LAB, "parse": object(), "findings": [
         a_finding(item_id="obs-1", field="value_text", page=1, lines=[16]),
         a_finding(severity=Severity.FLAG, message="flag"),
         a_finding(validator=Validator.MEDICINE_COVERAGE, item_id=None, page=1,
@@ -699,14 +717,52 @@ def test_problems_are_the_error_findings_with_where_they_are():
 
 
 def test_problems_after_a_refused_reply_are_why_it_was_refused():
-    state = {"parse": None, "parse_error": "results: Field required\npatient: x"}
+    state = {"parse": None, "part_results": [
+        PartResult(index=0, error="results: Field required\npatient: x")
+    ]}  # fmt: skip
     assert nodes.problems(state) == ["- results: Field required", "- patient: x"]
+
+
+def test_each_part_gets_the_problems_on_its_lines():
+    state = {**transcribed("d01"), "doc_type": LAB, "parse": object(), "findings": [
+        a_finding(item_id="obs-1", page=1, lines=[22]),
+        a_finding(item_id="obs-20", page=3, lines=[20]),
+        a_finding(item_id="obs-30", page=3, lines=[999]),  # past the page: its page
+        a_finding(item_id=None),  # nowhere: every part
+    ]}  # fmt: skip
+
+    found = nodes.part_problems(state)
+
+    assert sorted(found) == [0, 1, 2]
+    assert [len(found[i]) for i in (0, 1, 2)] == [2, 1, 3]
+
+
+def test_a_refused_part_alone_is_repaired(db, run, model_client):
+    state = transcribed("d01")
+    replies = part_replies("d01")
+    state.update(doc_type=LAB, parse=None, parse_attempts=1, part_results=[
+        PartResult(index=0, reply=replies[0], parse=LabReportParse.model_validate_json(
+            replies[0])),
+        PartResult(index=1, reply='{"patient": null}', error="patient: x"),
+        PartResult(index=2, reply=replies[2], parse=LabReportParse.model_validate_json(
+            replies[2])),
+    ])  # fmt: skip
+    model_client.replies[llm.PRIMARY_MODEL] = [replies[1]]
+
+    out = nodes.repair(state)
+
+    assert len(model_client.calls) == 1
+    assert model_client.calls[0]["messages"][1]["content"].startswith("=== Page 2 ===")
+    assert out["parse"] == parse_of(key("d01"))
+    [row] = step_rows(db, run)
+    assert row["input"]["parts"] == [1]
 
 
 def repair_state(doc_id="d09") -> dict:
     state = transcribed(doc_id)
     state.update(doc_type=LAB, parse=parse_of(key(doc_id)), parse_attempts=1,
-                 parse_reply='{"previous": "reply"}',
+                 part_results=[PartResult(index=0, reply='{"previous": "reply"}',
+                                          parse=parse_of(key(doc_id)))],
                  findings=[a_finding(item_id="obs-1", field="value_text")])  # fmt: skip
     return state
 
@@ -720,7 +776,8 @@ def test_repair_shows_the_model_its_reply_and_the_problems(db, run, model_client
     assert out["parse"] == parse_of(key("d09"))
     assert (out["parse_attempts"], out["repairs"]) == (2, 1)
     messages = model_client.calls[0]["messages"]
-    assert messages[:2] == nodes._parse_messages(state, "parse_lab_report")
+    [part] = nodes.parse_parts(state)
+    assert messages[:2] == nodes._part_messages(state, "parse_lab_report", part)
     assert messages[2] == {"role": "assistant", "content": '{"previous": "reply"}'}
     assert messages[3]["role"] == "user"
     assert messages[3]["content"].startswith(prompt("repair_parse"))
@@ -735,7 +792,7 @@ def test_repair_shows_the_model_its_reply_and_the_problems(db, run, model_client
 
 def test_repair_of_a_cut_off_reply_sends_no_previous_reply(db, run, model_client):
     state = repair_state()
-    state.update(parse=None, parse_reply=None, parse_error=nodes.CAPPED)
+    state.update(parse=None, part_results=[PartResult(index=0, error=nodes.CAPPED)])
     model_client.replies[llm.PRIMARY_MODEL] = [reply_for("d09")]
 
     nodes.repair(state)
@@ -753,7 +810,7 @@ def test_a_repair_that_still_breaks_the_schema_fails_without_raising(
     out = nodes.repair(state)
 
     assert out["parse"] is None and out["parse_attempts"] == 2
-    assert out["parse_reply"] == '{"patient": null}'
+    assert out["part_results"][0].reply == '{"patient": null}'
     assert step_rows(db, run)[0]["status"] == "failed"
 
 
@@ -780,7 +837,7 @@ def test_nothing_to_repair_is_a_routing_bug(db, run, model_client):
 def test_fallback_switches_the_model_and_starts_its_budget(db, run):
     out = nodes.use_fallback({"parse_attempts": 3, "model_role": "primary"})
 
-    assert out == {"model_role": "fallback", "parse_attempts": 0}
+    assert out == {"model_role": "fallback", "parse_attempts": 0, "part_results": []}
     [row] = step_rows(db, run)
     assert (row["node"], row["status"], row["input"]) == (
         "fallback", "ok", {"attempts": 3}
@@ -796,8 +853,9 @@ def parsed_and_validated(run, model_client, doc_id: str, reply: str | None = Non
     state.update(
         document_id=run.document_id, doc_type=DocumentType(DOCS[doc_id]["type"])
     )
-    model_client.replies[llm.PRIMARY_MODEL] = [reply or reply_for(doc_id)]
-    state.update(nodes.parse(state))
+    model_client.replies[llm.PRIMARY_MODEL] = [reply] if reply else part_replies(doc_id)
+    while nodes.next_part(state) is not None:
+        state.update(nodes.parse(state))
     state.update(nodes.validate(state))
     return state
 

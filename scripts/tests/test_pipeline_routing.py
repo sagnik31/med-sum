@@ -6,6 +6,7 @@ They are pure functions of the state, so no run, model or database.
 import pytest
 
 from pipeline import routing
+from pipeline.parts import PartResult
 from pipeline.routing import MAX_PARSE_ATTEMPTS
 from pipeline.state import PageImage
 from record.document import PageTranscription
@@ -49,36 +50,50 @@ def test_parsed_types_are_parsed_and_other_is_not(doc_type, expected):
 # -------------------------------------------------------------------
 # after parse or repair
 # -------------------------------------------------------------------
+def answered(**state) -> dict:
+    """A one-page lab report whose one part has a reply, plus `state`."""
+    return {"doc_type": LAB, "transcriptions": [page(1)],
+            "part_results": [PartResult(index=0)], **state}  # fmt: skip
+
+
+def test_a_part_without_a_reply_is_parsed_next():
+    state = {"doc_type": LAB, "transcriptions": [page(1), page(2)],
+             "part_results": [PartResult(index=0)], "parse": None,
+             "parse_attempts": 1}  # fmt: skip
+    assert routing.after_parse(state) == "parse"
+
+
 def test_a_parse_that_fit_is_validated():
-    assert routing.after_parse({"parse": object(), "parse_attempts": 1}) == "validate"
+    state = answered(parse=object(), parse_attempts=1)
+    assert routing.after_parse(state) == "validate"
 
 
 @pytest.mark.parametrize("attempts", range(1, MAX_PARSE_ATTEMPTS))
 def test_a_failed_parse_is_repaired_while_attempts_are_left(attempts):
-    state = {"parse": None, "parse_attempts": attempts, "model_role": "primary"}
+    state = answered(parse=None, parse_attempts=attempts, model_role="primary")
     assert routing.after_parse(state) == "repair"
 
 
 def test_the_primary_s_last_failed_attempt_goes_to_the_fallback():
-    state = {"parse": None, "parse_attempts": MAX_PARSE_ATTEMPTS,
-             "model_role": "primary"}  # fmt: skip
+    state = answered(parse=None, parse_attempts=MAX_PARSE_ATTEMPTS,
+                     model_role="primary")  # fmt: skip
     assert routing.after_parse(state) == "fallback"
 
 
 def test_the_fallback_is_repaired_with_a_budget_of_its_own():
-    state = {"parse": None, "parse_attempts": 1, "model_role": "fallback"}
+    state = answered(parse=None, parse_attempts=1, model_role="fallback")
     assert routing.after_parse(state) == "repair"
 
 
 def test_giving_up_keeps_an_earlier_record():
-    state = {"parse": None, "parse_attempts": MAX_PARSE_ATTEMPTS,
-             "model_role": "fallback", "record_parsed": True}  # fmt: skip
+    state = answered(parse=None, parse_attempts=MAX_PARSE_ATTEMPTS,
+                     model_role="fallback", record_parsed=True)  # fmt: skip
     assert routing.after_parse(state) == "render"
 
 
 def test_giving_up_without_any_record_builds_one_of_the_pages():
-    state = {"parse": None, "parse_attempts": MAX_PARSE_ATTEMPTS,
-             "model_role": "fallback"}  # fmt: skip
+    state = answered(parse=None, parse_attempts=MAX_PARSE_ATTEMPTS,
+                     model_role="fallback")  # fmt: skip
     assert routing.after_parse(state) == "validate"
 
 

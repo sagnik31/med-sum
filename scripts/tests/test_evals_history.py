@@ -41,9 +41,9 @@ def test_an_entry_records_what_produced_it(entry):
 
 def test_an_entry_holds_counts_not_content(entry):
     m = entry["models"][selfcheck.LABEL]
-    assert (m["field_f1"], m["unsafe"], m["clinical_items"]) == (1.0, 0, 144)
-    assert m["routing"]["auto_verified"] == {"hits": 21, "total": 24}
-    assert m["routing"]["unsafe_in_verified"] == {"hits": 0, "total": 139}
+    assert (m["field_f1"], m["unsafe"], m["clinical_items"]) == (1.0, 0, 204)
+    assert m["routing"]["auto_verified"] == {"hits": 22, "total": 25}
+    assert m["routing"]["unsafe_in_verified"] == {"hits": 0, "total": 199}
     assert set(m["splits"]) == {"dev", "held_out", "test"}
     text = json.dumps(entry)
     assert "Fatima" not in text and "TSH" not in text
@@ -54,8 +54,8 @@ def test_entries_are_written_loaded_and_shown(entry, tmp_path):
     assert path.name.endswith("-self-check.json")
     assert history.load(tmp_path) == [entry]
     board = history.scoreboard(history.load(tmp_path))
-    assert "| `answer keys` | 100.0% | 0/144 |" in board
-    assert "21/24" in board
+    assert "| `answer keys` | 100.0% | 0/204 |" in board
+    assert "22/25" in board
 
 
 def test_an_entry_names_its_report_and_the_board_shows_it(report, tmp_path):

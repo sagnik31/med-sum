@@ -290,6 +290,7 @@ def test_a_range_printed_in_another_unit_gives_no_flag():
         ("10^3/uL", "10³/µL"), ("x 10^9/L", "10³/µL"), ("lakhs/cumm", "lakh/cumm"),
         ("lakh/cu mm", "lakh/cumm"), ("million/cumm", "mill/cumm"),
         ("mL/min/1.73 m2", "mL/min/1.73m²"), ("IU/L", "U/L"), ("fl", "fL"),
+        ("mm/h", "mm/hr"), ("mm in 1st hr", "mm/hr"),
     ],
 )  # fmt: skip
 def test_unit_spellings_resolve_to_one_unit(spelling, symbol):
@@ -297,7 +298,7 @@ def test_unit_spellings_resolve_to_one_unit(spelling, symbol):
 
 
 def test_unknown_units_are_not_guessed():
-    for text in ["mg", "units", "lakh", "", None, "mm/hr"]:
+    for text in ["mg", "units", "lakh", "", None, "seconds"]:
         assert lookup_unit(text) is None, text
 
 

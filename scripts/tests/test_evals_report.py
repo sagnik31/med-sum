@@ -34,7 +34,10 @@ def perfect_run(model="qwen", seconds=None):
 
 
 def flawed_run(model="gemma"):
-    """d01 with a misread haemoglobin and an invented test; d02 not run at all."""
+    """
+    d01 with a misread haemoglobin and an invented test, d25 with a misread
+    haemoglobin, and d02 not run at all.
+    """
     run = perfect_run(model)
     pred = key("d01")
     hb = next(o for o in pred.observations if o.printed.test_name == "Haemoglobin")
@@ -46,6 +49,13 @@ def flawed_run(model="gemma"):
         "d01", score_document(pred, key("d01")), run.documents[0].transcription
     )
     run.documents[1] = DocumentResult("d02", score_document(None, key("d02")))
+    long = key("d25")
+    hb = next(o for o in long.observations if o.printed.test_name == "Haemoglobin")
+    hb.printed.value_text = "13.2"
+    at = DOC_IDS.index("d25")
+    run.documents[at] = DocumentResult(
+        "d25", score_document(long, key("d25")), run.documents[at].transcription
+    )
     return run
 
 
@@ -67,7 +77,8 @@ def test_the_report_is_json_and_names_its_run():
 def test_the_model_choice_is_in_the_report():
     r = report(perfect_run("qwen"), flawed_run("gemma"))
     assert r["choice"]["model"] == "qwen"
-    # gemma: 2 unsafe errors in d01 over the dataset's 104 clinical items.
+    # gemma: 3 unsafe errors over the dataset's 204 clinical items, above
+    # the 1% gate (2 would not be: the gate is a rate).
     assert set(r["choice"]["excluded"]) == {"gemma"}
 
 

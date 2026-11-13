@@ -24,6 +24,7 @@ from typing import Annotated, Literal, NotRequired, TypedDict
 
 from pydantic import BaseModel, Field
 
+from pipeline.parts import PartResult
 from pipeline.signals import SignalHit
 from record.common import Provenance, Strict
 from record.document import DocumentRecord, PageTranscription
@@ -84,22 +85,33 @@ class GraphState(TypedDict):
     # Pages whose transcription hit the token cap on every model; each is
     # in `transcriptions` with no lines (signal LC-02).
     capped_pages: NotRequired[list[int]]
+    # Pages whose transcription prompt may have been cut to fit the
+    # model's context window (signal LC-18).
+    truncated_pages: NotRequired[list[int]]
 
     # parse and repair ----------------------------------------------------
+    # The document is parsed in parts (pipeline/parts.py, planned from the
+    # transcriptions): each part's latest reply, in part order. Empty when
+    # a round of parsing starts (the first parse, and the fallback's).
+    part_results: NotRequired[list[PartResult]]
+    # The parts' parses merged, once every part has one that fit; None
+    # while parts are pending or when one was refused.
     parse: NotRequired[LabReportParse | PrescriptionParse | None]
-    # Why the last parse reply was refused (not JSON, or not the schema),
-    # for the repair prompt; None after a parse that fit.
+    # Why parts' replies were refused (not JSON, not the schema, cut off),
+    # one line each; None after a merged parse.
     parse_error: NotRequired[str | None]
-    # Parse attempts so far with the model in use (1 = the first parse).
+    # Parse attempts so far with the model in use (1 = the first round of
+    # parts, then one per repair).
     parse_attempts: NotRequired[int]
     model_role: NotRequired[ModelRole]
-    # The last reply as the model wrote it (None if it was cut off), which
-    # a repair shows the model again.
-    parse_reply: NotRequired[str | None]
-    # The step that produced the last parse that fit, and the role of the
-    # model that answered it: what the record's items are stamped with.
+    # What produced the last merged parse: the first part's step (for the
+    # document's and patient's details), each part's own (for its items),
+    # and the role of the model, fallback if any part's was.
     parse_provenance: NotRequired[Provenance | None]
+    part_provenance: NotRequired[list[Provenance | None]]
     parse_model_role: NotRequired[ModelRole | None]
+    # A part of the last merged parse had its prompt cut (signal LC-18).
+    parse_truncated: NotRequired[bool]
     # Repairs so far, over both models (signal OP-2).
     repairs: NotRequired[int]
 
@@ -138,6 +150,7 @@ def initial_state(
         expected_patient=expected_patient,
         transcriptions=[],
         findings=[],
+        part_results=[],
         parse_attempts=0,
         model_role="primary",
     )

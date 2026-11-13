@@ -340,6 +340,28 @@ def test_a_misread_printed_in_another_row_is_caught_per_row():
     assert "its row" in findings[0].message
 
 
+def test_a_misread_onto_its_own_range_bound_is_caught_in_its_row():
+    # "6" is printed in the eosinophils row, but only as the range's upper
+    # bound: the value is looked for with the row's own ranges taken out.
+    record = keyed_record("d25")
+    eosinophils = misread(record, "Eosinophils", "5", "6")
+
+    assert check_source_text(record) == []
+    assert check_range_bounds(record) == []  # the cited row has "6" as its value
+    assert problems(check_text_layer(record)) == {
+        ("text_layer", eosinophils.id, "value_text")
+    }
+
+
+def test_a_value_printed_as_its_whole_range_is_still_found():
+    # Urine protein "Nil", reference "Nil": the range isn't taken out.
+    record = keyed_record("d25")
+    protein = obs(record, "Protein")
+    assert protein.printed.value_text == protein.printed.reference_ranges[0] == "Nil"
+
+    assert check_text_layer(record) == []
+
+
 def test_each_field_of_a_row_is_checked_in_that_row():
     # A unit printed on the page, but in other rows, and a flag that isn't
     # printed. (A one-letter flag would be found inside "mg/dL": the text
@@ -409,8 +431,11 @@ def test_a_value_taken_from_its_range_is_flagged():
     findings = check_range_bounds(record)
     assert problems(findings) == {("range_bound", urea.id, "value_text")}
     assert findings[0].severity is Severity.FLAG
-    # Validators 1 and 2 can't see it: "15" is on the line and in the text layer.
-    assert check_source_text(record) == [] and check_text_layer(record) == []
+    # Validator 1 can't see it: "15" is on the cited line. Validator 2 sees
+    # it on a PDF with a text layer, where "15" is in the row only as the
+    # range; on a scan or photo this check is all there is.
+    assert check_source_text(record) == []
+    assert problems(check_text_layer(record)) == {("text_layer", urea.id, "value_text")}
 
 
 @pytest.mark.parametrize("bound", ["15", "40"])

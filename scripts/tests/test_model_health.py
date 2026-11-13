@@ -271,11 +271,15 @@ def test_a_parse_off_its_schema_is_a_quality_failure(model_client, monkeypatch):
         def set_output(self, output):
             pass
 
+        def model_call_list(self):
+            return []
+
     monkeypatch.setattr(nodes, "_step", lambda: Step())
     state = {"doc_type": nodes.DocumentType.LAB_REPORT, "parse_attempts": 0}
-    result = nodes._parse_call(state, MESSAGES)
+    part = nodes.ParsePart(index=0, page=1, first_line=1, last_line=1)
+    result = nodes._part_call(state, part, MESSAGES)
 
-    assert result["parse"] is None
+    assert result.parse is None
     assert seen == [(PRIMARY, "off_schema")]
 
 

@@ -5,8 +5,9 @@ each returning the next node's name.
     open -> transcribe (one page per visit, until every page is done)
          -> classify -> parse          (lab report, prescription)
                      -> validate       (other: a record of its pages only)
-    parse / repair -> validate         (the reply fit the schema)
-                   -> retry            (it didn't, or was cut off)
+    parse -> parse                     (one part per visit, until every part has a reply)
+    parse / repair -> validate         (every part's reply fit: they are merged)
+                   -> retry            (a part's didn't, or was cut off)
     validate -> retry                  (error findings: the parse may be wrong)
              -> render                 (no errors, or nothing left to try)
     render -> finish -> end
@@ -22,6 +23,7 @@ about the document itself, which a re-parse can't change, so it goes to a
 clinician at once (section 8.8).
 """
 
+from pipeline import parts
 from pipeline.state import GraphState
 from record.printed import PARSE_MODELS
 from validators import Severity
@@ -42,6 +44,11 @@ def after_classify(state: GraphState) -> str:
 
 def after_parse(state: GraphState) -> str:
     """After parse or repair."""
+    answered = {r.index for r in state.get("part_results", [])}
+    if any(p.index not in answered for p in parts.plan(
+        state["transcriptions"], state["doc_type"]
+    )):  # fmt: skip
+        return "parse"
     if state.get("parse") is not None:
         return "validate"
     return retry(state)

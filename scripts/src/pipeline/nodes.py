@@ -43,7 +43,7 @@ import model_health
 from derive import build_record
 from observability import current_step, stamp, traced
 from pipeline import pages as page_files
-from pipeline import signals, store
+from pipeline import parts, signals, store
 from pipeline.classify import decide, disagree, keyword_check
 from pipeline.prompts import (
     END_MARKER,
@@ -52,8 +52,9 @@ from pipeline.prompts import (
     prompt,
     transcription_messages,
 )
+from pipeline.parts import ParsePart, PartResult
 from pipeline.state import GraphState
-from record.document import PageTranscription, numbered_document
+from record.document import PageTranscription
 from record.printed import PARSE_MODELS, ClassifierOutput, DocumentType
 from record.schemas import classifier_schema, parse_output_schema
 from validators import Severity
@@ -150,6 +151,7 @@ def transcribe(state: GraphState) -> dict:
         page = PageTranscription(page=n, lines=lines, text_layer=text_layer)
         step.set_output({"transcriptions": [page], "reused_from_step": step_id})
         return {"transcriptions": [page]}
+    calls_before = len(step.model_call_list())
     try:
         reply = llm.chat(
             transcription_messages(image, prompt("extract_page")),
@@ -165,9 +167,17 @@ def transcribe(state: GraphState) -> dict:
         return {
             "transcriptions": [page],
             "capped_pages": [*state.get("capped_pages", []), n],
+            **_truncated_page(state, step, calls_before, n),
         }
     page = PageTranscription(page=n, lines=lines_of(reply), text_layer=text_layer)
-    return {"transcriptions": [page]}
+    return {"transcriptions": [page], **_truncated_page(state, step, calls_before, n)}
+
+
+def _truncated_page(state: GraphState, step, calls_before: int, n: int) -> dict:
+    """The page added to truncated_pages when its call's prompt may have been cut."""
+    if not _truncated(step, calls_before):
+        return {}
+    return {"truncated_pages": [*state.get("truncated_pages", []), n]}
 
 
 # -------------------------------------------------------------------
@@ -220,13 +230,51 @@ def classify(state: GraphState) -> dict:
 # -------------------------------------------------------------------
 # parse
 # -------------------------------------------------------------------
+def parse_parts(state: GraphState) -> list[ParsePart]:
+    """The parts the document is parsed in (planned in code from its pages)."""
+    return parts.plan(state["transcriptions"], state["doc_type"])
+
+
+def next_part(state: GraphState) -> ParsePart | None:
+    """The first part without a reply in this round, or None when all have one."""
+    done = {r.index for r in state.get("part_results", [])}
+    return next((p for p in parse_parts(state) if p.index not in done), None)
+
+
+def _round(state: GraphState) -> int:
+    """The parse attempt a parse step belongs to: a new one at the first part."""
+    attempts = state.get("parse_attempts", 0)
+    return attempts if state.get("part_results") else attempts + 1
+
+
 def _parse_input(state: GraphState) -> dict:
+    part = next_part(state)
     return {
         "doc_type": state.get("doc_type"),
         "model_role": state.get("model_role", "primary"),
-        "attempt": state.get("parse_attempts", 0) + 1,
+        "attempt": _round(state),
         "pages": _page_numbers(state),
+        "part": part.model_dump(mode="json") if part else None,
+        "parts": len(parse_parts(state)),
     }
+
+
+def _store_answered(answered: list[PartResult], out: dict) -> None:
+    """
+    What a parse or repair step stores as its output: the replies of the
+    parts it answered (not the earlier parts' again), and whether the
+    parts were merged. A refused part fails the step, without raising.
+    """
+    step = _step()
+    step.set_output({
+        "part_results": [
+            r.model_dump(mode="json", exclude={"provenance"}) for r in answered
+        ],
+        "merged": out.get("parse") is not None if "parse_error" in out else None,
+    })  # fmt: skip
+    errors = [r.error for r in answered if r.parse is None and r.error]
+    if errors:
+        step.fail("\n".join(errors))
 
 
 def schema_errors(error: ValidationError) -> str:
@@ -238,17 +286,16 @@ def schema_errors(error: ValidationError) -> str:
     return "\n".join(lines)
 
 
-def _parse_call(state: GraphState, messages: list[dict]) -> dict:
+def _part_call(state: GraphState, part: ParsePart, messages: list[dict]) -> PartResult:
     """
-    One parse attempt with the model in use, the reply checked against the
-    type's model. A reply that is cut off, not JSON or off the schema fails
-    the step without raising and leaves `parse` None for the graph to route
-    on; no model answering raises.
+    One parse call for one part with the model in use, the reply checked
+    against the type's model. A reply that is cut off, not JSON or off the
+    schema is a refused part (its error says why), not an exception; no
+    model answering raises.
     """
     step = _step()
     doc_type = state["doc_type"]
-    attempts = state.get("parse_attempts", 0) + 1
-    failed = {"parse": None, "parse_attempts": attempts}
+    calls_before = len(step.model_call_list())
     try:
         reply = llm.chat(
             messages,
@@ -257,27 +304,74 @@ def _parse_call(state: GraphState, messages: list[dict]) -> dict:
             model_role=state.get("model_role", "primary"),
         )
     except llm.OutputCappedError:
-        # A cut-off reply is a parse that failed, like one off the schema.
-        step.fail(CAPPED)
+        # A cut-off reply is a part that failed, like one off the schema.
         model_health.quality_failure(step.model, step.model_role, "capped")
-        return {**failed, "parse_error": CAPPED, "parse_reply": None}
+        return PartResult(
+            index=part.index, error=CAPPED, model_role=step.model_role,
+            truncated=_truncated(step, calls_before),
+        )  # fmt: skip
     try:
         parsed = PARSE_MODELS[doc_type].model_validate_json(reply)
     except ValidationError as e:
-        error = schema_errors(e)
-        step.fail(error)
-        step.set_output({"reply": reply})
         model_health.quality_failure(step.model, step.model_role, "off_schema")
-        return {**failed, "parse_error": error, "parse_reply": reply}
+        return PartResult(
+            index=part.index, reply=reply, error=schema_errors(e),
+            model_role=step.model_role, truncated=_truncated(step, calls_before),
+        )  # fmt: skip
+    return PartResult(
+        index=part.index,
+        reply=reply,
+        parse=parsed,
+        # What produced this part's parse, for its items in the record.
+        provenance=step.provenance(),
+        model_role=step.model_role,
+        truncated=_truncated(step, calls_before),
+    )
+
+
+def _truncated(step, calls_before: int) -> bool:
+    """Whether a call since `calls_before` may have had its prompt cut."""
+    return any(c.prompt_truncated for c in step.model_call_list()[calls_before:])
+
+
+def _combined(state: GraphState, results: list[PartResult]) -> dict:
+    """
+    The state once every part has a reply: the merged parse when all fit,
+    else no parse and why the refused parts were refused. A failed round
+    leaves the last merged parse's provenance in place, since the record
+    validate keeps is built from that parse.
+    """
+    plan = {p.index: p for p in parse_parts(state)}
+    refused = [r for r in results if r.parse is None]
+    if refused:
+        # With several parts, each line says which part it is about.
+        where = (
+            (lambda r: f"{_where(plan[r.index])}: ")
+            if len(plan) > 1
+            else (lambda r: "")
+        )
+        return {
+            "parse": None,
+            "parse_error": "\n".join(
+                f"{where(r)}{line}"
+                for r in refused
+                for line in (r.error or "").splitlines()
+                if line.strip()
+            ),
+        }
+    roles = {r.model_role for r in results}
     return {
-        "parse": parsed,
+        "parse": parts.merge([r.parse for r in results]),
         "parse_error": None,
-        "parse_attempts": attempts,
-        "parse_reply": reply,
-        # What produced this parse, for the items of the record built from it.
-        "parse_provenance": step.provenance(),
-        "parse_model_role": step.model_role,
+        "parse_provenance": results[0].provenance,
+        "part_provenance": [r.provenance for r in results],
+        "parse_model_role": "fallback" if "fallback" in roles else "primary",
+        "parse_truncated": any(r.truncated for r in results),
     }
+
+
+def _where(part: ParsePart) -> str:
+    return f"page {part.page} lines {part.first_line}-{part.last_line}"
 
 
 def _parse_prompt(state: GraphState) -> str:
@@ -287,71 +381,144 @@ def _parse_prompt(state: GraphState) -> str:
     return PARSE_PROMPTS[doc_type]
 
 
-def _parse_messages(state: GraphState, name: str) -> list[dict]:
+def _part_messages(state: GraphState, name: str, part: ParsePart) -> list[dict]:
     return [
         {"role": "system", "content": prompt(name)},
-        {"role": "user", "content": numbered_document(state["transcriptions"])},
+        {"role": "user", "content": parts.part_text(state["transcriptions"], part)},
     ]
 
 
-@traced("parse", input_of=_parse_input)
+@traced(
+    "parse",
+    page=lambda s: (part := next_part(s)) and part.page,
+    attempt=_round,
+    input_of=_parse_input,
+)
 def parse(state: GraphState) -> dict:
+    """
+    One part of the document parsed (one part per visit, so a run that
+    stops resumes at the next part). The last part of a round merges the
+    parts' parses.
+    """
+    part = next_part(state)
+    if part is None:
+        raise ValueError("every part is already parsed")
     name = _parse_prompt(state)
     _step().set_prompt(name, prompt(name))
-    return _parse_call(state, _parse_messages(state, name))
+    result = _part_call(state, part, _part_messages(state, name, part))
+    results = [*state.get("part_results", []), result]
+    out = {"part_results": results, "parse_attempts": _round(state)}
+    if part.index == 0:
+        out["parse"] = None  # a new round: no merged parse until it ends
+    if len(results) == len(parse_parts(state)):
+        out.update(_combined(state, results))
+    _store_answered([result], out)
+    return out
 
 
 # -------------------------------------------------------------------
 # repair
 # -------------------------------------------------------------------
-def problems(state: GraphState) -> list[str]:
+def _finding_line(f) -> str:
+    where = [f.item_id, f.field]
+    if f.page is not None:
+        where.append(f"page {f.page}")
+    if f.lines:
+        where.append("line " + ", ".join(map(str, f.lines)))
+    return f"- {' '.join(w for w in where if w)}: {f.message}"
+
+
+def _parts_of_finding(f, plan: list[ParsePart]) -> list[ParsePart]:
+    """The parts a finding is about: the one holding its line, else its page's, else all."""
+    held = [
+        p
+        for p in plan
+        if f.page is not None and any(p.holds(f.page, n) for n in f.lines)
+    ]
+    on_page = [p for p in plan if p.page == f.page]
+    return held or on_page or plan
+
+
+def part_problems(state: GraphState) -> dict[int, list[str]]:
     """
-    What was wrong with the last reply, one line each, for the repair
-    prompt: why it was refused, or else the validators' error findings
-    (flags and info are not the parse's to fix).
+    What was wrong with each part's last reply, one line each, for the
+    repair prompt: why it was refused, or else the validators' error
+    findings on its lines (flags and info are not the parse's to fix).
+    Parts with nothing wrong are left out.
     """
+    found: dict[int, list[str]] = {}
     if state.get("parse") is None:
-        error = state.get("parse_error") or ""
-        return [f"- {line}" for line in error.splitlines() if line.strip()]
-    lines = []
+        for r in state.get("part_results", []):
+            if r.parse is None:
+                found[r.index] = [
+                    f"- {line}" for line in (r.error or "").splitlines() if line.strip()
+                ]
+        return found
+    plan = parse_parts(state)
     for f in state.get("findings", []):
         if f.severity is not Severity.ERROR:
             continue
-        where = [f.item_id, f.field]
-        if f.page is not None:
-            where.append(f"page {f.page}")
-        if f.lines:
-            where.append("line " + ", ".join(map(str, f.lines)))
-        lines.append(f"- {' '.join(w for w in where if w)}: {f.message}")
-    return lines
+        for part in _parts_of_finding(f, plan):
+            found.setdefault(part.index, []).append(_finding_line(f))
+    return found
+
+
+def problems(state: GraphState) -> list[str]:
+    """Every part's problems, in part order."""
+    found = part_problems(state)
+    return [line for index in sorted(found) for line in found[index]]
 
 
 def _repair_input(state: GraphState) -> dict:
-    return {**_parse_input(state), "problems": len(problems(state))}
+    found = part_problems(state)
+    return {
+        "doc_type": state.get("doc_type"),
+        "model_role": state.get("model_role", "primary"),
+        "attempt": state.get("parse_attempts", 0) + 1,
+        "pages": _page_numbers(state),
+        "parts": sorted(found),
+        "problems": sum(len(v) for v in found.values()),
+    }
 
 
 @traced("repair", input_of=_repair_input)
 def repair(state: GraphState) -> dict:
     """
-    The parse again, with the previous reply and what was wrong with it in
-    the conversation, so the model corrects its own reply rather than
-    starting over. The validators judge the result like any parse.
+    The parts with problems parsed again, each with its previous reply and
+    what was wrong with it in the conversation, so the model corrects its
+    own reply rather than starting over. Parts without problems keep their
+    parse. The validators judge the merged result like any parse.
     """
     name = _parse_prompt(state)
-    found = problems(state)
+    found = part_problems(state)
     if not found:
         raise ValueError("there is nothing to repair")
-    previous = state.get("parse_reply")
-    if previous is None and state.get("parse") is not None:
-        previous = state["parse"].model_dump_json()
     instructions = prompt("repair_parse")
     _step().set_prompt(f"{name}+repair_parse", prompt(name) + instructions)
-    messages = _parse_messages(state, name)
-    if previous:
-        messages.append({"role": "assistant", "content": previous})
-    messages.append({"role": "user", "content": instructions + "\n".join(found)})
-    out = _parse_call(state, messages)
-    out["repairs"] = state.get("repairs", 0) + 1
+    plan = {p.index: p for p in parse_parts(state)}
+    by_index = {r.index: r for r in state.get("part_results", [])}
+    answered = []
+    for index in sorted(found):
+        previous = by_index.get(index)
+        messages = _part_messages(state, name, plan[index])
+        reply = previous.reply if previous else None
+        if reply is None and previous is not None and previous.parse is not None:
+            reply = previous.parse.model_dump_json()
+        if reply:
+            messages.append({"role": "assistant", "content": reply})
+        messages.append(
+            {"role": "user", "content": instructions + "\n".join(found[index])}
+        )
+        by_index[index] = _part_call(state, plan[index], messages)
+        answered.append(by_index[index])
+    results = [by_index[i] for i in sorted(by_index)]
+    out = {
+        "part_results": results,
+        "parse_attempts": state.get("parse_attempts", 0) + 1,
+        "repairs": state.get("repairs", 0) + 1,
+        **_combined(state, results),
+    }
+    _store_answered(answered, out)
     return out
 
 
@@ -361,10 +528,10 @@ def repair(state: GraphState) -> dict:
 @traced("fallback", input_of=lambda s: {"attempts": s.get("parse_attempts", 0)})
 def use_fallback(state: GraphState) -> dict:
     """
-    The primary model's attempts are used up: parse again from the start
-    with the fallback model, with a budget of its own (decision 20).
+    The primary model's attempts are used up: parse every part again from
+    the start with the fallback model, with a budget of its own.
     """
-    return {"model_role": "fallback", "parse_attempts": 0}
+    return {"model_role": "fallback", "parse_attempts": 0, "part_results": []}
 
 
 # -------------------------------------------------------------------
@@ -455,14 +622,33 @@ def marked_record(state: GraphState, provenance) -> tuple:
         parsed=parsed,
         findings=state.get("findings", []),
         capped_pages=state.get("capped_pages", []),
+        truncated_pages=state.get("truncated_pages", []),
+        parse_truncated=parsed and state.get("parse_truncated", False),
         classify_disagree=state.get("classify_disagree", False),
         record_model_role=state.get("parse_model_role") if parsed else None,
         repairs=state.get("repairs", 0),
         breaker_switches=_breaker_switches(),
     )
-    stamp(record, state["parse_provenance"] if parsed else provenance())
+    if parsed:
+        _stamp_by_part(record, state)
+        stamp(record, state["parse_provenance"])
+    else:
+        stamp(record, provenance())
     signals.apply(record, hits)
     return record, hits, parsed
+
+
+def _stamp_by_part(record, state: GraphState) -> None:
+    """Each item gets the provenance of the part whose lines it cites."""
+    plan = parse_parts(state)
+    made_by = state.get("part_provenance") or []
+    for item in record.items():
+        c = item.printed.citation
+        for part in plan:
+            if part.holds(c.page, c.first_line) and part.index < len(made_by):
+                if made_by[part.index] is not None:
+                    item.provenance = made_by[part.index].model_copy(deep=True)
+                break
 
 
 # -------------------------------------------------------------------

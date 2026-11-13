@@ -11,11 +11,18 @@ import pytest
 
 import llm
 from dataset.build import DATASET_DIR
-from dataset_records import DOCS, expected_patient, key, parse_of
+from dataset_records import (
+    DOCS,
+    expected_patient,
+    key,
+    parse_of,
+    part_replies,
+    split_parse,
+)
 from db_rows import add_account
 from observability import is_traced
 from pipeline import graph as pipeline_graph
-from pipeline import nodes
+from pipeline import nodes, parts
 from pipeline.routing import MAX_PARSE_ATTEMPTS
 from pipeline.state import initial_state
 from record.common import ItemStatus
@@ -148,7 +155,7 @@ def test_a_clean_prescription_is_verified(db, document, model_client):
 def test_every_page_of_a_lab_report_is_transcribed(db, document, model_client):
     state = document("d01")
     model_client.replies[PRIMARY] = [
-        *pages_of("d01"), classified("d01"), good_parse("d01"),
+        *pages_of("d01"), classified("d01"), *part_replies("d01"),
     ]  # fmt: skip
 
     final = run(state)
@@ -157,6 +164,96 @@ def test_every_page_of_a_lab_report_is_transcribed(db, document, model_client):
     assert len(final["record"].pages) == DOCS["d01"]["pages"] == 3
     steps = nodes_run(db, run_row(db, state["document_id"])["id"])
     assert steps.count("transcribe") == 3
+
+
+def parse_steps(db, run_id) -> list[tuple]:
+    with db.cursor() as cur:
+        cur.execute(
+            "SELECT id::text, page, attempt, status FROM pipeline_steps"
+            " WHERE run_id = %s AND node = 'parse' ORDER BY seq",
+            (run_id,),
+        )
+        return cur.fetchall()
+
+
+def test_each_page_is_parsed_in_its_own_step_and_the_parts_merged(
+    db, document, model_client
+):
+    state = document("d01")
+    model_client.replies[PRIMARY] = [
+        *pages_of("d01"), classified("d01"), *part_replies("d01"),
+    ]  # fmt: skip
+
+    final = run(state)
+
+    run_id = run_row(db, state["document_id"])["id"]
+    steps = parse_steps(db, run_id)
+    assert [(page, attempt, status) for _, page, attempt, status in steps] == [
+        (1, 1, "ok"), (2, 1, "ok"), (3, 1, "ok"),
+    ]  # fmt: skip
+    assert final["parse"] == parse_of(key("d01"))
+    # Each item traces to the step of the part that read it.
+    step_of_page = {page: step_id for step_id, page, _, _ in steps}
+    record = saved(db, state["document_id"])
+    for item in record.items():
+        assert item.provenance.step_id == step_of_page[item.printed.citation.page]
+    assert record.document.provenance.step_id == step_of_page[1]
+
+
+def test_a_long_page_is_parsed_in_parts_between_rows(
+    db, document, model_client, monkeypatch
+):
+    monkeypatch.setattr(parts, "MAX_ROWS_PER_PART", 4)
+    plan = parts.plan(key("d06").pages, key("d06").document.type, max_rows=4)
+    assert [p.page for p in plan] == [1, 1, 2]  # 8 rows on page 1: two parts
+    state = document("d06")
+    replies = [p.model_dump_json() for p in split_parse(parse_of(key("d06")), plan)]
+    model_client.replies[PRIMARY] = [*pages_of("d06"), classified("d06"), *replies]
+
+    final = run(state)
+
+    assert final["end_state"] == "verified"
+    assert final["parse"] == parse_of(key("d06"))
+    second = model_client.calls[len(pages_of("d06")) + 2]["messages"][1]["content"]
+    # Page 1's second part starts inside the kidney table, so it is shown
+    # the panel's heading and the table's header row first.
+    lines = second.splitlines()
+    assert lines[1] == "17| ## KIDNEY FUNCTION TEST"
+    assert lines[2].startswith("19| | Test | Result |")
+    assert "Uric Acid" in lines[4] and "Serum Creatinine" not in second
+
+
+def test_only_the_refused_part_is_parsed_again(db, document, model_client):
+    state = document("d01")
+    good = part_replies("d01")
+    model_client.replies[PRIMARY] = [
+        *pages_of("d01"), classified("d01"), good[0], '{"patient":', good[2], good[1],
+    ]  # fmt: skip
+
+    final = run(state)
+
+    assert final["end_state"] == "verified"
+    assert final["repairs"] == 1
+    repair = model_client.calls[-1]["messages"]
+    assert repair[1]["content"].startswith("=== Page 2 ===")
+    assert repair[2] == {"role": "assistant", "content": '{"patient":'}
+
+
+def test_a_cut_prompt_sends_the_document_to_review(
+    db, document, model_client, monkeypatch
+):
+    # A prompt this close to the context window may have been cut (LC-18).
+    monkeypatch.setattr(llm, "prompt_truncated", lambda *a: True)
+    state = document("d09")
+    model_client.replies[PRIMARY] = [
+        *pages_of("d09"), classified("d09"), good_parse("d09"),
+    ]  # fmt: skip
+
+    final = run(state)
+
+    assert final["end_state"] == "needs_review"
+    lc18 = [h for h in final["signals"] if h.signal == "LC-18"]
+    assert [h.details for h in lc18] == [{"page": 1}, {"step": "parse"}]
 
 
 def test_an_error_is_repaired(db, document, model_client):

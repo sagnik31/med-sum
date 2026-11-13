@@ -1200,14 +1200,117 @@ d24 = Doc(
     ]],
 )  # fmt: skip
 
+# -------------------------------------------------------------------
+# Arjun Menon again: a 60-row full-body check-up six months after d13
+# -------------------------------------------------------------------
+d25 = Doc(
+    "d25", "arjun", "lab_report", "pdf", "a4",
+    cases=["sixty_results", "page_parsed_in_parts", "trend_two_values",
+           "multiple_ranges", "non_numeric_values", "multi_page"],
+    notes="Sixty results on three pages, 27 on each of the first two: more than "
+          "one parse call reads, so those pages are parsed in parts cut between "
+          "rows. Lipids lower than d13's on the statin; HbA1c still in the "
+          "prediabetes band.",
+    pages=[
+        [
+            *sunrise_header(ARJUN, "Mr. Arjun Menon", "SD-25-092011", "Dr. Anil Deshpande",
+                            ("20/09/2025 07:50 AM", date(2025, 9, 20)),
+                            ("20/09/2025 04:10 PM", date(2025, 9, 20))),
+            *lab_panel("HAEMATOLOGY", [
+                LabTest(HB, "13.8", "g/dL", (rng("13.0 - 17.0"),)),
+                LabTest("RBC Count", "4.7", "mill/cumm", (rng("4.5 - 5.5"),)),
+                LabTest("PCV", "42.1", "%", (rng("40.0 - 50.0"),)),
+                LabTest("MCV", "89.6", "fL", (rng("83 - 101"),)),
+                LabTest("MCH", "29.4", "pg", (rng("27.0 - 32.0"),)),
+                LabTest("MCHC", "32.8", "g/dL", (rng("31.5 - 34.5"),)),
+                LabTest("RDW-CV", "13.1", "%", (rng("11.6 - 14.0"),)),
+                LabTest("Platelet Count", "2,18,000", "/cumm",
+                        (Range("1,50,000 - 4,10,000", 150000, 410000),), num=218000),
+                LabTest("Total WBC Count", "8,300", "/cumm",
+                        (Range("4,000 - 10,000", 4000, 10000),), num=8300),
+                LabTest("Neutrophils", "61", "%", (rng("40 - 80"),)),
+                LabTest("Lymphocytes", "29", "%", (rng("20 - 40"),)),
+                LabTest("Eosinophils", "5", "%", (rng("1 - 6"),)),
+                LabTest("Monocytes", "4", "%", (rng("2 - 10"),)),
+                LabTest("Basophils", "1", "%", (rng("0 - 2"),)),
+                LabTest("ESR", "12", "mm/hr", (rng("0 - 15"),)),
+            ]),
+            *lab_panel("GLUCOSE AND LIPIDS", [
+                LabTest("Fasting Plasma Glucose", "108", "mg/dL", (rng("70 - 100"),), "H"),
+                LabTest("HbA1c", "6.0", "%", HBA1C_RANGES),
+                LabTest("Total Cholesterol", "168", "mg/dL", CHOL_RANGES),
+                LabTest("Triglycerides", "142", "mg/dL", (Range("< 150", high=150),)),
+                LabTest("HDL Cholesterol", "38", "mg/dL", (Range("> 40", low=40),), "L"),
+                LabTest("LDL Cholesterol", "94", "mg/dL", LDL_RANGES),
+                LabTest("VLDL Cholesterol", "28.4", "mg/dL", (Range("< 30", high=30),)),
+            ]),
+            *lab_panel("KIDNEY FUNCTION TEST", [
+                LabTest("Blood Urea", "31", "mg/dL", (rng("15 - 40"),)),
+                LabTest("Blood Urea Nitrogen (BUN)", "14.5", "mg/dL", (rng("7 - 20"),)),
+                LabTest("Serum Creatinine", "1.0", "mg/dL", (rng("0.7 - 1.3"),)),
+                LabTest("Uric Acid", "6.1", "mg/dL", (rng("3.5 - 7.2"),)),
+                LabTest("eGFR", "84", "mL/min/1.73m²", (Range("> 60", low=60),)),
+            ]),
+        ],
+        [
+            running_header("Mr. Arjun Menon", "SD-25-092011", 2, 3),
+            *lab_panel("LIVER FUNCTION TEST", [
+                LabTest("Total Bilirubin", "0.9", "mg/dL", (rng("0.3 - 1.2"),)),
+                LabTest("Direct Bilirubin", "0.2", "mg/dL", (Range("< 0.3", high=0.3),)),
+                LabTest("Indirect Bilirubin", "0.7", "mg/dL", (rng("0.2 - 0.8"),)),
+                LabTest("SGOT (AST)", "28", "U/L", (Range("< 40", high=40),)),
+                LabTest("SGPT (ALT)", "34", "U/L", (Range("< 41", high=41),)),
+                LabTest("Alkaline Phosphatase", "88", "U/L", (rng("40 - 129"),)),
+                LabTest("GGT", "31", "U/L", (Range("< 60", high=60),)),
+                LabTest("Total Protein", "7.3", "g/dL", (rng("6.4 - 8.3"),)),
+                LabTest("Albumin", "4.4", "g/dL", (rng("3.5 - 5.2"),)),
+                LabTest("Globulin", "2.9", "g/dL", (rng("2.0 - 3.5"),)),
+                LabTest("A/G Ratio", "1.5", None, (rng("1.1 - 2.5"),)),
+            ]),
+            *lab_panel("ELECTROLYTES AND MINERALS", [
+                LabTest("Sodium", "140", "mmol/L", (rng("135 - 145"),)),
+                LabTest("Potassium", "4.2", "mmol/L", (rng("3.5 - 5.1"),)),
+                LabTest("Chloride", "103", "mmol/L", (rng("98 - 107"),)),
+                LabTest("Magnesium", "2.1", "mg/dL", (rng("1.6 - 2.6"),)),
+                LabTest("Calcium", "9.4", "mg/dL", (rng("8.6 - 10.2"),)),
+                LabTest("Phosphorus", "3.6", "mg/dL", (rng("2.5 - 4.5"),)),
+            ]),
+            *lab_panel("SPECIAL TESTS", [
+                LabTest("T3 (Total)", "1.2", "ng/mL", (rng("0.8 - 2.0"),)),
+                LabTest("T4 (Total)", "7.8", "µg/dL", (rng("5.1 - 14.1"),)),
+                LabTest("TSH", "2.1", "µIU/mL", (rng("0.27 - 4.20"),)),
+                LabTest("Serum Iron", "96", "µg/dL", (rng("65 - 175"),)),
+                LabTest("TIBC", "318", "µg/dL", (rng("250 - 450"),)),
+                LabTest("Transferrin Saturation", "30.2", "%", (rng("20 - 50"),)),
+                LabTest("Serum Ferritin", "142", "ng/mL", (rng("30 - 400"),)),
+                LabTest("Vitamin D (25-OH)", "34.2", "ng/mL", VITD_RANGES),
+                LabTest("Vitamin B12", "412", "pg/mL", (rng("211 - 911"),)),
+                LabTest("Total PSA", "1.4", "ng/mL", (Range("< 4.0", high=4.0),)),
+            ]),
+        ],
+        [
+            running_header("Mr. Arjun Menon", "SD-25-092011", 3, 3),
+            *lab_panel("URINE ROUTINE", [
+                LabTest("Colour", "Pale yellow", None, ()),
+                LabTest("Appearance", "Clear", None, ()),
+                LabTest("Specific Gravity", "1.015", None, (rng("1.005 - 1.030"),)),
+                LabTest("Protein", "Nil", None, (Range("Nil"),)),
+                LabTest("Glucose", "Nil", None, (Range("Nil"),)),
+                LabTest("Pus Cells", "1-2", "/hpf", (rng("0 - 5"),)),
+            ]),
+            *end_of_report("Dr. Neha Joshi, MD (Pathology)"),
+        ],
+    ],
+)  # fmt: skip
+
 DOCUMENTS = [d01, d02, d03, d04, d05, d06, d07, d08, d09, d10, d11, d12, d13, d14, d15, d16, d17,
-             d18, d19, d20, d21, d22, d23, d24]  # fmt: skip
+             d18, d19, d20, d21, d22, d23, d24, d25]  # fmt: skip
 
 # The order the loader uploads in: deliberately not document-date order
 # (bug 5), and patients interleaved.
 UPLOAD_ORDER = ["d04", "d07", "d12", "d16", "d01", "d06", "d09", "d13", "d02", "d17",
                 "d05", "d08", "d11", "d14", "d03", "d10", "d15",
-                "d22", "d20", "d24", "d18", "d23", "d19", "d21"]  # fmt: skip
+                "d22", "d20", "d24", "d18", "d23", "d19", "d21", "d25"]  # fmt: skip
 
 # Documents used while building and checking the prompts (every live check
 # so far ran on d02 and d09): reported apart as dev, never as test results.

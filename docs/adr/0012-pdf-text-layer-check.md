@@ -9,7 +9,7 @@ Validator 1 checks that a value is on the line of the transcription it cites. Th
 ## Decision
 
 - Where a PDF has a text layer, PyMuPDF's text of each page is stored with its transcription and used **only as a check**, never as the input.
-- Every extracted value must appear in that text **in its own row**: near the item's test or medicine name, in a window as wide as its cited row, after removing whitespace and normalising Unicode (text layers keep ligatures and split cells over lines). When the anchor name isn't in the layer, the check falls back to the whole page and flags the name.
+- Every extracted value must appear in that text **in its own row**: near the item's test or medicine name, in a window as wide as its cited row, after removing whitespace and normalising Unicode (text layers keep ligatures and split cells over lines). A value is looked for with the item's own reference ranges taken out of the window, so a misread that lands on a bound of its own range is caught too; a range printed exactly as the value ("Nil") stays in. When the anchor name isn't in the layer, the check falls back to the whole page and flags the name.
 - A disagreement is a **flag** (LC-03): both readings are shown to a clinician. Re-parsing can't fix a misread, so it doesn't go to repair.
 - A document without a text layer carries an info signal saying its vision reading has no independent check (LC-I1).
 - **Misreads on images are an accepted risk.** A cross-check with the second model was weighed and judged too costly for now.
@@ -22,7 +22,7 @@ Validator 1 checks that a value is on the line of the transcription it cites. Th
 
 ## Consequences
 
-- Fault injection catches about three quarters of injected misreads; every miss is on a page without a text layer.
+- Fault injection catches 110 of 130 injected misreads; every miss is on a page without a text layer.
 - The row window may flag a live transcription that spells a row differently from the PDF; live evals measure how often.
 
 ## What would change it

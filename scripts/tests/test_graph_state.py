@@ -53,6 +53,7 @@ def test_a_run_starts_with_empty_results_on_the_primary_model():
         "expected_patient": patient,
         "transcriptions": [],
         "findings": [],
+        "part_results": [],
         "parse_attempts": 0,
         "model_role": "primary",
     }

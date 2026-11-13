@@ -11,7 +11,7 @@ A vision-language model can turn a page image straight into JSON. But the valida
 Each document goes through two model steps:
 
 1. **Transcribe.** Each page image goes to the vision model with one generic prompt, and comes back as numbered lines of text (Markdown tables kept). Every document goes through this path, even a PDF with a text layer, so a scan and a digital PDF behave the same way.
-2. **Parse.** The text-only model call fills in the schema for the document's type from the numbered transcription, using Ollama's JSON-schema `format`. Every item cites the page and lines it came from.
+2. **Parse.** The text-only model call fills in the schema for the document's type from the numbered transcription, using Ollama's JSON-schema `format`. Every item cites the page and lines it came from. It reads one page, or part of a long page, per call, and code merges the replies (see [0033](0033-parse-per-page-in-parts.md)).
 
 The transcription is the anchor for every citation and the text the validators check against. A PDF's own text layer, where it has one, is read alongside and used only as an independent check (see [0012](0012-pdf-text-layer-check.md)).
 

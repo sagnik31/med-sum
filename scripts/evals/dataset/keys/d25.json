@@ -1,0 +1,2408 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "d25",
+    "type": "lab_report",
+    "page_count": 3,
+    "has_text_layer": true,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {
+        "citation": {
+          "page": 1,
+          "first_line": 1,
+          "last_line": 1,
+          "quote": "# Sunrise Diagnostics"
+        },
+        "text": "Sunrise Diagnostics"
+      },
+      "clinicians": [
+        {
+          "citation": {
+            "page": 1,
+            "first_line": 11,
+            "last_line": 11,
+            "quote": "Ref. By: Dr. Anil Deshpande"
+          },
+          "text": "Ref. By: Dr. Anil Deshpande"
+        },
+        {
+          "citation": {
+            "page": 3,
+            "first_line": 14,
+            "last_line": 14,
+            "quote": "Dr. Neha Joshi, MD (Pathology)"
+          },
+          "text": "Dr. Neha Joshi, MD (Pathology)"
+        }
+      ],
+      "report_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "Reported On: 20/09/2025 04:10 PM"
+        },
+        "text": "20/09/2025 04:10 PM"
+      },
+      "collection_date": {
+        "citation": {
+          "page": 1,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "Collected On: 20/09/2025 07:50 AM"
+        },
+        "text": "20/09/2025 07:50 AM"
+      },
+      "prescription_date": null
+    },
+    "derived": {
+      "report_date": "2025-09-20",
+      "collection_date": "2025-09-20",
+      "prescription_date": null,
+      "document_date": "2025-09-20",
+      "date_source": "report_date"
+    },
+    "provenance": null
+  },
+  "pages": [
+    {
+      "page": 1,
+      "lines": [
+        "# Sunrise Diagnostics",
+        "",
+        "Plot 12, Baner Road, Pune 411045",
+        "",
+        "Patient Name: Mr. Arjun Menon",
+        "",
+        "Age / Sex: 66 Years / Male",
+        "",
+        "Lab ID: SD-25-092011",
+        "",
+        "Ref. By: Dr. Anil Deshpande",
+        "",
+        "Collected On: 20/09/2025 07:50 AM",
+        "",
+        "Reported On: 20/09/2025 04:10 PM",
+        "",
+        "## HAEMATOLOGY",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| Haemoglobin | 13.8 |  | g/dL | 13.0 - 17.0 |",
+        "| RBC Count | 4.7 |  | mill/cumm | 4.5 - 5.5 |",
+        "| PCV | 42.1 |  | % | 40.0 - 50.0 |",
+        "| MCV | 89.6 |  | fL | 83 - 101 |",
+        "| MCH | 29.4 |  | pg | 27.0 - 32.0 |",
+        "| MCHC | 32.8 |  | g/dL | 31.5 - 34.5 |",
+        "| RDW-CV | 13.1 |  | % | 11.6 - 14.0 |",
+        "| Platelet Count | 2,18,000 |  | /cumm | 1,50,000 - 4,10,000 |",
+        "| Total WBC Count | 8,300 |  | /cumm | 4,000 - 10,000 |",
+        "| Neutrophils | 61 |  | % | 40 - 80 |",
+        "| Lymphocytes | 29 |  | % | 20 - 40 |",
+        "| Eosinophils | 5 |  | % | 1 - 6 |",
+        "| Monocytes | 4 |  | % | 2 - 10 |",
+        "| Basophils | 1 |  | % | 0 - 2 |",
+        "| ESR | 12 |  | mm/hr | 0 - 15 |",
+        "",
+        "## GLUCOSE AND LIPIDS",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| Fasting Plasma Glucose | 108 | H | mg/dL | 70 - 100 |",
+        "| HbA1c | 6.0 |  | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |",
+        "| Total Cholesterol | 168 |  | mg/dL | Desirable: < 200; Borderline: 200 - 239; High: >= 240 |",
+        "| Triglycerides | 142 |  | mg/dL | < 150 |",
+        "| HDL Cholesterol | 38 | L | mg/dL | > 40 |",
+        "| LDL Cholesterol | 94 |  | mg/dL | Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160 |",
+        "| VLDL Cholesterol | 28.4 |  | mg/dL | < 30 |",
+        "",
+        "## KIDNEY FUNCTION TEST",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| Blood Urea | 31 |  | mg/dL | 15 - 40 |",
+        "| Blood Urea Nitrogen (BUN) | 14.5 |  | mg/dL | 7 - 20 |",
+        "| Serum Creatinine | 1.0 |  | mg/dL | 0.7 - 1.3 |",
+        "| Uric Acid | 6.1 |  | mg/dL | 3.5 - 7.2 |",
+        "| eGFR | 84 |  | mL/min/1.73m² | > 60 |",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    },
+    {
+      "page": 2,
+      "lines": [
+        "Patient: Mr. Arjun Menon | Lab ID: SD-25-092011 | Page 2 of 3",
+        "",
+        "## LIVER FUNCTION TEST",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| Total Bilirubin | 0.9 |  | mg/dL | 0.3 - 1.2 |",
+        "| Direct Bilirubin | 0.2 |  | mg/dL | < 0.3 |",
+        "| Indirect Bilirubin | 0.7 |  | mg/dL | 0.2 - 0.8 |",
+        "| SGOT (AST) | 28 |  | U/L | < 40 |",
+        "| SGPT (ALT) | 34 |  | U/L | < 41 |",
+        "| Alkaline Phosphatase | 88 |  | U/L | 40 - 129 |",
+        "| GGT | 31 |  | U/L | < 60 |",
+        "| Total Protein | 7.3 |  | g/dL | 6.4 - 8.3 |",
+        "| Albumin | 4.4 |  | g/dL | 3.5 - 5.2 |",
+        "| Globulin | 2.9 |  | g/dL | 2.0 - 3.5 |",
+        "| A/G Ratio | 1.5 |  |  | 1.1 - 2.5 |",
+        "",
+        "## ELECTROLYTES AND MINERALS",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| Sodium | 140 |  | mmol/L | 135 - 145 |",
+        "| Potassium | 4.2 |  | mmol/L | 3.5 - 5.1 |",
+        "| Chloride | 103 |  | mmol/L | 98 - 107 |",
+        "| Magnesium | 2.1 |  | mg/dL | 1.6 - 2.6 |",
+        "| Calcium | 9.4 |  | mg/dL | 8.6 - 10.2 |",
+        "| Phosphorus | 3.6 |  | mg/dL | 2.5 - 4.5 |",
+        "",
+        "## SPECIAL TESTS",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| T3 (Total) | 1.2 |  | ng/mL | 0.8 - 2.0 |",
+        "| T4 (Total) | 7.8 |  | µg/dL | 5.1 - 14.1 |",
+        "| TSH | 2.1 |  | µIU/mL | 0.27 - 4.20 |",
+        "| Serum Iron | 96 |  | µg/dL | 65 - 175 |",
+        "| TIBC | 318 |  | µg/dL | 250 - 450 |",
+        "| Transferrin Saturation | 30.2 |  | % | 20 - 50 |",
+        "| Serum Ferritin | 142 |  | ng/mL | 30 - 400 |",
+        "| Vitamin D (25-OH) | 34.2 |  | ng/mL | Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100 |",
+        "| Vitamin B12 | 412 |  | pg/mL | 211 - 911 |",
+        "| Total PSA | 1.4 |  | ng/mL | < 4.0 |",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    },
+    {
+      "page": 3,
+      "lines": [
+        "Patient: Mr. Arjun Menon | Lab ID: SD-25-092011 | Page 3 of 3",
+        "",
+        "## URINE ROUTINE",
+        "",
+        "| Test | Result | Flag | Unit | Reference Range |",
+        "| --- | --- | --- | --- | --- |",
+        "| Colour | Pale yellow |  |  |  |",
+        "| Appearance | Clear |  |  |  |",
+        "| Specific Gravity | 1.015 |  |  | 1.005 - 1.030 |",
+        "| Protein | Nil |  |  | Nil |",
+        "| Glucose | Nil |  |  | Nil |",
+        "| Pus Cells | 1-2 |  | /hpf | 0 - 5 |",
+        "",
+        "Dr. Neha Joshi, MD (Pathology)",
+        "",
+        "*** End of Report ***",
+        "",
+        "Synthetic test document: fictional patient, doctors and laboratory."
+      ],
+      "text_layer": null
+    }
+  ],
+  "patient": {
+    "printed": {
+      "name": {
+        "citation": {
+          "page": 1,
+          "first_line": 5,
+          "last_line": 5,
+          "quote": "Patient Name: Mr. Arjun Menon"
+        },
+        "text": "Mr. Arjun Menon"
+      },
+      "age": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Age / Sex: 66 Years / Male"
+        },
+        "text": "66 Years"
+      },
+      "sex": {
+        "citation": {
+          "page": 1,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "Age / Sex: 66 Years / Male"
+        },
+        "text": "Male"
+      },
+      "date_of_birth": null,
+      "patient_id": {
+        "citation": {
+          "page": 1,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "Lab ID: SD-25-092011"
+        },
+        "text": "SD-25-092011"
+      }
+    },
+    "provenance": null,
+    "corrections": []
+  },
+  "observations": [
+    {
+      "id": "obs-1",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 21,
+          "last_line": 21,
+          "quote": "| Haemoglobin | 13.8 |  | g/dL | 13.0 - 17.0 |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "Haemoglobin",
+        "value_text": "13.8",
+        "unit": "g/dL",
+        "reference_ranges": [
+          "13.0 - 17.0"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "haemoglobin",
+        "value_num": 13.8,
+        "ranges": [
+          {
+            "text": "13.0 - 17.0",
+            "low": 13.0,
+            "high": 17.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-2",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 22,
+          "last_line": 22,
+          "quote": "| RBC Count | 4.7 |  | mill/cumm | 4.5 - 5.5 |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "RBC Count",
+        "value_text": "4.7",
+        "unit": "mill/cumm",
+        "reference_ranges": [
+          "4.5 - 5.5"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "rbc_count",
+        "value_num": 4.7,
+        "ranges": [
+          {
+            "text": "4.5 - 5.5",
+            "low": 4.5,
+            "high": 5.5,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-3",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 23,
+          "last_line": 23,
+          "quote": "| PCV | 42.1 |  | % | 40.0 - 50.0 |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "PCV",
+        "value_text": "42.1",
+        "unit": "%",
+        "reference_ranges": [
+          "40.0 - 50.0"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "pcv",
+        "value_num": 42.1,
+        "ranges": [
+          {
+            "text": "40.0 - 50.0",
+            "low": 40.0,
+            "high": 50.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-4",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 24,
+          "last_line": 24,
+          "quote": "| MCV | 89.6 |  | fL | 83 - 101 |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "MCV",
+        "value_text": "89.6",
+        "unit": "fL",
+        "reference_ranges": [
+          "83 - 101"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "mcv",
+        "value_num": 89.6,
+        "ranges": [
+          {
+            "text": "83 - 101",
+            "low": 83.0,
+            "high": 101.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-5",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 25,
+          "last_line": 25,
+          "quote": "| MCH | 29.4 |  | pg | 27.0 - 32.0 |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "MCH",
+        "value_text": "29.4",
+        "unit": "pg",
+        "reference_ranges": [
+          "27.0 - 32.0"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "mch",
+        "value_num": 29.4,
+        "ranges": [
+          {
+            "text": "27.0 - 32.0",
+            "low": 27.0,
+            "high": 32.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-6",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 26,
+          "last_line": 26,
+          "quote": "| MCHC | 32.8 |  | g/dL | 31.5 - 34.5 |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "MCHC",
+        "value_text": "32.8",
+        "unit": "g/dL",
+        "reference_ranges": [
+          "31.5 - 34.5"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "mchc",
+        "value_num": 32.8,
+        "ranges": [
+          {
+            "text": "31.5 - 34.5",
+            "low": 31.5,
+            "high": 34.5,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-7",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 27,
+          "last_line": 27,
+          "quote": "| RDW-CV | 13.1 |  | % | 11.6 - 14.0 |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "RDW-CV",
+        "value_text": "13.1",
+        "unit": "%",
+        "reference_ranges": [
+          "11.6 - 14.0"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "rdw_cv",
+        "value_num": 13.1,
+        "ranges": [
+          {
+            "text": "11.6 - 14.0",
+            "low": 11.6,
+            "high": 14.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-8",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 28,
+          "last_line": 28,
+          "quote": "| Platelet Count | 2,18,000 |  | /cumm | 1,50,000 - 4,10,000 |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "Platelet Count",
+        "value_text": "2,18,000",
+        "unit": "/cumm",
+        "reference_ranges": [
+          "1,50,000 - 4,10,000"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "platelet_count",
+        "value_num": 218000.0,
+        "ranges": [
+          {
+            "text": "1,50,000 - 4,10,000",
+            "low": 150000.0,
+            "high": 410000.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-9",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 29,
+          "last_line": 29,
+          "quote": "| Total WBC Count | 8,300 |  | /cumm | 4,000 - 10,000 |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "Total WBC Count",
+        "value_text": "8,300",
+        "unit": "/cumm",
+        "reference_ranges": [
+          "4,000 - 10,000"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "wbc_count",
+        "value_num": 8300.0,
+        "ranges": [
+          {
+            "text": "4,000 - 10,000",
+            "low": 4000.0,
+            "high": 10000.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-10",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 30,
+          "last_line": 30,
+          "quote": "| Neutrophils | 61 |  | % | 40 - 80 |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "Neutrophils",
+        "value_text": "61",
+        "unit": "%",
+        "reference_ranges": [
+          "40 - 80"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": 61.0,
+        "ranges": [
+          {
+            "text": "40 - 80",
+            "low": 40.0,
+            "high": 80.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-11",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 31,
+          "last_line": 31,
+          "quote": "| Lymphocytes | 29 |  | % | 20 - 40 |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "Lymphocytes",
+        "value_text": "29",
+        "unit": "%",
+        "reference_ranges": [
+          "20 - 40"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": 29.0,
+        "ranges": [
+          {
+            "text": "20 - 40",
+            "low": 20.0,
+            "high": 40.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-12",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 32,
+          "last_line": 32,
+          "quote": "| Eosinophils | 5 |  | % | 1 - 6 |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "Eosinophils",
+        "value_text": "5",
+        "unit": "%",
+        "reference_ranges": [
+          "1 - 6"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": 5.0,
+        "ranges": [
+          {
+            "text": "1 - 6",
+            "low": 1.0,
+            "high": 6.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-13",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 33,
+          "last_line": 33,
+          "quote": "| Monocytes | 4 |  | % | 2 - 10 |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "Monocytes",
+        "value_text": "4",
+        "unit": "%",
+        "reference_ranges": [
+          "2 - 10"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": 4.0,
+        "ranges": [
+          {
+            "text": "2 - 10",
+            "low": 2.0,
+            "high": 10.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-14",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 34,
+          "last_line": 34,
+          "quote": "| Basophils | 1 |  | % | 0 - 2 |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "Basophils",
+        "value_text": "1",
+        "unit": "%",
+        "reference_ranges": [
+          "0 - 2"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": 1.0,
+        "ranges": [
+          {
+            "text": "0 - 2",
+            "low": 0.0,
+            "high": 2.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-15",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 35,
+          "last_line": 35,
+          "quote": "| ESR | 12 |  | mm/hr | 0 - 15 |"
+        },
+        "panel": "HAEMATOLOGY",
+        "test_name": "ESR",
+        "value_text": "12",
+        "unit": "mm/hr",
+        "reference_ranges": [
+          "0 - 15"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": 12.0,
+        "ranges": [
+          {
+            "text": "0 - 15",
+            "low": 0.0,
+            "high": 15.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-16",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 41,
+          "last_line": 41,
+          "quote": "| Fasting Plasma Glucose | 108 | H | mg/dL | 70 - 100 |"
+        },
+        "panel": "GLUCOSE AND LIPIDS",
+        "test_name": "Fasting Plasma Glucose",
+        "value_text": "108",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "70 - 100"
+        ],
+        "flag_printed": "H"
+      },
+      "derived": {
+        "analyte": "glucose_fasting",
+        "value_num": 108.0,
+        "ranges": [
+          {
+            "text": "70 - 100",
+            "low": 70.0,
+            "high": 100.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "high",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-17",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 42,
+          "last_line": 42,
+          "quote": "| HbA1c | 6.0 |  | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |"
+        },
+        "panel": "GLUCOSE AND LIPIDS",
+        "test_name": "HbA1c",
+        "value_text": "6.0",
+        "unit": "%",
+        "reference_ranges": [
+          "Normal: < 5.7",
+          "Prediabetes: 5.7 - 6.4",
+          "Diabetes: >= 6.5"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "hba1c",
+        "value_num": 6.0,
+        "ranges": [
+          {
+            "text": "Normal: < 5.7",
+            "low": null,
+            "high": 5.7,
+            "label": "Normal"
+          },
+          {
+            "text": "Prediabetes: 5.7 - 6.4",
+            "low": 5.7,
+            "high": 6.4,
+            "label": "Prediabetes"
+          },
+          {
+            "text": "Diabetes: >= 6.5",
+            "low": 6.5,
+            "high": null,
+            "label": "Diabetes"
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-18",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 43,
+          "last_line": 43,
+          "quote": "| Total Cholesterol | 168 |  | mg/dL | Desirable: < 200; Borderline: 200 - 239; High: >= 240 |"
+        },
+        "panel": "GLUCOSE AND LIPIDS",
+        "test_name": "Total Cholesterol",
+        "value_text": "168",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "Desirable: < 200",
+          "Borderline: 200 - 239",
+          "High: >= 240"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "cholesterol_total",
+        "value_num": 168.0,
+        "ranges": [
+          {
+            "text": "Desirable: < 200",
+            "low": null,
+            "high": 200.0,
+            "label": "Desirable"
+          },
+          {
+            "text": "Borderline: 200 - 239",
+            "low": 200.0,
+            "high": 239.0,
+            "label": "Borderline"
+          },
+          {
+            "text": "High: >= 240",
+            "low": 240.0,
+            "high": null,
+            "label": "High"
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-19",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 44,
+          "last_line": 44,
+          "quote": "| Triglycerides | 142 |  | mg/dL | < 150 |"
+        },
+        "panel": "GLUCOSE AND LIPIDS",
+        "test_name": "Triglycerides",
+        "value_text": "142",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "< 150"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "triglycerides",
+        "value_num": 142.0,
+        "ranges": [
+          {
+            "text": "< 150",
+            "low": null,
+            "high": 150.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-20",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 45,
+          "last_line": 45,
+          "quote": "| HDL Cholesterol | 38 | L | mg/dL | > 40 |"
+        },
+        "panel": "GLUCOSE AND LIPIDS",
+        "test_name": "HDL Cholesterol",
+        "value_text": "38",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "> 40"
+        ],
+        "flag_printed": "L"
+      },
+      "derived": {
+        "analyte": "hdl_cholesterol",
+        "value_num": 38.0,
+        "ranges": [
+          {
+            "text": "> 40",
+            "low": 40.0,
+            "high": null,
+            "label": null
+          }
+        ],
+        "flag_computed": "low",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-21",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 46,
+          "last_line": 46,
+          "quote": "| LDL Cholesterol | 94 |  | mg/dL | Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160 |"
+        },
+        "panel": "GLUCOSE AND LIPIDS",
+        "test_name": "LDL Cholesterol",
+        "value_text": "94",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "Optimal: < 100",
+          "Near optimal: 100 - 129",
+          "Borderline high: 130 - 159",
+          "High: >= 160"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "ldl_cholesterol",
+        "value_num": 94.0,
+        "ranges": [
+          {
+            "text": "Optimal: < 100",
+            "low": null,
+            "high": 100.0,
+            "label": "Optimal"
+          },
+          {
+            "text": "Near optimal: 100 - 129",
+            "low": 100.0,
+            "high": 129.0,
+            "label": "Near optimal"
+          },
+          {
+            "text": "Borderline high: 130 - 159",
+            "low": 130.0,
+            "high": 159.0,
+            "label": "Borderline high"
+          },
+          {
+            "text": "High: >= 160",
+            "low": 160.0,
+            "high": null,
+            "label": "High"
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-22",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 47,
+          "last_line": 47,
+          "quote": "| VLDL Cholesterol | 28.4 |  | mg/dL | < 30 |"
+        },
+        "panel": "GLUCOSE AND LIPIDS",
+        "test_name": "VLDL Cholesterol",
+        "value_text": "28.4",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "< 30"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "vldl_cholesterol",
+        "value_num": 28.4,
+        "ranges": [
+          {
+            "text": "< 30",
+            "low": null,
+            "high": 30.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-23",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 53,
+          "last_line": 53,
+          "quote": "| Blood Urea | 31 |  | mg/dL | 15 - 40 |"
+        },
+        "panel": "KIDNEY FUNCTION TEST",
+        "test_name": "Blood Urea",
+        "value_text": "31",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "15 - 40"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "urea",
+        "value_num": 31.0,
+        "ranges": [
+          {
+            "text": "15 - 40",
+            "low": 15.0,
+            "high": 40.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-24",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 54,
+          "last_line": 54,
+          "quote": "| Blood Urea Nitrogen (BUN) | 14.5 |  | mg/dL | 7 - 20 |"
+        },
+        "panel": "KIDNEY FUNCTION TEST",
+        "test_name": "Blood Urea Nitrogen (BUN)",
+        "value_text": "14.5",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "7 - 20"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "bun",
+        "value_num": 14.5,
+        "ranges": [
+          {
+            "text": "7 - 20",
+            "low": 7.0,
+            "high": 20.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-25",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 55,
+          "last_line": 55,
+          "quote": "| Serum Creatinine | 1.0 |  | mg/dL | 0.7 - 1.3 |"
+        },
+        "panel": "KIDNEY FUNCTION TEST",
+        "test_name": "Serum Creatinine",
+        "value_text": "1.0",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "0.7 - 1.3"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "creatinine",
+        "value_num": 1.0,
+        "ranges": [
+          {
+            "text": "0.7 - 1.3",
+            "low": 0.7,
+            "high": 1.3,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-26",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 56,
+          "last_line": 56,
+          "quote": "| Uric Acid | 6.1 |  | mg/dL | 3.5 - 7.2 |"
+        },
+        "panel": "KIDNEY FUNCTION TEST",
+        "test_name": "Uric Acid",
+        "value_text": "6.1",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "3.5 - 7.2"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "uric_acid",
+        "value_num": 6.1,
+        "ranges": [
+          {
+            "text": "3.5 - 7.2",
+            "low": 3.5,
+            "high": 7.2,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-27",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 1,
+          "first_line": 57,
+          "last_line": 57,
+          "quote": "| eGFR | 84 |  | mL/min/1.73m² | > 60 |"
+        },
+        "panel": "KIDNEY FUNCTION TEST",
+        "test_name": "eGFR",
+        "value_text": "84",
+        "unit": "mL/min/1.73m²",
+        "reference_ranges": [
+          "> 60"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "egfr",
+        "value_num": 84.0,
+        "ranges": [
+          {
+            "text": "> 60",
+            "low": 60.0,
+            "high": null,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-28",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "| Total Bilirubin | 0.9 |  | mg/dL | 0.3 - 1.2 |"
+        },
+        "panel": "LIVER FUNCTION TEST",
+        "test_name": "Total Bilirubin",
+        "value_text": "0.9",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "0.3 - 1.2"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "bilirubin_total",
+        "value_num": 0.9,
+        "ranges": [
+          {
+            "text": "0.3 - 1.2",
+            "low": 0.3,
+            "high": 1.2,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-29",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 8,
+          "last_line": 8,
+          "quote": "| Direct Bilirubin | 0.2 |  | mg/dL | < 0.3 |"
+        },
+        "panel": "LIVER FUNCTION TEST",
+        "test_name": "Direct Bilirubin",
+        "value_text": "0.2",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "< 0.3"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "bilirubin_direct",
+        "value_num": 0.2,
+        "ranges": [
+          {
+            "text": "< 0.3",
+            "low": null,
+            "high": 0.3,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-30",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "| Indirect Bilirubin | 0.7 |  | mg/dL | 0.2 - 0.8 |"
+        },
+        "panel": "LIVER FUNCTION TEST",
+        "test_name": "Indirect Bilirubin",
+        "value_text": "0.7",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "0.2 - 0.8"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": 0.7,
+        "ranges": [
+          {
+            "text": "0.2 - 0.8",
+            "low": 0.2,
+            "high": 0.8,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-31",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 10,
+          "last_line": 10,
+          "quote": "| SGOT (AST) | 28 |  | U/L | < 40 |"
+        },
+        "panel": "LIVER FUNCTION TEST",
+        "test_name": "SGOT (AST)",
+        "value_text": "28",
+        "unit": "U/L",
+        "reference_ranges": [
+          "< 40"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "ast",
+        "value_num": 28.0,
+        "ranges": [
+          {
+            "text": "< 40",
+            "low": null,
+            "high": 40.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-32",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 11,
+          "last_line": 11,
+          "quote": "| SGPT (ALT) | 34 |  | U/L | < 41 |"
+        },
+        "panel": "LIVER FUNCTION TEST",
+        "test_name": "SGPT (ALT)",
+        "value_text": "34",
+        "unit": "U/L",
+        "reference_ranges": [
+          "< 41"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "alt",
+        "value_num": 34.0,
+        "ranges": [
+          {
+            "text": "< 41",
+            "low": null,
+            "high": 41.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-33",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 12,
+          "last_line": 12,
+          "quote": "| Alkaline Phosphatase | 88 |  | U/L | 40 - 129 |"
+        },
+        "panel": "LIVER FUNCTION TEST",
+        "test_name": "Alkaline Phosphatase",
+        "value_text": "88",
+        "unit": "U/L",
+        "reference_ranges": [
+          "40 - 129"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "alp",
+        "value_num": 88.0,
+        "ranges": [
+          {
+            "text": "40 - 129",
+            "low": 40.0,
+            "high": 129.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-34",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 13,
+          "last_line": 13,
+          "quote": "| GGT | 31 |  | U/L | < 60 |"
+        },
+        "panel": "LIVER FUNCTION TEST",
+        "test_name": "GGT",
+        "value_text": "31",
+        "unit": "U/L",
+        "reference_ranges": [
+          "< 60"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": 31.0,
+        "ranges": [
+          {
+            "text": "< 60",
+            "low": null,
+            "high": 60.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-35",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 14,
+          "last_line": 14,
+          "quote": "| Total Protein | 7.3 |  | g/dL | 6.4 - 8.3 |"
+        },
+        "panel": "LIVER FUNCTION TEST",
+        "test_name": "Total Protein",
+        "value_text": "7.3",
+        "unit": "g/dL",
+        "reference_ranges": [
+          "6.4 - 8.3"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "protein_total",
+        "value_num": 7.3,
+        "ranges": [
+          {
+            "text": "6.4 - 8.3",
+            "low": 6.4,
+            "high": 8.3,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-36",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 15,
+          "last_line": 15,
+          "quote": "| Albumin | 4.4 |  | g/dL | 3.5 - 5.2 |"
+        },
+        "panel": "LIVER FUNCTION TEST",
+        "test_name": "Albumin",
+        "value_text": "4.4",
+        "unit": "g/dL",
+        "reference_ranges": [
+          "3.5 - 5.2"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "albumin",
+        "value_num": 4.4,
+        "ranges": [
+          {
+            "text": "3.5 - 5.2",
+            "low": 3.5,
+            "high": 5.2,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-37",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 16,
+          "last_line": 16,
+          "quote": "| Globulin | 2.9 |  | g/dL | 2.0 - 3.5 |"
+        },
+        "panel": "LIVER FUNCTION TEST",
+        "test_name": "Globulin",
+        "value_text": "2.9",
+        "unit": "g/dL",
+        "reference_ranges": [
+          "2.0 - 3.5"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": 2.9,
+        "ranges": [
+          {
+            "text": "2.0 - 3.5",
+            "low": 2.0,
+            "high": 3.5,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-38",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 17,
+          "last_line": 17,
+          "quote": "| A/G Ratio | 1.5 |  |  | 1.1 - 2.5 |"
+        },
+        "panel": "LIVER FUNCTION TEST",
+        "test_name": "A/G Ratio",
+        "value_text": "1.5",
+        "unit": null,
+        "reference_ranges": [
+          "1.1 - 2.5"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": 1.5,
+        "ranges": [
+          {
+            "text": "1.1 - 2.5",
+            "low": 1.1,
+            "high": 2.5,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-39",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 23,
+          "last_line": 23,
+          "quote": "| Sodium | 140 |  | mmol/L | 135 - 145 |"
+        },
+        "panel": "ELECTROLYTES AND MINERALS",
+        "test_name": "Sodium",
+        "value_text": "140",
+        "unit": "mmol/L",
+        "reference_ranges": [
+          "135 - 145"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "sodium",
+        "value_num": 140.0,
+        "ranges": [
+          {
+            "text": "135 - 145",
+            "low": 135.0,
+            "high": 145.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-40",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 24,
+          "last_line": 24,
+          "quote": "| Potassium | 4.2 |  | mmol/L | 3.5 - 5.1 |"
+        },
+        "panel": "ELECTROLYTES AND MINERALS",
+        "test_name": "Potassium",
+        "value_text": "4.2",
+        "unit": "mmol/L",
+        "reference_ranges": [
+          "3.5 - 5.1"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "potassium",
+        "value_num": 4.2,
+        "ranges": [
+          {
+            "text": "3.5 - 5.1",
+            "low": 3.5,
+            "high": 5.1,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-41",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 25,
+          "last_line": 25,
+          "quote": "| Chloride | 103 |  | mmol/L | 98 - 107 |"
+        },
+        "panel": "ELECTROLYTES AND MINERALS",
+        "test_name": "Chloride",
+        "value_text": "103",
+        "unit": "mmol/L",
+        "reference_ranges": [
+          "98 - 107"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "chloride",
+        "value_num": 103.0,
+        "ranges": [
+          {
+            "text": "98 - 107",
+            "low": 98.0,
+            "high": 107.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-42",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 26,
+          "last_line": 26,
+          "quote": "| Magnesium | 2.1 |  | mg/dL | 1.6 - 2.6 |"
+        },
+        "panel": "ELECTROLYTES AND MINERALS",
+        "test_name": "Magnesium",
+        "value_text": "2.1",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "1.6 - 2.6"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": 2.1,
+        "ranges": [
+          {
+            "text": "1.6 - 2.6",
+            "low": 1.6,
+            "high": 2.6,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-43",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 27,
+          "last_line": 27,
+          "quote": "| Calcium | 9.4 |  | mg/dL | 8.6 - 10.2 |"
+        },
+        "panel": "ELECTROLYTES AND MINERALS",
+        "test_name": "Calcium",
+        "value_text": "9.4",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "8.6 - 10.2"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": 9.4,
+        "ranges": [
+          {
+            "text": "8.6 - 10.2",
+            "low": 8.6,
+            "high": 10.2,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-44",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 28,
+          "last_line": 28,
+          "quote": "| Phosphorus | 3.6 |  | mg/dL | 2.5 - 4.5 |"
+        },
+        "panel": "ELECTROLYTES AND MINERALS",
+        "test_name": "Phosphorus",
+        "value_text": "3.6",
+        "unit": "mg/dL",
+        "reference_ranges": [
+          "2.5 - 4.5"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": 3.6,
+        "ranges": [
+          {
+            "text": "2.5 - 4.5",
+            "low": 2.5,
+            "high": 4.5,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-45",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 34,
+          "last_line": 34,
+          "quote": "| T3 (Total) | 1.2 |  | ng/mL | 0.8 - 2.0 |"
+        },
+        "panel": "SPECIAL TESTS",
+        "test_name": "T3 (Total)",
+        "value_text": "1.2",
+        "unit": "ng/mL",
+        "reference_ranges": [
+          "0.8 - 2.0"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "t3_total",
+        "value_num": 1.2,
+        "ranges": [
+          {
+            "text": "0.8 - 2.0",
+            "low": 0.8,
+            "high": 2.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-46",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 35,
+          "last_line": 35,
+          "quote": "| T4 (Total) | 7.8 |  | µg/dL | 5.1 - 14.1 |"
+        },
+        "panel": "SPECIAL TESTS",
+        "test_name": "T4 (Total)",
+        "value_text": "7.8",
+        "unit": "µg/dL",
+        "reference_ranges": [
+          "5.1 - 14.1"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "t4_total",
+        "value_num": 7.8,
+        "ranges": [
+          {
+            "text": "5.1 - 14.1",
+            "low": 5.1,
+            "high": 14.1,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-47",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 36,
+          "last_line": 36,
+          "quote": "| TSH | 2.1 |  | µIU/mL | 0.27 - 4.20 |"
+        },
+        "panel": "SPECIAL TESTS",
+        "test_name": "TSH",
+        "value_text": "2.1",
+        "unit": "µIU/mL",
+        "reference_ranges": [
+          "0.27 - 4.20"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "tsh",
+        "value_num": 2.1,
+        "ranges": [
+          {
+            "text": "0.27 - 4.20",
+            "low": 0.27,
+            "high": 4.2,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-48",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 37,
+          "last_line": 37,
+          "quote": "| Serum Iron | 96 |  | µg/dL | 65 - 175 |"
+        },
+        "panel": "SPECIAL TESTS",
+        "test_name": "Serum Iron",
+        "value_text": "96",
+        "unit": "µg/dL",
+        "reference_ranges": [
+          "65 - 175"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "iron",
+        "value_num": 96.0,
+        "ranges": [
+          {
+            "text": "65 - 175",
+            "low": 65.0,
+            "high": 175.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-49",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 38,
+          "last_line": 38,
+          "quote": "| TIBC | 318 |  | µg/dL | 250 - 450 |"
+        },
+        "panel": "SPECIAL TESTS",
+        "test_name": "TIBC",
+        "value_text": "318",
+        "unit": "µg/dL",
+        "reference_ranges": [
+          "250 - 450"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "tibc",
+        "value_num": 318.0,
+        "ranges": [
+          {
+            "text": "250 - 450",
+            "low": 250.0,
+            "high": 450.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-50",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 39,
+          "last_line": 39,
+          "quote": "| Transferrin Saturation | 30.2 |  | % | 20 - 50 |"
+        },
+        "panel": "SPECIAL TESTS",
+        "test_name": "Transferrin Saturation",
+        "value_text": "30.2",
+        "unit": "%",
+        "reference_ranges": [
+          "20 - 50"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "transferrin_saturation",
+        "value_num": 30.2,
+        "ranges": [
+          {
+            "text": "20 - 50",
+            "low": 20.0,
+            "high": 50.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-51",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 40,
+          "last_line": 40,
+          "quote": "| Serum Ferritin | 142 |  | ng/mL | 30 - 400 |"
+        },
+        "panel": "SPECIAL TESTS",
+        "test_name": "Serum Ferritin",
+        "value_text": "142",
+        "unit": "ng/mL",
+        "reference_ranges": [
+          "30 - 400"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "ferritin",
+        "value_num": 142.0,
+        "ranges": [
+          {
+            "text": "30 - 400",
+            "low": 30.0,
+            "high": 400.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-52",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 41,
+          "last_line": 41,
+          "quote": "| Vitamin D (25-OH) | 34.2 |  | ng/mL | Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100 |"
+        },
+        "panel": "SPECIAL TESTS",
+        "test_name": "Vitamin D (25-OH)",
+        "value_text": "34.2",
+        "unit": "ng/mL",
+        "reference_ranges": [
+          "Deficiency: < 20",
+          "Insufficiency: 20 - 30",
+          "Sufficiency: 30 - 100"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "vitamin_d_25oh",
+        "value_num": 34.2,
+        "ranges": [
+          {
+            "text": "Deficiency: < 20",
+            "low": null,
+            "high": 20.0,
+            "label": "Deficiency"
+          },
+          {
+            "text": "Insufficiency: 20 - 30",
+            "low": 20.0,
+            "high": 30.0,
+            "label": "Insufficiency"
+          },
+          {
+            "text": "Sufficiency: 30 - 100",
+            "low": 30.0,
+            "high": 100.0,
+            "label": "Sufficiency"
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-53",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 42,
+          "last_line": 42,
+          "quote": "| Vitamin B12 | 412 |  | pg/mL | 211 - 911 |"
+        },
+        "panel": "SPECIAL TESTS",
+        "test_name": "Vitamin B12",
+        "value_text": "412",
+        "unit": "pg/mL",
+        "reference_ranges": [
+          "211 - 911"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": 412.0,
+        "ranges": [
+          {
+            "text": "211 - 911",
+            "low": 211.0,
+            "high": 911.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-54",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 2,
+          "first_line": 43,
+          "last_line": 43,
+          "quote": "| Total PSA | 1.4 |  | ng/mL | < 4.0 |"
+        },
+        "panel": "SPECIAL TESTS",
+        "test_name": "Total PSA",
+        "value_text": "1.4",
+        "unit": "ng/mL",
+        "reference_ranges": [
+          "< 4.0"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": "psa_total",
+        "value_num": 1.4,
+        "ranges": [
+          {
+            "text": "< 4.0",
+            "low": null,
+            "high": 4.0,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-55",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 3,
+          "first_line": 7,
+          "last_line": 7,
+          "quote": "| Colour | Pale yellow |  |  |  |"
+        },
+        "panel": "URINE ROUTINE",
+        "test_name": "Colour",
+        "value_text": "Pale yellow",
+        "unit": null,
+        "reference_ranges": [],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": null,
+        "ranges": [],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-56",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 3,
+          "first_line": 8,
+          "last_line": 8,
+          "quote": "| Appearance | Clear |  |  |  |"
+        },
+        "panel": "URINE ROUTINE",
+        "test_name": "Appearance",
+        "value_text": "Clear",
+        "unit": null,
+        "reference_ranges": [],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": null,
+        "ranges": [],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-57",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 3,
+          "first_line": 9,
+          "last_line": 9,
+          "quote": "| Specific Gravity | 1.015 |  |  | 1.005 - 1.030 |"
+        },
+        "panel": "URINE ROUTINE",
+        "test_name": "Specific Gravity",
+        "value_text": "1.015",
+        "unit": null,
+        "reference_ranges": [
+          "1.005 - 1.030"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": 1.015,
+        "ranges": [
+          {
+            "text": "1.005 - 1.030",
+            "low": 1.005,
+            "high": 1.03,
+            "label": null
+          }
+        ],
+        "flag_computed": "normal",
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-58",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 3,
+          "first_line": 10,
+          "last_line": 10,
+          "quote": "| Protein | Nil |  |  | Nil |"
+        },
+        "panel": "URINE ROUTINE",
+        "test_name": "Protein",
+        "value_text": "Nil",
+        "unit": null,
+        "reference_ranges": [
+          "Nil"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": null,
+        "ranges": [
+          {
+            "text": "Nil",
+            "low": null,
+            "high": null,
+            "label": null
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-59",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 3,
+          "first_line": 11,
+          "last_line": 11,
+          "quote": "| Glucose | Nil |  |  | Nil |"
+        },
+        "panel": "URINE ROUTINE",
+        "test_name": "Glucose",
+        "value_text": "Nil",
+        "unit": null,
+        "reference_ranges": [
+          "Nil"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": null,
+        "ranges": [
+          {
+            "text": "Nil",
+            "low": null,
+            "high": null,
+            "label": null
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    },
+    {
+      "id": "obs-60",
+      "provenance": null,
+      "corrections": [],
+      "printed": {
+        "citation": {
+          "page": 3,
+          "first_line": 12,
+          "last_line": 12,
+          "quote": "| Pus Cells | 1-2 |  | /hpf | 0 - 5 |"
+        },
+        "panel": "URINE ROUTINE",
+        "test_name": "Pus Cells",
+        "value_text": "1-2",
+        "unit": "/hpf",
+        "reference_ranges": [
+          "0 - 5"
+        ],
+        "flag_printed": null
+      },
+      "derived": {
+        "analyte": null,
+        "value_num": null,
+        "ranges": [
+          {
+            "text": "0 - 5",
+            "low": 0.0,
+            "high": 5.0,
+            "label": null
+          }
+        ],
+        "flag_computed": null,
+        "converted": null
+      }
+    }
+  ],
+  "medications": [],
+  "conditions": [],
+  "remarks": [],
+  "vitals": [],
+  "allergies": [],
+  "procedures": [],
+  "encounters": [],
+  "imaging_findings": []
+}

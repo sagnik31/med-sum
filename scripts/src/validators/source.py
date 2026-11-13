@@ -10,7 +10,8 @@ gain nothing. Text that is not on those lines remains an error.
 
 Validator 1 only catches values lost or changed between transcription and
 parse; a misread in the image is in both. Validator 2 is the one check on
-the vision step, and only where a text layer exists (decisions 24, 40).
+the vision step, and only where a text layer exists.
+See docs/adr/0012-pdf-text-layer-check.md.
 """
 
 from record.document import DocumentRecord
@@ -84,9 +85,10 @@ def check_text_layer(record: DocumentRecord) -> list[Finding]:
     either side of where the name sits in it, not merely somewhere on the
     page. Otherwise a misread value that happens to be printed in another
     row passes (creatinine "1.7" read for "1.6", found inside the next
-    row's "mL/min/1.73m²"). A misread that is printed on its own row (a
-    range bound) still passes here; check_range_bounds covers the case
-    where only the range has it. A name the text layer doesn't have is
+    row's "mL/min/1.73m²"). A value is looked for in its row with the
+    item's own reference ranges taken out, so a misread that lands on a
+    range bound printed in that row (eosinophils "6" read for "5" beside
+    "1 - 6") is flagged too. A name the text layer doesn't have is
     flagged itself, and the item's other fields are then checked on the
     page, since the row can't be found.
     """
@@ -94,10 +96,12 @@ def check_text_layer(record: DocumentRecord) -> list[Finding]:
         return []
     layers = [squash(p.text_layer or "") for p in record.pages]
     fields = list(cited_fields(record))
-    anchors = {}
+    anchors, ranges = {}, {}
     for f in fields:
         if f.field in _ROW_ANCHORS and f.place is Place.ON_LINES:
             anchors.setdefault(f.item_id, f)
+        if f.field.startswith("reference_ranges") and squash(f.text):
+            ranges.setdefault(f.item_id, []).append(squash(f.text))
     findings = []
     for f in fields:
         index = f.citation.page - 1
@@ -108,6 +112,11 @@ def check_text_layer(record: DocumentRecord) -> list[Finding]:
             found, where = needle in "".join(layers[: index + 1]), "page"
         elif (windows := _row_windows(record, f, anchors.get(f.item_id),
                                       layers[index])) is not None:  # fmt: skip
+            if f.field == "value_text":
+                # A range printed as the value itself ("Nil", reference
+                # "Nil") stays: taking it out would take the value too.
+                own = [r for r in ranges.get(f.item_id, []) if r != needle]
+                windows = [_without(w, own) for w in windows]
             found, where = any(needle in w for w in windows), "row"
         else:
             found, where = needle in layers[index], "page"
@@ -121,6 +130,13 @@ def check_text_layer(record: DocumentRecord) -> list[Finding]:
                 lines=[f.citation.first_line],
                 details={"transcription": f.citation.quote}))  # fmt: skip
     return findings
+
+
+def _without(text: str, parts: list[str]) -> str:
+    """`text` with every occurrence of each of `parts` taken out."""
+    for part in parts:
+        text = text.replace(part, "\x00")
+    return text
 
 
 def _row_windows(

@@ -132,15 +132,19 @@ def medicine_lines(record: DocumentRecord) -> list[tuple[int, int]]:
     dosage form (Tab, Cap, Syp, Inj, ...), or a table row under an Rx
     heading.
     """
+    return [(p.page, n) for p in record.pages for n in medicine_line_numbers(p.lines)]
+
+
+def medicine_line_numbers(lines: list[str]) -> list[int]:
+    """medicine_lines for one page's lines: their line numbers."""
     found = []
-    for p in record.pages:
-        in_rx = False
-        for n, line in enumerate(p.lines, start=1):
-            if is_heading(line) or _RX_HEADING.match(line):
-                in_rx = bool(_RX_HEADING.match(line))
-                continue
-            if _MEDICINE_LINE.match(line) or (in_rx and _is_table_row(p.lines, n)):
-                found.append((p.page, n))
+    in_rx = False
+    for n, line in enumerate(lines, start=1):
+        if is_heading(line) or _RX_HEADING.match(line):
+            in_rx = bool(_RX_HEADING.match(line))
+            continue
+        if _MEDICINE_LINE.match(line) or (in_rx and _is_table_row(lines, n)):
+            found.append(n)
     return found
 
 
@@ -206,20 +210,24 @@ def result_rows(record: DocumentRecord) -> list[tuple[int, int]]:
     """
     if record.document.type is not DocumentType.LAB_REPORT:
         return []
+    return [(p.page, n) for p in record.pages for n in results_table_rows(p.lines)]
+
+
+def results_table_rows(lines: list[str]) -> list[int]:
+    """result_rows for one page's lines: their line numbers."""
     found = []
-    for p in record.pages:
-        in_results = False
-        for n, line in enumerate(p.lines, start=1):
-            if not line.lstrip().startswith("|"):
-                in_results = False
-                continue
-            if _TABLE_SEPARATOR.match(line):
-                continue
-            if n < len(p.lines) and _TABLE_SEPARATOR.match(p.lines[n]):
-                in_results = any(_RESULT_HEADER.search(c) for c in _cells(line))
-                continue
-            if in_results and any(_cells(line)[1:]):
-                found.append((p.page, n))
+    in_results = False
+    for n, line in enumerate(lines, start=1):
+        if not line.lstrip().startswith("|"):
+            in_results = False
+            continue
+        if _TABLE_SEPARATOR.match(line):
+            continue
+        if n < len(lines) and _TABLE_SEPARATOR.match(lines[n]):
+            in_results = any(_RESULT_HEADER.search(c) for c in _cells(line))
+            continue
+        if in_results and any(_cells(line)[1:]):
+            found.append(n)
     return found
 
 

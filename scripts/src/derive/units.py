@@ -75,6 +75,7 @@ _UNIT_ROWS: list[tuple[str, str, str, tuple[str, ...]]] = [
     ("pg", "cell_mass", "1", ()),
     ("mL/min/1.73m²", "filtration", "1", ()),
     ("/hpf", "per_field", "1", ("per hpf",)),
+    ("mm/hr", "sedimentation", "1", ("mm/h", "mm/1st hr", "mm in 1st hr")),
 ]  # fmt: skip
 
 UNITS: dict[str, Unit] = {}

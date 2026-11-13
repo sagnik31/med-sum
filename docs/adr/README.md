@@ -34,6 +34,7 @@ A decision that changes gets a new record, or its status says what superseded it
 | [0019](0019-observability-in-postgres.md) | Observability in Postgres; logs carry no patient content | Built |
 | [0020](0020-pages-built-by-code.md) | Document pages and the patient summary are built by code | Built |
 | [0021](0021-patient-summary-rules.md) | Patient summary: computed facts, honest trends, a checked overview | Built |
+| [0033](0033-parse-per-page-in-parts.md) | The parse reads a page, or part of a long page, per call | Built |
 
 ## Data, operations and evals
 

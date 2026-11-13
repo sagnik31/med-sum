@@ -78,6 +78,7 @@ SIGNALS = _signals(
     ("LC-15", R, "The model's document type and the keyword check disagree."),
     ("LC-16", R, "The value may have been read from its own reference range."),
     ("LC-17", R, "A row of a results table has no result in the record."),
+    ("LC-18", R, "A model's input may have been cut short; content may be missing."),
     ("LC-I1", INFO, "No PDF text layer, so the reading has no independent check."),
     ("LC-I2", INFO, "Transcription lines that no extracted item uses."),
     ("LC-I3", INFO, "A range, flag or unit that code could not read."),
@@ -171,6 +172,8 @@ def collect(
     parsed: bool,
     findings: list[Finding],
     capped_pages: list[int] = (),
+    truncated_pages: list[int] = (),
+    parse_truncated: bool = False,
     classify_disagree: bool = False,
     record_model_role: str | None = None,
     repairs: int = 0,
@@ -182,11 +185,19 @@ def collect(
     type other, and for a parsed type whose every parse attempt failed).
     `breaker_switches` are the run's circuit breaker switches, one OP-3 hit
     each ({event, model, model_role}, as observability's Run notes them).
+    `truncated_pages` and `parse_truncated` say which calls' prompts may
+    have been cut to fit the context window (LC-18: a page's transcription
+    request, or a part of the parse the record was built from).
     """
     hits: list[SignalHit] = []
     if record is not None:
         hits += unreadable(record)
     hits += [SignalHit(signal="LC-02", details={"page": page}) for page in capped_pages]
+    hits += [
+        SignalHit(signal="LC-18", details={"page": page}) for page in truncated_pages
+    ]
+    if parse_truncated:
+        hits.append(SignalHit(signal="LC-18", details={"step": "parse"}))
     hits += from_findings(findings)
     if doc_type in PARSE_MODELS and not parsed:
         hits.append(SignalHit(signal="LC-08"))
