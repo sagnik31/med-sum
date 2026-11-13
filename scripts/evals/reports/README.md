@@ -10,3 +10,5 @@ Each folder has the same name as its entry in [`../history/`](../history/), whic
 Every document is fictional, so the reports contain no real patient data. The model replies behind each run are in [`../cassettes/`](../cassettes/), so `python -m evals.run --replay` rebuilds a run's report without Ollama, as long as the prompts, pages and options are unchanged.
 
 A replay, or a live run with `--no-history`, only reproduces or tries something and writes to `../results/`, which is not committed.
+
+A repair eval run (`python -m evals.repair --live`) is kept here too, with its own `report.md` and `report.json` (rows per model and repair, by fault, and every case). It has no history entry: its rows are compared within the report, fixed re-parse against tool repair. Its cassettes are under [`../cassettes/repair/`](../cassettes/repair/).
