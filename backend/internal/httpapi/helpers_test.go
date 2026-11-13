@@ -372,7 +372,21 @@ func (f *fakeStore) GetPatientSummary(_ context.Context, userID string) (*db.Pat
 	return &db.PatientSummary{}, nil
 }
 
-func (f *fakeStore) CreateDocument(_ context.Context, userID, originalName, contentType, storagePath string) (*db.Document, error) {
+// duplicateOf is the first other document of d's user with d's file hash
+// (IDs increase, so the smallest earlier ID); call it holding f.mu.
+func (f *fakeStore) duplicateOf(d *db.Document) *string {
+	var first *string
+	for _, o := range f.documents {
+		if o.UserID == d.UserID && o.SHA256 != "" && o.SHA256 == d.SHA256 && o.ID < d.ID &&
+			(first == nil || o.ID < *first) {
+			id := o.ID
+			first = &id
+		}
+	}
+	return first
+}
+
+func (f *fakeStore) CreateDocument(_ context.Context, userID, originalName, contentType, storagePath, sha256 string) (*db.Document, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
@@ -387,9 +401,11 @@ func (f *fakeStore) CreateDocument(_ context.Context, userID, originalName, cont
 		StoragePath:  storagePath,
 		UploadedAt:   now,
 		UpdatedAt:    now,
+		SHA256:       sha256,
 	}
 	f.documents[d.ID] = d
 	copied := *d
+	copied.DuplicateOf = f.duplicateOf(d)
 	return &copied, nil
 }
 
@@ -403,6 +419,7 @@ func (f *fakeStore) ListDocumentsByUser(_ context.Context, userID string) ([]db.
 	for _, d := range f.documents {
 		if d.UserID == userID {
 			copied := *d
+			copied.DuplicateOf = f.duplicateOf(d)
 			copied.InsightStatus = "not_started"
 			if ins, ok := f.insights[d.ID]; ok {
 				copied.InsightStatus = ins.Status
@@ -475,7 +492,7 @@ func (f *fakeStore) GetDocumentRecord(_ context.Context, docID string) (*db.Docu
 
 // addDocument stores a document directly, bypassing the upload route.
 func (f *fakeStore) addDocument(userID, storagePath string) string {
-	d, _ := f.CreateDocument(context.Background(), userID, "report.pdf", "application/pdf", storagePath)
+	d, _ := f.CreateDocument(context.Background(), userID, "report.pdf", "application/pdf", storagePath, "")
 	return d.ID
 }
 

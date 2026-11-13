@@ -31,7 +31,12 @@ class Summary:
 
 
 def load_inputs(conn, user_id: str) -> list[SummaryInput]:
-    """Every document of the user, with its processing status and record (if any)."""
+    """
+    Every document of the user, with its processing status and record (if
+    any). A file uploaded again (the same SHA-256) is left out, so its
+    values don't count twice in trends; the first upload stands for it.
+    See docs/adr/0036-data-lifecycle.md.
+    """
     with conn.cursor() as cur:
         cur.execute(
             """
@@ -40,6 +45,10 @@ def load_inputs(conn, user_id: str) -> list[SummaryInput]:
             LEFT JOIN insights i ON i.document_id = d.id
             LEFT JOIN document_records r ON r.document_id = d.id
             WHERE d.user_id = %s
+              AND NOT EXISTS (
+                  SELECT 1 FROM documents o
+                  WHERE o.user_id = d.user_id AND o.sha256 = d.sha256
+                    AND (o.uploaded_at, o.id) < (d.uploaded_at, d.id))
             ORDER BY d.uploaded_at
             """,
             (user_id,),

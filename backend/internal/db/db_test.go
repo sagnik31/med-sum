@@ -8,6 +8,8 @@ package db
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -147,11 +149,17 @@ func mustUser(t *testing.T, s *Store, email string) *User {
 
 func mustDocument(t *testing.T, s *Store, userID, path string) *Document {
 	t.Helper()
-	d, err := s.CreateDocument(context.Background(), userID, "report.pdf", "application/pdf", path)
+	d, err := s.CreateDocument(context.Background(), userID, "report.pdf", "application/pdf", path, fileHash(path))
 	if err != nil {
 		t.Fatal(err)
 	}
 	return d
+}
+
+// fileHash stands in for a file's SHA-256: a distinct one per path.
+func fileHash(path string) string {
+	sum := sha256.Sum256([]byte(path))
+	return hex.EncodeToString(sum[:])
 }
 
 func setInsight(t *testing.T, s *Store, docID, status string, errMsg *string) {
@@ -224,6 +232,67 @@ func TestListDocumentsByUser(t *testing.T) {
 	}
 	if docs[0].InsightStatus != "not_started" || docs[1].InsightStatus != "verified" {
 		t.Errorf("insight statuses = %q, %q", docs[0].InsightStatus, docs[1].InsightStatus)
+	}
+}
+
+func TestAnExactCopyIsFlaggedForTheSamePatientOnly(t *testing.T) {
+	s := store(t)
+	ctx := context.Background()
+	me := mustUser(t, s, "me@hospital.test")
+	other := mustUser(t, s, "other@hospital.test")
+	file := fileHash("the same file")
+	create := func(userID, path string) *Document {
+		d, err := s.CreateDocument(ctx, userID, "report.pdf", "application/pdf", path, file)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return d
+	}
+
+	first := create(me.ID, "a.pdf")
+	if first.DuplicateOf != nil || first.SHA256 != file {
+		t.Fatalf("first upload = %+v, want no duplicate and its hash", first)
+	}
+	copy1 := create(me.ID, "b.pdf")
+	copy2 := create(me.ID, "c.pdf")
+	theirs := create(other.ID, "d.pdf")
+	for _, d := range []*Document{copy1, copy2} {
+		if d.DuplicateOf == nil || *d.DuplicateOf != first.ID {
+			t.Errorf("copy %s duplicate_of = %v, want %s", d.ID, d.DuplicateOf, first.ID)
+		}
+	}
+	if theirs.DuplicateOf != nil {
+		t.Errorf("another patient's copy is flagged: %v", *theirs.DuplicateOf)
+	}
+
+	docs, err := s.ListDocumentsByUser(ctx, me.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	flagged := map[string]string{}
+	for _, d := range docs {
+		if d.DuplicateOf != nil {
+			flagged[d.ID] = *d.DuplicateOf
+		}
+	}
+	want := map[string]string{copy1.ID: first.ID, copy2.ID: first.ID}
+	if fmt.Sprint(flagged) != fmt.Sprint(want) {
+		t.Errorf("listed duplicates = %v, want %v", flagged, want)
+	}
+
+	// Once the first is deleted, the next copy is the original.
+	if _, _, err := s.DeleteDocumentByIDAndUser(ctx, first.ID, me.ID); err != nil {
+		t.Fatal(err)
+	}
+	docs, err = s.ListDocumentsByUser(ctx, me.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, d := range docs {
+		dup := d.DuplicateOf != nil
+		if (d.ID == copy1.ID && dup) || (d.ID == copy2.ID && (!dup || *d.DuplicateOf != copy1.ID)) {
+			t.Errorf("after deleting the first: %s duplicate_of = %v", d.ID, d.DuplicateOf)
+		}
 	}
 }
 

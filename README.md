@@ -16,6 +16,7 @@ All model inference runs locally through [Ollama](https://ollama.com), so docume
 - [Project structure](#project-structure)
 - [Development](#development)
 - [Design decisions](docs/adr/README.md)
+- [Where patient data goes, and the threat model](docs/data-and-threats.md)
 - [Limitations](#limitations)
 - [Roadmap](#roadmap)
 - [License](#license)
@@ -269,8 +270,8 @@ All backend routes except `/healthz`, `/auth/login`, `/auth/logout` and `/auth/s
 | `PATCH` | `/admin/users/{id}` | Change `{roles?, status?, full_name?, registration_no?}`; `status` is `active` or `disabled` (admins) |
 | `POST` | `/admin/users/{id}/reset-link` | A new setup link (invited account) or reset link (active account) (admins) |
 | `GET` | `/documents` | List the user's documents, newest first, each with its `insight_status` |
-| `POST` | `/documents` | Upload a PDF, JPG or PNG (multipart field `file`, max 20 MB) and start processing it |
-| `DELETE` | `/documents/{id}` | Delete a document and its file |
+| `POST` | `/documents` | Upload a PDF, JPG or PNG (multipart field `file`, max 20 MB) and start processing it. The same file uploaded again for the same patient is accepted and names the first as `duplicate_of` (also in the list); the patient summary counts it once |
+| `DELETE` | `/documents/{id}` | Delete a document and its file; everything stored about it goes too, the pipeline's checkpoints included |
 | `GET` | `/documents/{id}/insight` | Get the summary and its status (`not_started`, `processing`, `verified`, `needs_review`, `failed`) |
 | `POST` | `/documents/{id}/insight` | Start or retry processing |
 | `GET` | `/documents/{id}/record` | The document's structured record as stored: every printed and derived value, the page transcriptions, and each item's provenance. `citations` lists every value's page, lines and quoted text with its item's review status (`validated`, `low_confidence`, ...) and the reasons it was flagged. 404 before the document has a record |

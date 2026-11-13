@@ -16,6 +16,7 @@ import document_jobs as jobs
 import insights_service as service
 import llm
 from dataset_records import key
+from summary.build import load_inputs
 from db_rows import add_account
 from test_service_logging import line_with
 
@@ -177,6 +178,20 @@ def test_the_summary_is_built_from_records_in_document_date_order(db, model_clie
     assert soup.select_one('[data-overview="shown"]').get_text() == (
         "The documents cover lab reports."
     )
+
+
+def test_a_file_uploaded_twice_counts_once(db, model_client):
+    user = add_user(db)
+    first = add_processed(db, user, "d01", "2025-06-01 10:00+05:30")
+    again = add_processed(db, user, "d01", "2025-06-05 10:00+05:30")
+    other = add_processed(db, user, "d04", "2025-06-06 10:00+05:30")
+    with db.cursor() as cur:
+        cur.execute("UPDATE documents SET sha256 = repeat('a', 64) WHERE id IN (%s, %s)",
+                    (first, again))  # fmt: skip
+        cur.execute("UPDATE documents SET sha256 = repeat('b', 64) WHERE id = %s",
+                    (other,))  # fmt: skip
+        inputs = load_inputs(db, user)
+    assert [i.document_id for i in inputs] == [first, other]
 
 
 def test_a_rejected_overview_leaves_the_summary_complete_without_it(

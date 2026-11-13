@@ -37,6 +37,7 @@ A decision that changes gets a new record, or its status says what superseded it
 | [0033](0033-parse-per-page-in-parts.md) | The parse reads a page, or part of a long page, per call | Built |
 | [0034](0034-capped-page-read-again-in-halves.md) | A page cut off by the output cap is read again in two halves | Built |
 | [0035](0035-run-provenance-and-replay.md) | Each run records its code and schemas, prompts are stored by hash, and a step can be replayed | Built |
+| [0036](0036-data-lifecycle.md) | Checkpoints go with their run, and a file uploaded twice is flagged | Built |
 
 ## Data, operations and evals
 

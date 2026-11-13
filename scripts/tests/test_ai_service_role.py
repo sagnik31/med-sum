@@ -90,9 +90,11 @@ def test_a_document_job_runs_as_the_role(db, as_role, model_client):
 
     status, html, error = insight_row(db, doc)
     assert (status, error) == ("verified", None)
+    # The role wrote the run's checkpoints as it went (a refused write fails
+    # the job), and deleted them when the run ended.
     with db.cursor() as cur:
         cur.execute("SELECT count(*) FROM langgraph.checkpoints")
-        assert cur.fetchone()[0] > 0
+        assert cur.fetchone()[0] == 0
 
 
 def test_the_patient_summary_runs_as_the_role(db, as_role, model_client):

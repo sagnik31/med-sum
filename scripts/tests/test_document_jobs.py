@@ -15,9 +15,10 @@ import llm
 from dataset.build import DATASET_DIR
 from dataset_records import DOCS, expected_patient, key, parse_of
 from document_jobs import LostClaim
-from observability import context, start_run
+from observability import context, resume_run, start_run
 from pipeline import checkpoints
 from pipeline import graph as document_graph
+from test_service_logging import line_with
 
 PRIMARY, FALLBACK = llm.PRIMARY_MODEL, llm.FALLBACK_MODEL
 
@@ -404,3 +405,136 @@ def test_a_reprocess_is_a_new_run_whose_record_replaces_the_last(db, model_clien
         assert cur.fetchone() == (second,)
         cur.execute("SELECT count(*) FROM pipeline_runs WHERE document_id = %s", (doc,))
         assert cur.fetchone() == (2,)
+
+
+# -------------------------------------------------------------------
+# Checkpoints go when the run ends or its document goes
+# -------------------------------------------------------------------
+CHECKPOINT_TABLES = ("checkpoints", "checkpoint_blobs", "checkpoint_writes")
+
+
+def thread_rows(db, run_id: str) -> int:
+    with db.cursor() as cur:
+        return sum(
+            cur.execute(
+                f"SELECT count(*) FROM langgraph.{t} WHERE thread_id = %s", (run_id,)
+            ).fetchone()[0]
+            for t in CHECKPOINT_TABLES
+        )
+
+
+def crashed_run(db, doc: str):
+    """A job's run left open after its first page, with its checkpoints."""
+    jobs.enqueue(db, doc)
+    job = jobs.claim_next(db, "A")
+    run = start_run(doc, document_graph.GRAPH_VERSION)
+    jobs.set_run(db, job, "A", run.id)
+    with checkpoints.open_checkpointer() as saver:
+        graph = document_graph.build(checkpointer=saver, interrupt_before=["classify"])
+        token = context.current_run.set(run)
+        try:
+            graph.invoke(
+                jobs._document_state(db, doc),
+                {"configurable": {"thread_id": run.id}, "recursion_limit": 100},
+            )
+        finally:
+            context.current_run.reset(token)
+            run.close()
+    assert thread_rows(db, run.id) > 0
+    return job, run
+
+
+def rows_naming(db, needles: list[str]) -> list[str]:
+    """Every table, in every schema, with a row that holds one of `needles`."""
+    with db.cursor() as cur:
+        cur.execute(
+            "SELECT table_schema, table_name FROM information_schema.tables"
+            " WHERE table_type = 'BASE TABLE'"
+            " AND table_schema NOT IN ('pg_catalog', 'information_schema')"
+        )
+        tables = cur.fetchall()
+        found = []
+        for schema, table in tables:
+            cur.execute(
+                "SELECT column_name FROM information_schema.columns"
+                " WHERE table_schema = %s AND table_name = %s AND data_type = 'bytea'",
+                (schema, table),
+            )
+            blobs = [c for (c,) in cur.fetchall()]
+            for needle in needles:
+                tests = ["t::text LIKE %s"] + [
+                    f"position(convert_to(%s, 'UTF8') in t.\"{c}\") > 0" for c in blobs
+                ]
+                params = [f"%{needle}%"] + [needle] * len(blobs)
+                cur.execute(
+                    f'SELECT 1 FROM "{schema}"."{table}" t WHERE {" OR ".join(tests)}'
+                    " LIMIT 1",
+                    params,
+                )
+                if cur.fetchone():
+                    found.append(f"{schema}.{table}")
+        return sorted(set(found))
+
+
+def test_a_finished_job_leaves_no_checkpoints(db, model_client):
+    doc = add_document(db)
+    jobs.enqueue(db, doc)
+    job = jobs.claim_next(db, "A")
+    replies_for(model_client)
+
+    jobs.process(job, "A")
+
+    assert insight_row(db, doc)[0] == "verified"
+    assert thread_rows(db, job_row(db, doc)["run_id"]) == 0
+
+
+def test_a_failed_job_leaves_no_checkpoints(db, model_client):
+    doc = add_document(db)
+    jobs.enqueue(db, doc)
+    job = jobs.claim_next(db, "A")
+    model_client.replies[PRIMARY] = [ConnectionError("down")]
+    model_client.replies[FALLBACK] = [ConnectionError("down")]
+
+    jobs.process(job, "A")
+
+    row = job_row(db, doc)
+    assert row["status"] == "failed"
+    assert thread_rows(db, row["run_id"]) == 0
+
+
+def test_ending_an_open_run_deletes_its_checkpoints(db, model_client):
+    replies_for(model_client)
+    _, run = crashed_run(db, add_document(db))
+
+    with resume_run(run.id) as again:
+        again.finish("failed", error="stopped")
+
+    assert thread_rows(db, run.id) == 0
+
+
+def test_deleting_a_document_leaves_no_row_that_names_it(db, model_client):
+    replies_for(model_client)
+    doc = add_document(db)
+    _, run = crashed_run(db, doc)
+    keep = add_document(db)  # another patient's document stays
+    jobs.enqueue(db, keep)
+    before = rows_naming(db, [doc, run.id])
+    assert {"public.documents", "public.pipeline_steps", "langgraph.checkpoints",
+            "langgraph.checkpoint_blobs"} <= set(before)  # fmt: skip
+
+    with db.cursor() as cur:
+        cur.execute("DELETE FROM documents WHERE id = %s", (doc,))
+
+    assert rows_naming(db, [doc, run.id]) == []
+    assert rows_naming(db, [keep]) != []
+
+
+def test_a_checkpoint_that_cant_be_deleted_is_logged_not_raised(json_log):
+    class Saver:
+        def delete_thread(self, run_id):
+            raise RuntimeError("gone")
+
+    jobs._delete_thread(Saver(), "r1")
+
+    line = line_with(json_log, "checkpoints_not_deleted")
+    assert line["run_id"] == "r1"

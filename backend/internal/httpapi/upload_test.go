@@ -2,6 +2,8 @@ package httpapi
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
 	"io"
 	"net/http"
 	"os"
@@ -116,6 +118,40 @@ func TestUploadSavesTheFileAndStartsProcessing(t *testing.T) {
 		Body: map[string]string{"document_id": doc.ID}}
 	if calls[0].Path != want.Path || calls[0].Token != want.Token || calls[0].Body["document_id"] != doc.ID {
 		t.Errorf("AI call = %+v, want %+v", calls[0], want)
+	}
+}
+
+func TestTheSameFileUploadedAgainIsFlaggedNotRefused(t *testing.T) {
+	e := newTestEnv(t)
+	_, auth := e.login("me@hospital.test")
+	upload := func(name string, content []byte) (db.Document, string) {
+		body, contentType := multipartFile(t, "file", name, content)
+		rec := e.do(http.MethodPost, "/documents", auth, body, contentType)
+		if rec.Code != http.StatusCreated {
+			t.Fatalf("status = %d, want 201: %s", rec.Code, rec.Body)
+		}
+		return decodeJSON[db.Document](t, rec), rec.Body.String()
+	}
+
+	first, firstBody := upload("cbc.pdf", pdfBytes)
+	again, _ := upload("cbc copy.pdf", pdfBytes)
+	other, _ := upload("lft.pdf", append(append([]byte{}, pdfBytes...), ' '))
+
+	if first.DuplicateOf != nil || strings.Contains(firstBody, "duplicate_of") {
+		t.Errorf("first upload flagged: %s", firstBody)
+	}
+	if again.DuplicateOf == nil || *again.DuplicateOf != first.ID {
+		t.Errorf("copy duplicate_of = %v, want %s", again.DuplicateOf, first.ID)
+	}
+	if other.DuplicateOf != nil {
+		t.Errorf("a different file is flagged as a copy of %s", *other.DuplicateOf)
+	}
+	sum := sha256.Sum256(pdfBytes)
+	if got := e.store.documents[first.ID].SHA256; got != hex.EncodeToString(sum[:]) {
+		t.Errorf("stored hash = %q, want the file's SHA-256", got)
+	}
+	if strings.Contains(firstBody, hex.EncodeToString(sum[:])) {
+		t.Error("the response carries the file hash")
 	}
 }
 

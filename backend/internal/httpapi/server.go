@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -52,7 +53,7 @@ type Store interface {
 
 	// Documents and summaries
 	GetPatientSummary(ctx context.Context, userID string) (*db.PatientSummary, error)
-	CreateDocument(ctx context.Context, userID, originalName, contentType, storagePath string) (*db.Document, error)
+	CreateDocument(ctx context.Context, userID, originalName, contentType, storagePath, sha256 string) (*db.Document, error)
 	ListDocumentsByUser(ctx context.Context, userID string) ([]db.Document, error)
 	GetDocumentByIDAndUser(ctx context.Context, docID, userID string) (*db.Document, error)
 	DeleteDocumentByIDAndUser(ctx context.Context, docID, userID string) (storagePath string, shared bool, err error)
@@ -222,7 +223,10 @@ func (s *Server) handleUploadDocument(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to save file", http.StatusInternalServerError)
 		return
 	}
-	_, err = dst.ReadFrom(file)
+	// Hashed as it is written, so an exact copy of an earlier upload can be
+	// flagged.
+	hash := sha256.New()
+	_, err = dst.ReadFrom(io.TeeReader(file, hash))
 	if closeErr := dst.Close(); err == nil {
 		err = closeErr
 	}
@@ -238,6 +242,7 @@ func (s *Server) handleUploadDocument(w http.ResponseWriter, r *http.Request) {
 		header.Filename,
 		header.Header.Get("Content-Type"),
 		storagePath,
+		hex.EncodeToString(hash.Sum(nil)),
 	)
 	if err != nil {
 		_ = os.Remove(storagePath)

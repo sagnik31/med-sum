@@ -94,9 +94,15 @@ CREATE TABLE documents (
     storage_path       text NOT NULL,          -- absolute; never sent to clients
     uploaded_at        timestamptz NOT NULL DEFAULT now(),
     updated_at         timestamptz NOT NULL DEFAULT now(),
-    extracted_markdown text                    -- the latest run's transcription, as plain text
+    extracted_markdown text,                   -- the latest run's transcription, as plain text
+    -- SHA-256 of the uploaded file. The same file uploaded again for the
+    -- same patient is flagged as a duplicate of the first (not refused),
+    -- and the patient summary counts it once. Null for rows made without
+    -- an upload. See docs/adr/0036-data-lifecycle.md.
+    sha256             text CHECK (sha256 ~ '^[0-9a-f]{64}$')
 );
 CREATE INDEX documents_user_id_idx ON documents (user_id);
+CREATE INDEX documents_user_id_sha256_idx ON documents (user_id, sha256, uploaded_at);
 
 -- Where a document's processing stands: at most one row per document, and
 -- its status is what the API reports; no row means not started. processing
@@ -152,6 +158,39 @@ CREATE TABLE pipeline_runs (
     CHECK (ended_at IS NULL OR ended_at >= started_at)
 );
 CREATE INDEX pipeline_runs_document_id_idx ON pipeline_runs (document_id, started_at);
+
+-- A run's checkpoints (its LangGraph thread, named by the run's id) are
+-- needed only while the run can still resume, and they hold the graph's
+-- state, document content included. So they are deleted when the run ends
+-- and when the run is deleted (with its document, by ON DELETE CASCADE).
+-- The AI service creates the checkpoint tables after this file is loaded,
+-- so the function looks each one up when it runs. SECURITY DEFINER: the
+-- role deleting a document needn't be able to touch the checkpoint schema.
+-- See docs/adr/0036-data-lifecycle.md.
+CREATE FUNCTION delete_run_checkpoints() RETURNS trigger
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = pg_catalog, pg_temp AS $$
+DECLARE
+    thread text := OLD.id::text;
+BEGIN
+    IF to_regclass('langgraph.checkpoint_writes') IS NOT NULL THEN
+        DELETE FROM langgraph.checkpoint_writes WHERE thread_id = thread;
+    END IF;
+    IF to_regclass('langgraph.checkpoint_blobs') IS NOT NULL THEN
+        DELETE FROM langgraph.checkpoint_blobs WHERE thread_id = thread;
+    END IF;
+    IF to_regclass('langgraph.checkpoints') IS NOT NULL THEN
+        DELETE FROM langgraph.checkpoints WHERE thread_id = thread;
+    END IF;
+    RETURN NULL;
+END
+$$;
+CREATE TRIGGER pipeline_runs_ended_delete_checkpoints
+    AFTER UPDATE OF ended_at ON pipeline_runs
+    FOR EACH ROW WHEN (OLD.ended_at IS NULL AND NEW.ended_at IS NOT NULL)
+    EXECUTE FUNCTION delete_run_checkpoints();
+CREATE TRIGGER pipeline_runs_deleted_delete_checkpoints
+    AFTER DELETE ON pipeline_runs
+    FOR EACH ROW EXECUTE FUNCTION delete_run_checkpoints();
 
 -- The text of every prompt a step has used, by the hash that
 -- pipeline_steps.prompt_hash records, written the first time a step uses

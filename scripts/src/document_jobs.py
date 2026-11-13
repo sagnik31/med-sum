@@ -328,6 +328,23 @@ def _invoke(graph, run, state: dict) -> dict:
     return graph.invoke(None if saved.values else state, config)
 
 
+def _delete_thread(saver, run_id: str) -> None:
+    """
+    The run's checkpoints, deleted once the graph has stopped: the run has
+    ended, so it won't resume, and they hold document content. The database
+    deletes them too when the run ends or goes with its document; this
+    catches a checkpoint the graph wrote after its document was deleted.
+    See docs/adr/0036-data-lifecycle.md.
+    """
+    try:
+        saver.delete_thread(run_id)
+    except Exception:
+        logger.warning(
+            "could not delete the run's checkpoints",
+            extra=_obs("checkpoints_not_deleted", run_id=run_id),
+        )
+
+
 def process(job: Job, worker: str, *, build=None, heartbeat_s: float = HEARTBEAT_S):
     """
     Run one claimed job to its end. Errors are stored, not raised. `build`
@@ -341,12 +358,20 @@ def process(job: Job, worker: str, *, build=None, heartbeat_s: float = HEARTBEAT
                 Heartbeat(job, worker, every=heartbeat_s) as beat,
             ):
                 compiled = (build or document_graph.build)(checkpointer=saver)
-                with _open_run(conn, job, worker) as run:
-                    final = _invoke(compiled, run, state)
-                    if beat.lost.is_set():
-                        raise LostClaim(f"job {job.id} lost its claim while running")
-                    renew_lease(conn, job, worker)  # still ours, before ending
-                    run.finish(final["end_state"])
+                run_id = None
+                try:
+                    with _open_run(conn, job, worker) as run:
+                        run_id = run.id
+                        final = _invoke(compiled, run, state)
+                        if beat.lost.is_set():
+                            raise LostClaim(
+                                f"job {job.id} lost its claim while running"
+                            )
+                        renew_lease(conn, job, worker)  # still ours, before ending
+                        run.finish(final["end_state"])
+                finally:
+                    if run_id is not None:
+                        _delete_thread(saver, run_id)
             complete(conn, job, worker, final)
             logger.info(
                 "document job completed",
