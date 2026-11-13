@@ -23,6 +23,7 @@ from datetime import datetime, timezone
 
 from observability import context
 from observability.jsonable import jsonable
+from observability.redact import redact
 
 # The fields a log line may carry from `extra={"obs": ...}`.
 LOG_FIELDS = frozenset(
@@ -116,7 +117,9 @@ class JsonFormatter(logging.Formatter):
             ),
             "level": record.levelname,
             "logger": record.name,
-            "message": record.getMessage(),
+            # Written by code, but masked anyway: the safety net behind the
+            # allowlist below (observability.redact, patterns only).
+            "message": redact(record.getMessage()),
         }
         # Formatting happens in the logging thread for the handlers below,
         # so the context is the caller's (a QueueHandler would lose it).

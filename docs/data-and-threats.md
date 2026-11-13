@@ -26,9 +26,21 @@ This page maps every place a document's content enters, is stored and is deleted
 - **`pipeline_model_calls`.** Sizes, token counts, options and timings; never the prompt, the reply or an image.
 - **`prompts`.** The pipeline's own instructions, never document content. A step's document text goes in a separate message, so prompt rows can outlive the documents that used them ([0035](adr/0035-run-provenance-and-replay.md)).
 - **The browser, except through the API.** The browser never calls the AI service ([0032](adr/0032-ai-service-behind-the-api.md)).
-- **A cloud model.** None is configured.
+- **A cloud model.** None is configured, and `llm.chat` refuses one unless the documents are marked synthetic. It never sends one a page image ([0037](adr/0037-data-classes-and-redaction.md)).
 
 `python -m pipeline.replay` prints a stored step's content to the terminal. It is a developer's tool run against a local database, not a service endpoint.
+
+## Data classes
+
+Every database column and every log field has one class ([`observability/data_classes.py`](../scripts/src/observability/data_classes.py)), and a test fails when one has none:
+
+- **clinical**: patient data, on purpose: `documents`' file name, transcription and hash; `document_records`; `insights.html_insights`; the account's name and summary (the account is the patient for now); `pipeline_steps.input` and `output`; the checkpoint schema.
+- **personal**: staff e-mail and registration number, a session's IP address and browser.
+- **secret**: password and token hashes.
+- **telemetry**: run, step, model-call and job details, findings and every error column. These must never hold patient data. Text written to them is masked: the identifiers the run has seen (the expected patient, and the name, ID and date of birth printed on the document) go first, then patterns for e-mail addresses, Indian mobile numbers, ABHA, Aadhaar, PAN, and hospital and laboratory IDs.
+- **safe**: ids, timestamps, statuses, counts, and the pipeline's own prompts and hashes.
+
+Logs carry only safe and telemetry fields, and every log message is masked by pattern as well. A leak test runs the whole synthetic dataset, and a document uploaded for the wrong patient, through the pipeline. It then checks that no patient's name, ID or date of birth is in a log line or any telemetry column. `python -m evals.redaction` reports recall per identifier type: every type is masked when the run knows the value; by pattern alone, IDs, phone, Aadhaar, ABHA, PAN and e-mail are caught, and names are not.
 
 ## What is protected
 
@@ -42,8 +54,18 @@ This page maps every place a document's content enters, is stored and is deleted
 - **No encryption at rest.** The database and the uploads folder are plain on disk; protecting them is left to the disk.
 - **No audit log.** Who read or changed which patient's data isn't recorded yet ([0031](adr/0031-append-only-audit-log.md)).
 - **Organisation scope isn't enforced in SQL.** Each account sees only the documents it uploaded, but the database itself doesn't keep organisations apart yet ([0030](adr/0030-authorization-in-two-layers.md)).
-- **Step rows hold content.** `pipeline_steps` is both a trace and a clinical store, and it is protected as a clinical store.
+- **Step rows hold some content.** A transcribe step keeps its page's lines and a parse step its reply, so `pipeline_steps.input` and `output` are clinical. Steps that would repeat another table's content store a hash instead.
 - **Development secrets** are in the development configuration, and the AI service's localhost-only bind is not built yet ([0032](adr/0032-ai-service-behind-the-api.md)).
+
+## The legal frame: India's DPDP Act
+
+India's Digital Personal Data Protection Act, 2023, and its rules are the frame this design is read against. Health data is personal data under the Act. The hospital is the data fiduciary and this system processes data on its behalf. The duties that shape the design are:
+- purpose limitation (data is used to summarise the patient's own documents and nothing else);
+- reasonable security safeguards;
+- erasure when the purpose is served or consent is withdrawn (deleting a document removes everything stored about it);
+- telling the board and the people concerned about a breach.
+
+The system does not yet meet every duty a deployment would carry. It has no consent records, no audit log, no encryption at rest, no retention schedule, and no export of a patient's data on request. Those belong with real patient data, not with this synthetic showcase, and are listed above under what isn't protected. Nothing here is legal advice.
 
 ## Threat model: a document that tries to steer the models
 

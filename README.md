@@ -365,6 +365,7 @@ All of these run from `scripts/src`.
 - **`python -m evals.run --replay`** runs the same graph from the cassettes, without Ollama. A changed prompt, page, option or output schema is a miss, and the run stops with a message naming what changed and asking for a re-record.
 - **`python -m evals.compare A B`** compares two history entries or reports. It fails when unsafe errors rise (overall or in verified documents), when routing or medicine recall falls, or when field F1 or value recall falls by more than a point. **`python -m evals.history`** prints every run as a table.
 - **`python -m evals.selfcheck`** scores the answer keys against themselves to show the report's shape. Every score is perfect, and 22 of 25 documents end verified. Even so, its 0 unsafe errors in 204 clinical items still allows up to 1.8% at 95%: that is how little a dataset this size can rule out, and why every count in the report carries its interval.
+- **`python -m evals.redaction`** measures how well patient identifiers are masked in what leaves the clinical stores (findings, errors, logs): recall per identifier type, with the run's known values and with patterns alone. See [where patient data goes](docs/data-and-threats.md).
 
 ## Limitations
 

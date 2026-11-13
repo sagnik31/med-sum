@@ -8,6 +8,7 @@ does nothing.
 """
 
 import uuid
+from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -17,6 +18,20 @@ from datetime import datetime, timezone
 # contextvars.copy_context(), which is how LangGraph runs sync nodes.
 current_run: ContextVar = ContextVar("medsum_current_run", default=None)
 current_step: ContextVar = ContextVar("medsum_current_step", default=None)
+# True only while the documents being processed are known to be synthetic
+# (the eval dataset): the one case where llm.chat may send text to a cloud
+# model. Set it with synthetic_documents().
+synthetic_only: ContextVar = ContextVar("medsum_synthetic_only", default=False)
+
+
+@contextmanager
+def synthetic_documents():
+    """Mark the calls made inside the block as being about synthetic documents."""
+    token = synthetic_only.set(True)
+    try:
+        yield
+    finally:
+        synthetic_only.reset(token)
 
 
 @dataclass(frozen=True)

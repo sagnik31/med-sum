@@ -34,6 +34,8 @@ fit its schema fails the step without raising, and the graph decides what
 comes next.
 """
 
+import hashlib
+import json
 from datetime import date
 
 from pydantic import ValidationError
@@ -43,7 +45,8 @@ import psycopg
 import llm
 import model_health
 from derive import build_record
-from observability import current_step, stamp, traced
+from observability import add_identifiers, current_step, stamp, traced
+from observability.jsonable import jsonable
 from pipeline import pages as page_files
 from pipeline import parts, reread, signals, store
 from pipeline.classify import decide, disagree, keyword_check
@@ -79,6 +82,36 @@ def _page_numbers(state: GraphState) -> list[int]:
     return [p.page for p in state.get("transcriptions", [])]
 
 
+def _note_expected_patient(state: GraphState) -> None:
+    """
+    Who the document should be for, noted on the run so stored findings
+    and errors mask it (observability.redact).
+    """
+    expected = state.get("expected_patient")
+    dob = getattr(expected, "date_of_birth", None)
+    add_identifiers(
+        state.get("uploaded_by"),
+        getattr(expected, "name", None),
+        getattr(expected, "mrn", None),
+        *(
+            (dob.isoformat(), dob.strftime("%d/%m/%Y"), dob.strftime("%d-%m-%Y"))
+            if dob
+            else ()
+        ),
+    )
+
+
+def _note_printed_patient(parsed) -> None:
+    """The patient as the parse read them, noted like the expected one."""
+    patient = getattr(parsed, "patient", None)
+    if patient is None:
+        return
+    add_identifiers(*(
+        getattr(getattr(patient, name, None), "text", None)
+        for name in ("name", "patient_id", "date_of_birth")
+    ))  # fmt: skip
+
+
 def _step():
     step = current_step()
     assert step is not None, "a node runs inside its traced step"
@@ -90,6 +123,7 @@ def _step():
 # -------------------------------------------------------------------
 @traced("open", input_of=lambda s: {"document_id": s["document_id"]})
 def open_document(state: GraphState) -> dict:
+    _note_expected_patient(state)
     path = state["file_path"]
     n = page_files.page_count(path)
     images = [
@@ -362,6 +396,7 @@ def _part_call(state: GraphState, part: ParsePart, messages: list[dict]) -> Part
             index=part.index, reply=reply, error=schema_errors(e),
             model_role=step.model_role, truncated=_truncated(step, calls_before),
         )  # fmt: skip
+    _note_printed_patient(parsed)
     return PartResult(
         index=part.index,
         reply=reply,
@@ -581,20 +616,40 @@ def use_fallback(state: GraphState) -> dict:
 # -------------------------------------------------------------------
 # validate
 # -------------------------------------------------------------------
+def content_ref(value) -> dict | None:
+    """
+    What a step stores in place of content another store already holds:
+    its SHA-256 and size. See docs/adr/0037-data-classes-and-redaction.md.
+    """
+    if value is None:
+        return None
+    text = (
+        value
+        if isinstance(value, str)
+        else json.dumps(jsonable(value), sort_keys=True, ensure_ascii=False)
+    )
+    data = text.encode("utf-8")
+    return {"sha256": hashlib.sha256(data).hexdigest(), "chars": len(text)}
+
+
 def _validate_input(state: GraphState) -> dict:
+    # The parse is in the parse steps' replies, the patient in the account:
+    # references only.
     return {
         "doc_type": state.get("doc_type"),
-        "parse": state.get("parse"),
-        "expected_patient": state.get("expected_patient"),
-        "uploaded_by": state.get("uploaded_by"),
+        "parse": content_ref(state.get("parse")),
+        "expected_patient": state.get("expected_patient") is not None,
         "pages": _page_numbers(state),
     }
 
 
 def _validate_output(result: dict) -> dict:
-    # The pages are in the transcribe steps and the findings in their own
-    # column; the record without its pages is what this step adds.
-    return {"record": result["record"].model_dump(mode="json", exclude={"pages"})}
+    # The record is in document_records, the findings in their own column.
+    record = result["record"]
+    return {
+        "record": content_ref(record.model_dump(mode="json", exclude={"pages"})),
+        "items": sum(1 for _ in record.items()),
+    }
 
 
 @traced("validate", input_of=_validate_input, output_of=_validate_output)
@@ -706,7 +761,12 @@ def _render_input(state: GraphState) -> dict:
     }
 
 
-@traced("render", input_of=_render_input)
+def _render_output(result: dict) -> dict:
+    # The page itself is stored in insights.
+    return {"insight_html": content_ref(result["insight_html"])}
+
+
+@traced("render", input_of=_render_input, output_of=_render_output)
 def render(state: GraphState) -> dict:
     """
     The document view, built by code from the record (views/document.py),

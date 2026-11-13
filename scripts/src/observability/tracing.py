@@ -40,6 +40,7 @@ from psycopg.types.json import Jsonb
 import settings
 
 from observability import context, model_calls, versions
+from observability.redact import redact, redact_finding
 from observability.jsonable import jsonable
 from record.common import Provenance
 
@@ -209,6 +210,17 @@ class Run:
         self._lock = threading.Lock()  # parallel nodes share the connection
         self._started = time.monotonic()
         self._tokens: list = []
+        # The patient identifiers this run has seen, masked in the findings
+        # and error text it stores (observability.redact).
+        self.identifiers: set[str] = set()
+
+    def add_identifiers(self, *values) -> None:
+        """Patient identifiers to mask in what this run stores from now on."""
+        with self._lock:
+            self.identifiers.update(str(v) for v in values if v)
+
+    def redacted(self, text: str | None) -> str | None:
+        return redact(text, self.identifiers)
 
     def note_breaker_switch(self, event: str, model: str, role: str) -> None:
         with self._lock:
@@ -267,7 +279,7 @@ class Run:
                 f"UPDATE pipeline_runs SET end_state = %(state)s, ended_at = now(),"
                 f" error = %(error)s, models_used = {_MODELS_USED}"
                 f" WHERE id = %(run)s AND ended_at IS NULL RETURNING models_used",
-                {"run": self.id, "state": end_state, "error": error},
+                {"run": self.id, "state": end_state, "error": self.redacted(error)},
             )
             row = cur.fetchone()
             if row is None:
@@ -408,8 +420,12 @@ class Run:
             "output": None if step._output is _UNSET else Jsonb(jsonable(step._output)),
             "prompt_tokens": step.prompt_tokens,
             "completion_tokens": step.completion_tokens,
-            "findings": Jsonb(jsonable(step.findings)),
-            "error": step.error,
+            # Findings and errors can quote the document: identifiers are
+            # masked here, on the telemetry row (the record keeps its own).
+            "findings": Jsonb(
+                [redact_finding(f, self.identifiers) for f in jsonable(step.findings)]
+            ),
+            "error": self.redacted(step.error),
         }
         with self._tx() as cur:
             if step.prompt_text is not None:
@@ -629,6 +645,14 @@ class Step:
 # -------------------------------------------------------------------
 def current_run() -> Run | None:
     return context.current_run.get()
+
+
+def add_identifiers(*values) -> None:
+    """Note patient identifiers on the current run, if there is one."""
+    step = context.current_step.get()
+    run = step.run if step is not None else context.current_run.get()
+    if run is not None:
+        run.add_identifiers(*values)
 
 
 def current_step() -> Step | None:

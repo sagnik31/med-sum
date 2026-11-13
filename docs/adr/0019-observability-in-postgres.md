@@ -23,7 +23,7 @@ A clinician who sees a wrong value, or a developer chasing a regression, needs t
 
 ## Consequences
 
-- Step rows hold content (inputs and outputs), so the database is a clinical store throughout and protected as one.
+- Step rows hold content (inputs and outputs), so the database is a clinical store throughout and protected as one. Since [0037](0037-data-classes-and-redaction.md), findings and errors on these rows are masked, and steps that would repeat another table's content store a hash.
 - Where all of this content lives, and when it is deleted: [the data-flow page](../data-and-threats.md) and [0036](0036-data-lifecycle.md).
 - Everything is queryable with SQL; there is no trace UI yet.
 - Each run also records its code version and database structure, prompt texts are kept by hash, and a step can be replayed: see [0035](0035-run-provenance-and-replay.md).

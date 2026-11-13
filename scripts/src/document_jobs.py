@@ -31,6 +31,7 @@ from dataclasses import dataclass
 import psycopg
 
 from observability import resume_run, start_run
+from observability.redact import redact
 from pipeline import checkpoints
 from pipeline import graph as document_graph
 from pipeline.nodes import plain_text
@@ -350,9 +351,12 @@ def process(job: Job, worker: str, *, build=None, heartbeat_s: float = HEARTBEAT
     Run one claimed job to its end. Errors are stored, not raised. `build`
     makes the graph from a checkpointer (default: pipeline.graph.build).
     """
+    known: list[str] = []  # the patient's identifiers, once known
     with connect() as conn:
         try:
             state = _document_state(conn, job.document_id)
+            expected = state.get("expected_patient")
+            known = [state.get("uploaded_by"), getattr(expected, "name", None)]
             with (
                 checkpoints.open_checkpointer() as saver,
                 Heartbeat(job, worker, every=heartbeat_s) as beat,
@@ -391,7 +395,9 @@ def process(job: Job, worker: str, *, build=None, heartbeat_s: float = HEARTBEAT
                 extra=_obs("job_failed", document_id=job.document_id, job_id=job.id),
             )
             try:
-                fail(conn, job, worker, str(e) or type(e).__name__)
+                # Shown to the user and stored on the job: identifiers masked.
+                message = redact(str(e) or type(e).__name__, known)
+                fail(conn, job, worker, message)
             except LostClaim:
                 pass
 

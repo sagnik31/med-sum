@@ -26,6 +26,7 @@ reply is constrained to.
 import base64
 import binascii
 import logging
+import os
 import struct
 import time
 from datetime import datetime, timezone
@@ -42,6 +43,7 @@ from observability.context import (
     ModelCall,
     record_breaker_switch,
     record_model_call,
+    synthetic_only,
 )
 
 logger = logging.getLogger("llm")
@@ -68,6 +70,38 @@ MODEL_ERRORS = (ollama.ResponseError, ConnectionError, httpx.TransportError)
 
 ModelRole = Literal["primary", "fallback"]
 _MODELS = {"primary": PRIMARY_MODEL, "fallback": FALLBACK_MODEL}
+
+# Models that run off this machine: names a cloud provider uses, Ollama's
+# cloud-hosted tags, and any listed in MEDSUM_CLOUD_MODELS. None is
+# configured; the guard is there so that adding one can't leak patient data.
+# See docs/adr/0037-data-classes-and-redaction.md.
+CLOUD_MODEL_PREFIXES = ("gemini", "gpt-", "claude", "o1", "o3", "o4")
+CLOUD_TAG_SUFFIXES = ("-cloud", ":cloud")
+
+
+def is_cloud(model: str, environ=os.environ) -> bool:
+    """Whether a model runs at a cloud provider rather than on this machine."""
+    listed = {m.strip() for m in environ.get("MEDSUM_CLOUD_MODELS", "").split(",")}
+    name = model.lower()
+    return (
+        model in listed
+        or name.startswith(CLOUD_MODEL_PREFIXES)
+        or name.endswith(CLOUD_TAG_SUFFIXES)
+    )
+
+
+def cloud_refusal(messages: list[dict]) -> str | None:
+    """
+    Why these messages may not go to a cloud model, or None when they may:
+    page images never go (they show the patient's name and can't be
+    masked), and text goes only for documents marked synthetic.
+    """
+    if any(m.get("images") for m in messages):
+        return "page images are never sent to a cloud model"
+    if not synthetic_only.get():
+        return "the document is not marked synthetic"
+    return None
+
 
 # Model digests, looked up at most once per model per process (a tag can
 # point to new weights after a re-pull). None when the lookup failed.
@@ -129,6 +163,16 @@ def chat(
     tried = False
     for role in roles:
         model = _MODELS[role]
+        refused = cloud_refusal(messages) if is_cloud(model) else None
+        if refused:
+            failures.append(f"{model}: not called, {refused}")
+            logger.warning(
+                "cloud model %s not called",
+                model,
+                extra={"obs": {"event": "cloud_call_refused", "model": model,
+                               "model_role": role}},
+            )  # fmt: skip
+            continue
         if not model_health.allow(model, role):
             wait = model_health.retry_in(model)
             failures.append(

@@ -47,6 +47,7 @@ import model_health
 import settings
 from document_jobs import LostClaim
 from observability import configure_logging
+from observability.redact import redact
 from pipeline import checkpoints
 
 
@@ -388,7 +389,7 @@ def run_patient_summary(user_id: str, claim: datetime) -> None:
             with conn.cursor() as cur:
                 cur.execute(
                     _FAIL_SUMMARY,
-                    {"error": str(e) or type(e).__name__, "user_id": user_id,
+                    {"error": redact(str(e) or type(e).__name__), "user_id": user_id,
                      "claim": claim},
                 )  # fmt: skip
                 lost = cur.rowcount == 0
