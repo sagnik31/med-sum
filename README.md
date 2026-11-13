@@ -305,7 +305,6 @@ scripts/
   src/pipeline/              the document graph: nodes, routing, low-confidence signals, checkpoints
   src/views/                 HTML built by code from records: the document page and the patient summary
   src/summary/               the patient summary: facts from the records, the overview and its check
-  src/extract_report_slm.py  page transcription from images
   src/model_health.py        the circuit breaker per model
   src/llm.py                 model calls with the primary and fallback model
   src/record/                the structured record of a document and the schemas the model fills in
@@ -345,8 +344,6 @@ Checks and tests for each part:
 ```
 
 The tests never call a model: model calls are replaced with fakes, so Ollama need not be running. The database tests create a throwaway database (`med_sum_test_go` for Go, `med_sum_test_py` for Python) from `db/schema.sql`, and drop it afterwards; your `med_sum` database is not touched. The Go tests need `psql` on the `PATH`. Both connect as `postgres:postgres@localhost:5432` unless `MEDSUM_TEST_ADMIN_URL` says otherwise. When Postgres can't be reached they are skipped; set `MEDSUM_REQUIRE_DB=1` to make that a failure. `pytest -m "not db"` runs only the tests that need no database.
-
-Page transcription can also be run on its own, which is useful for tuning the prompt: `python scripts/src/extract_report_slm.py [file]` transcribes a file (by default a synthetic lab report from `scripts/evals/dataset/`) and writes Markdown to `data/output/`. The paths are set in `scripts/src/config.py`, and `data/` is not checked in.
 
 ### Synthetic dataset
 

@@ -41,12 +41,17 @@ import psycopg
 import llm
 import model_health
 from derive import build_record
-from extract_report_slm import END_MARKER, MAX_TOKENS_PER_PAGE, transcription_messages
 from observability import current_step, stamp, traced
 from pipeline import pages as page_files
 from pipeline import signals, store
 from pipeline.classify import decide, disagree, keyword_check
-from pipeline.prompts import PARSE_PROMPTS, prompt
+from pipeline.prompts import (
+    END_MARKER,
+    MAX_TOKENS_PER_PAGE,
+    PARSE_PROMPTS,
+    prompt,
+    transcription_messages,
+)
 from pipeline.state import GraphState
 from record.document import PageTranscription, numbered_document
 from record.printed import PARSE_MODELS, ClassifierOutput, DocumentType

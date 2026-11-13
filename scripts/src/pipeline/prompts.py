@@ -30,3 +30,29 @@ PARSE_PROMPTS = {
 def prompt(name: str) -> str:
     """A prompt's text. Read once per process; a changed file needs a restart."""
     return FILES[name].read_text(encoding="utf-8")
+
+
+# -------------------------------------------------------------------
+# Page transcription request
+# -------------------------------------------------------------------
+# The model ends each page with this line; generation stops there (Ollama's
+# stop option), and nothing after it is kept.
+END_MARKER = "[[END_OF_PAGE]]"
+# Hard cap so a model stuck in a repetition loop cannot run forever; a real
+# report page needs far fewer tokens. A page that hits it is capped (LC-02).
+MAX_TOKENS_PER_PAGE = 4096
+
+
+def transcription_messages(image_bytes: bytes, system_prompt: str) -> list[dict]:
+    """The request that transcribes one page image."""
+    return [
+        {"role": "system", "content": system_prompt},
+        {
+            "role": "user",
+            "content": (
+                "Transcribe this page following your instructions. "
+                f"At the very end, output {END_MARKER} on its own line, then stop."
+            ),
+            "images": [image_bytes],
+        },
+    ]

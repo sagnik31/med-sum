@@ -4,16 +4,6 @@ import os
 # config.py is in <project>/scripts/src/config.py
 SRC_DIR = os.path.dirname(os.path.abspath(__file__))  # .../scripts/src
 SCRIPTS_DIR = os.path.dirname(SRC_DIR)  # .../scripts
-PROJECT_ROOT = os.path.dirname(SCRIPTS_DIR)  # .../med-sum
-
-# The document the extraction script transcribes when run on its own: a
-# synthetic lab report from the dataset (scripts/evals/dataset/).
-SAMPLE_DOCUMENT = os.path.join(
-    SCRIPTS_DIR, "evals", "dataset", "documents", "d09_lab_report.pdf"
-)
-OUTPUT_MD_SLM = os.path.join(
-    PROJECT_ROOT, "data", "output", "extraction", "txt", "extracted_report_slm.md"
-)
 
 # Page transcription prompt, for lab reports and prescriptions
 EXTRACTION_PROMPT_FILE = os.path.join(SCRIPTS_DIR, "prompt", "img", "extract_page.txt")

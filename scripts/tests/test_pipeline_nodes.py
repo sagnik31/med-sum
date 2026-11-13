@@ -17,13 +17,18 @@ import llm
 from dataset.build import DATASET_DIR
 from dataset_records import DOCS, MAIN_PARSED_IDS, expected_patient, key, parse_of
 from db_rows import add_account
-from extract_report_slm import END_MARKER, transcription_messages
 from observability import is_traced, start_run
 from pipeline import nodes
 from pipeline import pages as page_files
 from pipeline import store
 from pipeline.classify import Decision, decide, keyword_check
-from pipeline.prompts import FILES, prompt
+from pipeline.prompts import (
+    END_MARKER,
+    FILES,
+    MAX_TOKENS_PER_PAGE,
+    prompt,
+    transcription_messages,
+)
 from pipeline.state import PageImage, initial_state, merge_pages
 from record.common import ItemStatus
 from record.document import DocumentRecord, PageTranscription, numbered_document
@@ -226,9 +231,12 @@ def test_transcribe_reads_the_next_page_with_its_text_layer(db, run, model_clien
     assert page.lines == ["# Sunrise Diagnostics", "", "Name: A"]
     assert page.text_layer == page_files.text_layer(file_of("d09"), 1)
     image = page_files.page_png(file_of("d09"), 1)
-    assert model_client.calls[0]["messages"] == transcription_messages(
-        image, prompt("extract_page")
-    )
+    [call] = model_client.calls
+    assert call["messages"] == transcription_messages(image, prompt("extract_page"))
+    system, user = call["messages"]
+    assert system == {"role": "system", "content": prompt("extract_page")}
+    assert user["images"] == [image] and END_MARKER in user["content"]
+    assert call["options"]["num_predict"] == MAX_TOKENS_PER_PAGE
     [row] = step_rows(db, run)
     assert (row["node"], row["page"], row["status"]) == ("transcribe", 1, "ok")
     assert (row["model"], row["model_role"]) == (llm.PRIMARY_MODEL, "primary")
