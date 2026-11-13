@@ -21,7 +21,7 @@ from typing import Any, Generic, Literal, TypeVar
 
 from pydantic import BaseModel, ConfigDict, ValidationError
 
-from record.document import PageTranscription
+from record.document import DocumentRecord, PageTranscription
 
 
 class ToolInput(BaseModel):
@@ -40,12 +40,26 @@ class ToolOutput(BaseModel):
 
 @dataclass(frozen=True)
 class ToolSource:
-    """What the tools read: one document's transcribed pages, in order."""
+    """
+    What the tools read: one document's transcribed pages, in order (each
+    with the PDF's own text when it has one), and the record built from its
+    parse, when there is one.
+    """
 
     pages: tuple[PageTranscription, ...]
+    record: DocumentRecord | None = None
 
     def page(self, number: int) -> PageTranscription | None:
         return next((p for p in self.pages if p.page == number), None)
+
+    @property
+    def page_numbers(self) -> str:
+        return ", ".join(str(p.page) for p in self.pages) or "none"
+
+
+def cite(page: int, first: int, last: int | None = None) -> str:
+    """Where lines are, as every tool answer gives it: p2:7, or p2:7-9."""
+    return f"p{page}:{first}" if last in (None, first) else f"p{page}:{first}-{last}"
 
 
 ErrorKind = Literal["unknown_tool", "malformed_arguments", "not_found"]

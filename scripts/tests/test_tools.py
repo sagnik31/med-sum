@@ -6,9 +6,11 @@ each tool's schema, get_lines' answers and citations, and what may be logged.
 import json
 
 import pytest
+from dataset_records import keyed_record
 
 from record.document import PageTranscription
-from tools import GET_LINES, TOOLS, ToolSource, invoke, specs
+from tools import GET_LINES, TOOLS, ToolSource, invoke, specs, subset
+from tools import transcription as tools_transcription
 from tools.transcription import MAX_LINES
 
 # An invented page; no line is taken from the dataset.
@@ -156,7 +158,7 @@ def test_an_unknown_tool_is_an_error_naming_the_tools():
 # -------------------------------------------------------------------
 def test_the_model_gets_the_output_as_json():
     sent = json.loads(call("get_lines", {"page": 1, "first": 6, "last": 6}).for_model())
-    assert sent["cite"] == "p1:6-6"
+    assert sent["cite"] == "p1:6"
     assert sent["lines"] == [{"number": 6, "text": "| Serum Sodium | 139 | mmol/L |"}]
 
 
@@ -180,3 +182,144 @@ def test_log_fields_of_an_error_name_its_kind():
         "ok": False,
         "error_kind": "malformed_arguments",
     }
+
+
+# -------------------------------------------------------------------
+# search_transcription
+# -------------------------------------------------------------------
+def test_search_finds_every_line_ignoring_case_and_spacing():
+    out = call("search_transcription", {"text": "serum   SODIUM"}).output
+    assert [(h.page, h.line, h.cite) for h in out.hits] == [(1, 6, "p1:6")]
+    assert out.hits[0].text == "| Serum Sodium | 139 | mmol/L |"
+    assert out.more is False
+
+
+def test_search_on_one_page_only():
+    out = call("search_transcription", {"text": "line 1", "page": 1}).output
+    assert out.hits == []
+    hits = call("search_transcription", {"text": "line 1", "page": 2}).output.hits
+    assert all(h.page == 2 for h in hits) and hits
+
+
+def test_a_broad_search_is_cut_and_says_so():
+    out = call("search_transcription", {"text": "line"}).output
+    assert len(out.hits) == tools_transcription.MAX_HITS and out.more is True
+
+
+@pytest.mark.parametrize("text", ["x", " ", "y" * 121])
+def test_a_search_too_short_or_long_is_malformed(text):
+    result = call("search_transcription", {"text": text})
+    assert result.error.kind == "malformed_arguments"
+
+
+def test_a_search_on_a_missing_page_is_not_found():
+    assert call("search_transcription", {"text": "Sodium", "page": 9}).error.kind == (
+        "not_found"
+    )
+
+
+# -------------------------------------------------------------------
+# get_text_layer
+# -------------------------------------------------------------------
+LAYERED = ToolSource(
+    pages=(
+        PageTranscription(page=1, lines=["a"], text_layer="Serum Sodium 139\nmmol/L"),
+        PageTranscription(page=2, lines=["b"]),
+    )
+)
+
+
+def test_the_text_layer_comes_back_as_numbered_lines():
+    out = invoke(TOOLS, "get_text_layer", {"page": 1}, LAYERED).output
+    assert out.has_text_layer and out.layer_lines == 2 and out.cut is False
+    assert [(line.number, line.text) for line in out.lines] == [
+        (1, "Serum Sodium 139"),
+        (2, "mmol/L"),
+    ]
+
+
+def test_a_page_without_a_text_layer_says_so():
+    out = invoke(TOOLS, "get_text_layer", {"page": 2}, LAYERED).output
+    assert out.has_text_layer is False and out.lines == []
+
+
+def test_the_text_layer_is_cut_at_the_limit():
+    long = ToolSource(
+        pages=(PageTranscription(page=1, lines=[], text_layer="x\n" * 100),)
+    )
+    out = invoke(TOOLS, "get_text_layer", {"page": 1, "first": 5}, long).output
+    assert [line.number for line in out.lines][0] == 5
+    assert len(out.lines) == MAX_LINES and out.cut is True
+
+
+def test_text_layer_errors():
+    assert invoke(TOOLS, "get_text_layer", {"page": 3}, LAYERED).error.kind == (
+        "not_found"
+    )
+    bad = invoke(TOOLS, "get_text_layer", {"page": 1, "first": 2, "last": 1}, LAYERED)
+    assert bad.error.kind == "malformed_arguments"
+
+
+# -------------------------------------------------------------------
+# list_items and get_item (over an answer key's record)
+# -------------------------------------------------------------------
+@pytest.fixture
+def d09():
+    record = keyed_record("d09")
+    return ToolSource(pages=tuple(record.pages), record=record)
+
+
+def test_list_items_gives_each_item_with_its_kind_name_and_citation(d09):
+    out = invoke(TOOLS, "list_items", {}, d09).output
+    assert [i.item_id for i in out.items] == [i.id for i in d09.record.items()]
+    first = out.items[0]
+    c = d09.record.observations[0].printed.citation
+    assert first.kind == "lab_result"
+    assert first.name == d09.record.observations[0].printed.test_name
+    assert first.cite == f"p{c.page}:{c.first_line}"
+
+
+def test_list_items_of_one_kind(d09):
+    out = invoke(TOOLS, "list_items", {"kind": "remark"}, d09).output
+    assert {i.kind for i in out.items} == {"remark"}
+    assert invoke(TOOLS, "list_items", {"kind": "x"}, d09).error.kind == (
+        "malformed_arguments"
+    )
+
+
+def test_get_item_gives_the_item_and_the_text_it_cites(d09):
+    out = invoke(TOOLS, "get_item", {"item_id": "obs-1"}, d09).output
+    item = d09.record.observations[0]
+    c = item.printed.citation
+    assert out.printed["test_name"] == item.printed.test_name
+    assert (
+        out.cited_lines == d09.pages[c.page - 1].lines[c.first_line - 1 : c.last_line]
+    )
+    assert out.cite == f"p{c.page}:{c.first_line}"
+    assert out.kind == "lab_result"
+
+
+def test_get_item_of_an_unknown_id_is_not_found(d09):
+    assert invoke(TOOLS, "get_item", {"item_id": "obs-99"}, d09).error.kind == (
+        "not_found"
+    )
+
+
+def test_record_tools_without_a_record_say_there_is_none():
+    for name, args in (("list_items", {}), ("get_item", {"item_id": "obs-1"})):
+        result = invoke(TOOLS, name, args, SOURCE)
+        assert result.error.kind == "not_found"
+        assert "no record" in result.error.message
+
+
+def test_every_tool_spec_is_an_object_schema_without_titles():
+    for spec in specs(TOOLS):
+        params = spec["function"]["parameters"]
+        assert params["type"] == "object" and params["additionalProperties"] is False
+        assert "title" not in params
+
+
+def test_subset_keeps_the_order_and_refuses_unknown_names():
+    assert list(subset("get_item", "get_lines")) == ["get_lines", "get_item"]
+    with pytest.raises(KeyError):
+        subset("delete_page")

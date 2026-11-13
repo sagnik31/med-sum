@@ -96,7 +96,7 @@ def test_the_turn_is_recorded_with_its_tools_and_tokens(model_client, recorded):
     assert turn.wall_ms is not None
     (call,) = recorded
     assert call.status == "ok" and call.complete
-    assert call.request["tools"] == ["get_lines"]
+    assert call.request["tools"] == sorted(TOOLS)
     assert call.request["structured_output"] is False
     assert (call.prompt_tokens, call.completion_tokens) == (410, 25)
     assert call.first_token_ms is not None  # a call with no text still counts
