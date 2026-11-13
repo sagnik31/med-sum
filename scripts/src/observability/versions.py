@@ -12,7 +12,7 @@ result can be traced to the code and database that produced it:
   read from pg_catalog so every role sees the same thing. Two runs with the
   same hash ran on the same structure, whatever schema file was loaded.
 
-See docs/adr/0035-run-provenance-and-replay.md.
+See docs/adr/0006-durable-traceable-runs.md.
 """
 
 import functools

@@ -74,7 +74,7 @@ _MODELS = {"primary": PRIMARY_MODEL, "fallback": FALLBACK_MODEL}
 # Models that run off this machine: names a cloud provider uses, Ollama's
 # cloud-hosted tags, and any listed in MEDSUM_CLOUD_MODELS. None is
 # configured; the guard is there so that adding one can't leak patient data.
-# See docs/adr/0037-data-classes-and-redaction.md.
+# See docs/adr/0005-local-models-with-fallback.md.
 CLOUD_MODEL_PREFIXES = ("gemini", "gpt-", "claude", "o1", "o3", "o4")
 CLOUD_TAG_SUFFIXES = ("-cloud", ":cloud")
 

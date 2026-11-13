@@ -619,7 +619,7 @@ def use_fallback(state: GraphState) -> dict:
 def content_ref(value) -> dict | None:
     """
     What a step stores in place of content another store already holds:
-    its SHA-256 and size. See docs/adr/0037-data-classes-and-redaction.md.
+    its SHA-256 and size. See docs/adr/0008-patient-data-protection.md.
     """
     if value is None:
         return None

@@ -11,7 +11,7 @@ gain nothing. Text that is not on those lines remains an error.
 Validator 1 only catches values lost or changed between transcription and
 parse; a misread in the image is in both. Validator 2 is the one check on
 the vision step, and only where a text layer exists.
-See docs/adr/0012-pdf-text-layer-check.md.
+See docs/adr/0004-deterministic-checks-decide-routing.md.
 """
 
 from record.document import DocumentRecord

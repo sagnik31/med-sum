@@ -25,7 +25,7 @@ type Document struct {
 	// DuplicateOf is the first document of the same patient with the same
 	// file, when this one is a copy of it: a flag, not a refusal. Set by
 	// CreateDocument and ListDocumentsByUser. See
-	// docs/adr/0036-data-lifecycle.md.
+	// docs/adr/0008-patient-data-protection.md.
 	DuplicateOf *string `json:"duplicate_of,omitempty"`
 }
 

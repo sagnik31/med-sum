@@ -35,7 +35,7 @@ def load_inputs(conn, user_id: str) -> list[SummaryInput]:
     Every document of the user, with its processing status and record (if
     any). A file uploaded again (the same SHA-256) is left out, so its
     values don't count twice in trends; the first upload stands for it.
-    See docs/adr/0036-data-lifecycle.md.
+    See docs/adr/0008-patient-data-protection.md.
     """
     with conn.cursor() as cur:
         cur.execute(

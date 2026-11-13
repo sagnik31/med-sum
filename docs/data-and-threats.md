@@ -5,7 +5,7 @@ This page maps every place a document's content enters, is stored and is deleted
 ## Where content enters
 
 1. **Upload** (Go backend, `POST /documents`). The file is written under `UPLOADS_DIR` with a random name, and a `documents` row records its path, its original name and its SHA-256. The path and the hash are never sent to clients.
-2. **Processing** (AI service, a document job). Pages are rendered in memory and sent to the local Ollama models with the prompts. Nothing leaves the machine: inference is local only (see [0024](adr/0024-local-inference-by-default.md)).
+2. **Processing** (AI service, a document job). Pages are rendered in memory and sent to the local Ollama models with the prompts. Nothing leaves the machine: inference is local only (see [0005](adr/0005-local-models-with-fallback.md)).
 
 ## Where content is stored
 
@@ -17,16 +17,16 @@ This page maps every place a document's content enters, is stored and is deleted
 | `document_records` | the structured record | with its document (cascade) |
 | `insights` | the rendered document page | with its document (cascade) |
 | `users.patient_insights` | the patient summary page | rebuilt from the remaining documents |
-| `langgraph` schema | checkpoints of the graph's state while a run is open | when the run ends, and when its document is deleted ([0036](adr/0036-data-lifecycle.md)) |
+| `langgraph` schema | checkpoints of the graph's state while a run is open | when the run ends, and when its document is deleted ([0008](adr/0008-patient-data-protection.md)) |
 | `med_sum_evals`, `med_sum_test_py`, `med_sum_test_go` | synthetic documents only | dropped after each eval run or test session |
 
 ## Where content must never go
 
-- **Logs.** Console and file logs carry ids, counts, statuses and timings only. A step's error text is stored in the database and never logged ([0019](adr/0019-observability-in-postgres.md)).
+- **Logs.** Console and file logs carry ids, counts, statuses and timings only. A step's error text is stored in the database and never logged ([0006](adr/0006-durable-traceable-runs.md)).
 - **`pipeline_model_calls`.** Sizes, token counts, options and timings; never the prompt, the reply or an image.
-- **`prompts`.** The pipeline's own instructions, never document content. A step's document text goes in a separate message, so prompt rows can outlive the documents that used them ([0035](adr/0035-run-provenance-and-replay.md)).
-- **The browser, except through the API.** The browser never calls the AI service ([0032](adr/0032-ai-service-behind-the-api.md)).
-- **A cloud model.** None is configured, and `llm.chat` refuses one unless the documents are marked synthetic. It never sends one a page image ([0037](adr/0037-data-classes-and-redaction.md)).
+- **`prompts`.** The pipeline's own instructions, never document content. A step's document text goes in a separate message, so prompt rows can outlive the documents that used them ([0006](adr/0006-durable-traceable-runs.md)).
+- **The browser, except through the API.** The browser never calls the AI service ([0010](adr/0010-staff-access-and-security.md)).
+- **A cloud model.** None is configured, and `llm.chat` refuses one unless the documents are marked synthetic. It never sends one a page image ([0005](adr/0005-local-models-with-fallback.md)).
 
 `python -m pipeline.replay` prints a stored step's content to the terminal. It is a developer's tool run against a local database, not a service endpoint.
 
@@ -44,18 +44,18 @@ Logs carry only safe and telemetry fields, and every log message is masked by pa
 
 ## What is protected
 
-- **Least-privilege database role.** The AI service connects as `medsum_ai`, which can't read accounts, sessions or password hashes, can't delete application rows (only its own checkpoints), and can't alter tables ([0023](adr/0023-fail-closed-settings-and-database-roles.md)).
-- **Accounts.** Server-side sessions in an HttpOnly cookie, CSRF protection, and permissions checked in code ([0028](adr/0028-server-side-sessions.md)-[0030](adr/0030-authorization-in-two-layers.md)).
+- **Least-privilege database role.** The AI service connects as `medsum_ai`, which can't read accounts, sessions or password hashes, can't delete application rows (only its own checkpoints), and can't alter tables ([0008](adr/0008-patient-data-protection.md)).
+- **Accounts.** Server-side sessions in an HttpOnly cookie, CSRF protection, and permissions checked in code ([0010](adr/0010-staff-access-and-security.md)).
 - **Deletion is complete.** A deleted document leaves no row that names it in any schema, and a test checks this.
 - **Duplicates are visible.** The same file uploaded twice for one patient is flagged and counted once in the summary.
 
 ## What isn't protected yet
 
 - **No encryption at rest.** The database and the uploads folder are plain on disk; protecting them is left to the disk.
-- **No audit log.** Who read or changed which patient's data isn't recorded yet ([0031](adr/0031-append-only-audit-log.md)).
-- **Organisation scope isn't enforced in SQL.** Each account sees only the documents it uploaded, but the database itself doesn't keep organisations apart yet ([0030](adr/0030-authorization-in-two-layers.md)).
+- **No audit log.** Who read or changed which patient's data isn't recorded yet ([0010](adr/0010-staff-access-and-security.md)).
+- **Organisation scope isn't enforced in SQL.** Each account sees only the documents it uploaded, but the database itself doesn't keep organisations apart yet ([0010](adr/0010-staff-access-and-security.md)).
 - **Step rows hold some content.** A transcribe step keeps its page's lines and a parse step its reply, so `pipeline_steps.input` and `output` are clinical. Steps that would repeat another table's content store a hash instead.
-- **Development secrets** are in the development configuration, and the AI service's localhost-only bind is not built yet ([0032](adr/0032-ai-service-behind-the-api.md)).
+- **Development secrets** are in the development configuration, and the AI service's localhost-only bind is not built yet ([0010](adr/0010-staff-access-and-security.md)).
 
 ## The legal frame: India's DPDP Act
 
@@ -73,8 +73,8 @@ A document is untrusted input. Its text, printed or hidden, can say "ignore the 
 
 What the models could do with such text, and what stops it:
 
-- **Change a value or invent one.** The parse copies values as printed, and code checks each one against the page's transcription and, where the PDF has one, its own text layer ([0006](adr/0006-printed-and-derived-values.md), [0011](adr/0011-deterministic-validators.md), [0012](adr/0012-pdf-text-layer-check.md)). A value that isn't on its cited line is a finding, and the document goes to review.
-- **Decide a flag, a range or a date.** These are derived in code from the printed text, never taken from the model ([0006](adr/0006-printed-and-derived-values.md)).
+- **Change a value or invent one.** The parse copies values as printed, and code checks each one against the page's transcription and, where the PDF has one, its own text layer ([0003](adr/0003-printed-and-derived-values.md), [0004](adr/0004-deterministic-checks-decide-routing.md)). A value that isn't on its cited line is a finding, and the document goes to review.
+- **Decide a flag, a range or a date.** These are derived in code from the printed text, never taken from the model ([0003](adr/0003-printed-and-derived-values.md)).
 - **Mark the document verified.** The end state comes from deterministic signals, not from the model.
 - **Run a tool, call a URL or read another record.** The models get no tools. Each call sees only its prompt and its own page or part.
 - **Inject markup into the page.** Every value from a document is HTML-escaped where it is inserted.

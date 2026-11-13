@@ -10,7 +10,7 @@ and e-mail values, is put into a sentence shaped like a stored error or
 finding. That sentence is then masked twice: with the run's known
 identifiers, as tracing does, and with patterns alone, as the log
 formatter does. Recall is the share of identifiers that no longer appear.
-See docs/adr/0037-data-classes-and-redaction.md.
+See docs/adr/0008-patient-data-protection.md.
 """
 
 import sys

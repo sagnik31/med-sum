@@ -17,7 +17,7 @@ stores as text. A transcribe step that read its page again in halves is
 replayed as the single whole-page call.
 
 It prints document content to the terminal, as a developer's tool; none
-of it is logged. See docs/adr/0035-run-provenance-and-replay.md.
+of it is logged. See docs/adr/0006-durable-traceable-runs.md.
 """
 
 import argparse

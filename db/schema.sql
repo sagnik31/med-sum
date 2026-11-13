@@ -98,7 +98,7 @@ CREATE TABLE documents (
     -- SHA-256 of the uploaded file. The same file uploaded again for the
     -- same patient is flagged as a duplicate of the first (not refused),
     -- and the patient summary counts it once. Null for rows made without
-    -- an upload. See docs/adr/0036-data-lifecycle.md.
+    -- an upload. See docs/adr/0008-patient-data-protection.md.
     sha256             text CHECK (sha256 ~ '^[0-9a-f]{64}$')
 );
 CREATE INDEX documents_user_id_idx ON documents (user_id);
@@ -149,7 +149,7 @@ CREATE TABLE pipeline_runs (
     -- whether the tree had changes (null when not known, e.g. a commit
     -- given by MEDSUM_CODE_VERSION); a SHA-256 of the structured-output
     -- schemas the models are sent; and one of the database's own table
-    -- structure. See docs/adr/0035-run-provenance-and-replay.md.
+    -- structure. See docs/adr/0006-durable-traceable-runs.md.
     code_version   text,
     code_dirty     boolean,
     schema_hash    text,
@@ -166,7 +166,7 @@ CREATE INDEX pipeline_runs_document_id_idx ON pipeline_runs (document_id, starte
 -- The AI service creates the checkpoint tables after this file is loaded,
 -- so the function looks each one up when it runs. SECURITY DEFINER: the
 -- role deleting a document needn't be able to touch the checkpoint schema.
--- See docs/adr/0036-data-lifecycle.md.
+-- See docs/adr/0008-patient-data-protection.md.
 CREATE FUNCTION delete_run_checkpoints() RETURNS trigger
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = pg_catalog, pg_temp AS $$
 DECLARE

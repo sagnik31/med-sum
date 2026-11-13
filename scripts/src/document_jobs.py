@@ -335,7 +335,7 @@ def _delete_thread(saver, run_id: str) -> None:
     ended, so it won't resume, and they hold document content. The database
     deletes them too when the run ends or goes with its document; this
     catches a checkpoint the graph wrote after its document was deleted.
-    See docs/adr/0036-data-lifecycle.md.
+    See docs/adr/0008-patient-data-protection.md.
     """
     try:
         saver.delete_thread(run_id)

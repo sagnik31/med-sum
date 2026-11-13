@@ -18,7 +18,7 @@ lines from the top half's end and the bottom half's start. No such run,
 or more than one, and the page is not joined: it keeps the capped
 reading's signal (LC-02) for a clinician. Repair still never re-reads a
 page: this is only for a reading that is known to be incomplete.
-See docs/adr/0034-capped-page-read-again-in-halves.md.
+See docs/adr/0002-two-model-steps.md.
 """
 
 # Fractions of the page height each half covers, top and bottom.

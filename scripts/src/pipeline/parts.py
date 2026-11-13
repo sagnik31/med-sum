@@ -16,7 +16,7 @@ Merging is code's job, as item ids and remark links already are: the
 patient's and the document's printed details take each field from the
 first part that has it (a page header repeats them), clinicians are
 listed once each, and every list of items is the parts' lists in order.
-See docs/adr/0033-parse-per-page-in-parts.md.
+See docs/adr/0002-two-model-steps.md.
 """
 
 import math

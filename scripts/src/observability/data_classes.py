@@ -15,7 +15,7 @@ has no class, so a new one can't be added without deciding.
   constants (prompts, schema hashes).
 
 Logs carry only safe and telemetry fields. See
-docs/adr/0037-data-classes-and-redaction.md.
+docs/adr/0008-patient-data-protection.md.
 """
 
 CLINICAL, PERSONAL, SECRET, TELEMETRY, SAFE = (

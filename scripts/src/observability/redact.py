@@ -17,7 +17,7 @@ Two layers, strongest first:
 Names inside free text that no run has seen are not caught: that would
 take a named-entity model, and the clinical stores hold names on purpose.
 The clinical stores are never redacted. See
-docs/adr/0037-data-classes-and-redaction.md.
+docs/adr/0008-patient-data-protection.md.
 """
 
 import re
