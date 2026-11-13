@@ -111,7 +111,10 @@ def test_a_cassette_of_another_version_is_refused(tmp_path):
     [
         ({"msgs": messages(system="A new prompt.")}, "the prompt changed"),
         ({"msgs": messages(image=b"another page")}, "the input changed"),
-        ({"options": {**OPTIONS, "num_predict": 20}}, "options, output schema or tools"),
+        (
+            {"options": {**OPTIONS, "num_predict": 20}},
+            "options, output schema or tools",
+        ),
         ({"format": {"type": "object"}}, "options, output schema or tools"),
     ],
 )
