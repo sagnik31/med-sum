@@ -74,8 +74,8 @@ class Outcome:
     error: str | None = None
 
 
-def run_one(doc_id: str, user_id: str, dataset_dir: Path = DATASET_DIR):
-    """One document through the graph; the final state, or the error."""
+def insert_document(user_id: str, doc_id: str, dataset_dir: Path = DATASET_DIR) -> str:
+    """A documents row for a dataset document; its id."""
     entry = documents(dataset_dir)[doc_id]
     with psycopg.connect(settings.database_url(), autocommit=True) as conn:
         with conn.cursor() as cur:
@@ -85,7 +85,13 @@ def run_one(doc_id: str, user_id: str, dataset_dir: Path = DATASET_DIR):
                 (user_id, entry["file"].split("/")[-1], entry["content_type"],
                  str(dataset_dir / entry["file"])),
             )  # fmt: skip
-            document_id = str(cur.fetchone()[0])
+            return str(cur.fetchone()[0])
+
+
+def run_one(doc_id: str, user_id: str, dataset_dir: Path = DATASET_DIR):
+    """One document through the graph; the final state, or the error."""
+    entry = documents(dataset_dir)[doc_id]
+    document_id = insert_document(user_id, doc_id, dataset_dir)
     state = initial_state(
         document_id,
         file_path=str(dataset_dir / entry["file"]),
