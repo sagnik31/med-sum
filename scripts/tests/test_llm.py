@@ -20,6 +20,20 @@ def test_returns_the_primary_reply_without_calling_the_fallback(model_client):
     assert models_called(model_client) == [llm.PRIMARY_MODEL]
 
 
+def test_a_reply_is_never_printed(model_client, capsys):
+    # Replies hold patient data; nothing goes to the console.
+    model_client.replies[llm.PRIMARY_MODEL] = ["Haemoglobin 13.2 g/dL " + "[[END]]"]
+
+    llm.chat([{"role": "user", "content": "x"}], max_tokens=10, stop_marker="[[END]]")
+
+    assert capsys.readouterr() == ("", "")
+
+
+def test_there_is_no_verbose_option(model_client):
+    with pytest.raises(TypeError):
+        llm.chat([], max_tokens=10, verbose=True)
+
+
 def test_calls_are_deterministic_streamed_and_capped(model_client):
     model_client.replies[llm.PRIMARY_MODEL] = ["ok"]
 

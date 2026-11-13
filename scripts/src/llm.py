@@ -107,7 +107,6 @@ def chat(
     stop_marker: str | None = None,
     format: dict | None = None,
     model_role: ModelRole = "primary",
-    verbose: bool = False,
 ) -> str:
     """
     Run `messages` on the primary model, then the fallback if needed, and
@@ -140,7 +139,7 @@ def chat(
         tried = True
         attempt = _Attempt()
         try:
-            _stream(attempt, model, messages, options, format, verbose, stop_marker)
+            _stream(attempt, model, messages, options, format)
         except Exception as e:
             _report(attempt, model, role, request, sizes, error=e)
             if not isinstance(e, MODEL_ERRORS):
@@ -196,14 +195,14 @@ class _Attempt:
         self.done = None  # the final chunk, which carries counts and timings
 
 
-def _stream(attempt, model, messages, options, format, verbose, stop_marker):
+def _stream(attempt, model, messages, options, format):
     """
     Read the whole streamed reply into `attempt`, up to Ollama's final
     chunk: only that chunk carries the token counts and timings, so the
-    stream is read to the end even after a stop marker appears.
+    stream is read to the end even after a stop marker appears. Nothing is
+    printed: the reply holds patient data, which never goes to the console.
     """
     extra = {"format": format} if format is not None else {}
-    printing = verbose
     for chunk in _client.chat(
         model=model,
         messages=messages,
@@ -216,9 +215,6 @@ def _stream(attempt, model, messages, options, format, verbose, stop_marker):
         if token and attempt.first_token_ms is None:
             attempt.first_token_ms = _ms_since(attempt.started)
         attempt.raw += token
-        if printing and token:
-            print(token, end="", flush=True)
-            printing = not (stop_marker and stop_marker in attempt.raw)
         if chunk.done:
             attempt.done = chunk
 
