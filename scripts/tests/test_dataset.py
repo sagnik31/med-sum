@@ -97,6 +97,17 @@ def test_every_patient_has_several_documents_across_dates():
         assert len(docs) >= 3 and len(dates) >= 3, patient["key"]
 
 
+def test_patients_list_only_record_fields_and_their_development_account():
+    # Accounts are email: no login phone is left from the old phone login.
+    for patient in MANIFEST["patients"]:
+        assert set(patient) == {"key", "name", "sex", "date_of_birth", "mrn"}
+    readme = (DATASET / "README.md").read_text(encoding="utf-8")
+    assert "phone" not in readme.lower()
+    for patient in MANIFEST["patients"]:
+        # The address medsumctl seed-dev creates (devPatientEmail).
+        assert f"`patient-{patient['key']}@med-sum.test`" in readme
+
+
 def test_upload_order_covers_every_document_once():
     assert sorted(MANIFEST["upload_order"]) == sorted(DOCS)
 

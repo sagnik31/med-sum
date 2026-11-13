@@ -21,14 +21,14 @@ check, and `test` for the rest; eval reports keep them apart.
 
 ## Patients
 
-| Name | Sex | Date of birth | MRN | Login phone |
+| Name | Sex | Date of birth | MRN | Development account |
 | --- | --- | --- | --- | --- |
-| Meera Iyer | F | 1967-04-12 | SH-100231 | +919000000001 |
-| Rohan Kulkarni | M | 1980-08-03 | SH-100232 | +919000000002 |
-| Fatima Shaikh | F | 1993-01-25 | SH-100233 | +919000000003 |
-| Arjun Menon | M | 1958-11-30 | SH-100234 | +919000000004 |
-| Kabir Sethi | M | 1979-03-09 | SH-100235 | +919000000005 |
-| Nandini Bose | F | 1988-07-21 | SH-100236 | +919000000006 |
+| Meera Iyer | F | 1967-04-12 | SH-100231 | `patient-meera@med-sum.test` |
+| Rohan Kulkarni | M | 1980-08-03 | SH-100232 | `patient-rohan@med-sum.test` |
+| Fatima Shaikh | F | 1993-01-25 | SH-100233 | `patient-fatima@med-sum.test` |
+| Arjun Menon | M | 1958-11-30 | SH-100234 | `patient-arjun@med-sum.test` |
+| Kabir Sethi | M | 1979-03-09 | SH-100235 | `patient-kabir@med-sum.test` |
+| Nandini Bose | F | 1988-07-21 | SH-100236 | `patient-nandini@med-sum.test` |
 
 ## Documents
 

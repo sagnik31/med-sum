@@ -25,16 +25,11 @@ from pathlib import Path
 
 import httpx
 
-from dataset.build import DATASET_DIR
+from dataset.build import DATASET_DIR, account_email
 
 SESSION_COOKIE = "medsum_session"
 # The backend refuses state-changing requests without it (CSRF check).
 CSRF_HEADERS = {"X-Requested-With": "med-sum"}
-
-
-def account_email(patient_key: str) -> str:
-    """The development account of a synthetic patient (see medsumctl seed-dev)."""
-    return f"patient-{patient_key}@med-sum.test"
 
 
 @dataclass

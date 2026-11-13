@@ -54,7 +54,6 @@ class Patient:
     sex: str
     dob: date
     mrn: str  # the hospital's patient ID
-    phone: str  # the development login (one per patient until Phase B)
 
     def age(self, on: date) -> int:
         return (
@@ -89,13 +88,13 @@ class Doc:
 
 
 PATIENTS = [
-    Patient("meera", "Meera Iyer", "F", date(1967, 4, 12), "SH-100231", "+919000000001"),
-    Patient("rohan", "Rohan Kulkarni", "M", date(1980, 8, 3), "SH-100232", "+919000000002"),
-    Patient("fatima", "Fatima Shaikh", "F", date(1993, 1, 25), "SH-100233", "+919000000003"),
-    Patient("arjun", "Arjun Menon", "M", date(1958, 11, 30), "SH-100234", "+919000000004"),
+    Patient("meera", "Meera Iyer", "F", date(1967, 4, 12), "SH-100231"),
+    Patient("rohan", "Rohan Kulkarni", "M", date(1980, 8, 3), "SH-100232"),
+    Patient("fatima", "Fatima Shaikh", "F", date(1993, 1, 25), "SH-100233"),
+    Patient("arjun", "Arjun Menon", "M", date(1958, 11, 30), "SH-100234"),
     # Held out (d18-d24).
-    Patient("kabir", "Kabir Sethi", "M", date(1979, 3, 9), "SH-100235", "+919000000005"),
-    Patient("nandini", "Nandini Bose", "F", date(1988, 7, 21), "SH-100236", "+919000000006"),
+    Patient("kabir", "Kabir Sethi", "M", date(1979, 3, 9), "SH-100235"),
+    Patient("nandini", "Nandini Bose", "F", date(1988, 7, 21), "SH-100236"),
 ]  # fmt: skip
 BY_KEY = {p.key: p for p in PATIENTS}
 

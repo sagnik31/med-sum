@@ -7,48 +7,42 @@
       "name": "Meera Iyer",
       "sex": "F",
       "date_of_birth": "1967-04-12",
-      "mrn": "SH-100231",
-      "phone": "+919000000001"
+      "mrn": "SH-100231"
     },
     {
       "key": "rohan",
       "name": "Rohan Kulkarni",
       "sex": "M",
       "date_of_birth": "1980-08-03",
-      "mrn": "SH-100232",
-      "phone": "+919000000002"
+      "mrn": "SH-100232"
     },
     {
       "key": "fatima",
       "name": "Fatima Shaikh",
       "sex": "F",
       "date_of_birth": "1993-01-25",
-      "mrn": "SH-100233",
-      "phone": "+919000000003"
+      "mrn": "SH-100233"
     },
     {
       "key": "arjun",
       "name": "Arjun Menon",
       "sex": "M",
       "date_of_birth": "1958-11-30",
-      "mrn": "SH-100234",
-      "phone": "+919000000004"
+      "mrn": "SH-100234"
     },
     {
       "key": "kabir",
       "name": "Kabir Sethi",
       "sex": "M",
       "date_of_birth": "1979-03-09",
-      "mrn": "SH-100235",
-      "phone": "+919000000005"
+      "mrn": "SH-100235"
     },
     {
       "key": "nandini",
       "name": "Nandini Bose",
       "sex": "F",
       "date_of_birth": "1988-07-21",
-      "mrn": "SH-100236",
-      "phone": "+919000000006"
+      "mrn": "SH-100236"
     }
   ],
   "documents": [
