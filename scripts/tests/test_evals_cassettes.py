@@ -111,8 +111,8 @@ def test_a_cassette_of_another_version_is_refused(tmp_path):
     [
         ({"msgs": messages(system="A new prompt.")}, "the prompt changed"),
         ({"msgs": messages(image=b"another page")}, "the input changed"),
-        ({"options": {**OPTIONS, "num_predict": 20}}, "options or output schema"),
-        ({"format": {"type": "object"}}, "options or output schema"),
+        ({"options": {**OPTIONS, "num_predict": 20}}, "options, output schema or tools"),
+        ({"format": {"type": "object"}}, "options, output schema or tools"),
     ],
 )
 def test_a_miss_says_what_changed(recorded, change, why):
@@ -144,3 +144,65 @@ def test_a_miss_is_not_a_model_error_so_llm_raises_it(recorded, monkeypatch):
     monkeypatch.setattr(llm, "_client", ReplayClient(recorded))
     with pytest.raises(CassetteMiss):
         llm.chat(messages(system="Changed."), max_tokens=10)
+
+
+# -------------------------------------------------------------------
+# Tool turns
+# -------------------------------------------------------------------
+TOOL_SPECS = [{"type": "function", "function": {"name": "get_lines", "parameters": {}}}]
+
+
+def test_the_tools_offered_are_part_of_the_key():
+    plain = request_key(model=MODEL, messages=messages(), options=OPTIONS)
+    offered = request_key(
+        model=MODEL, messages=messages(), options=OPTIONS, tools=TOOL_SPECS
+    )
+    assert plain.request != offered.request and plain.options != offered.options
+    assert plain.prompt == offered.prompt and plain.input == offered.input
+
+
+def test_a_key_without_tools_is_unchanged_by_the_tools_option():
+    # Cassettes recorded before tools existed still match a call without them.
+    assert request_key(model=MODEL, messages=messages(), options=OPTIONS) == (
+        request_key(model=MODEL, messages=messages(), options=OPTIONS, tools=None)
+    )
+
+
+def test_a_tool_turn_is_recorded_and_replayed_with_its_calls(model_client, monkeypatch):
+    from conftest import ToolReply
+
+    model_client.digests[MODEL] = "sha256:abc"
+    call = ("get_lines", {"page": 1, "first": 2, "last": 3})
+    model_client.replies[MODEL] = [ToolReply(call, fields={"eval_count": 7})]
+    cassette = Cassette()
+    msgs = [{"role": "user", "content": "check line 2"}]
+    monkeypatch.setattr(llm, "_client", RecordingClient(model_client, cassette))
+    live = llm.chat_with_tools(msgs, tools=TOOL_SPECS, max_tokens=10)
+    (entry,) = cassette.entries
+    assert entry.tool_calls == [{"name": "get_lines", "arguments": call[1]}]
+    assert model_client.calls[0]["tools"] == TOOL_SPECS
+
+    monkeypatch.setattr(llm, "_client", ReplayClient(cassette))
+    replayed = llm.chat_with_tools(msgs, tools=TOOL_SPECS, max_tokens=10)
+    assert replayed.tool_calls == live.tool_calls == (llm.ToolCall(*call),)
+    assert replayed.completion_tokens == 7
+    assert len(model_client.calls) == 1
+
+
+def test_a_tool_cassette_survives_saving_and_loading(model_client, tmp_path):
+    from conftest import ToolReply
+
+    model_client.replies[MODEL] = [ToolReply(("get_lines", {"page": 1}))]
+    cassette = Cassette()
+    client = RecordingClient(model_client, cassette)
+    list(client.chat(model=MODEL, messages=messages(), stream=True, think=False,
+                     options=OPTIONS, tools=TOOL_SPECS))  # fmt: skip
+    cassette.save(tmp_path / "c.json")
+    assert Cassette.load(tmp_path / "c.json").entries == cassette.entries
+
+
+def test_changed_tools_are_a_miss_that_says_so(recorded):
+    replay = ReplayClient(recorded)
+    with pytest.raises(CassetteMiss, match="tools changed"):
+        list(replay.chat(model=MODEL, messages=messages(), stream=True, think=False,
+                         options=OPTIONS, tools=TOOL_SPECS))  # fmt: skip

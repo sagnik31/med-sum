@@ -9,8 +9,9 @@ its client (`llm._client`), so everything above them (the breaker, the
 model call rows, the graph) runs as it does live.
 
 Each reply is keyed by the model tag and a hash of the whole request: the
-messages (a page image by its SHA-256), the generation options and the
-output schema. So a changed prompt, a changed page, a changed option or a
+messages (a page image by its SHA-256), the generation options, the
+output schema and the tools offered, if any. A reply that called tools
+keeps its calls, and a replay sends them back as Ollama does. So a changed prompt, a changed page, a changed option or a
 changed schema is a miss, and a miss is an error (`CassetteMiss`) that says
 which part differs from the nearest recording and to re-record, which is a
 live run. Each entry also keeps the model digest it was recorded with, the
@@ -78,7 +79,7 @@ class RequestKey:
     options: str  # generation options and output schema
 
 
-def request_key(*, model, messages, options, format=None) -> RequestKey:
+def request_key(*, model, messages, options, format=None, tools=None) -> RequestKey:
     """
     The hashes of one chat request. The prompt is the text of the system
     messages and of a user message's text when it carries no image; the
@@ -89,6 +90,8 @@ def request_key(*, model, messages, options, format=None) -> RequestKey:
     prompt = [m["content"] for m in msgs if m.get("role") == "system"]
     inputs = [m for m in msgs if m.get("role") != "system"]
     opts = {"options": options, "format": format}
+    if tools is not None:  # absent from the key of a call without tools
+        opts["tools"] = tools
     return RequestKey(
         model=model,
         request=_sha(_canonical({"model": model, "messages": msgs, **opts})),
@@ -109,6 +112,8 @@ class Entry:
     reply: str
     done_reason: str | None
     done: dict = field(default_factory=dict)
+    # The reply's tool calls, as {"name", "arguments"}; empty for text.
+    tool_calls: list = field(default_factory=list)
 
     def as_dict(self) -> dict:
         return dict(self.__dict__)
@@ -141,17 +146,43 @@ class Cassette:
         return {e.model: e.digest for e in self.entries}
 
 
-def _chunks(reply: str, done_reason: str | None, done: dict) -> Iterator:
+def _chunks(reply: str, done_reason: str | None, done: dict, tool_calls=()) -> Iterator:
     """The reply as a stream of one content chunk and a final chunk."""
     yield SimpleNamespace(
-        message=SimpleNamespace(content=reply), done=False, done_reason=None
+        message=SimpleNamespace(content=reply, tool_calls=None),
+        done=False,
+        done_reason=None,
     )
+    calls = [
+        SimpleNamespace(
+            function=SimpleNamespace(name=c["name"], arguments=c["arguments"])
+        )
+        for c in tool_calls
+    ]
     yield SimpleNamespace(
-        message=SimpleNamespace(content=""),
+        message=SimpleNamespace(content="", tool_calls=calls or None),
         done=True,
         done_reason=done_reason,
         **done,
     )
+
+
+def _tool_calls(chunk) -> list[dict]:
+    calls = getattr(chunk.message, "tool_calls", None) or []
+    return [
+        {"name": c.function.name, "arguments": _plain(c.function.arguments)}
+        for c in calls
+    ]
+
+
+def _plain(value):
+    """Arguments as JSON-ready values (Ollama hands them over as a mapping)."""
+    if isinstance(value, dict | str | int | float | bool) or value is None:
+        return dict(value) if isinstance(value, dict) else value
+    try:
+        return dict(value)
+    except (TypeError, ValueError):
+        return str(value)
 
 
 def _models(digests: dict[str, str | None]):
@@ -177,12 +208,14 @@ class RecordingClient:
             self._digests[model] = listed.get(model)
         return self._digests[model]
 
-    def chat(self, *, model, messages, stream, think, options, format=None):
+    def chat(self, *, model, messages, stream, think, options, format=None, tools=None):
         key = request_key(
-            model=model, messages=messages, options=options, format=format
+            model=model, messages=messages, options=options, format=format, tools=tools
         )
         extra = {"format": format} if format is not None else {}
-        reply = ""
+        if tools is not None:
+            extra["tools"] = tools
+        reply, calls = "", []
         for chunk in self.inner.chat(
             model=model,
             messages=messages,
@@ -192,6 +225,7 @@ class RecordingClient:
             **extra,
         ):
             reply += chunk.message.content or ""
+            calls.extend(_tool_calls(chunk))
             if chunk.done:
                 self.cassette.entries.append(
                     Entry(
@@ -208,6 +242,7 @@ class RecordingClient:
                             for f in DONE_FIELDS
                             if getattr(chunk, f, None) is not None
                         },
+                        tool_calls=calls,
                     )
                 )
             yield chunk
@@ -228,9 +263,9 @@ class ReplayClient:
     def list(self):
         return _models(self.cassette.digests())
 
-    def chat(self, *, model, messages, stream, think, options, format=None):
+    def chat(self, *, model, messages, stream, think, options, format=None, tools=None):
         key = request_key(
-            model=model, messages=messages, options=options, format=format
+            model=model, messages=messages, options=options, format=format, tools=tools
         )
         matches = [
             e
@@ -248,7 +283,7 @@ class ReplayClient:
                 f"{expected}; re-record with a live run"
             )
         self._used[key.request] = n + 1
-        return _chunks(entry.reply, entry.done_reason, entry.done)
+        return _chunks(entry.reply, entry.done_reason, entry.done, entry.tool_calls)
 
     def _why(self, key: RequestKey, seen: bool) -> str:
         if seen:
@@ -261,7 +296,7 @@ class ReplayClient:
         elif any(e.prompt == key.prompt and e.input != key.input for e in same_model):
             what = "the input changed (page, document text or repair findings)"
         elif any(e.prompt == key.prompt and e.input == key.input for e in same_model):
-            what = "the options or output schema changed"
+            what = "the options, output schema or tools changed"
         else:
             what = "no recorded request matches"
         return f"{key.model}: {what} since the recording; re-record with a live run"
