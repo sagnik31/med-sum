@@ -211,11 +211,48 @@ for _row in _ANALYTE_ROWS:
         _BY_NAME[_nk] = _analyte
 
 
+# Every word that is part of some listed test name. A qualifier made of
+# other words ("Ultrasensitive", "CLIA") says how the test was done, not
+# which test it is.
+# A specimen other than blood is a different test even though no listed
+# name has the word: "Creatinine (Urine)" is not serum creatinine.
+_NAME_WORDS = frozenset(w for nk in _BY_NAME for w in nk.split()) | {
+    "urine", "urinary", "csf", "stool", "fluid", "ascitic", "pleural", "synovial",
+}  # fmt: skip
+
+# A trailing parenthesised qualifier: "TSH (Ultrasensitive)".
+_QUALIFIER = re.compile(r"^(?P<name>.*\S)\s*\((?P<qualifier>[^()]*)\)\s*$")
+
+
 def lookup_analyte(test_name: str | None) -> Analyte | None:
-    """The analyte a printed test name is, or None when it isn't in the table."""
+    """
+    The analyte a printed test name is, or None when it isn't in the table.
+
+    The whole name is looked up first ("T3 (Total)" is "t3 total"). Failing
+    that, a trailing parenthesised qualifier is ignored, but only when it
+    can't name a different test: it is another name of the same analyte
+    ("Glycated Haemoglobin (HbA1c)"), or none of its words is part of any
+    listed name ("TSH (Ultrasensitive)"). "Cholesterol (HDL)" and
+    "Bilirubin (Direct)" keep no analyte, since "HDL" and "Direct" would
+    pick another test than the bare name does.
+    """
     if not test_name:
         return None
-    return _BY_NAME.get(name_key(test_name))
+    found = _BY_NAME.get(name_key(test_name))
+    if found is not None:
+        return found
+    m = _QUALIFIER.match(unicodedata.normalize("NFKC", test_name))
+    if m is None:
+        return None
+    base = _BY_NAME.get(name_key(m["name"]))
+    if base is None:
+        return None
+    qualifier = name_key(m["qualifier"])
+    if _BY_NAME.get(qualifier) is base:
+        return base
+    if not qualifier or any(w in _NAME_WORDS for w in qualifier.split()):
+        return None
+    return base
 
 
 # -------------------------------------------------------------------

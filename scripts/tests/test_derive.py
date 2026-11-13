@@ -88,14 +88,12 @@ def test_where_the_code_derives_held_out_documents_differently():
             built.model_dump(mode="json"), record.model_dump(mode="json")
         ):
             gaps.add((doc_id, path, got, expected))
-    assert gaps == {
-        # "Glycated Haemoglobin (HbA1c)": the name with its abbreviation.
-        ("d18", ".observations[5].derived.analyte", None, "hba1c"),
-        # "Allergy: None known".
-        ("d19", ".allergies[0].derived.no_known_allergies", False, True),
-        # "TSH (Ultrasensitive)": the name with its method.
-        ("d20", ".observations[1].derived.analyte", None, "tsh"),
-    }
+    # The held-out set first showed three gaps: "Glycated Haemoglobin
+    # (HbA1c)" (d18) and "TSH (Ultrasensitive)" (d20) got no analyte, and
+    # "None known" (d19) wasn't read as no known allergies. They were closed
+    # as general rules with test cases of their own (trailing qualifiers and
+    # allergy phrasings, above and below), not by tuning on these documents.
+    assert gaps == set()
 
 
 def test_the_keys_exercise_every_kind_of_derived_value():
@@ -116,6 +114,50 @@ def test_the_keys_exercise_every_kind_of_derived_value():
 def test_every_analyte_in_the_dataset_is_in_the_unit_table():
     for name, analyte in content.ANALYTES.items():
         assert lookup_analyte(name).key == analyte, name
+
+
+@pytest.mark.parametrize(
+    "name, analyte",
+    [
+        # The qualifier is another name of the same analyte.
+        ("Glycosylated Haemoglobin (HbA1c)", "hba1c"),
+        ("Potassium (K)", "potassium"),
+        ("Serum Sodium (Na+)", "sodium"),
+        # The qualifier is a method, not a test.
+        ("Thyroid Stimulating Hormone (Ultrasensitive)", "tsh"),
+        ("Ferritin (CLIA)", "ferritin"),
+        ("Serum Creatinine (Enzymatic)", "creatinine"),
+        ("Haemoglobin ( Photometry )", "haemoglobin"),
+        # The whole name is listed, so the brackets are just punctuation.
+        ("T3 (Total)", "t3_total"),
+        ("Bilirubin (Direct)", "bilirubin_direct"),
+        ("Glucose (Fasting)", "glucose_fasting"),
+        ("Ferritin ()", "ferritin"),
+    ],
+)  # fmt: skip
+def test_a_trailing_qualifier_that_names_no_other_test_is_ignored(name, analyte):
+    assert lookup_analyte(name).key == analyte
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        # These qualifiers would pick another test than the bare name does.
+        "Cholesterol (HDL)",
+        "Cholesterol (LDL)",
+        "Urea (BUN)",
+        "Creatinine (Urine)",
+        "Protein (CSF)",
+        "Haemoglobin (A1c)",
+        # The bare name is no test of its own.
+        "Glucose (2 hr)",
+        "Protein (Ultrasensitive)",
+        # A nested qualifier.
+        "Ferritin (CLIA (v2))",
+    ],
+)  # fmt: skip
+def test_a_qualifier_that_could_name_another_test_keeps_no_analyte(name):
+    assert lookup_analyte(name) is None, name
 
 
 def test_tests_without_an_analyte_get_none():
@@ -474,7 +516,13 @@ def test_vitals(name, value, expected):
 @pytest.mark.parametrize(
     "text, none_known",
     [("NKDA", True), ("N.K.D.A.", True), ("No known allergies", True),
-     ("Nil", True), ("Sulfa drugs (rash)", False), ("Penicillin - hives", False)],
+     ("Nil", True), ("None known", True), ("Nil known", True),
+     ("None reported", True), ("No drug allergies", True),
+     ("No allergies known.", True), ("NONE KNOWN", True),
+     # "Not known" means nobody asked, not that there are none.
+     ("Not known", False), ("Unknown", False),
+     ("Sulfa drugs (rash)", False), ("Penicillin - hives", False),
+     ("None known to penicillin; sulfa (rash)", False)],
 )  # fmt: skip
 def test_no_known_allergies(text, none_known):
     a = allergy("alg-1", PrintedAllergy(citation=CITE, text=text, substance=None,

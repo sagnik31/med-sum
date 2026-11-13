@@ -206,9 +206,14 @@ def vital(item_id: str, printed: PrintedVital) -> Vital:
     return Vital(id=item_id, printed=printed, derived=derived)
 
 
+# Printed ways of saying the patient has no known allergies. "Not known"
+# is not one of them: it means nobody asked, not that there are none.
 NO_KNOWN_ALLERGIES = {
-    "nkda", "nka", "nil", "none", "no allergies", "no known allergies",
-    "no known allergy", "no known drug allergies", "no known drug allergy",
+    "nkda", "nka", "nil", "none", "no allergies", "no allergy",
+    "no known allergies", "no known allergy", "no known drug allergies",
+    "no known drug allergy", "no drug allergies", "no drug allergy",
+    "none known", "nil known", "none reported", "nil reported",
+    "no allergies known", "no known allergies reported",
 }  # fmt: skip
 
 
