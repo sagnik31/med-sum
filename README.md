@@ -15,6 +15,7 @@ All model inference runs locally through [Ollama](https://ollama.com), so docume
 - [API](#api)
 - [Project structure](#project-structure)
 - [Development](#development)
+- [Design decisions](docs/adr/README.md)
 - [Limitations](#limitations)
 - [Roadmap](#roadmap)
 - [License](#license)
@@ -56,6 +57,8 @@ The cumulative patient summary is a separate background job, started from the Pa
 - **The overview** is the only model-written part: a few sentences the model writes from the computed facts alone. Code checks it before it is shown. A number must be one of the facts and stand near what the facts say it is (TSH's value next to TSH, a report's date next to that report's test, a count next to "documents"), and a name with digits such as "T4" must appear whole. Every word must be a word of the facts or one of a fixed list of ordinary words, so a test, medicine or diagnosis that isn't in the facts can't get through. A reply that fails is sent back once with what failed. If the second reply fails too, or no model answers, the summary is still saved without the overview and says why.
 
 ### Design notes
+
+The reasons behind these and the project's other main design choices, with the alternatives that were rejected, are recorded as [architecture decision records](docs/adr/README.md).
 
 - **The AI service is not exposed to the browser.** Only the Go API calls it, after checking that the document belongs to the user, and every call carries a shared secret.
 - **Recovery from crashed workers.** A job is claimed with a lease of 5 minutes, which a heartbeat renews every minute while the document runs. When a worker dies, its lease runs out and another worker takes the job over, carrying on from the graph's last checkpoint (kept in Postgres) instead of starting again. A job claimed three times without finishing is set aside, and every write a worker makes checks that it still holds the claim. The patient summary keeps a simpler lock: a summary with no progress for 30 minutes can be taken over by a new request, and the run that lost it can no longer write its result or failure.
@@ -293,6 +296,7 @@ backend/
   internal/db/           PostgreSQL data access (pgx)
 db/schema.sql            the whole database schema (no migrations; see step 2 of setup)
 db/ai_service_role.sql   the AI service's least-privilege role (see Database roles)
+docs/adr/                architecture decision records: why the system is built this way
 frontend/
   src/api/               API client
   src/components/        shared components (sandboxed HTML viewer, sessions list)
