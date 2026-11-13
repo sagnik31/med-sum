@@ -25,6 +25,7 @@ A clinician who sees a wrong value, or a developer chasing a regression, needs t
 
 - Step rows hold content (inputs and outputs), so the database is a clinical store throughout and protected as one.
 - Everything is queryable with SQL; there is no trace UI yet.
+- Each run also records its code version and database structure, prompt texts are kept by hash, and a step can be replayed: see [0035](0035-run-provenance-and-replay.md).
 
 ## What would change it
 

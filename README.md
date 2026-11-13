@@ -46,7 +46,7 @@ When a document is uploaded, the Go API asks the AI service to queue it. A worke
 5. **Render.** Code builds the document's page from the record, with no model call: every value exactly as printed, values computed by code (the document date, a flag from the printed range, a unit conversion, doses a day) marked as derived, and nothing the record doesn't hold, so no "abnormal" or severity of its own. A value that awaits review shows why, in plain words.
 6. **Finish.** The record is saved with what each value traces back to. A document ends `verified`, or `needs_review` when a low-confidence signal fired (a value the checks couldn't confirm, a cut-off page, a model input that may have been cut short to fit the context window, a patient name that doesn't match the account, and others); the document page then says which values to check. Anything that can't be recovered from ends `failed` with a message, and the user can retry from the UI.
 
-Each document's run, its steps, and the prompt and model used at each are stored in the database. **Reprocess** on the summary page runs the document again from the start, for when the pipeline has changed; the new run's record replaces the last. A page whose image, model and transcription prompt are the same as in the document's earlier run is not transcribed again: the earlier run's lines are reused, and the step records which step they came from.
+Each document's run, its steps, and the prompt and model used at each are stored in the database, with the git commit, output schemas and database structure the run used and the text of every prompt. `python -m pipeline.replay <step_id>` runs one stored transcribe, classify or parse step again and shows how the reply differs. **Reprocess** on the summary page runs the document again from the start, for when the pipeline has changed; the new run's record replaces the last. A page whose image, model and transcription prompt are the same as in the document's earlier run is not transcribed again: the earlier run's lines are reused, and the step records which step they came from.
 
 The cumulative patient summary is a separate background job, started from the Patient summary page. Once a user has one, it is rebuilt after each of their documents finishes (once the last of a batch is done, so a batch rebuilds it once). It is built by code from the records of every document that has finished (`verified` or `needs_review`):
 
@@ -306,7 +306,7 @@ scripts/
   src/insights_service.py    FastAPI service; starts the document worker
   src/document_jobs.py       the document job queue: claims, leases, the worker
   src/settings.py            database settings, checked at start-up (no default outside dev)
-  src/pipeline/              the document graph: nodes, routing, low-confidence signals, checkpoints
+  src/pipeline/              the document graph: nodes, routing, low-confidence signals, checkpoints, step replay
   src/views/                 HTML built by code from records: the document page and the patient summary
   src/summary/               the patient summary: facts from the records, the overview and its check
   src/model_health.py        the circuit breaker per model
@@ -314,7 +314,7 @@ scripts/
   src/record/                the structured record of a document and the schemas the model fills in
   src/derive/                values computed from the printed text: numbers, ranges, flags, unit table, dose schedules, dates
   src/validators/            deterministic checks of a record against its transcription and PDF text
-  src/observability/         pipeline runs and steps in the database, provenance checks, JSON logs
+  src/observability/         pipeline runs and steps in the database, run versions, provenance checks, JSON logs
   src/reset_db.py            resets the development database and uploads
   schemas/                   those schemas exported as JSON (regenerate: `python -m record.schemas` in src/)
   src/dataset/               synthetic dataset generator and loader

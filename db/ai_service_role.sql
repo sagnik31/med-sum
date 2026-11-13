@@ -20,6 +20,8 @@
 --   insights, jobs, document_records, pipeline_runs, pipeline_steps,
 --   pipeline_model_calls  reads and writes (no deletes: rows go with their
 --                      document, through ON DELETE CASCADE)
+--   prompts            reads and adds (a prompt's text is written once, on
+--                      first use, and never changed)
 --   pipeline_* views   reads
 --   langgraph schema   creates and migrates its checkpoint tables, and reads,
 --                      writes and deletes checkpoints
@@ -60,6 +62,8 @@ GRANT SELECT, INSERT, UPDATE
     ON insights, jobs, document_records,
        pipeline_runs, pipeline_steps, pipeline_model_calls
     TO medsum_ai;
+
+GRANT SELECT, INSERT ON prompts TO medsum_ai;
 
 GRANT SELECT
     ON pipeline_run_model_totals, pipeline_document_model_totals,

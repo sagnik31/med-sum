@@ -139,10 +139,31 @@ CREATE TABLE pipeline_runs (
     end_state     text CHECK (end_state IN ('verified', 'needs_review', 'failed')),
     models_used   text[] NOT NULL DEFAULT '{}',
     error         text,
+    -- What the run was made with: the git commit (null when unknown);
+    -- whether the tree had changes (null when not known, e.g. a commit
+    -- given by MEDSUM_CODE_VERSION); a SHA-256 of the structured-output
+    -- schemas the models are sent; and one of the database's own table
+    -- structure. See docs/adr/0035-run-provenance-and-replay.md.
+    code_version   text,
+    code_dirty     boolean,
+    schema_hash    text,
+    db_schema_hash text,
     CHECK ((end_state IS NULL) = (ended_at IS NULL)),
     CHECK (ended_at IS NULL OR ended_at >= started_at)
 );
 CREATE INDEX pipeline_runs_document_id_idx ON pipeline_runs (document_id, started_at);
+
+-- The text of every prompt a step has used, by the hash that
+-- pipeline_steps.prompt_hash records, written the first time a step uses
+-- it, so an old step can be read and replayed with the prompt it was sent.
+-- Prompts are the pipeline's own instructions, never document content, so
+-- rows outlive the documents and runs that used them.
+CREATE TABLE prompts (
+    hash          text PRIMARY KEY CHECK (hash ~ '^sha256:[0-9a-f]{64}$'),
+    name          text NOT NULL,    -- the name it was first used under
+    text          text NOT NULL,
+    first_used_at timestamptz NOT NULL DEFAULT now()
+);
 
 -- One row per node attempt (a span). A repair is a new attempt of parse.
 CREATE TABLE pipeline_steps (

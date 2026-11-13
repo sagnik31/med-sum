@@ -36,6 +36,7 @@ A decision that changes gets a new record, or its status says what superseded it
 | [0021](0021-patient-summary-rules.md) | Patient summary: computed facts, honest trends, a checked overview | Built |
 | [0033](0033-parse-per-page-in-parts.md) | The parse reads a page, or part of a long page, per call | Built |
 | [0034](0034-capped-page-read-again-in-halves.md) | A page cut off by the output cap is read again in two halves | Built |
+| [0035](0035-run-provenance-and-replay.md) | Each run records its code and schemas, prompts are stored by hash, and a step can be replayed | Built |
 
 ## Data, operations and evals
 

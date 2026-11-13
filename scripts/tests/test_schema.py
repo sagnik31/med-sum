@@ -279,3 +279,12 @@ def test_the_opentelemetry_map_names_real_columns(db, document):
         "gen_ai.usage.output_tokens": 1583,
         "error.type": None,
     }
+
+
+def test_a_prompt_is_stored_once_under_its_hash(db):
+    h = "sha256:" + "a" * 64
+    run(db, "INSERT INTO prompts (hash, name, text) VALUES (%s, 'p', 't')", h)
+    with pytest.raises(psycopg.errors.UniqueViolation):
+        run(db, "INSERT INTO prompts (hash, name, text) VALUES (%s, 'q', 'u')", h)
+    with pytest.raises(psycopg.errors.CheckViolation):
+        run(db, "INSERT INTO prompts (hash, name, text) VALUES ('abc', 'p', 't')")

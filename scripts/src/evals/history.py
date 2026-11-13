@@ -13,32 +13,16 @@ scripts/evals/reports/<name>/ under the same name.
 import hashlib
 import json
 import re
-import subprocess
 import sys
 from pathlib import Path
 
 from dataset.build import DATASET_DIR
+from observability.versions import code_version
 from pipeline.prompts import FILES
 
 HISTORY_DIR = DATASET_DIR.parent / "history"
 REPORTS_DIR = DATASET_DIR.parent / "reports"
 HISTORY_VERSION = 1
-
-
-def code_version(cwd: Path = DATASET_DIR) -> dict | None:
-    """The git commit the code is at, and whether the tree has changes."""
-    try:
-        commit = subprocess.run(
-            ["git", "rev-parse", "HEAD"], cwd=cwd, capture_output=True, text=True,
-            check=True,
-        ).stdout.strip()  # fmt: skip
-        status = subprocess.run(
-            ["git", "status", "--porcelain"], cwd=cwd, capture_output=True,
-            text=True, check=True,
-        ).stdout  # fmt: skip
-    except (OSError, subprocess.CalledProcessError):
-        return None
-    return {"commit": commit, "dirty": bool(status.strip())}
 
 
 def prompt_hashes() -> dict[str, str]:

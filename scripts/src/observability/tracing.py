@@ -39,7 +39,7 @@ from psycopg.types.json import Jsonb
 
 import settings
 
-from observability import context, model_calls
+from observability import context, model_calls, versions
 from observability.jsonable import jsonable
 from record.common import Provenance
 
@@ -99,13 +99,17 @@ def _ms_since(start: float) -> int:
 def start_run(document_id: str, graph_version: str, *, connect=None) -> "Run":
     """Insert a pipeline_runs row and return the run; use it as a context manager."""
     conn = _open(connect)
+    commit, dirty = versions.run_code_version()
     try:
         with conn.transaction(), conn.cursor() as cur:
+            db_schema = versions.db_schema_hash(cur)
             cur.execute(
-                "INSERT INTO pipeline_runs (document_id, graph_version)"
-                " VALUES (%s, %s) RETURNING id, trace_id",
-                (document_id, graph_version),
-            )
+                "INSERT INTO pipeline_runs (document_id, graph_version,"
+                " code_version, code_dirty, schema_hash, db_schema_hash)"
+                " VALUES (%s, %s, %s, %s, %s, %s) RETURNING id, trace_id",
+                (document_id, graph_version, commit, dirty,
+                 versions.output_schema_hash(), db_schema),
+            )  # fmt: skip
             run_id, trace_id = cur.fetchone()
     except BaseException:
         conn.close()
@@ -408,6 +412,13 @@ class Run:
             "error": step.error,
         }
         with self._tx() as cur:
+            if step.prompt_text is not None:
+                # A prompt's text, the first time any step uses it.
+                cur.execute(
+                    "INSERT INTO prompts (hash, name, text) VALUES (%s, %s, %s)"
+                    " ON CONFLICT (hash) DO NOTHING",
+                    (step.prompt_hash, step.prompt_name, step.prompt_text),
+                )
             cur.execute(
                 "UPDATE pipeline_steps SET ended_at = now(), status = %(status)s,"
                 " model = %(model)s, model_role = %(role)s,"
@@ -493,6 +504,7 @@ class Step:
         self.model_calls = 0
         self.prompt_name: str | None = None
         self.prompt_hash: str | None = None
+        self.prompt_text: str | None = None  # stored in prompts when the step ends
         self.prompt_tokens: int | None = None
         self.completion_tokens: int | None = None
         self.findings: list = []
@@ -509,11 +521,16 @@ class Step:
     def set_prompt(
         self, name: str, text: str | None = None, *, hash: str | None = None
     ):
-        """The prompt this step used: its name, and its text or a ready hash."""
+        """
+        The prompt this step used: its name, and its text or a ready hash.
+        A text is stored in the prompts table (once per hash) when the
+        step ends, so the step can be replayed; a bare hash is not.
+        """
         if (text is None) == (hash is None):
             raise ValueError("give the prompt's text or its hash, not both")
         self.prompt_name = name
         self.prompt_hash = hash if hash is not None else prompt_hash(text)
+        self.prompt_text = text
 
     def set_input(self, value) -> None:
         """Replace the input recorded when the step started."""
