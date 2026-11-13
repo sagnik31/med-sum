@@ -45,7 +45,7 @@ def finding(validator, severity, item_id=None, field=None):
 # The catalogue
 # -------------------------------------------------------------------
 def test_the_catalogue_is_the_list_of_section_8_8():
-    routing = {f"LC-{n:02}" for n in range(1, 17)}
+    routing = {f"LC-{n:02}" for n in range(1, 18)}
     info = {"LC-I1", "LC-I2", "LC-I3"}
     assert {s for s, v in SIGNALS.items() if v.kind is Kind.ROUTING} == routing
     assert {s for s, v in SIGNALS.items() if v.kind is Kind.INFO} == info
@@ -92,6 +92,7 @@ V, S = Validator, Severity
         (finding(V.REMARK_PLACEMENT, S.ERROR, "rem-1", "scope"), "LC-07", "rem-1"),
         (finding(V.MEDICINE_COVERAGE, S.ERROR, "med-1", "citation"), "LC-05", "med-1"),
         (finding(V.MEDICINE_COVERAGE, S.ERROR), "LC-06", None),
+        (finding(V.RESULT_COVERAGE, S.ERROR), "LC-17", None),
         (finding(V.DATES, S.FLAG, "document", "report_date"), "LC-11", None),
         (finding(V.DATES, S.FLAG, "patient", "date_of_birth"), "LC-11", "patient"),
         (finding(V.COVERAGE, S.INFO), "LC-I2", None),
@@ -109,6 +110,7 @@ V, S = Validator, Severity
         "LC-07",
         "LC-05",
         "LC-06",
+        "LC-17",
         "LC-11",
         "LC-11-patient",
         "LC-I2",

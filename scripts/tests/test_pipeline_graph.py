@@ -214,6 +214,44 @@ def test_an_error_left_by_both_models_goes_to_review(db, document, model_client)
     assert first.provenance.low_confidence_reasons[0].startswith("LC-04")
 
 
+def dropped_row(doc_id: str) -> str:
+    """A parse that leaves out the last result (its row is in a results table)."""
+    reply = json.loads(good_parse(doc_id))
+    del reply["results"][-1]
+    return json.dumps(reply)
+
+
+def test_a_dropped_lab_row_is_repaired(db, document, model_client):
+    state = document("d09")
+    model_client.replies[PRIMARY] = [
+        *pages_of("d09"), classified("d09"), dropped_row("d09"), good_parse("d09"),
+    ]  # fmt: skip
+
+    final = run(state)
+
+    assert final["end_state"] == "verified"
+    assert final["repairs"] == 1
+    repair_prompt = model_client.calls[-1]["messages"][-1]["content"]
+    assert "results table has no result" in repair_prompt
+
+
+def test_a_lab_row_dropped_by_both_models_sends_the_document_to_review(
+    db, document, model_client
+):
+    state = document("d09")
+    model_client.replies[PRIMARY] = [
+        *pages_of("d09"), classified("d09"),
+        *[dropped_row("d09")] * MAX_PARSE_ATTEMPTS,
+    ]  # fmt: skip
+    model_client.replies[FALLBACK] = [dropped_row("d09")] * MAX_PARSE_ATTEMPTS
+
+    final = run(state)
+
+    assert final["end_state"] == "needs_review"
+    reasons = saved(db, state["document_id"]).document.provenance.low_confidence_reasons
+    assert any(r.startswith("LC-17") for r in reasons)
+
+
 def test_replies_that_never_fit_the_schema_leave_the_pages_for_review(
     db, document, model_client
 ):

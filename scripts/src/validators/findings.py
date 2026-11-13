@@ -18,6 +18,7 @@ class Validator(str, Enum):
     FLAG_AGREEMENT = "flag_agreement"  # 4: printed flag vs computed flag
     REMARK_PLACEMENT = "remark_placement"  # 5: a remark sits by what it's on
     MEDICINE_COVERAGE = "medicine_coverage"  # 6: no medicine invented or dropped
+    RESULT_COVERAGE = "result_coverage"  # 6b: no results-table row dropped
     DATES = "dates"  # 7: dates are real and in order
     COVERAGE = "coverage"  # 8: transcription lines no item uses
     PATIENT_MATCH = "patient_match"  # 9: printed patient vs uploaded-to patient

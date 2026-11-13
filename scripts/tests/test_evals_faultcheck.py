@@ -113,14 +113,17 @@ def test_a_value_change_is_flagged_on_the_item_it_changed(check):
 
 def test_known_blind_spots_are_reported_not_hidden(check):
     """
-    A dropped lab row is info only, and a misread on a page without a text
-    layer has nothing to disagree with. When one of these is fixed, this
-    test changes with it. (A range bound taken for the value was the third
-    until the range-bound check; a misread printed in another row of a
-    text-layer page was caught only per page until validator 2 went per row.)
+    A dropped result printed as a line of text rather than a table row is
+    info only, and a misread on a page without a text layer has nothing to
+    disagree with. When one of these is fixed, this test changes with it.
+    (Earlier blind spots: a range bound taken for the value, until the
+    range-bound check; a misread printed in another row of a text-layer
+    page, until validator 2 went per row; every dropped table row, until
+    the results-table check.)
     """
-    missed = {r.fault for r in check.results if not r.flagged}
-    assert "dropped_result" in missed
+    dropped = [r for r in check.results if r.fault == "dropped_result"]
+    # d18 prints its results as "Test: value unit (Ref: ...)" lines.
+    assert {r.doc_id for r in dropped if not r.flagged} == {"d18"}
     image_only = [d for d, e in documents().items() if not e["has_text_layer"]]
     assert all(
         r.flagged

@@ -19,6 +19,8 @@ from validators import ExpectedPatient, Finding, Severity, Validator, validate
 from validators.layout import (
     check_coverage,
     check_medicine_coverage,
+    check_result_coverage,
+    result_rows,
     check_remark_placement,
     medicine_lines,
     unused_lines,
@@ -695,6 +697,134 @@ def test_a_date_of_birth_after_the_document_is_flagged():
     assert problems(check_dates(record, TODAY)) == {
         ("dates", "patient", "date_of_birth")
     }
+
+
+# -------------------------------------------------------------------
+# 6b: no results-table row dropped
+# -------------------------------------------------------------------
+def dropped(record: DocumentRecord, test_name: str) -> tuple[int, int]:
+    """Drop a result from the record; (page, line) of its row."""
+    o = obs(record, test_name)
+    record.observations.remove(o)
+    return o.printed.citation.page, o.printed.citation.first_line
+
+
+def test_a_dropped_lab_row_is_an_error_on_its_row():
+    record = keyed_record("d06")
+    page, line = dropped(record, "Serum Creatinine")
+
+    [finding] = check_result_coverage(record)
+    assert finding.validator is Validator.RESULT_COVERAGE
+    assert finding.severity is Severity.ERROR
+    assert (finding.item_id, finding.page, finding.lines) == (None, page, [line])
+    assert "Serum Creatinine" in finding.details["line"]
+
+
+def test_every_row_of_every_results_table_is_listed():
+    record = keyed_record("d01")
+    rows = result_rows(record)
+
+    # One row per result, and every result cites one of them.
+    assert len(rows) == len(record.observations)
+    assert {(o.printed.citation.page, o.printed.citation.first_line)
+            for o in record.observations} == set(rows)  # fmt: skip
+
+
+@pytest.mark.parametrize(
+    "header",
+    ["| Test | Result | Unit |", "| Investigation | Observed Value | Units |",
+     "| Parameter | Value | Range |", "| Test | Results | Flag |",
+     "| Test | Reading |"],
+)  # fmt: skip
+def test_a_results_table_is_known_by_its_result_column(header):
+    record = keyed_record("d06")
+    lines = record.pages[0].lines
+    first = lines.index("| Test | Result | Flag | Unit | Reference Range |")
+    lines[first] = header
+
+    assert (1, first + 3) in result_rows(record)
+
+
+def test_tables_without_a_result_column_are_not_results_tables():
+    # d20's patient details are a two-column key-value table.
+    record = keyed_record("d20")
+    details = [n for n, line in enumerate(record.pages[0].lines, start=1)
+               if "Patient Name" in line]  # fmt: skip
+    rows = result_rows(record)
+
+    assert details and not any((1, n) in rows for n in details)
+    assert len(rows) == len(record.observations)
+
+
+def test_a_prescription_table_is_left_to_the_medicine_check():
+    assert result_rows(keyed_record("d02")) == []
+
+
+def test_a_heading_row_inside_a_table_is_not_a_result():
+    record = keyed_record("d06")
+    lines = record.pages[0].lines
+    at = lines.index("| Blood Urea | 46 | H | mg/dL | 15 - 40 |")
+    lines.insert(at, "| **Renal** |  |  |  |  |")
+    record = rebuilt_with_lines(record, at + 1)
+
+    assert check_result_coverage(record) == []
+
+
+def test_a_table_without_a_header_row_is_not_judged():
+    record = keyed_record("d06")
+    lines = record.pages[0].lines
+    header = lines.index("| Test | Result | Flag | Unit | Reference Range |")
+    del lines[header : header + 2]  # the header and its separator
+    record = rebuilt_with_lines(record, header + 1, shift=-2)
+    dropped(record, "Blood Urea")
+
+    assert check_result_coverage(record) == []
+
+
+def test_results_printed_as_lines_stay_with_coverage():
+    # d18 prints "Test: value unit (Ref: ...)" lines, not a table: a dropped
+    # one is only listed as unused, which the fault check reports.
+    record = keyed_record("d18")
+    assert result_rows(record) == []
+    dropped(record, record.observations[0].printed.test_name)
+    assert check_result_coverage(record) == []
+    assert check_coverage(record)
+
+
+def test_a_result_citing_several_lines_covers_each():
+    record = keyed_record("d06")
+    o = obs(record, "Blood Urea")
+    nxt = obs(record, "Blood Urea Nitrogen (BUN)")
+    record.observations.remove(nxt)
+    o.printed.citation.last_line = nxt.printed.citation.first_line
+    o.printed.citation.quote = "\n".join(
+        record.pages[0].lines[
+            o.printed.citation.first_line - 1 : o.printed.citation.last_line
+        ]
+    )
+
+    assert check_result_coverage(record) == []
+
+
+def rebuilt_with_lines(record: DocumentRecord, from_line: int, shift: int = 1):
+    """Move every citation at or below `from_line` of page 1 by `shift` lines."""
+    for item in record.items():
+        c = item.printed.citation
+        if c.page == 1 and c.first_line >= from_line:
+            c.first_line += shift
+            c.last_line += shift
+    for value in (record.patient.printed if record.patient else None,
+                  record.document.printed):  # fmt: skip
+        if value is None:
+            continue
+        for name in type(value).model_fields:
+            text = getattr(value, name)
+            for t in text if isinstance(text, list) else [text]:
+                c = getattr(t, "citation", None)
+                if c is not None and c.page == 1 and c.first_line >= from_line:
+                    c.first_line += shift
+                    c.last_line += shift
+    return record
 
 
 # -------------------------------------------------------------------

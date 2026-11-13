@@ -77,6 +77,7 @@ SIGNALS = _signals(
     ("LC-14", R, "Document type not supported; not parsed."),
     ("LC-15", R, "The model's document type and the keyword check disagree."),
     ("LC-16", R, "The value may have been read from its own reference range."),
+    ("LC-17", R, "A row of a results table has no result in the record."),
     ("LC-I1", INFO, "No PDF text layer, so the reading has no independent check."),
     ("LC-I2", INFO, "Transcription lines that no extracted item uses."),
     ("LC-I3", INFO, "A range, flag or unit that code could not read."),
@@ -99,13 +100,14 @@ _BY_FINDING = {
     (Validator.FLAG_AGREEMENT, Severity.FLAG): "LC-10",
     (Validator.FLAG_AGREEMENT, Severity.INFO): "LC-I3",
     (Validator.REMARK_PLACEMENT, Severity.ERROR): "LC-07",
+    (Validator.RESULT_COVERAGE, Severity.ERROR): "LC-17",
     (Validator.DATES, Severity.FLAG): "LC-11",
     (Validator.COVERAGE, Severity.INFO): "LC-I2",
     (Validator.PATIENT_MATCH, Severity.FLAG): "LC-13",
 }
 
 # Hits on the document as a whole, whatever item the finding names.
-_DOCUMENT_LEVEL = {"LC-06", "LC-13"}
+_DOCUMENT_LEVEL = {"LC-06", "LC-13", "LC-17"}
 
 
 class SignalHit(Strict):

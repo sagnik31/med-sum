@@ -1,7 +1,7 @@
 """
-Validators 5, 6 and 8, which read the layout of the transcription:
-where a remark sits, which lines are medicines, and which lines no item
-uses.
+Validators 5, 6, 6b and 8, which read the layout of the transcription:
+where a remark sits, which lines are medicines, which table rows are lab
+results, and which lines no item uses.
 """
 
 import re
@@ -9,7 +9,7 @@ import re
 from derive.build import same_text
 from record.common import Citation
 from record.document import DocumentRecord, Observation
-from record.printed import RemarkScope
+from record.printed import DocumentType, RemarkScope
 from validators.fields import item_citations
 from validators.findings import Finding, Severity, Validator
 from validators.text import is_blank, is_heading
@@ -179,6 +179,73 @@ def check_medicine_coverage(record: DocumentRecord) -> list[Finding]:
                         "holds a medicine", item_id=m.id, field="citation",
                 page=c.page, lines=[c.first_line]))  # fmt: skip
     return findings
+
+
+# -------------------------------------------------------------------
+# 6b: no lab result dropped
+# -------------------------------------------------------------------
+# A table is a results table when a header cell names the result column.
+_RESULT_HEADER = re.compile(
+    r"\b(?:results?|values?|observed|observations?|readings?|findings?)\b",
+    re.IGNORECASE,
+)
+
+
+def _cells(line: str) -> list[str]:
+    return [c.strip() for c in line.strip().strip("|").split("|")]
+
+
+def result_rows(record: DocumentRecord) -> list[tuple[int, int]]:
+    """
+    (page, line) of each data row of a results table: a Markdown table
+    whose header row (the row above its separator) has a result column
+    ("Result", "Observed Value", ...). A row with nothing after its first
+    cell is a heading inside the table, not a result. Results printed as
+    free text rather than a table are not listed: their lines carry no
+    shape that says "one result per line", so they stay with coverage.
+    """
+    if record.document.type is not DocumentType.LAB_REPORT:
+        return []
+    found = []
+    for p in record.pages:
+        in_results = False
+        for n, line in enumerate(p.lines, start=1):
+            if not line.lstrip().startswith("|"):
+                in_results = False
+                continue
+            if _TABLE_SEPARATOR.match(line):
+                continue
+            if n < len(p.lines) and _TABLE_SEPARATOR.match(p.lines[n]):
+                in_results = any(_RESULT_HEADER.search(c) for c in _cells(line))
+                continue
+            if in_results and any(_cells(line)[1:]):
+                found.append((p.page, n))
+    return found
+
+
+def check_result_coverage(record: DocumentRecord) -> list[Finding]:
+    """
+    Every data row of a results table is cited by a result. A dropped row
+    would otherwise reach the summary as nothing at all, so it is an error
+    (a re-parse can add it), like a dropped medicine line.
+    """
+    cited = {
+        (o.printed.citation.page, n)
+        for o in record.observations
+        for n in range(o.printed.citation.first_line, o.printed.citation.last_line + 1)
+    }
+    return [
+        Finding(
+            validator=Validator.RESULT_COVERAGE,
+            severity=Severity.ERROR,
+            message="this row of a results table has no result in the record",
+            page=page,
+            lines=[n],
+            details={"line": record.pages[page - 1].lines[n - 1]},
+        )
+        for page, n in result_rows(record)
+        if (page, n) not in cited
+    ]
 
 
 # -------------------------------------------------------------------

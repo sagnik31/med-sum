@@ -7,7 +7,8 @@ info to the review screen.
 - source.py: 1 values on their cited lines, 2 values in the PDF text layer
 - values.py: 3 units and ranges, 3b a value read from its own range,
   4 printed vs computed flag, 7 dates
-- layout.py: 5 remark placement, 6 medicine coverage, 8 unused lines
+- layout.py: 5 remark placement, 6 medicine coverage, 6b results-table
+  rows without a result, 8 unused lines
 - patient.py: 9 printed patient vs the patient uploaded to
 """
 
@@ -20,6 +21,7 @@ from validators.layout import (
     check_coverage,
     check_medicine_coverage,
     check_remark_placement,
+    check_result_coverage,
 )
 from validators.patient import ExpectedPatient, check_patient_match
 from validators.source import check_source_text, check_text_layer
@@ -59,6 +61,7 @@ def validate(
         *check_flag_agreement(record),
         *check_remark_placement(record),
         *check_medicine_coverage(record),
+        *check_result_coverage(record),
         *check_dates(record, today),
         *check_coverage(record),
         *check_patient_match(record, expected_patient),
