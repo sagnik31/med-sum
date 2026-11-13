@@ -41,6 +41,7 @@ import psycopg
 import llm
 import model_health
 import reset_db
+import settings
 from dataset.build import DATASET_DIR
 from evals import history
 from evals.cassettes import Cassette, CassetteMiss, RecordingClient, ReplayClient
@@ -54,9 +55,6 @@ from pipeline.state import initial_state
 
 RESULTS_DIR = DATASET_DIR.parent / "results"
 CASSETTE_DIR = DATASET_DIR.parent / "cassettes"
-ADMIN_URL = os.environ.get(
-    "MEDSUM_EVAL_ADMIN_URL", "postgres://postgres:postgres@localhost:5432/postgres"
-)
 EVAL_DB_NAME = os.environ.get("MEDSUM_EVAL_DB_NAME", "med_sum_evals")
 UPLOADED_BY = "Eval runner"
 
@@ -79,7 +77,7 @@ class Outcome:
 def run_one(doc_id: str, user_id: str, dataset_dir: Path = DATASET_DIR):
     """One document through the graph; the final state, or the error."""
     entry = documents(dataset_dir)[doc_id]
-    with psycopg.connect(os.environ["DATABASE_URL"], autocommit=True) as conn:
+    with psycopg.connect(settings.database_url(), autocommit=True) as conn:
         with conn.cursor() as cur:
             cur.execute(
                 "INSERT INTO documents (user_id, original_name, content_type,"
@@ -180,9 +178,10 @@ def _url_with_database(url: str, name: str) -> str:
 class EvalDatabase:
     """A fresh database for one eval run, dropped afterwards."""
 
-    def __init__(self, admin_url: str = ADMIN_URL, name: str = EVAL_DB_NAME):
+    def __init__(self, admin_url: str | None = None, name: str = EVAL_DB_NAME):
         if name == "med_sum":
             raise ValueError("the eval runner never uses med_sum")
+        admin_url = admin_url or settings.eval_admin_url()
         self.admin_url, self.name = admin_url, name
         self.url = _url_with_database(admin_url, name)
 

@@ -44,6 +44,7 @@ import os
 import config
 import document_jobs
 import model_health
+import settings
 from document_jobs import LostClaim
 from observability import configure_logging
 from pipeline import checkpoints
@@ -73,6 +74,9 @@ def worker_enabled() -> bool:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Fails here, at start-up, when DATABASE_URL is missing outside
+    # MEDSUM_ENV=dev, instead of at the first job.
+    settings.load()
     configure_logging(log_file=config.LOG_FILE)
     logger.info("service started", extra=_obs("service_started"))
     if not INTERNAL_API_TOKEN:
@@ -128,15 +132,8 @@ class GenerateUserInsightsRequest(BaseModel):
 
 
 def get_db_connection():
-    """
-    Connects to Postgres using DATABASE_URL (same variable as the Go backend),
-    falling back to the local dev database.
-    """
-    dsn = os.environ.get(
-        "DATABASE_URL",
-        "postgres://postgres:postgres@localhost:5432/med_sum?sslmode=disable",
-    )
-    return psycopg.connect(dsn)
+    """Postgres at DATABASE_URL (settings.database_url)."""
+    return psycopg.connect(settings.database_url())
 
 
 def request_document(document_id: str, *, reprocess: bool = False) -> str:

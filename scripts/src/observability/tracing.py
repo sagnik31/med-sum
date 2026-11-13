@@ -29,7 +29,6 @@ is the node's state.
 import functools
 import hashlib
 import logging
-import os
 import threading
 import time
 from collections import Counter
@@ -37,6 +36,8 @@ from contextlib import contextmanager
 
 import psycopg
 from psycopg.types.json import Jsonb
+
+import settings
 
 from observability import context, model_calls
 from observability.jsonable import jsonable
@@ -79,11 +80,7 @@ def prompt_hash(text: str) -> str:
 
 
 def _default_connect():
-    dsn = os.environ.get(
-        "DATABASE_URL",
-        "postgres://postgres:postgres@localhost:5432/med_sum?sslmode=disable",
-    )
-    return psycopg.connect(dsn)
+    return psycopg.connect(settings.database_url())
 
 
 def _error_text(exc: BaseException) -> str:

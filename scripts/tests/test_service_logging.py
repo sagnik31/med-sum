@@ -40,12 +40,17 @@ def line_with(log, event: str) -> dict:
 # -------------------------------------------------------------------
 # Start-up
 # -------------------------------------------------------------------
+# The app needs a database URL to start; without the worker it never connects.
+UNUSED_URL = "postgres://medsum_ai@localhost:5432/unused"
+
+
 def test_starting_the_app_sends_json_lines_to_the_log_file(
     tmp_path, monkeypatch, root_logger
 ):
     log_file = tmp_path / "logs" / "medsum.jsonl"
     monkeypatch.setattr(config, "LOG_FILE", str(log_file))
     monkeypatch.setattr(service, "INTERNAL_API_TOKEN", "t")
+    monkeypatch.setenv("DATABASE_URL", UNUSED_URL)
 
     with TestClient(service.app):  # runs the lifespan
         pass
@@ -63,6 +68,7 @@ def test_a_missing_internal_token_is_warned_about_at_start_up(
 ):
     monkeypatch.setattr(config, "LOG_FILE", str(tmp_path / "medsum.jsonl"))
     monkeypatch.setattr(service, "INTERNAL_API_TOKEN", "")
+    monkeypatch.setenv("DATABASE_URL", UNUSED_URL)
 
     with TestClient(service.app):
         pass

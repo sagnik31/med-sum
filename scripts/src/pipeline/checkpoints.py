@@ -14,7 +14,6 @@ it is limited to the types the state can hold (pipeline.state), so a
 checkpoint can't make the service build any other class.
 """
 
-import os
 from collections.abc import Iterator
 from contextlib import contextmanager
 
@@ -23,16 +22,16 @@ from langgraph.checkpoint.postgres import PostgresSaver
 from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
 from psycopg.rows import dict_row
 
+import settings
+
 from pipeline.state import checkpoint_types
 
 CHECKPOINT_SCHEMA = "langgraph"
 
-DEFAULT_URL = "postgres://postgres:postgres@localhost:5432/med_sum?sslmode=disable"
-
 
 def database_url() -> str:
-    """DATABASE_URL (the same variable as the Go backend), read at call time."""
-    return os.environ.get("DATABASE_URL", DEFAULT_URL)
+    """DATABASE_URL (settings.database_url), read at call time."""
+    return settings.database_url()
 
 
 def connect(url: str | None = None) -> psycopg.Connection:

@@ -5,10 +5,10 @@ trace back to a step of the run that produced it (check_provenance); a gap
 is a bug in the pipeline, so nothing is saved and the run fails.
 """
 
-import os
-
 import psycopg
 from psycopg.types.json import Jsonb
+
+import settings
 
 from observability import check_provenance
 from record.document import DocumentRecord
@@ -19,10 +19,7 @@ class ProvenanceGapError(RuntimeError):
 
 
 def connect() -> psycopg.Connection:
-    dsn = os.environ.get("DATABASE_URL")
-    if not dsn:
-        raise RuntimeError("DATABASE_URL is not set")
-    return psycopg.connect(dsn, autocommit=True)
+    return psycopg.connect(settings.database_url(), autocommit=True)
 
 
 def save_record(record: DocumentRecord, *, run_id: str, connect=connect) -> None:

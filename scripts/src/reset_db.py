@@ -16,7 +16,6 @@ reset. Nothing it prints holds patient content: counts only.
 """
 
 import argparse
-import os
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -24,12 +23,14 @@ from urllib.parse import urlsplit
 
 import psycopg
 
+import settings
 from pipeline import checkpoints
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SCHEMA_FILE = PROJECT_ROOT / "db" / "schema.sql"
+AI_SERVICE_ROLE_FILE = PROJECT_ROOT / "db" / "ai_service_role.sql"
+AI_SERVICE_ROLE = "medsum_ai"
 UPLOADS_DIR = PROJECT_ROOT / "backend" / "uploads"
-DEFAULT_URL = "postgres://postgres:postgres@localhost:5432/med_sum?sslmode=disable"
 LOCAL_HOSTS = {"", "localhost", "127.0.0.1", "::1"}
 
 # Schemas whose contents a reset removes: the application's tables and the
@@ -85,11 +86,21 @@ def load_schema(conn) -> None:
         cur.execute(SCHEMA_FILE.read_text(encoding="utf-8"))
 
 
-def reset_database(url: str) -> None:
+def grant_ai_service_role(conn) -> None:
+    """Create the AI service's role if missing, and grant its privileges."""
+    with conn.cursor() as cur:
+        cur.execute(AI_SERVICE_ROLE_FILE.read_text(encoding="utf-8"))
+
+
+def reset_database(url: str) -> bool:
     """
     Drop everything in the reset schemas and load db/schema.sql, in one
     transaction; then create the checkpoint tables, which need a
     connection of their own (their indexes are built concurrently).
+
+    Dropping the tables drops their grants, so when the AI service's role
+    exists (db/ai_service_role.sql) its grants are applied again; returns
+    whether they were.
     """
     check_local(url)
     # Leaving the block commits and closes the connection (psycopg 3).
@@ -99,6 +110,12 @@ def reset_database(url: str) -> None:
             cur.execute(f'CREATE SCHEMA "{schema}"')
         load_schema(conn)
     checkpoints.setup(url)
+    with psycopg.connect(url) as conn, conn.cursor() as cur:
+        cur.execute("SELECT 1 FROM pg_roles WHERE rolname = %s", (AI_SERVICE_ROLE,))
+        if cur.fetchone() is None:
+            return False
+        grant_ai_service_role(conn)
+    return True
 
 
 def _upload_files(uploads: Path) -> list[Path]:
@@ -121,14 +138,16 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--yes", action="store_true", help="really delete")
     parser.add_argument(
-        "--database-url", default=os.environ.get("DATABASE_URL", DEFAULT_URL)
+        "--database-url",
+        help="a role that owns the schema (default: DATABASE_URL, see settings.py)",
     )
     parser.add_argument("--uploads", type=Path, default=UPLOADS_DIR)
     args = parser.parse_args(argv)
 
     try:
-        p = plan(args.database_url, args.uploads)
-    except NotLocal as e:
+        url = args.database_url or settings.database_url()
+        p = plan(url, args.uploads)
+    except (NotLocal, settings.SettingsError) as e:
         print(e, file=sys.stderr)
         return 2
     print(f"Database {p.database}:")
@@ -142,9 +161,13 @@ def main(argv: list[str] | None = None) -> int:
         print("Nothing deleted. Run with --yes to drop the tables, load "
               "db/schema.sql and delete the uploaded files.")  # fmt: skip
         return 0
-    reset_database(args.database_url)
+    granted = reset_database(url)
     deleted = clear_uploads(args.uploads)
     print(f"Reset {p.database} from db/schema.sql; deleted {deleted} uploaded files.")
+    if granted:
+        print(
+            f"Granted {AI_SERVICE_ROLE} its privileges again (db/ai_service_role.sql)."
+        )
     return 0
 
 

@@ -112,7 +112,7 @@ createdb -U postgres med_sum
 psql -U postgres -d med_sum -f db/schema.sql
 ```
 
-The whole schema is in `db/schema.sql`; there are no migrations, because the database holds synthetic data only. After the schema changes, reset the database from `scripts/src` (with the virtual environment of step 4 active). Without `--yes` it only lists what it would delete. With `--yes` it drops every table, loads `db/schema.sql` and deletes the files in `backend/uploads/`. It only works on a database on this machine:
+The whole schema is in `db/schema.sql`; there are no migrations, because the database holds synthetic data only. After the schema changes, reset the database from `scripts/src` (with the virtual environment of step 4 active). Without `--yes` it only lists what it would delete. With `--yes` it drops every table, loads `db/schema.sql` and deletes the files in `backend/uploads/`. It only works on a database on this machine, and needs a role that owns the tables (`--database-url`, else `DATABASE_URL`). When the AI service's role exists (see [Database roles](#database-roles)), the reset grants it its privileges again:
 
 ```bash
 python -m reset_db --yes
@@ -177,6 +177,7 @@ go run ./cmd/server
 cd scripts
 source .venv/bin/activate
 export INTERNAL_API_TOKEN="dev-internal-token"   # must match the backend
+export MEDSUM_ENV=dev   # without DATABASE_URL, use the local med_sum database
 uvicorn insights_service:app --app-dir src --reload --port 9000
 ```
 
@@ -211,7 +212,7 @@ On PowerShell, set the same variables with `$env:NAME = "value"`.
 
 | Variable | Used by | Default |
 |---|---|---|
-| `DATABASE_URL` | Backend (required), AI service | AI service falls back to `postgres://postgres:postgres@localhost:5432/med_sum?sslmode=disable` |
+| `DATABASE_URL` | Backend (required), AI service (required unless `MEDSUM_ENV=dev`) | none. With `MEDSUM_ENV=dev` the AI service falls back to the local `med_sum` database as `postgres`; otherwise it refuses to start. Point the AI service at the `medsum_ai` role (see [Database roles](#database-roles)) |
 | `INTERNAL_API_TOKEN` | Backend (required), AI service | none; must be the same in both services |
 | `HTTP_ADDRESS` | Backend | `:8080` |
 | `UPLOADS_DIR` | Backend | `./uploads` (resolved to an absolute path) |
@@ -219,7 +220,8 @@ On PowerShell, set the same variables with `$env:NAME = "value"`.
 | `ALLOWED_ORIGINS` | Backend | `http://localhost:5173`; comma-separated browser origins that may call the API |
 | `COOKIE_SECURE` | Backend | `true`; set `false` only for a browser that won't keep a `Secure` cookie on plain-HTTP `localhost` |
 | `MEDSUM_APP_URL` | Backend, `medsumctl` | `http://localhost:5173`; where setup and reset links point |
-| `MEDSUM_ENV`, `MEDSUM_DEV_PASSWORD` | `medsumctl seed-dev`, `dataset.load` | none; `seed-dev` runs only with `MEDSUM_ENV=dev` |
+| `MEDSUM_ENV`, `MEDSUM_DEV_PASSWORD` | `medsumctl seed-dev`, `dataset.load`, AI service | none; `seed-dev` runs only with `MEDSUM_ENV=dev`, and only then may the AI service and the eval runner fall back to the local database |
+| `MEDSUM_EVAL_ADMIN_URL` | `evals.run` (required unless `MEDSUM_ENV=dev`) | none; a connection to the server where the eval runner creates and drops its throwaway database. With `MEDSUM_ENV=dev`, the local server as `postgres` |
 | `MEDSUM_PRIMARY_MODEL` | AI service | `qwen3.5:4b` |
 | `MEDSUM_FALLBACK_MODEL` | AI service | `gemma4:e2b` |
 | `MEDSUM_NUM_CTX` | AI service | `16384` (context window for each model call) |
@@ -228,6 +230,19 @@ On PowerShell, set the same variables with `$env:NAME = "value"`.
 | `MEDSUM_JOB_LEASE`, `MEDSUM_JOB_HEARTBEAT_S`, `MEDSUM_JOB_MAX_ATTEMPTS` | AI service | `5 minutes`, `60`, `3`; how long a claim lasts, how often it is renewed, and how many claims a job gets before it is set aside |
 | `MEDSUM_LOG_FILE` | AI service logs (`observability`) | `scripts/logs/medsum.jsonl`; JSON log lines (ids, events, timings) without patient content, also on stderr. Set up when the service starts |
 | `VITE_API_BASE_URL` | Frontend | `/api`, set in `frontend/.env.local`; the Vite dev server proxies it to the backend |
+
+The AI service reads its database settings in one place, `scripts/src/settings.py`, and checks them when it starts: outside `MEDSUM_ENV=dev`, a missing `DATABASE_URL` stops it at start-up instead of connecting somewhere by default.
+
+### Database roles
+
+The development setup connects as `postgres`, a superuser. Anywhere else, give the AI service its own role, `medsum_ai`, with only the privileges it uses ([`db/ai_service_role.sql`](db/ai_service_role.sql)). It can read documents and write their transcription, read and write processing state (insights, jobs, records, pipeline runs and steps, model calls) and its checkpoints, and read only the account columns the patient summary needs. It cannot read emails, password hashes, sessions or setup links, delete or truncate rows, or create, alter or drop tables in `public`. Create it once per database, as a superuser, after loading the schema, then give it a password:
+
+```bash
+psql -U postgres -d med_sum -f db/ai_service_role.sql
+psql -U postgres -d med_sum -c "\password medsum_ai"
+```
+
+Then start the AI service with `DATABASE_URL="postgres://medsum_ai:<password>@localhost:5432/med_sum?sslmode=disable"`. The script is safe to run again, and `python -m reset_db` runs it after a reset when the role exists, since dropping the tables drops their grants. `scripts/tests/test_ai_service_role.py` runs a document job and a patient summary as the role and checks what it is refused. The Go backend and the admin tools (`reset_db`, `medsumctl`) still connect as the schema's owner.
 | `MEDSUM_API_TARGET` | Frontend (Vite proxy) | `http://localhost:8080` |
 
 ## API
@@ -277,6 +292,7 @@ backend/
   internal/httpapi/      handlers, sessions, CORS and CSRF checks, forwarding to the AI service
   internal/db/           PostgreSQL data access (pgx)
 db/schema.sql            the whole database schema (no migrations; see step 2 of setup)
+db/ai_service_role.sql   the AI service's least-privilege role (see Database roles)
 frontend/
   src/api/               API client
   src/components/        shared components (sandboxed HTML viewer, sessions list)
@@ -285,6 +301,7 @@ frontend/
 scripts/
   src/insights_service.py    FastAPI service; starts the document worker
   src/document_jobs.py       the document job queue: claims, leases, the worker
+  src/settings.py            database settings, checked at start-up (no default outside dev)
   src/pipeline/              the document graph: nodes, routing, low-confidence signals, checkpoints
   src/views/                 HTML built by code from records: the document page and the patient summary
   src/summary/               the patient summary: facts from the records, the overview and its check
