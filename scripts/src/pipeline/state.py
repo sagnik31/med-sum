@@ -26,6 +26,7 @@ from pydantic import BaseModel, Field
 
 from pipeline.parts import PartResult
 from pipeline.signals import SignalHit
+from pipeline.tool_repair import RepairRecord
 from record.common import Provenance, Strict
 from record.document import DocumentRecord, PageTranscription
 from record.printed import DocumentType, LabReportParse, PrescriptionParse
@@ -114,6 +115,9 @@ class GraphState(TypedDict):
     parse_truncated: NotRequired[bool]
     # Repairs so far, over both models (signal OP-2).
     repairs: NotRequired[int]
+    # What each part's repair took (variant, turns, tool calls, tokens,
+    # seconds): counts only, for the eval's repair rows.
+    repair_log: NotRequired[list[RepairRecord]]
 
     # validate ------------------------------------------------------------
     # The last record validated. A later parse that fails leaves it, so a

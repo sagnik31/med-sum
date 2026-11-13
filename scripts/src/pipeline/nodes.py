@@ -36,6 +36,7 @@ comes next.
 
 import hashlib
 import json
+import time
 from datetime import date
 
 from pydantic import ValidationError
@@ -48,7 +49,7 @@ from derive import build_record
 from observability import add_identifiers, current_step, stamp, traced
 from observability.jsonable import jsonable
 from pipeline import pages as page_files
-from pipeline import parts, reread, signals, store
+from pipeline import parts, reread, signals, store, tool_repair
 from pipeline.classify import decide, disagree, keyword_check
 from pipeline.prompts import (
     END_MARKER,
@@ -62,6 +63,7 @@ from pipeline.state import GraphState
 from record.document import PageTranscription
 from record.printed import PARSE_MODELS, ClassifierOutput, DocumentType
 from record.schemas import classifier_schema, parse_output_schema
+from tools import ToolSource
 from validators import Severity
 from validators import validate as run_validators
 from views.document import document_html
@@ -337,7 +339,7 @@ def _parse_input(state: GraphState) -> dict:
     }
 
 
-def _store_answered(answered: list[PartResult], out: dict) -> None:
+def _store_answered(answered: list[PartResult], out: dict, **extra) -> None:
     """
     What a parse or repair step stores as its output: the replies of the
     parts it answered (not the earlier parts' again), and whether the
@@ -349,6 +351,7 @@ def _store_answered(answered: list[PartResult], out: dict) -> None:
             r.model_dump(mode="json", exclude={"provenance"}) for r in answered
         ],
         "merged": out.get("parse") is not None if "parse_error" in out else None,
+        **extra,
     })  # fmt: skip
     errors = [r.error for r in answered if r.parse is None and r.error]
     if errors:
@@ -396,6 +399,12 @@ def _part_call(state: GraphState, part: ParsePart, messages: list[dict]) -> Part
             index=part.index, reply=reply, error=schema_errors(e),
             model_role=step.model_role, truncated=_truncated(step, calls_before),
         )  # fmt: skip
+    return _fitted(part, reply, parsed, calls_before)
+
+
+def _fitted(part: ParsePart, reply: str, parsed, calls_before: int) -> PartResult:
+    """A part whose reply fit its schema."""
+    step = _step()
     _note_printed_patient(parsed)
     return PartResult(
         index=part.index,
@@ -406,6 +415,15 @@ def _part_call(state: GraphState, part: ParsePart, messages: list[dict]) -> Part
         model_role=step.model_role,
         truncated=_truncated(step, calls_before),
     )
+
+
+def _fits(state: GraphState, part: ParsePart, text: str, calls_before: int):
+    """The part's result when `text` is a reply that fits its schema, else None."""
+    try:
+        parsed = PARSE_MODELS[state["doc_type"]].model_validate_json(text)
+    except ValidationError:
+        return None
+    return _fitted(part, text, parsed, calls_before)
 
 
 def _truncated(step, calls_before: int) -> bool:
@@ -567,19 +585,38 @@ def repair(state: GraphState) -> dict:
     what was wrong with it in the conversation, so the model corrects its
     own reply rather than starting over. Parts without problems keep their
     parse. The validators judge the merged result like any parse.
+
+    With MEDSUM_REPAIR=tools the model may first read the document with
+    read-only tools, within a budget of turns (pipeline/tool_repair.py);
+    the fixed re-parse is the default.
     """
     name = _parse_prompt(state)
     found = part_problems(state)
     if not found:
         raise ValueError("there is nothing to repair")
+    way = tool_repair.variant()
     instructions = prompt("repair_parse")
-    _step().set_prompt(f"{name}+repair_parse", prompt(name) + instructions)
+    step = _step()
+    if way == "tools":
+        step.set_prompt(
+            f"{name}+repair_parse+tools",
+            prompt(name) + instructions + tool_repair.READING_NOTE
+            + tool_repair.FINAL_NOTE,
+        )  # fmt: skip
+    else:
+        step.set_prompt(f"{name}+repair_parse", prompt(name) + instructions)
     plan = {p.index: p for p in parse_parts(state)}
     by_index = {r.index: r for r in state.get("part_results", [])}
-    answered = []
+    attempt = state.get("parse_attempts", 0) + 1
+    role = state.get("model_role", "primary")
+    source = ToolSource(
+        pages=tuple(state["transcriptions"]), record=state.get("record")
+    )
+    answered, log = [], []
     for index in sorted(found):
+        part = plan[index]
         previous = by_index.get(index)
-        messages = _part_messages(state, name, plan[index])
+        messages = _part_messages(state, name, part)
         reply = previous.reply if previous else None
         if reply is None and previous is not None and previous.parse is not None:
             reply = previous.parse.model_dump_json()
@@ -588,17 +625,49 @@ def repair(state: GraphState) -> dict:
         messages.append(
             {"role": "user", "content": instructions + "\n".join(found[index])}
         )
-        by_index[index] = _part_call(state, plan[index], messages)
-        answered.append(by_index[index])
+        calls_before = len(step.model_call_list())
+        started = time.monotonic()
+        record = tool_repair.RepairRecord(
+            attempt=attempt, part=index, model_role=role, variant=way, turns=0
+        )
+        if way == "tools":
+            result = tool_repair.read_then_fix(
+                messages,
+                source=source,
+                model_role=role,
+                max_tokens=PARSE_MAX_TOKENS,
+                budget=tool_repair.turn_budget(),
+                record=record,
+                try_fix=lambda text, part=part, n=calls_before: _fits(
+                    state, part, text, n
+                ),
+                final_call=lambda m, part=part: _part_call(state, part, m),
+            )
+        else:
+            result = _part_call(state, part, messages)
+            record.turns = 1
+        _measure(record, step.model_call_list()[calls_before:], started)
+        by_index[index] = result
+        answered.append(result)
+        log.append(record)
     results = [by_index[i] for i in sorted(by_index)]
     out = {
         "part_results": results,
-        "parse_attempts": state.get("parse_attempts", 0) + 1,
+        "parse_attempts": attempt,
         "repairs": state.get("repairs", 0) + 1,
+        "repair_log": [*state.get("repair_log", []), *log],
         **_combined(state, results),
     }
-    _store_answered(answered, out)
+    _store_answered(answered, out, repair=[r.model_dump(mode="json") for r in log])
     return out
+
+
+def _measure(record, calls: list, started: float) -> None:
+    """A part repair's model calls, tokens and seconds, from the step's calls."""
+    record.model_calls = len(calls)
+    record.prompt_tokens = sum(c.prompt_tokens or 0 for c in calls)
+    record.completion_tokens = sum(c.completion_tokens or 0 for c in calls)
+    record.seconds = round(time.monotonic() - started, 3)
 
 
 # -------------------------------------------------------------------

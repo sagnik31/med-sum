@@ -64,7 +64,7 @@ class FakeModelClient:
     def chat(self, *, model, messages, stream, think, options, format=None, **kw):
         call = {
             "model": model,
-            "messages": messages,
+            "messages": list(messages),  # as sent, not as later appended to
             "stream": stream,
             "think": think,
             "options": options,
