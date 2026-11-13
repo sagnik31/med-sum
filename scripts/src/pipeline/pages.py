@@ -69,6 +69,21 @@ def page_png(path: str | Path, page: int) -> bytes:
         return pdf[page - 1].get_pixmap(dpi=RENDER_DPI).tobytes("png")
 
 
+def crop_band(image: bytes, top: float, bottom: float) -> bytes:
+    """
+    A horizontal band of a page image, from `top` to `bottom` as fractions
+    of its height, as a PNG at the image's own resolution.
+    """
+    pix = pymupdf.Pixmap(image)
+    band = pymupdf.IRect(
+        0, round(pix.height * top), pix.width, round(pix.height * bottom)
+    )
+    out = pymupdf.Pixmap(pix.colorspace, band, pix.alpha)
+    out.copy(pix, band)
+    out.set_origin(0, 0)
+    return out.tobytes("png")
+
+
 def describe(page: int, image: bytes) -> PageImage:
     """What the state keeps of a page image."""
     try:

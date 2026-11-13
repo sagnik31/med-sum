@@ -605,7 +605,7 @@
       "type": "lab_report",
       "file": "documents/d25_lab_report.pdf",
       "content_type": "application/pdf",
-      "pages": 3,
+      "pages": 4,
       "has_text_layer": true,
       "document_date": "2025-09-20",
       "key": "keys/d25.json",
@@ -613,12 +613,13 @@
       "cases": [
         "sixty_results",
         "page_parsed_in_parts",
+        "dense_page_over_output_cap",
         "trend_two_values",
         "multiple_ranges",
         "non_numeric_values",
         "multi_page"
       ],
-      "notes": "Sixty results on three pages, 27 on each of the first two: more than one parse call reads, so those pages are parsed in parts cut between rows. Lipids lower than d13's on the statin; HbA1c still in the prediabetes band.",
+      "notes": "Sixty results on three pages, 27 on each of the first two: more than one parse call reads, so those pages are parsed in parts cut between rows. The fourth page is the laboratory's test menu in small print, whose transcription runs past a page call's output cap, so it is read again in two halves. Lipids lower than d13's on the statin; HbA1c still in the prediabetes band.",
       "split": "test",
       "expected_end_state": "verified",
       "expected_signals": []

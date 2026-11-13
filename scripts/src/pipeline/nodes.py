@@ -7,7 +7,9 @@ the current run (section 8.4).
     transcribe  one page per call: the vision model's numbered lines, with
                 the PDF's own text for that page when it has one; a page
                 this document's earlier run read with the same model and
-                prompt (same image hash) is used again, with no model call
+                prompt (same image hash) is used again, with no model call;
+                a page cut off by the output cap is read once more in two
+                overlapping halves (pipeline/reread.py)
     classify    the document type: the model's label checked against
                 keywords (pipeline/classify.py)
     parse       the type's schema filled in from the transcription
@@ -43,7 +45,7 @@ import model_health
 from derive import build_record
 from observability import current_step, stamp, traced
 from pipeline import pages as page_files
-from pipeline import parts, signals, store
+from pipeline import parts, reread, signals, store
 from pipeline.classify import decide, disagree, keyword_check
 from pipeline.prompts import (
     END_MARKER,
@@ -152,25 +154,67 @@ def transcribe(state: GraphState) -> dict:
         step.set_output({"transcriptions": [page], "reused_from_step": step_id})
         return {"transcriptions": [page]}
     calls_before = len(step.model_call_list())
+    note = None
     try:
-        reply = llm.chat(
-            transcription_messages(image, prompt("extract_page")),
-            max_tokens=MAX_TOKENS_PER_PAGE,
-            stop_marker=END_MARKER,
-        )
+        lines = lines_of(_read_page(image))
     except llm.OutputCappedError:
-        # The page is longer than a call can hold. It stays in the record
-        # with no lines, so its content can't be cited, and the document
-        # goes to review (signal LC-02) rather than failing outright.
-        step.fail(CAPPED)
+        lines, note = _reread_in_halves(image)
+        if lines is None:
+            step.fail(f"{CAPPED}; read again in halves: {note['reason']}")
+    if lines is None:
+        # The page is longer than a call can hold, even in halves (or the
+        # halves didn't join). It stays in the record with no lines, so
+        # its content can't be cited, and the document goes to review
+        # (signal LC-02) rather than failing outright.
         page = PageTranscription(page=n, lines=[], text_layer=text_layer)
-        return {
+        out = {
             "transcriptions": [page],
             "capped_pages": [*state.get("capped_pages", []), n],
-            **_truncated_page(state, step, calls_before, n),
         }
-    page = PageTranscription(page=n, lines=lines_of(reply), text_layer=text_layer)
-    return {"transcriptions": [page], **_truncated_page(state, step, calls_before, n)}
+    else:
+        page = PageTranscription(page=n, lines=lines, text_layer=text_layer)
+        out = {"transcriptions": [page]}
+    if note is not None:  # the step's output says how the re-read went
+        step.set_output({"transcriptions": [page], "reread": note})
+    return {**out, **_truncated_page(state, step, calls_before, n)}
+
+
+def _read_page(image: bytes) -> str:
+    """One transcription call on a page image (or part of one)."""
+    return llm.chat(
+        transcription_messages(image, prompt("extract_page")),
+        max_tokens=MAX_TOKENS_PER_PAGE,
+        stop_marker=END_MARKER,
+    )
+
+
+def _reread_in_halves(image: bytes) -> tuple[list[str] | None, dict]:
+    """
+    The lines of a page whose reading hit the output cap, read again as
+    two overlapping halves and joined (None when a half is capped too or
+    the halves don't join), and a note of what happened for the step's
+    output. Every call is recorded on the step as usual.
+    """
+    halves = []
+    for top, bottom in reread.HALVES:
+        try:
+            halves.append(
+                lines_of(_read_page(page_files.crop_band(image, top, bottom)))
+            )
+        except llm.OutputCappedError:
+            return None, _note(
+                "not joined", halves, reason="a half hit the token cap too"
+            )
+    joined = reread.join_halves(*halves)
+    if joined is None:
+        return None, _note("not joined", halves,
+                           reason="the halves share no single run of lines")  # fmt: skip
+    lines, overlap = joined
+    return lines, _note("joined", halves, overlap_lines=overlap)
+
+
+def _note(outcome: str, halves: list[list[str]], **more) -> dict:
+    return {"outcome": outcome, "half_lines": [len(h) for h in halves], **more}
 
 
 def _truncated_page(state: GraphState, step, calls_before: int, n: int) -> dict:

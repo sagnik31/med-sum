@@ -11,6 +11,7 @@ of section 6 of the plan that clean documents can show. The content is
 written out by hand, not drawn at random, so it is the same on every build.
 """
 
+import re
 from dataclasses import dataclass, field
 from datetime import date
 
@@ -25,6 +26,8 @@ from dataset.layout import (
     Medicine,
     Range,
     Remark,
+    Row,
+    Table,
     Title,
     Vital,
     allergy_line,
@@ -1203,14 +1206,518 @@ d24 = Doc(
 # -------------------------------------------------------------------
 # Arjun Menon again: a 60-row full-body check-up six months after d13
 # -------------------------------------------------------------------
+# The page that ends d25: the laboratory's test menu, printed small. Its
+# transcription runs past the 4,096-token cap on a page, so the page is
+# read again in two halves (top and bottom). Prose can't do it at a size
+# a model still reads: measured live with qwen3.5:4b, a full page of notes
+# in 4.6-point print (18,700 characters) took 3,769 output tokens, and the
+# model dropped about a sixth of it. A table costs far more tokens per
+# printed character (cell separators, codes, numbers), and its rows are
+# separate lines that come out the same in both halves, which the join
+# needs. The header has no result column, so it is not a results table.
+METHODS = [
+    (
+        "HAEMATOLOGY",
+        [
+            (
+                "Haemoglobin",
+                "SLS-haemoglobin photometry on an automated five-part cell counter",
+                "lower in pregnancy and after recent blood loss; higher at altitude and in smokers",
+            ),
+            (
+                "RBC Count",
+                "electrical impedance with hydrodynamic focusing",
+                "read with haemoglobin and the red cell indices, never alone",
+            ),
+            (
+                "PCV",
+                "calculated from the RBC count and the MCV",
+                "rises with dehydration and falls with over-hydration, without any change in red cell mass",
+            ),
+            (
+                "MCV",
+                "electrical impedance, from the red cell volume histogram",
+                "low values suggest iron deficiency or thalassaemia trait; high values B12 or folate deficiency",
+            ),
+            (
+                "MCH",
+                "calculated from haemoglobin and the RBC count",
+                "follows the MCV; a low MCH with a normal MCV is unusual and is checked on a smear",
+            ),
+            (
+                "MCHC",
+                "calculated from haemoglobin and the PCV",
+                "a high MCHC can be an artefact of lipaemia or cold agglutinins and is then repeated on a warmed sample",
+            ),
+            (
+                "RDW-CV",
+                "calculated from the red cell volume histogram",
+                "a raised RDW shows red cells of mixed sizes, as in early iron deficiency or after a transfusion",
+            ),
+            (
+                "Platelet Count",
+                "electrical impedance, confirmed on a stained smear when outside the reference interval",
+                "clumping in EDTA can give a falsely low count; a citrate sample is then requested",
+            ),
+            (
+                "Total WBC Count",
+                "flow cytometry with fluorescent nucleic acid staining",
+                "raised after exercise, stress, smoking and steroids; nucleated red cells are counted out",
+            ),
+            (
+                "Neutrophils",
+                "flow cytometry (five-part differential); a smear is reviewed when the analyser flags",
+                "rise with bacterial infection, stress and steroids",
+            ),
+            (
+                "Lymphocytes",
+                "flow cytometry (five-part differential)",
+                "rise with viral infections; reactive lymphocytes are reported from the smear",
+            ),
+            (
+                "Eosinophils",
+                "flow cytometry (five-part differential)",
+                "rise with allergy, asthma and parasitic infection",
+            ),
+            (
+                "Monocytes",
+                "flow cytometry (five-part differential)",
+                "rise in chronic infection and in recovery from an acute one",
+            ),
+            (
+                "Basophils",
+                "flow cytometry (five-part differential)",
+                "rarely raised; a persistent rise is referred for haematology review",
+            ),
+            (
+                "ESR",
+                "modified Westergren method, read at one hour at room temperature",
+                "rises with age, anaemia and pregnancy as well as inflammation; not specific to any disease",
+            ),
+        ],
+    ),
+    (
+        "GLUCOSE AND LIPIDS",
+        [
+            (
+                "Fasting Plasma Glucose",
+                "hexokinase, enzymatic UV end point",
+                "needs 8 to 10 hours without food; glucose falls in a sample left unseparated, so fluoride tubes are used",
+            ),
+            (
+                "HbA1c",
+                "ion-exchange HPLC, NGSP certified and IFCC standardised",
+                "reflects the past two to three months; falsely low after blood loss or transfusion and with some haemoglobin variants",
+            ),
+            (
+                "Total Cholesterol",
+                "cholesterol oxidase-peroxidase (CHOD-PAP), enzymatic colorimetric",
+                "changes little with a meal; acute illness lowers it for some weeks",
+            ),
+            (
+                "Triglycerides",
+                "glycerol phosphate oxidase-peroxidase (GPO-PAP), with glycerol blanking",
+                "rises after food and alcohol; a 12-hour fast is advised for a lipid profile",
+            ),
+            (
+                "HDL Cholesterol",
+                "direct homogeneous enzymatic method",
+                "lower in smokers and with obesity and inactivity; regular exercise raises it",
+            ),
+            (
+                "LDL Cholesterol",
+                "calculated by the Friedewald equation when triglycerides are below 400 mg/dL",
+                "measured directly when triglycerides are 400 mg/dL or more",
+            ),
+            (
+                "VLDL Cholesterol",
+                "calculated as triglycerides divided by five",
+                "not valid when triglycerides are 400 mg/dL or more",
+            ),
+        ],
+    ),
+    (
+        "KIDNEY FUNCTION TEST",
+        [
+            (
+                "Blood Urea",
+                "urease-glutamate dehydrogenase, kinetic UV",
+                "rises with a high-protein diet, dehydration and gastrointestinal bleeding, as well as with kidney disease",
+            ),
+            (
+                "Blood Urea Nitrogen (BUN)",
+                "calculated as urea divided by 2.14",
+                "the same measurement as urea, expressed as its nitrogen",
+            ),
+            (
+                "Serum Creatinine",
+                "modified kinetic Jaffe method, traceable to IDMS",
+                "depends on muscle mass; a recent large meat meal and some drugs raise it without any change in kidney function",
+            ),
+            (
+                "Uric Acid",
+                "uricase-peroxidase, enzymatic colorimetric",
+                "rises with alcohol, a purine-rich diet, diuretics and fasting",
+            ),
+            (
+                "eGFR",
+                "calculated by the CKD-EPI 2021 creatinine equation, without a race term",
+                "an estimate for adults with stable creatinine; not valid in acute illness, pregnancy or extremes of muscle mass",
+            ),
+        ],
+    ),
+    (
+        "LIVER FUNCTION TEST",
+        [
+            (
+                "Total Bilirubin",
+                "diazo method with an accelerator",
+                "rises with fasting and in Gilbert syndrome, a harmless inherited condition",
+            ),
+            (
+                "Direct Bilirubin",
+                "diazo method without an accelerator",
+                "the conjugated fraction; rises when bile flow is obstructed",
+            ),
+            (
+                "Indirect Bilirubin",
+                "calculated as total minus direct bilirubin",
+                "the unconjugated fraction; rises with red cell breakdown and in Gilbert syndrome",
+            ),
+            (
+                "SGOT (AST)",
+                "IFCC method without pyridoxal phosphate, kinetic UV",
+                "also present in muscle and red cells; raised after strenuous exercise and in a haemolysed sample",
+            ),
+            (
+                "SGPT (ALT)",
+                "IFCC method without pyridoxal phosphate, kinetic UV",
+                "more specific to the liver than AST; raised in fatty liver and with some drugs",
+            ),
+            (
+                "Alkaline Phosphatase",
+                "IFCC method, AMP buffer, kinetic colorimetric",
+                "higher in growing children, in pregnancy and with bone disease",
+            ),
+            (
+                "GGT",
+                "IFCC method (Szasz), kinetic colorimetric",
+                "raised by alcohol and by enzyme-inducing drugs; used to tell a liver from a bone source of ALP",
+            ),
+            (
+                "Total Protein",
+                "biuret method, end point",
+                "rises slightly with prolonged tourniquet use and dehydration",
+            ),
+            (
+                "Albumin",
+                "bromocresol green, end point",
+                "falls in acute illness, liver disease and protein loss through the kidneys or gut",
+            ),
+            (
+                "Globulin",
+                "calculated as total protein minus albumin",
+                "a high globulin is followed up by protein electrophoresis",
+            ),
+            (
+                "A/G Ratio",
+                "calculated as albumin divided by globulin",
+                "a ratio, with no unit",
+            ),
+        ],
+    ),
+    (
+        "ELECTROLYTES AND MINERALS",
+        [
+            (
+                "Sodium",
+                "indirect ion-selective electrode",
+                "falsely low in very lipaemic or high-protein samples measured by an indirect method",
+            ),
+            (
+                "Potassium",
+                "indirect ion-selective electrode",
+                "falsely high in a haemolysed sample or one kept cold before separation",
+            ),
+            (
+                "Chloride",
+                "indirect ion-selective electrode",
+                "moves with sodium in most conditions",
+            ),
+            (
+                "Magnesium",
+                "xylidyl blue, colorimetric end point",
+                "falls with diuretics, proton pump inhibitors and alcohol",
+            ),
+            (
+                "Calcium",
+                "arsenazo III, colorimetric end point",
+                "total calcium falls with albumin; a corrected or ionised calcium is advised when albumin is low",
+            ),
+            (
+                "Phosphorus",
+                "phosphomolybdate, UV end point",
+                "rises after meals and in a haemolysed sample",
+            ),
+        ],
+    ),
+    (
+        "SPECIAL TESTS",
+        [
+            (
+                "T3 (Total)",
+                "chemiluminescent immunoassay (CLIA)",
+                "changes with binding proteins in pregnancy and with oral contraceptives",
+            ),
+            (
+                "T4 (Total)",
+                "chemiluminescent immunoassay (CLIA)",
+                "changes with binding proteins; free T4 is advised when they may be abnormal",
+            ),
+            (
+                "TSH",
+                "third-generation chemiluminescent immunoassay (CLIA)",
+                "varies through the day, highest at night; biotin supplements can interfere and are stopped two days before",
+            ),
+            (
+                "Serum Iron",
+                "ferrozine method, without deproteinisation",
+                "varies widely through the day and after iron tablets; read with TIBC and ferritin",
+            ),
+            (
+                "TIBC",
+                "direct method with magnesium carbonate adsorption",
+                "rises in iron deficiency and in pregnancy",
+            ),
+            (
+                "Transferrin Saturation",
+                "calculated as serum iron divided by TIBC, times 100",
+                "low in iron deficiency; high values are followed up for iron overload",
+            ),
+            (
+                "Serum Ferritin",
+                "particle-enhanced immunoturbidimetric assay",
+                "the best single marker of iron stores, but raised by inflammation and liver disease",
+            ),
+            (
+                "Vitamin D (25-OH)",
+                "chemiluminescent immunoassay (CLIA), total 25-OH vitamin D2 and D3",
+                "lower in winter and with little time outdoors; cut-offs follow the Endocrine Society guideline",
+            ),
+            (
+                "Vitamin B12",
+                "competitive chemiluminescent immunoassay (CLIA)",
+                "may be low with metformin and long-term acid-suppressing drugs; a borderline value can be checked with other markers",
+            ),
+            (
+                "Total PSA",
+                "chemiluminescent immunoassay (CLIA)",
+                "rises after ejaculation, cycling and prostate examination; a 48-hour gap is advised before the sample",
+            ),
+        ],
+    ),
+    (
+        "URINE ROUTINE",
+        [
+            (
+                "Colour",
+                "visual examination",
+                "varies with fluid intake, diet and some medicines",
+            ),
+            (
+                "Appearance",
+                "visual examination",
+                "cloudiness may come from crystals in a sample left standing",
+            ),
+            (
+                "Specific Gravity",
+                "reagent strip (ion exchange)",
+                "reflects how concentrated the urine is",
+            ),
+            (
+                "Protein",
+                "reagent strip, confirmed by sulphosalicylic acid when positive",
+                "a trace can follow exercise or fever",
+            ),
+            (
+                "Glucose",
+                "reagent strip (glucose oxidase), confirmed by Benedict's test when positive",
+                "appears when blood glucose exceeds the kidney threshold",
+            ),
+            (
+                "Pus Cells",
+                "microscopy of the centrifuged deposit, per high-power field",
+                "a few are normal; more than five per field suggests infection or contamination",
+            ),
+        ],
+    ),
+]
+GENERAL_NOTES = [
+    "All results relate only to the sample as received. Reference intervals are those of this laboratory for adults and may differ from other laboratories.",
+    "A result outside its reference interval is not by itself a disease; about one healthy person in twenty falls outside any single interval.",
+    "Results are to be interpreted by a registered medical practitioner, together with the history, the examination and other investigations.",
+    "Values flagged H or L lie above or below the printed reference interval. Critical values are telephoned to the referring doctor.",
+]
+
+
+# Tests the laboratory offers beyond d25's: (name, section, sample, method).
+OTHER_TESTS = [
+    (
+        "Prothrombin Time (PT/INR)",
+        "COAGULATION",
+        "Citrate (blue)",
+        "clotting time, photo-optical",
+    ),
+    ("aPTT", "COAGULATION", "Citrate (blue)", "clotting time, photo-optical"),
+    ("Fibrinogen", "COAGULATION", "Citrate (blue)", "Clauss method"),
+    ("D-Dimer", "COAGULATION", "Citrate (blue)", "latex immunoturbidimetry"),
+    (
+        "Blood Group and Rh Type",
+        "HAEMATOLOGY",
+        "EDTA (lavender)",
+        "column agglutination",
+    ),
+    (
+        "Peripheral Smear Examination",
+        "HAEMATOLOGY",
+        "EDTA (lavender)",
+        "Leishman stain, microscopy",
+    ),
+    ("Reticulocyte Count", "HAEMATOLOGY", "EDTA (lavender)", "flow cytometry"),
+    ("Malaria Antigen", "HAEMATOLOGY", "EDTA (lavender)", "immunochromatography"),
+    (
+        "Post-prandial Plasma Glucose",
+        "GLUCOSE AND LIPIDS",
+        "Fluoride (grey)",
+        "hexokinase",
+    ),
+    ("Random Plasma Glucose", "GLUCOSE AND LIPIDS", "Fluoride (grey)", "hexokinase"),
+    (
+        "Oral Glucose Tolerance Test",
+        "GLUCOSE AND LIPIDS",
+        "Fluoride (grey)",
+        "hexokinase, 0 and 120 min",
+    ),
+    ("Apolipoprotein B", "GLUCOSE AND LIPIDS", "Serum (gold)", "immunoturbidimetry"),
+    ("Lipoprotein (a)", "GLUCOSE AND LIPIDS", "Serum (gold)", "immunoturbidimetry"),
+    (
+        "Cystatin C",
+        "KIDNEY FUNCTION TEST",
+        "Serum (gold)",
+        "particle-enhanced immunoturbidimetry",
+    ),
+    (
+        "Urine Albumin/Creatinine Ratio",
+        "KIDNEY FUNCTION TEST",
+        "Spot urine",
+        "immunoturbidimetry and Jaffe",
+    ),
+    (
+        "24-hour Urine Protein",
+        "KIDNEY FUNCTION TEST",
+        "24-hour urine",
+        "pyrogallol red",
+    ),
+    (
+        "Serum Amylase",
+        "LIVER FUNCTION TEST",
+        "Serum (gold)",
+        "CNPG3 substrate, kinetic",
+    ),
+    ("Serum Lipase", "LIVER FUNCTION TEST", "Serum (gold)", "colorimetric, kinetic"),
+    ("LDH", "LIVER FUNCTION TEST", "Serum (gold)", "lactate to pyruvate, kinetic UV"),
+    (
+        "Serum Ammonia",
+        "LIVER FUNCTION TEST",
+        "EDTA on ice",
+        "glutamate dehydrogenase, UV",
+    ),
+]
+SECTION_CODE = {"HAEMATOLOGY": "HEM", "GLUCOSE AND LIPIDS": "GLU", "KIDNEY FUNCTION TEST": "KFT",
+                "LIVER FUNCTION TEST": "LFT", "ELECTROLYTES AND MINERALS": "ELM",
+                "SPECIAL TESTS": "SPL", "URINE ROUTINE": "URN", "COAGULATION": "COA",
+                "SEROLOGY": "SER", "MICROBIOLOGY": "MIC"}  # fmt: skip
+TUBE = {"HAEMATOLOGY": "EDTA (lavender)", "GLUCOSE AND LIPIDS": "Serum (gold)",
+        "KIDNEY FUNCTION TEST": "Serum (gold)", "LIVER FUNCTION TEST": "Serum (gold)",
+        "ELECTROLYTES AND MINERALS": "Serum (gold)", "SPECIAL TESTS": "Serum (gold)",
+        "URINE ROUTINE": "Urine container"}  # fmt: skip
+TUBE_OF_TEST = {"Fasting Plasma Glucose": "Fluoride (grey)", "HbA1c": "EDTA (lavender)"}
+VOLUME = {"EDTA": "2 mL", "Serum": "3 mL", "Fluoride": "2 mL", "Citrate": "2.7 mL",
+          "Heparin": "2 mL"}  # fmt: skip
+TAT = {"HAEMATOLOGY": "4 h", "GLUCOSE AND LIPIDS": "Same day", "KIDNEY FUNCTION TEST": "6 h",
+       "LIVER FUNCTION TEST": "6 h", "ELECTROLYTES AND MINERALS": "4 h",
+       "SPECIAL TESTS": "Next day", "URINE ROUTINE": "2 h", "COAGULATION": "4 h",
+       "SEROLOGY": "Next day", "MICROBIOLOGY": "48-72 h"}  # fmt: skip
+STORE = {"EDTA": "24 h, 2-8 °C", "Serum": "7 d, 2-8 °C", "Fluoride": "24 h, 2-8 °C",
+         "Citrate": "4 h, room temp.", "Heparin": "2 h, room temp."}  # fmt: skip
+FASTING = {"GLUCOSE AND LIPIDS": "10-12 h", "LIVER FUNCTION TEST": "Preferred"}
+RUN_DAYS = {
+    "SPECIAL TESTS": "Mon-Sat",
+    "SEROLOGY": "Mon-Sat",
+    "MICROBIOLOGY": "Daily, read at 48 h",
+}
+DEPARTMENT = {"HAEMATOLOGY": "Haematology", "COAGULATION": "Haematology",
+              "URINE ROUTINE": "Clinical Pathology", "SPECIAL TESTS": "Immunoassay",
+              "SEROLOGY": "Serology", "MICROBIOLOGY": "Microbiology"}  # fmt: skip
+NOT_ACCREDITED = {"SEROLOGY", "MICROBIOLOGY"}
+BASE_PRICE = {"HAEMATOLOGY": 150, "GLUCOSE AND LIPIDS": 120, "KIDNEY FUNCTION TEST": 180,
+              "LIVER FUNCTION TEST": 200, "ELECTROLYTES AND MINERALS": 220,
+              "SPECIAL TESTS": 450, "URINE ROUTINE": 100, "COAGULATION": 350,
+              "SEROLOGY": 400, "MICROBIOLOGY": 600}  # fmt: skip
+
+
+def _short_method(method: str) -> str:
+    """A method as the menu prints it: up to its first comma or "on an"."""
+    return re.split(r",| on an ", method)[0]
+
+
+def _menu_rows() -> list[Row]:
+    entries = [(name, panel, TUBE_OF_TEST.get(name, TUBE[panel]), _short_method(method))
+               for panel, tests in METHODS for name, method, _ in tests]  # fmt: skip
+    entries += OTHER_TESTS
+    rows, seen = [], {}
+    for name, section, tube, method in entries:
+        seen[section] = seen.get(section, 0) + 1
+        kind = tube.split()[0]
+        rows.append(Row([
+            f"{SECTION_CODE[section]}-{seen[section]:03d}", name, tube,
+            VOLUME.get(kind, "As supplied"), STORE.get(kind, "See note"), TAT[section],
+            FASTING.get(section, "No"), RUN_DAYS.get(section, "Daily"),
+            DEPARTMENT.get(section, "Clinical Biochemistry"),
+            "No" if section in NOT_ACCREDITED else "Yes",
+            f"{BASE_PRICE[section] + 30 * (seen[section] % 7)}", method,
+        ]))  # fmt: skip
+    return rows
+
+
+TEST_MENU = Table(
+    [
+        "Code",
+        "Test",
+        "Sample",
+        "Vol.",
+        "Stability",
+        "TAT",
+        "Fasting",
+        "Runs",
+        "Department",
+        "Accredited",
+        "Rs",
+        "Method",
+    ],
+    _menu_rows(),
+    style="fine",
+)
 d25 = Doc(
     "d25", "arjun", "lab_report", "pdf", "a4",
-    cases=["sixty_results", "page_parsed_in_parts", "trend_two_values",
-           "multiple_ranges", "non_numeric_values", "multi_page"],
+    cases=["sixty_results", "page_parsed_in_parts", "dense_page_over_output_cap",
+           "trend_two_values", "multiple_ranges", "non_numeric_values", "multi_page"],
     notes="Sixty results on three pages, 27 on each of the first two: more than "
           "one parse call reads, so those pages are parsed in parts cut between "
-          "rows. Lipids lower than d13's on the statin; HbA1c still in the "
-          "prediabetes band.",
+          "rows. The fourth page is the laboratory's test menu in small print, "
+          "whose transcription runs past a page call's output cap, so it is read "
+          "again in two halves. Lipids lower than d13's on the statin; HbA1c still in "
+          "the prediabetes band.",
     pages=[
         [
             *sunrise_header(ARJUN, "Mr. Arjun Menon", "SD-25-092011", "Dr. Anil Deshpande",
@@ -1253,7 +1760,7 @@ d25 = Doc(
             ]),
         ],
         [
-            running_header("Mr. Arjun Menon", "SD-25-092011", 2, 3),
+            running_header("Mr. Arjun Menon", "SD-25-092011", 2, 4),
             *lab_panel("LIVER FUNCTION TEST", [
                 LabTest("Total Bilirubin", "0.9", "mg/dL", (rng("0.3 - 1.2"),)),
                 LabTest("Direct Bilirubin", "0.2", "mg/dL", (Range("< 0.3", high=0.3),)),
@@ -1289,7 +1796,7 @@ d25 = Doc(
             ]),
         ],
         [
-            running_header("Mr. Arjun Menon", "SD-25-092011", 3, 3),
+            running_header("Mr. Arjun Menon", "SD-25-092011", 3, 4),
             *lab_panel("URINE ROUTINE", [
                 LabTest("Colour", "Pale yellow", None, ()),
                 LabTest("Appearance", "Clear", None, ()),
@@ -1298,6 +1805,12 @@ d25 = Doc(
                 LabTest("Glucose", "Nil", None, (Range("Nil"),)),
                 LabTest("Pus Cells", "1-2", "/hpf", (rng("0 - 5"),)),
             ]),
+        ],
+        [
+            running_header("Mr. Arjun Menon", "SD-25-092011", 4, 4),
+            Heading("TEST MENU AND METHODS"),
+            TEST_MENU,
+            *[Line(note, style="fine") for note in GENERAL_NOTES],
             *end_of_report("Dr. Neha Joshi, MD (Pathology)"),
         ],
     ],

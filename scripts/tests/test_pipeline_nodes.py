@@ -306,24 +306,93 @@ def test_both_models_failing_fails_the_transcribe_step(db, run, model_client):
     assert row["status"] == "failed" and "ModelOutputError" in row["error"]
 
 
-def test_a_page_capped_on_every_model_is_kept_empty_and_noted(db, run, model_client):
+CUT = ("cut off", "length")  # a reply that hit the token cap
+
+
+def capped_on_both(model_client, calls: int = 1):
+    """The next `calls` transcription calls hit the cap on both models."""
+    model_client.replies[llm.PRIMARY_MODEL] = [CUT] * calls
+    model_client.replies[llm.FALLBACK_MODEL] = [CUT] * calls
+
+
+def test_a_page_capped_on_every_model_even_in_halves_is_kept_empty_and_noted(
+    db, run, model_client
+):
     state = opened("d03")
-    model_client.replies[llm.PRIMARY_MODEL] = [("cut off", "length")]
-    model_client.replies[llm.FALLBACK_MODEL] = [("cut off", "length")]
+    capped_on_both(model_client, calls=2)  # the page, then its top half
 
     out = nodes.transcribe(state)
 
     assert out["transcriptions"] == [PageTranscription(page=1, lines=[])]
     assert out["capped_pages"] == [1]
     [row] = step_rows(db, run)
-    assert (row["status"], row["error"]) == ("failed", nodes.CAPPED)
+    assert row["status"] == "failed"
+    assert (
+        row["error"]
+        == f"{nodes.CAPPED}; read again in halves: a half hit the token cap too"
+    )
+    assert row["output"]["reread"] == {
+        "outcome": "not joined", "half_lines": [],
+        "reason": "a half hit the token cap too",
+    }  # fmt: skip
 
     # The next page goes on, and the list keeps the first one.
     state["transcriptions"] = out["transcriptions"]
     state["capped_pages"] = out["capped_pages"]
-    model_client.replies[llm.PRIMARY_MODEL] = [("cut off", "length")]
-    model_client.replies[llm.FALLBACK_MODEL] = [("cut off", "length")]
+    capped_on_both(model_client, calls=2)
     assert nodes.transcribe(state)["capped_pages"] == [1, 2]
+
+
+def test_a_capped_page_is_read_again_in_halves_and_joined(db, run, model_client):
+    state = opened("d03")
+    top = [
+        "# Report",
+        "| Test | Result |",
+        "| --- | --- |",
+        "| Hb | 10.4 |",
+        "| MCV | 76 |",
+        "| MCH | 25.4 |",
+        "| PL",
+    ]  # cut through by its edge
+    bottom = ["| MCV | 76 |", "| MCH | 25.4 |", "| Platelets | 2.45 |", "End"]
+    model_client.replies[llm.PRIMARY_MODEL] = [CUT, "\n".join(top), "\n".join(bottom)]
+    model_client.replies[llm.FALLBACK_MODEL] = [CUT]
+
+    out = nodes.transcribe(state)
+
+    assert out["transcriptions"][0].lines == [
+        "# Report", "| Test | Result |", "| --- | --- |", "| Hb | 10.4 |",
+        "| MCV | 76 |", "| MCH | 25.4 |", "| Platelets | 2.45 |", "End",
+    ]  # fmt: skip
+    assert "capped_pages" not in out
+    [row] = step_rows(db, run)
+    assert row["status"] == "ok"
+    assert row["output"]["reread"] == {
+        "outcome": "joined", "half_lines": [7, 4], "overlap_lines": 2,
+    }  # fmt: skip
+    # Both attempts are on the step: the capped reading on each model, then
+    # each half, sent as a crop of the page image.
+    sent = [c["messages"][1]["images"][0] for c in model_client.calls]
+    assert len(sent) == 4 and sent[0] == sent[1] != sent[2]
+    full = page_files.describe(1, sent[0])
+    halves = [page_files.describe(1, image) for image in sent[2:]]
+    assert all(h.width == full.width for h in halves)
+    assert [h.height for h in halves] == [
+        round(full.height * 0.575),
+        full.height - round(full.height * 0.425),
+    ]
+
+
+def test_halves_that_share_no_lines_are_not_joined(db, run, model_client):
+    state = opened("d03")
+    model_client.replies[llm.PRIMARY_MODEL] = [CUT, "a\nb\nc", "x\ny\nz"]
+    model_client.replies[llm.FALLBACK_MODEL] = [CUT]
+
+    out = nodes.transcribe(state)
+
+    assert out["capped_pages"] == [1] and out["transcriptions"][0].lines == []
+    [row] = step_rows(db, run)
+    assert row["error"].endswith("the halves share no single run of lines")
 
 
 # -------------------------------------------------------------------

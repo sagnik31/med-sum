@@ -22,6 +22,7 @@ When validation finds errors, the model gets another try. The first plan was to 
 
 - Repair is cheap: a text call, not a vision call.
 - A page misread on an image without a text layer is not repaired, only caught where a check sees it.
+- One narrow re-read exists outside repair: a page whose reading hit the output cap is read again in two halves (see [0034](0034-capped-page-read-again-in-halves.md)).
 
 ## What would change it
 

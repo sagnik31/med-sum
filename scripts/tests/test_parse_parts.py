@@ -51,7 +51,7 @@ def test_a_page_of_more_rows_than_a_part_holds_is_cut_mid_table():
     record = key(LONG)
     plan = parts.plan(record.pages, record.document.type)
 
-    assert [p.page for p in plan] == [1, 1, 2, 2, 3]
+    assert [p.page for p in plan] == [1, 1, 2, 2, 3, 4]
     for first, second in (plan[0:2], plan[2:4]):
         assert second.first_line == first.last_line + 1
         # The second part starts inside a table: it gets that table's
@@ -179,6 +179,6 @@ def test_nothing_to_merge_is_a_bug():
 
 
 def test_the_parts_of_the_dataset_s_longest_document():
-    longest = max(PARSED_IDS, key=lambda d: DOCS[d]["pages"])
+    longest = max((d for d in PARSED_IDS if d != LONG), key=lambda d: DOCS[d]["pages"])
     record = key(longest)
     assert len(parts.plan(record.pages, record.document.type)) == len(record.pages)

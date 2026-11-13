@@ -239,6 +239,28 @@ def test_only_the_refused_part_is_parsed_again(db, document, model_client):
     assert repair[2] == {"role": "assistant", "content": '{"patient":'}
 
 
+def test_a_page_capped_then_read_again_in_halves_ends_verified(
+    db, document, model_client
+):
+    # d09's one page hits the cap on both models; its two halves, read
+    # again, overlap by three lines and join into the whole page.
+    lines = key("d09").pages[0].lines
+    cut = len(lines) // 2
+    top, bottom = lines[: cut + 3], lines[cut:]
+    capped, nl = ("cut off", "length"), chr(10)
+    state = document("d09")
+    model_client.replies[PRIMARY] = [
+        capped, nl.join(top), nl.join(bottom), classified("d09"), good_parse("d09"),
+    ]  # fmt: skip
+    model_client.replies[FALLBACK] = [capped]
+
+    final = run(state)
+
+    assert final["end_state"] == "verified"
+    assert final["transcriptions"][0].lines == lines
+    assert not [h for h in final["signals"] if h.signal == "LC-02"]
+
+
 def test_a_cut_prompt_sends_the_document_to_review(
     db, document, model_client, monkeypatch
 ):

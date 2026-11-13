@@ -134,8 +134,9 @@ def test_another_documents_reading_of_the_same_page_is_not_used(
 
 def test_a_capped_page_is_read_again(db, model_client):
     doc = new_document(db)
-    model_client.replies[llm.PRIMARY_MODEL] = [("cut off", "length")]
-    model_client.replies[llm.FALLBACK_MODEL] = [("cut off", "length")]
+    # Capped on both models, then capped again in its top half.
+    model_client.replies[llm.PRIMARY_MODEL] = [("cut off", "length")] * 2
+    model_client.replies[llm.FALLBACK_MODEL] = [("cut off", "length")] * 2
     _, page = transcribe_in_a_run(doc)
     assert page.lines == []
     model_client.replies[llm.PRIMARY_MODEL] = ["whole page"]

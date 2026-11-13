@@ -22,6 +22,8 @@ h1 { font-size: 15pt; margin: 0 0 2pt 0; }
 h2 { font-size: 10.5pt; margin: 10pt 0 4pt 0; }
 p { margin: 0 0 3pt 0; }
 p.footer { margin-top: 14pt; font-size: 7.5pt; color: #555; }
+p.fine { margin: 0; font-size: 5pt; line-height: 1.15; }
+table.fine th, table.fine td { font-size: 5pt; padding: 0.4pt 2pt; }
 table { border-collapse: collapse; width: 100%; margin-bottom: 4pt; }
 th, td { border: 1px solid #555; padding: 2pt 4pt; text-align: left; }
 th { background-color: #e8eef4; }
