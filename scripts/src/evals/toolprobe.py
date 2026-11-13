@@ -111,11 +111,34 @@ class Target:
 
 
 @dataclass(frozen=True)
+class Search:
+    """A search the case expects: text holding `needle`, on `page` if one is given."""
+
+    needle: str
+    page: int | None = None
+    tool: str = "search_transcription"
+
+    def hit(self, args: dict) -> bool:
+        text = args.get("text")
+        if not isinstance(text, str) or self.needle.casefold() not in text.casefold():
+            return False
+        page = args.get("page")
+        return page is None or self.page is None or str(page) == str(self.page)
+
+
+@dataclass(frozen=True)
 class Case:
     name: str
     request: str
-    target: Target | None  # None: the model should answer without a tool
+    # The calls that answer it (any one will do); None: answer without a tool.
+    target: Target | Search | tuple | None
     answer: str | None = None  # a regex the final reply must match
+
+    @property
+    def targets(self) -> tuple:
+        if self.target is None:
+            return ()
+        return self.target if isinstance(self.target, tuple) else (self.target,)
 
 
 CASES = (
@@ -146,6 +169,25 @@ CASES = (
         "number.",
         Target("get_lines", 1, (11, 16)),
         answer=r"\b15\b",
+    ),
+    Case(
+        "search_for_a_value",
+        "A validator reported: results[2] (Serum Uric Acid): value_text '6.9' "
+        "is not on the line it cites. Find the line where 6.9 is printed and "
+        "reply with only its page and line, as p<page>:<line>.",
+        (Search("6.9"), Target("get_lines", 1, (10, 10), max_span=40)),
+        answer=r"\bp1:10\b",
+    ),
+    Case(
+        "search_for_a_test_name",
+        "Which page and line hold the Post Prandial Glucose row? Reply with "
+        "only p<page>:<line>.",
+        (
+            Search("Post Prandial"),
+            Search("Prandial"),
+            Target("get_lines", 2, (5, 5), max_span=40),
+        ),
+        answer=r"\bp2:5\b",
     ),
     Case(
         "no_tool_needed",
@@ -240,12 +282,12 @@ def score(case: Case, result: CaseResult, first_call) -> None:
     if first_call is not None:
         call, outcome = first_call
         result.called = True
-        result.right_tool = case.target is not None and call.name == case.target.tool
+        result.right_tool = call.name in {t.tool for t in case.targets}
         result.well_formed = outcome.ok or outcome.error.kind == "not_found"
         result.exact_types = bool(outcome.exact_types)
         args = call.arguments if isinstance(call.arguments, dict) else {}
-        result.on_target = (
-            case.target is not None and result.right_tool and case.target.hit(args)
+        result.on_target = any(
+            t.tool == call.name and t.hit(args) for t in case.targets
         )
     if case.answer is not None:
         result.answered = bool(re.search(case.answer, result.final_reply))

@@ -21,6 +21,14 @@ PERFECT = {
         ToolReply(("get_lines", {"page": 1, "first": 11, "last": 16})),
         "15",
     ],
+    "search_for_a_value": [
+        ToolReply(("search_transcription", {"text": "6.9"})),
+        "p1:10",
+    ],
+    "search_for_a_test_name": [
+        ToolReply(("search_transcription", {"text": "post prandial glucose"})),
+        "p2:5",
+    ],
     "no_tool_needed": ["No"],
 }
 
@@ -42,7 +50,7 @@ def test_every_case_passes_on_a_model_that_calls_the_tools_right(
     report = json.loads((tmp_path / "probe.json").read_text(encoding="utf-8"))
     s = report["summary"][llm.PRIMARY_MODEL]
     assert s["passed"] == s["cases"] == len(toolprobe.CASES)
-    assert s["on_target"] == s["tool_cases"] == 4
+    assert s["on_target"] == s["tool_cases"] == 6
 
 
 def test_the_tool_answer_goes_back_as_a_tool_message(model_client):
@@ -115,3 +123,17 @@ def test_no_probe_line_with_a_value_is_a_dataset_transcription_line():
     for doc in DOCS:
         for page in key(doc).pages:
             assert not probe_lines & {line for line in page.lines if line.strip()}
+
+
+def test_a_search_answers_a_search_case_and_so_does_reading_the_line(model_client):
+    case = next(c for c in toolprobe.CASES if c.name == "search_for_a_value")
+    model_client.replies[llm.PRIMARY_MODEL] = [
+        ToolReply(("get_lines", {"page": 1, "first": 1, "last": 16})),
+        "p1:10",
+    ]
+    assert toolprobe.run_case(case, "primary").passed
+    model_client.replies[llm.PRIMARY_MODEL] = [
+        ToolReply(("search_transcription", {"text": "7.2"})),
+        "p1:10",
+    ]
+    assert not toolprobe.run_case(case, "primary").on_target
