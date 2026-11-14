@@ -34,7 +34,7 @@ flowchart LR
 
 The system has three services that share one PostgreSQL database:
 
-- **Frontend (React).** Login and password setup, staff management, document upload and listing with each document's status, and viewers for the document pages and the patient summary.
+- **Frontend (React).** Login and password setup, staff management, patients, document upload and listing with each document's status, and viewers for the document pages and the patient summary. Every value on a document's page shows the page and lines it was read from; choosing it highlights those lines in the page's transcription beside it. Values computed by code (numbers, flags from ranges, unit conversions, dose schedules, the document date) are labelled *derived*, and a flagged value shows why. Each source reference in the patient summary (`D2 p1:6`) opens its document at those lines.
 - **Backend (Go).** The public API. It handles accounts, login sessions and uploads, checks that a document belongs to the caller, serves each document's record with its citations, and forwards processing requests to the AI service.
 - **AI service (Python).** Runs the document pipeline and the patient summary against local Ollama models, and builds both pages in code.
 
@@ -320,12 +320,14 @@ backend/
   internal/db/           PostgreSQL data access (pgx)
 db/schema.sql            the whole database schema (no migrations; see step 2 of setup)
 db/ai_service_role.sql   the AI service's least-privilege role (see Database roles)
+db/api_role.sql          the Go API's least-privilege role
 docs/adr/                architecture decision records: why the system is built this way
 frontend/
   src/api/               API client
-  src/components/        shared components (sandboxed HTML viewer, sessions list)
+  src/components/        shared components (sandboxed HTML viewer, record view and source page, sessions list, idle warning)
+  src/record/            what the record view shows: values, derived values, citations (with tests)
   src/auth/              the logged-in account (AuthProvider), permissions and the route guard
-  src/pages/             login, set password, account, staff, documents, document summary, patient summary
+  src/pages/             login, set password, account, staff, audit log, patients, patient, document, patient summary
 scripts/
   src/insights_service.py    FastAPI service; starts the document worker
   src/document_jobs.py       the document job queue: claims, leases, the worker
@@ -359,6 +361,8 @@ postman/                 API collection
 
 ## Development
 
+The frontend's tests (`npm test`) use Node's own test runner on the functions in `src/record/`, with a synthetic record that a pytest test keeps valid against the record schema.
+
 Install the Python test tools (pytest, [Ruff](https://docs.astral.sh/ruff/) and Beautiful Soup, which the tests use to read the generated pages) into the AI service's virtual environment:
 
 ```bash
@@ -370,7 +374,7 @@ Checks and tests for each part:
 ```bash
 (cd backend  && go build ./... && go vet ./... && go test ./...)
 (cd scripts  && ruff check src tests && ruff format --check src tests && pytest)
-(cd frontend && npm run lint && npm run build)
+(cd frontend && npm run lint && npm test && npm run build)
 ```
 
 The tests never call a model: model calls are replaced with fakes, so Ollama need not be running. The database tests create a throwaway database (`med_sum_test_go` for Go, `med_sum_test_py` for Python) from `db/schema.sql`, and drop it afterwards; your `med_sum` database is not touched. The Go tests need `psql` on the `PATH`. Both connect as `postgres:postgres@localhost:5432` unless `MEDSUM_TEST_ADMIN_URL` says otherwise. When Postgres can't be reached they are skipped; set `MEDSUM_REQUIRE_DB=1` to make that a failure. `pytest -m "not db"` runs only the tests that need no database.
@@ -402,7 +406,7 @@ All of these run from `scripts/src`.
 - **Some wrong values pass the checks.** Every row of a results table must become a result, so a row the parse leaves out goes back to the parse, then to review. A result printed as a line of text rather than a table row has no such check: leaving it out is only an information note, so the document can still end verified (the 6 dropped results the fault check missed are all of this kind). A value equal to one of its own range bounds is sent to review when its row prints that number only inside the range (98 of 98 range bounds taken for the value were caught); one printed in its own cell as well is taken as the real value.
 - **No medical codes or brand-to-generic mapping.** Medicines are kept as written (brands stay brands), and no LOINC, SNOMED or RxNorm codes are assigned: the local models aren't reliable enough to map them.
 - **Lab reports and prescriptions only.** Any other document is kept, transcribed and marked for review, but not parsed.
-- **Not yet evaluated on the models.** The eval runner, the repair eval, the fault check and the synthetic dataset exist, and the checks have been measured, but the pipeline has not yet been run live over the dataset on both models, so neither repair has been measured. A short probe showed both models calling a tool correctly. Citations and clinician corrections are not yet on screen.
+- **Not yet evaluated on the models.** The eval runner, the repair eval, the fault check and the synthetic dataset exist, and the checks have been measured, but the pipeline has not yet been run live over the dataset on both models, so neither repair has been measured. A short probe showed both models calling a tool correctly. Clinician corrections are not yet on screen.
 - **The overview check is strict and literal.** It compares words, not meanings. A number counts as in context when one of the words around it (three either side) is a word of what it belongs to, so two tests that share a unit in one list can still trade values, and an ordinary word missing from its fixed list leaves the overview out. Its layout is a first draft.
 - **No container setup** yet, and no CI.
 
@@ -410,7 +414,7 @@ All of these run from `scripts/src`.
 
 The next phase focuses on doctors and hospital groups:
 
-- Citations shown on screen, and a review screen where a clinician confirms or corrects flagged values
+- A review screen where a clinician confirms or corrects flagged values
 - Live eval runs on both models, reported for the dev, test and held-out documents apart
 
 ## License

@@ -12,10 +12,15 @@ const CONTENT_POLICY =
 // Renders AI-generated HTML (a full document with its own <style>) in a
 // sandboxed iframe: its CSS cannot leak into the app, and scripts in it
 // cannot run (no allow-scripts). allow-same-origin only lets us measure
-// the content to size the frame.
-function HtmlFrame({ html, title }) {
+// the content to size the frame, and, with onCite, lets the app make the
+// summary's source references (<cite data-document-id ...>) clickable:
+// the listener runs in the app, not in the frame, and onCite gets only the
+// element's data attributes to check.
+function HtmlFrame({ html, title, onCite }) {
   const frameRef = useRef(null);
   const [height, setHeight] = useState(0);
+  const onCiteRef = useRef(onCite);
+  onCiteRef.current = onCite;
 
   function handleLoad() {
     const doc = frameRef.current?.contentDocument;
@@ -23,6 +28,25 @@ function HtmlFrame({ html, title }) {
     const fit = () => setHeight(doc.documentElement.scrollHeight);
     fit();
     new ResizeObserver(fit).observe(doc.body);
+
+    if (!onCite) return;
+    for (const el of doc.querySelectorAll("cite[data-document-id]")) {
+      el.setAttribute("role", "link");
+      el.setAttribute("tabindex", "0");
+      el.setAttribute("title", "Show this value on its document");
+      el.style.cursor = "pointer";
+      el.style.textDecoration = "underline";
+    }
+    const open = (event) => {
+      const el = event.target.closest?.("cite[data-document-id]");
+      if (!el) return;
+      if (event.type === "keydown" && event.key !== "Enter") return;
+      event.preventDefault();
+      const { documentId, page, lines } = el.dataset;
+      onCiteRef.current?.({ documentId, page, lines });
+    };
+    doc.addEventListener("click", open);
+    doc.addEventListener("keydown", open);
   }
 
   return (

@@ -363,6 +363,8 @@ def test_every_value_cites_its_document_page_and_lines():
     for c in cites:
         n = int(c["data-doc"][1:])
         record = facts.documents[n - 1].record
+        # The app opens the document from this id.
+        assert c["data-document-id"] == facts.documents[n - 1].document_id
         first, _, last = c["data-lines"].partition("-")
         lines = record.pages[int(c["data-page"]) - 1].lines
         assert 1 <= int(first) <= int(last or first) <= len(lines)

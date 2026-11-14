@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "document": {
+    "document_id": "00000000-0000-4000-8000-000000000001",
+    "type": "lab_report",
+    "page_count": 2,
+    "has_text_layer": false,
+    "uploaded_by": null,
+    "printed": {
+      "facility": {"citation": {"page": 1, "first_line": 1, "last_line": 1, "quote": "Example Diagnostics"}, "text": "Example Diagnostics"},
+      "clinicians": [{"citation": {"page": 1, "first_line": 3, "last_line": 3, "quote": "Ref. by: Dr. A. Example"}, "text": "Ref. by: Dr. A. Example"}],
+      "report_date": {"citation": {"page": 1, "first_line": 4, "last_line": 4, "quote": "Reported: 05/09/2024"}, "text": "05/09/2024"},
+      "collection_date": null,
+      "prescription_date": null
+    },
+    "derived": {"report_date": "2024-09-05", "document_date": "2024-09-05", "date_source": "report_date"},
+    "provenance": {"run_id": "run-1", "node": "parse", "status": "validated"}
+  },
+  "pages": [
+    {"page": 1, "lines": [
+      "Example Diagnostics",
+      "Name: Test Patient A    Age/Sex: 40 Y / F",
+      "Ref. by: Dr. A. Example",
+      "Reported: 05/09/2024",
+      "COMPLETE BLOOD COUNT",
+      "| Haemoglobin | 10.2 | g/dL | 12.0-15.5 | L |",
+      "Kindly correlate clinically.",
+      "| Platelet count | 2.1 | lakh/cumm | 1.5-4.5 | |"
+    ]},
+    {"page": 2, "lines": [
+      "BP: 130/85 mmHg",
+      "Known case of hypothyroidism",
+      "Tab Exampleine 50 mcg 1-0-0 x 30 days"
+    ]}
+  ],
+  "patient": {
+    "printed": {
+      "name": {"citation": {"page": 1, "first_line": 2, "last_line": 2, "quote": "Name: Test Patient A    Age/Sex: 40 Y / F"}, "text": "Test Patient A"},
+      "age": {"citation": {"page": 1, "first_line": 2, "last_line": 2, "quote": "Name: Test Patient A    Age/Sex: 40 Y / F"}, "text": "40 Y"},
+      "sex": {"citation": {"page": 1, "first_line": 2, "last_line": 2, "quote": "Name: Test Patient A    Age/Sex: 40 Y / F"}, "text": "F"},
+      "date_of_birth": null,
+      "patient_id": null
+    },
+    "provenance": {"run_id": "run-1", "node": "parse", "status": "validated"}
+  },
+  "observations": [
+    {
+      "id": "obs-1",
+      "printed": {"citation": {"page": 1, "first_line": 6, "last_line": 6, "quote": "| Haemoglobin | 10.2 | g/dL | 12.0-15.5 | L |"}, "panel": "COMPLETE BLOOD COUNT", "test_name": "Haemoglobin", "value_text": "10.2", "unit": "g/dL", "reference_ranges": ["12.0-15.5"], "flag_printed": "L"},
+      "derived": {"analyte": "haemoglobin", "value_num": 10.2, "ranges": [{"text": "12.0-15.5", "low": 12.0, "high": 15.5}], "flag_computed": "low"},
+      "provenance": {"run_id": "run-1", "node": "parse", "status": "validated"}
+    },
+    {
+      "id": "obs-2",
+      "printed": {"citation": {"page": 1, "first_line": 8, "last_line": 8, "quote": "| Platelet count | 2.1 | lakh/cumm | 1.5-4.5 | |"}, "panel": "COMPLETE BLOOD COUNT", "test_name": "Platelet count", "value_text": "2.1", "unit": "lakh/cumm", "reference_ranges": ["1.5-4.5"], "flag_printed": null},
+      "derived": {"analyte": "platelets", "value_num": 2.1, "ranges": [{"text": "1.5-4.5", "low": 1.5, "high": 4.5}], "flag_computed": "normal", "converted": {"value": 210.0, "unit": "10^3/uL", "from_unit": "lakh/cumm"}},
+      "provenance": {"run_id": "run-1", "node": "parse", "status": "low_confidence", "low_confidence_reasons": ["The unit was converted; check the printed unit."]}
+    }
+  ],
+  "medications": [
+    {
+      "id": "med-1",
+      "printed": {"citation": {"page": 2, "first_line": 3, "last_line": 3, "quote": "Tab Exampleine 50 mcg 1-0-0 x 30 days"}, "form": "Tab", "name": "Exampleine", "strength": "50 mcg", "dose": null, "frequency": "1-0-0", "route": null, "duration": "x 30 days", "instructions": null},
+      "derived": {"schedule": {"morning": 1, "noon": 0, "night": 0, "times_per_day": 1}, "duration_days": 30}
+    }
+  ],
+  "conditions": [
+    {"id": "cond-1", "printed": {"citation": {"page": 2, "first_line": 2, "last_line": 2, "quote": "Known case of hypothyroidism"}, "text": "Known case of hypothyroidism", "kind": "history"}}
+  ],
+  "remarks": [
+    {"id": "rem-1", "printed": {"citation": {"page": 1, "first_line": 7, "last_line": 7, "quote": "Kindly correlate clinically."}, "text": "Kindly correlate clinically.", "kind": "comment", "scope": "test", "test_name": "Haemoglobin", "panel": "COMPLETE BLOOD COUNT"}, "derived": {"observation_id": "obs-1"}}
+  ],
+  "vitals": [
+    {"id": "vit-1", "printed": {"citation": {"page": 2, "first_line": 1, "last_line": 1, "quote": "BP: 130/85 mmHg"}, "name": "BP", "value_text": "130/85", "unit": "mmHg"}, "derived": {"kind": "blood_pressure", "systolic": 130, "diastolic": 85}}
+  ]
+}

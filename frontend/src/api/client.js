@@ -251,6 +251,14 @@ export function deleteDocument(id) {
   return apiRequest(`/documents/${enc(id)}`, { method: "DELETE" });
 }
 
+// The document's structured record: { document_id, status, record, citations, ... }.
+// record holds every value as printed, what code derived from it, and the
+// page transcriptions each value's citation points into. 404 until the
+// pipeline has stored one.
+export function fetchDocumentRecord(id) {
+  return apiRequest(`/documents/${enc(id)}/record`);
+}
+
 export function getInsight(documentId) {
   return apiRequest(`/documents/${enc(documentId)}/insight`);
 }

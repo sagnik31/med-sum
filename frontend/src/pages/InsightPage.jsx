@@ -1,14 +1,17 @@
 // src/pages/InsightPage.jsx
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useSearchParams, Link } from "react-router-dom";
 import {
   fetchDocument,
+  fetchDocumentRecord,
   getInsight,
   reprocessDocument,
   triggerInsightGeneration,
 } from "../api/client.js";
 import ApiErrorNotice from "../components/ApiErrorNotice.jsx";
 import HtmlFrame from "../components/HtmlFrame.jsx";
+import RecordView from "../components/RecordView.jsx";
+import { citationFromQuery } from "../record/recordView.js";
 
 // How often to check a document that is still being processed.
 const POLL_MS = 5000;
@@ -25,6 +28,12 @@ function InsightPage() {
   const [doc, setDoc] = useState(null);
   // Bumped by Retry to restart the polling loop.
   const [attempt, setAttempt] = useState(0);
+  // The structured record, once the document is processed; its loading error.
+  const [record, setRecord] = useState(null);
+  const [recordError, setRecordError] = useState(null);
+  // A link from the patient summary names the lines to show (?page=&lines=).
+  const [searchParams] = useSearchParams();
+  const linkedCitation = citationFromQuery(searchParams);
 
   useEffect(() => {
     if (!id) return;
@@ -89,6 +98,23 @@ function InsightPage() {
     };
   }, [id, attempt]);
 
+  // Load the record when the document is processed. A 404 means the
+  // pipeline stored none (it can't happen for a finished document, but the
+  // page then shows the insight alone).
+  const processed = status === "ready" || status === "needs_review";
+  useEffect(() => {
+    if (!id || !processed) return undefined;
+    let cancelled = false;
+    setRecord(null);
+    setRecordError(null);
+    fetchDocumentRecord(id)
+      .then((data) => !cancelled && setRecord(data.record))
+      .catch((err) => !cancelled && err.status !== 404 && setRecordError(err));
+    return () => {
+      cancelled = true;
+    };
+  }, [id, processed, attempt]);
+
   async function handleReprocess() {
     setError(null);
     try {
@@ -146,6 +172,19 @@ function InsightPage() {
           >
             Reprocess
           </button>
+        </div>
+      )}
+
+      {!loading && !error && processed && (
+        <div className="mb-4">
+          <h2 className="text-sm font-semibold text-slate-700 mb-2">Values and where they are printed</h2>
+          <ApiErrorNotice error={recordError} />
+          {!record && !recordError && <p className="text-sm text-slate-600">Loading the record…</p>}
+          {record && (
+            // Keyed by the link, so following another source link to this
+            // page selects its lines.
+            <RecordView key={searchParams.toString()} record={record} initialCitation={linkedCitation} />
+          )}
         </div>
       )}
 

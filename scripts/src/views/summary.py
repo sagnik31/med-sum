@@ -112,6 +112,8 @@ def _v(value) -> str:
 
 
 def _cite(f: Fact) -> str:
+    # data-document-id lets the app open the document at these lines; it
+    # is an id, not patient data.
     s = f.source
     lines = (
         f"{s.first_line}"
@@ -119,7 +121,8 @@ def _cite(f: Fact) -> str:
         else f"{s.first_line}-{s.last_line}"
     )
     return (
-        f'<cite data-doc="D{s.doc}" data-page="{s.page}" data-lines="{lines}">'
+        f'<cite data-doc="D{s.doc}" data-document-id="{esc(f.doc.document_id)}" '
+        f'data-page="{s.page}" data-lines="{lines}">'
         f"D{s.doc} p{s.page}:{lines}</cite>"
     )
 

@@ -1,11 +1,12 @@
 // src/pages/PatientSummaryPage.jsx
 import React, { useCallback, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { fetchPatient, fetchPatientSummary, triggerPatientSummary } from "../api/client.js";
 import { useAuth } from "../auth/context.js";
 import { PERM, can } from "../auth/permissions.js";
 import ApiErrorNotice from "../components/ApiErrorNotice.jsx";
 import HtmlFrame from "../components/HtmlFrame.jsx";
+import { citeLink } from "../record/recordView.js";
 
 // How often to check while the summary is being generated.
 const POLL_MS = 5000;
@@ -14,6 +15,7 @@ const POLL_MS = 5000;
 function PatientSummaryPage() {
   const { id } = useParams();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [patient, setPatient] = useState(null);
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -112,7 +114,15 @@ function PatientSummaryPage() {
           )}
 
           {summary?.insights_html ? (
-            <HtmlFrame html={summary.insights_html} title="Patient summary" />
+            <HtmlFrame
+              html={summary.insights_html}
+              title="Patient summary"
+              onCite={(cite) => {
+                // A source reference opens its document at the cited lines.
+                const path = citeLink(cite);
+                if (path) navigate(path);
+              }}
+            />
           ) : (
             !processing && (
               <div className="text-center py-12 bg-slate-50 rounded-lg border border-dashed border-slate-200">
