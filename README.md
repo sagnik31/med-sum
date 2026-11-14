@@ -13,6 +13,7 @@ All model inference runs locally through [Ollama](https://ollama.com), so docume
 - [Getting started](#getting-started)
 - [Configuration](#configuration)
 - [API](#api)
+- [MCP server](#mcp-server)
 - [Project structure](#project-structure)
 - [Development](#development)
 - [Design decisions](docs/adr/README.md)
@@ -314,6 +315,51 @@ The AI service exposes `GET /health` (with each model's circuit-breaker state) a
 
 A Postman collection is in [`postman/collections/`](postman/collections/med-sum.postman_collection.json). It uses the variables `backend_url`, `ai_service_url`, `email`, `password` and `internal_api_token` (your `.env.local` value; the collection holds none). Log in first: Postman keeps the `medsum_session` cookie from that response and sends it with every later request, and each request that changes something carries `X-Requested-With: med-sum`.
 
+## MCP server
+
+A local [MCP](https://modelcontextprotocol.io) server lets an MCP client (a desktop assistant, an IDE, an agent) read the records with the same read-only tools the repair step uses. It never connects to the database: it reads through the API, logged in as its own clinician account, so the account's organisation, its permissions and the audit log apply to every call. See [ADR 0012](docs/adr/0012-shared-tool-layer.md).
+
+> **Synthetic data only.** Whatever a tool returns goes to the client's model, and many clients run their model at a cloud provider. Real patient data must never be served to one. The server starts only with `MEDSUM_ENV=dev`, where every document is synthetic (the [synthetic dataset](#synthetic-dataset), loaded with `python -m dataset.load --yes`).
+
+| Tool | Reads | Answers with |
+|---|---|---|
+| `find_patients` | `GET /patients?q=` | patients of the organisation by part of the name or the start of the MRN (at most 25) |
+| `list_documents` | `GET /patients/{id}/documents` | a patient's documents, newest first, with their processing status |
+| `list_items` | `GET /documents/{id}/record` | the record's items (lab results, medicines, conditions, ...), each with its id and citation |
+| `get_item` | `GET /documents/{id}/record` | one item as parsed, as clinicians reviewed it, with what code derived and the text of the lines it cites |
+| `search_transcription` | `GET /documents/{id}/record` | the transcription's lines that contain some text (at most 12) |
+| `get_lines` | `GET /documents/{id}/record` | lines of one page of the transcription (at most 40) |
+| `get_text_layer` | `GET /documents/{id}/record` | the PDF's own text of one page, which the transcription is checked against |
+
+Every answer is `{"citations": [...], "result": {...}}`, and every entry of the result carries its own `cite`: `patient:<id>`, `document:<id>`, `document:<id>#p2:7-9` (transcription lines) or `document:<id>#text-layer:p3:1-40`. No value comes without the place it was read from. Each tool call is one API request, so one audit row, and the row's details name the tool (the server sends `X-Medsum-Tool`). Admins see the rows on the Audit log page, under the server's account. A call whose arguments don't fit the tool's schema is answered before any request is made and reads nothing.
+
+**Set it up.** Create an account for the server alone, so its reads are told apart from a person's, and set its password with the link `medsumctl` prints:
+
+```bash
+cd backend
+go run ./cmd/medsumctl create-user --email mcp-client@med-sum.test --name "MCP client"
+```
+
+Then copy `scripts/mcp.env.example` to `scripts/mcp.env.local` (untracked) and fill in `MEDSUM_MCP_EMAIL` and `MEDSUM_MCP_PASSWORD`. `MEDSUM_MCP_API_URL` defaults to `http://localhost:8080`, and `MEDSUM_ENV=dev` must stay. A variable set in the environment wins over the file. When the session ends (idle or absolute timeout, a revoke, a new password), the server logs in again.
+
+**Connect a client.** The server speaks MCP over stdio: the client starts it as a subprocess. Most clients take a JSON entry like this one, with your clone's paths (on macOS or Linux, the interpreter is `scripts/.venv/bin/python`):
+
+```json
+{
+  "mcpServers": {
+    "medsum": {
+      "command": "D:/path/to/med-sum/scripts/.venv/Scripts/python.exe",
+      "args": ["-m", "medsum_mcp"],
+      "env": { "PYTHONPATH": "D:/path/to/med-sum/scripts/src" }
+    }
+  }
+}
+```
+
+The API must be running. To try the server by hand, run `python -m medsum_mcp` from `scripts/src`, or point the MCP Inspector at that command. The server's log lines go to stderr and hold the tool, the outcome, the status and the time, never an argument or a value.
+
+**Measure a client.** `python -m evals.mcp_eval --live` asks a local model questions about the synthetic patients, answered through the server, and scores each answer (see [Evals](#evals)). It has not been run yet.
+
 ## Project structure
 
 ```
@@ -342,6 +388,7 @@ scripts/
   src/views/                 HTML built by code from records: the document page and the patient summary
   src/summary/               the patient summary: facts from the records, the overview and its check
   src/tools/                 read-only tools over one document (lines, search, text layer, record items), typed and citing where each answer is from
+  src/medsum_mcp/            the stdio MCP server over those tools, reading through the Go API
   src/model_health.py        the circuit breaker per model
   src/llm.py                 model calls with the primary and fallback model
   src/record/                the structured record of a document and the schemas the model fills in
@@ -360,6 +407,7 @@ scripts/
   evals/cassettes/           recorded model replies, so an eval can be replayed without Ollama; written by the first live run
   prompt/                    prompts: page transcription, classify, parse per type, repair, the summary's overview
   tests/                 pytest suite (fixtures in conftest.py)
+  mcp.env.example        the MCP server's settings; copy to mcp.env.local (untracked)
   requirements.in        direct dependencies; requirements.txt pins every package
   requirements-dev.in    test tools; requirements-dev.txt pins them
 postman/                 API collection
@@ -402,6 +450,7 @@ All of these run from `scripts/src`.
 - **`python -m evals.toolprobe --live`** checks that each model can call the tools through Ollama at all: seven short text-only cases over an invented report, scored for the right tool, well-formed arguments, the right page and lines, and the answer given after reading.
 - **`python -m evals.compare A B`** compares two history entries or reports. It fails when unsafe errors rise (overall or in verified documents), when routing or medicine recall falls, or when field F1 or value recall falls by more than a point. **`python -m evals.history`** prints every run as a table.
 - **`python -m evals.review_signals`** measures the signals in use, from clinicians' reviews in the database: for each low-confidence signal, the values it raised and the share a clinician corrected (its precision), and from the audit samples, the share of verified documents that still held a value a clinician corrected (the escape rate). Counts only, with intervals. **`python -m evals.export_review <document_id> <out_dir>`** writes a reviewed document as a candidate eval case (the file, a key from the reviewed record, and which fields were corrected), to be checked by hand before it joins the dataset; development only (`MEDSUM_ENV=dev`).
+- **`python -m evals.mcp_eval --live`** measures an MCP client: questions about the synthetic patients, built from the answer keys, go to a local model that can read the records only through the [MCP server](#mcp-server). Value questions (a lab result, a medicine's strength or frequency) are scored for quoting a citation, every citation covering lines a tool returned, every number appearing in what the tools returned (the overview's number check), pointing at the key's lines in the right document, and holding the key's value. Questions about a test none of the patient's documents holds are scored for abstaining. Each measure carries its interval. It needs the dataset loaded and processed and the API running; it has not been run yet.
 - **`python -m evals.selfcheck`** scores the answer keys against themselves to show the report's shape. Every score is perfect, and 22 of 25 documents end verified. Even so, its 0 unsafe errors in 204 clinical items still allows up to 1.8% at 95%: that is how little a dataset this size can rule out, and why every count in the report carries its interval.
 - **`python -m evals.redaction`** measures how well patient identifiers are masked in what leaves the clinical stores (findings, errors, logs): recall per identifier type, with the run's known values and with patterns alone. See [where patient data goes](docs/data-and-threats.md).
 
