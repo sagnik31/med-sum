@@ -1,13 +1,17 @@
 # Med-Sum
 
-Med-Sum turns medical documents into checked, structured records that a doctor can read before a visit. Hospital staff upload lab reports and prescriptions as PDFs or images. A LangGraph pipeline has a local vision-language model transcribe each page and fill in a schema for the document's type; deterministic code then derives numbers, ranges, flags and dates, checks every value against the page it came from, and sends anything it can't confirm to review. Each document's page and the cumulative patient summary are built by code from those records, so every value shown is printed on a document and cites where.
+**Checked, cited records of a patient's lab reports and prescriptions, for the clinicians of a hospital.**
 
-All model inference runs locally through [Ollama](https://ollama.com), so documents never leave the machine.
+Patients arrive with a folder of reports from different laboratories, in different layouts, often photographed on a phone. Before a consultation a doctor has minutes to find the latest haemoglobin, what was prescribed last time and what changed. Med-Sum reads those documents for them. Staff upload each document to the patient's record. A local vision-language model transcribes every page and fills in a schema for the document's type. Deterministic code then derives numbers, ranges, flags and dates, checks every value against the page it came from, and sends anything it can't confirm to a clinician's review queue. Each document's page and the patient's cumulative summary are built by code from those records, so every value shown is printed on a document and cites the page and lines where.
 
-> **Status:** an early-stage personal project. Staff accounts, sessions, roles and staff management are in place, but patient records and an audit log are not yet (see [Limitations](#limitations)), so do not use it with real patient data. The models can misread a document, so extracted values can be wrong; nothing here is medical advice. The repository holds synthetic data only.
+All model inference runs on the hospital's own machine through [Ollama](https://ollama.com), so documents never leave it.
+
+> **Status:** a personal project, not a medical device. It has not been validated with clinicians or on real documents, and the models can misread a page, so a value can be wrong; nothing here is medical advice. Staff accounts, patient records shared within an organisation, clinician review and an audit log of every read are built, but the deployment hardening a hospital needs is not (see [Limitations](#limitations)). The repository holds synthetic data only; do not use it with real patient data.
 
 ## Contents
 
+- [For hospitals](#for-hospitals)
+- [Case study](#case-study)
 - [How it works](#how-it-works)
 - [Tech stack](#tech-stack)
 - [Getting started](#getting-started)
@@ -22,6 +26,134 @@ All model inference runs locally through [Ollama](https://ollama.com), so docume
 - [Roadmap](#roadmap)
 - [License](#license)
 
+## For hospitals
+
+**What a clinician gets.** For each patient, one summary built from every processed document: flagged and out-of-range values from the latest reports, the medicines on the latest prescription, diagnoses as printed, results over time under their printed panels, and every document in date order. Each value links to the lines of the document it was read from, shown beside the original upload. Nothing is paraphrased: values appear exactly as printed, and anything code computed (a flag from the printed range, a unit conversion, doses a day, the document's date) is labelled *derived*.
+
+**What it never does.** It doesn't diagnose, grade severity, suggest treatment, map brands to generics, or fill in what a document doesn't say. A trend is only "rising" or "falling", from two or more reports in the same unit, with the reports named. The only model-written prose, the summary's few-sentence overview, is checked word by word against the facts before it is shown.
+
+**How wrong values are caught.** In three layers, the first and the third measured:
+
+1. **Deterministic checks decide what a clinician must see.** A document goes to `needs_review`, with the reason in plain words, when a value doesn't trace to its line, doesn't match the PDF's own text, disagrees with its printed range or flag, or carries an impossible date, or when the document was printed for another patient. Without any model, these checks catch 962 of 988 injected faults (97.4%, 95% CI 96.2% to 98.2%); what gets through is listed under [Limitations](#limitations).
+2. **A clinician confirms or corrects, beside the reading.** The review queue lists documents awaiting review, oldest first. On the review screen the clinician sees the original upload next to each value, confirms it or enters the right value, and the correction is kept next to what the model read, never over it, with who and when. A corrected value runs the range, flag and date checks again. The summary then says "corrected by Dr X on date".
+3. **A share of verified documents is audited.** Ten per cent of the documents that passed every check (`MEDSUM_AUDIT_SAMPLE_RATE`) go back to the queue as an audit, and the audit can only be finished once every value is confirmed or corrected. A correction there is an error the checks let through, so the escape rate is measured in use, and each signal's precision is measured from the reviews it caused.
+
+**Where the data lives.** Documents, records and the audit log stay in the hospital's PostgreSQL and on its disk, and the models run locally. Each organisation's patients are visible to its own clinicians only, enforced in the SQL of every query. Every read or change of patient data writes an audit row (who, what, which patient, the outcome), and a database trigger refuses to change or delete one. Admins manage staff and read the audit log but see no clinical data. See [where patient data goes](docs/data-and-threats.md).
+
+**What a deployment would still need.** Encryption at rest, TLS, single sign-on or a second factor, verification of clinicians' registration numbers, integration with the hospital's systems (HL7 or FHIR), and above all a clinical validation on the hospital's own documents. None of these is built; see [Limitations](#limitations).
+
+## Case study
+
+A local, small-model document pipeline for clinical use, built so that every number it shows can be traced and every error it lets through can be counted.
+
+### The approach
+
+- **Extract and display, never infer.** The models read and transcribe; code derives and checks. No model output reaches a clinician without a citation to a page and lines, and no clinical judgement is made by a model ([ADR 0001](docs/adr/0001-extract-and-display.md), [ADR 0003](docs/adr/0003-printed-and-derived-values.md)).
+- **Two model steps per document**: transcribe each page into numbered lines, then parse the lines into a typed schema in parts small enough for a 4B model ([ADR 0002](docs/adr/0002-two-model-steps.md)).
+- **Deterministic routing.** Whether a document needs a clinician is decided by code from named signals, not by a model's confidence ([ADR 0004](docs/adr/0004-deterministic-checks-decide-routing.md)).
+- **Local models with a fallback** and a circuit breaker; a cloud model only ever for synthetic text ([ADR 0005](docs/adr/0005-local-models-with-fallback.md)).
+- **Durable, traceable runs**: every step, prompt, model and reply stored, resumable after a crash, replayable step by step ([ADR 0006](docs/adr/0006-durable-traceable-runs.md)).
+- **One read-only tool layer**, used by the repair step in-process and served to MCP clients through the API, with a citation on every answer and an audit row per call ([ADR 0012](docs/adr/0012-shared-tool-layer.md)).
+
+### The pipeline graph
+
+```mermaid
+flowchart LR
+    S((start)) --> open --> T["transcribe<br/>(each page)"]
+    T --> T
+    T --> C[classify]
+    C -->|"lab report,<br/>prescription"| P["parse<br/>(each part)"]
+    C -->|other| V[validate]
+    P --> P
+    P --> V
+    P -->|"reply refused<br/>or cut off"| R[repair]
+    V -->|error findings| R
+    R --> V
+    P -->|"tries<br/>used up"| F[fallback model]
+    R -->|"tries<br/>used up"| F
+    V -->|error findings left| F
+    F --> P
+    V --> RE[render] --> FI[finish]
+    FI --> E1([verified])
+    FI --> E2([needs_review])
+```
+
+A run that can't recover (an unreadable file, no model answering) ends `failed` with a message and can be retried. Each node's state is checkpointed in Postgres, so a crashed worker's run is carried on by another.
+
+### Results
+
+The evals run on a committed synthetic dataset of 25 documents for 6 fictional patients (lab reports, prescriptions and one other document; PDFs with and without a text layer, and images), reported for its dev (2), test (16) and held-out (7) documents apart. Every count carries a 95% Wilson interval: 25 documents can't support a bare percentage.
+
+> Cells marked *pending* are filled from the first live eval run, whose full report will be committed to [`scripts/evals/reports/`](scripts/evals/reports/README.md). None is estimated.
+
+**The document pipeline, per model** (`python -m evals.run --live`)
+
+| Measure | `qwen3.5:4b` | `gemma4:e2b` |
+|---|---|---|
+| Printed-field precision | *pending* | *pending* |
+| Printed-field recall | *pending* | *pending* |
+| Printed-field F1 | *pending* | *pending* |
+| Unsafe errors (a wrong value, unit, flag, date, strength or frequency) | *pending* | *pending* |
+| Documents ending `verified` | *pending* | *pending* |
+| Unsafe errors inside `verified` documents | *pending* | *pending* |
+| End state as the manifest expects | *pending* | *pending* |
+| Transcription value recall | *pending* | *pending* |
+| Transcription character error rate | *pending* | *pending* |
+| Seconds per page (CPU) | *pending* | *pending* |
+
+**Repair** (`python -m evals.repair --live`, 676 injected-fault cases)
+
+| Measure | Re-parse with the problems listed | Tool repair |
+|---|---|---|
+| Cases repaired | *pending* | *pending* |
+| Unsafe errors left after repair | *pending* | *pending* |
+| Model calls per repair | *pending* | *pending* |
+| Seconds per repair | *pending* | *pending* |
+| Tool calls malformed or unknown | n/a | *pending* |
+
+**The checks without a model** (`python -m evals.faultcheck`, measured)
+
+| Measure | Result |
+|---|---|
+| Injected faults caught | 962/988 (97.4%, 95% CI 96.2%-98.2%) |
+| Faults in a value, unit, strength, frequency or date caught | all |
+| Dropped lab results caught | 161/167 |
+| Value misreads in the transcription caught | 110/130 (all 20 missed were on pages without a text layer) |
+
+**In use, from clinicians' reviews** (`python -m evals.review_signals`)
+
+| Measure | Result |
+|---|---|
+| Precision of each low-confidence signal (values a clinician corrected, of those it raised) | *pending* |
+| Escape rate (audited `verified` documents holding a value a clinician corrected) | *pending* |
+
+**An MCP client reading the records** (`python -m evals.mcp_eval --live`)
+
+| Measure | Result |
+|---|---|
+| Value questions answered correctly, cited and grounded | *pending* |
+| Answers whose every citation is one the tools returned | *pending* |
+| Answers whose every number appears in what the tools returned | *pending* |
+| Questions with no answer in the records, declined | *pending* |
+
+**Prompt injection.** Text in a document aimed at the model (embedded instructions, hidden text, a remote image) is contained by design: pages are built by code with every value escaped, shown in a sandboxed frame with scripts off and no remote loads, and the overview is checked word by word. These defences are tested. A measured injection eval, scoring whether the record stays faithful when a document carries such text, is not built yet:
+
+| Measure | Result |
+|---|---|
+| Records unchanged by an embedded instruction | *pending* |
+| Pages with no remote load or script | *pending* |
+
+### Design trade-offs
+
+- **Small local models over a large cloud one.** Documents stay on the hospital's machine, at the price of minutes per page on a CPU and a parse split into parts. Whether a 4B model is good enough is exactly what the results above measure.
+- **Strict checks over a smooth experience.** A document whose values can't all be traced goes to review, even when every value is in fact right. A clinician's time is the cost of an error rate that can be counted.
+- **Code-built pages over model-written ones.** No model writes a page, so no model can add a diagnosis, a severity or an injected link. The only prose, the overview, is constrained to the facts' own words.
+- **Synthetic data in the repository.** Everything here can be shared and re-run; nothing has been shown on real documents yet.
+
+### Demo
+
+A recorded walk-through (upload, processing, the review queue, a correction and the summary that follows) is *pending*, as is `python -m demo`, which will run two dataset documents through the real graph from recorded model replies, without Ollama, in under a minute.
+
 ## How it works
 
 ```mermaid
@@ -35,7 +167,7 @@ flowchart LR
 
 The system has three services that share one PostgreSQL database:
 
-- **Frontend (React).** Login and password setup, staff management, patients, document upload and listing with each document's status, and viewers for the document pages and the patient summary. Every value on a document's page shows the page and lines it was read from; choosing it highlights those lines in the page's transcription beside it. Values computed by code (numbers, flags from ranges, unit conversions, dose schedules, the document date) are labelled *derived*, and a flagged value shows why. Each source reference in the patient summary (`D2 p1:6`) opens its document at those lines.
+- **Frontend (React).** Login and password setup, staff management, patients, document upload and listing with each document's status, and viewers for the document pages and the patient summary. Every value on a document's page shows the page and lines it was read from; choosing it highlights those lines in the page's transcription beside it. Values computed by code (numbers, flags from ranges, unit conversions, dose schedules, the document date) are labelled *derived*, and a flagged value shows why. Each source reference in the patient summary (`D2 p1:6`) opens its document at those lines. A review queue lists the documents awaiting a clinician, and the review screen shows the original upload beside each value to confirm or correct; each document's "Processing details" show how its run went, step by step.
 - **Backend (Go).** The public API. It handles accounts, login sessions and uploads, checks that a document belongs to the caller, serves each document's record with its citations, and forwards processing requests to the AI service.
 - **AI service (Python).** Runs the document pipeline and the patient summary against local Ollama models, and builds both pages in code.
 
@@ -462,7 +594,9 @@ All of these run from `scripts/src`.
 - **Some wrong values pass the checks.** Every row of a results table must become a result, so a row the parse leaves out goes back to the parse, then to review. A result printed as a line of text rather than a table row has no such check: leaving it out is only an information note, so the document can still end verified (the 6 dropped results the fault check missed are all of this kind). A value equal to one of its own range bounds is sent to review when its row prints that number only inside the range (98 of 98 range bounds taken for the value were caught); one printed in its own cell as well is taken as the real value.
 - **No medical codes or brand-to-generic mapping.** Medicines are kept as written (brands stay brands), and no LOINC, SNOMED or RxNorm codes are assigned: the local models aren't reliable enough to map them.
 - **Lab reports and prescriptions only.** Any other document is kept, transcribed and marked for review, but not parsed.
-- **Not yet evaluated on the models.** The eval runner, the repair eval, the fault check and the synthetic dataset exist, and the checks have been measured, but the pipeline has not yet been run live over the dataset on both models, so neither repair has been measured. A short probe showed both models calling a tool correctly. Clinician corrections are not yet on screen.
+- **Not yet evaluated on the models.** The eval runner, the repair eval, the MCP client eval, the fault check and the synthetic dataset exist, and the checks have been measured, but the pipeline has not yet been run live over the dataset on both models, so neither repair has been measured. A short probe showed both models calling a tool correctly. Signal precision and the escape rate need clinicians' reviews, so they have no numbers yet either.
+- **Clinicians' licences are not verified.** A medical registration number can be recorded on an account, but nothing checks it against a medical council's register.
+- **Not validated clinically.** Nothing here has been tried by clinicians or on real documents. The synthetic dataset is varied in layout, but it was built by the same hands as the checks.
 - **The overview check is strict and literal.** It compares words, not meanings. A number counts as in context when one of the words around it (three either side) is a word of what it belongs to, so two tests that share a unit in one list can still trade values, and an ordinary word missing from its fixed list leaves the overview out. Its layout is a first draft.
 - **No container setup** yet, and no CI.
 
@@ -470,8 +604,11 @@ All of these run from `scripts/src`.
 
 The next phase focuses on doctors and hospital groups:
 
-- A review screen where a clinician confirms or corrects flagged values
-- Live eval runs on both models, reported for the dev, test and held-out documents apart
+- Live eval runs on both models, reported for the dev, test and held-out documents apart, which fill in the [results](#results)
+- A prompt-injection eval: documents carrying embedded instructions, hidden text and remote images, scored for a faithful record and contained pages
+- A trace screen showing each run's steps, inputs, outputs, retries and models
+- CI on every push (builds, linters, tests, the fault check, eval replay from recorded replies) and the one-minute demo
+- A clinical pilot on a hospital's own documents, after the deployment work under [For hospitals](#for-hospitals)
 
 ## License
 
