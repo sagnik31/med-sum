@@ -758,6 +758,111 @@
             }
           ],
           "id": "b555f06b-3bb6-4848-8154-9fed5adf7abf"
+        },
+        {
+          "name": "Review",
+          "item": [
+            {
+              "name": "Review Queue",
+              "id": "fd22189a-8f69-4fe6-a66c-87c868a34843",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{backend_url}}/review/queue",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "review",
+                    "queue"
+                  ]
+                },
+                "header": []
+              }
+            },
+            {
+              "name": "Confirm a Value",
+              "id": "1e5b5bd5-f879-4e38-ae2a-e4682782a669",
+              "request": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{backend_url}}/documents/:id/review",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "documents",
+                    ":id",
+                    "review"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "Document ID"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "X-Requested-With",
+                    "value": "med-sum",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"confirm\",\n  \"item_id\": \"obs-1\",\n  \"record_updated_at\": \"<updated_at from GET /documents/{id}/record>\"\n}"
+                }
+              }
+            },
+            {
+              "name": "Correct a Value",
+              "id": "fb356d08-d4aa-4050-ba95-c5bbdaae62d8",
+              "request": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{backend_url}}/documents/:id/review",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "documents",
+                    ":id",
+                    "review"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "Document ID"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "X-Requested-With",
+                    "value": "med-sum",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"correct\",\n  \"item_id\": \"obs-1\",\n  \"field\": \"value_text\",\n  \"value\": \"11.4\",\n  \"note\": null,\n  \"record_updated_at\": \"<updated_at from GET /documents/{id}/record>\",\n  \"accept_findings\": false\n}"
+                }
+              }
+            }
+          ]
         }
       ],
       "id": "425abae1-67f1-4527-8db6-0bed481efb82"

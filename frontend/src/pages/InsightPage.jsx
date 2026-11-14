@@ -6,8 +6,12 @@ import {
   fetchDocumentRecord,
   getInsight,
   reprocessDocument,
+  reviewDocument,
   triggerInsightGeneration,
 } from "../api/client.js";
+import { useAuth } from "../auth/context.js";
+import { PERM, can } from "../auth/permissions.js";
+import { flaggedCount } from "../record/review.js";
 import ApiErrorNotice from "../components/ApiErrorNotice.jsx";
 import HtmlFrame from "../components/HtmlFrame.jsx";
 import RecordView from "../components/RecordView.jsx";
@@ -30,7 +34,14 @@ function InsightPage() {
   const [attempt, setAttempt] = useState(0);
   // The structured record, once the document is processed; its loading error.
   const [record, setRecord] = useState(null);
+  const [recordUpdatedAt, setRecordUpdatedAt] = useState(null);
   const [recordError, setRecordError] = useState(null);
+  // Review mode shows the confirm and correct controls; a clinician with
+  // review.write turns it on. Bumped by a saved review to reload.
+  const { user } = useAuth();
+  const canReview = can(user, PERM.reviewWrite);
+  const [reviewing, setReviewing] = useState(searchParamsHasReview());
+  const [reviewed, setReviewed] = useState(0);
   // A link from the patient summary names the lines to show (?page=&lines=).
   const [searchParams] = useSearchParams();
   const linkedCitation = citationFromQuery(searchParams);
@@ -108,12 +119,26 @@ function InsightPage() {
     setRecord(null);
     setRecordError(null);
     fetchDocumentRecord(id)
-      .then((data) => !cancelled && setRecord(data.record))
+      .then((data) => {
+        if (cancelled) return;
+        setRecord(data.record);
+        setRecordUpdatedAt(data.updated_at);
+      })
       .catch((err) => !cancelled && err.status !== 404 && setRecordError(err));
     return () => {
       cancelled = true;
     };
-  }, [id, processed, attempt]);
+  }, [id, processed, attempt, reviewed]);
+
+  // Save one review, then load the record and the page again. A
+  // ReviewFindings error is left to the controls to show.
+  async function handleReview(review, { acceptFindings }) {
+    const result = await reviewDocument(id, review, { recordUpdatedAt, acceptFindings });
+    if (result?.status === "verified") setStatus("ready");
+    setReviewed((n) => n + 1);
+    const data = await getInsight(id);
+    if (data?.insights_html) setInsight(data.insights_html);
+  }
 
   async function handleReprocess() {
     setError(null);
@@ -155,6 +180,28 @@ function InsightPage() {
         <div className="mb-4 text-sm bg-amber-50 border border-amber-100 rounded-md px-3 py-2 text-amber-800">
           Some values in this document were flagged for review by a clinician.
           Check them against the source document before relying on them.
+          {record && <> {flaggedCount(record)} still await review.</>}
+        </div>
+      )}
+
+      {!loading && !error && processed && canReview && record && (
+        <div className="mb-4 flex items-center gap-3 text-sm">
+          <button
+            type="button"
+            onClick={() => setReviewing((r) => !r)}
+            aria-pressed={reviewing}
+            className={`rounded px-3 py-1 border font-medium ${
+              reviewing ? "bg-blue-600 text-white border-blue-600" : "bg-white text-blue-700 border-blue-300"
+            }`}
+          >
+            {reviewing ? "Done reviewing" : "Review this document"}
+          </button>
+          {reviewing && (
+            <span className="text-slate-600">
+              Confirm each value that matches the original, or correct it. What was read is kept beside
+              every correction.
+            </span>
+          )}
         </div>
       )}
 
@@ -183,7 +230,12 @@ function InsightPage() {
           {record && (
             // Keyed by the link, so following another source link to this
             // page selects its lines.
-            <RecordView key={searchParams.toString()} record={record} initialCitation={linkedCitation} />
+            <RecordView
+              key={searchParams.toString()}
+              record={record}
+              initialCitation={linkedCitation}
+              onReview={reviewing && canReview ? handleReview : undefined}
+            />
           )}
         </div>
       )}
@@ -217,6 +269,11 @@ function InsightPage() {
       </div>
     </div>
   );
+}
+
+// The review queue links here with ?review=1, opening in review mode.
+function searchParamsHasReview() {
+  return new URLSearchParams(window.location.search).get("review") === "1";
 }
 
 export default InsightPage;

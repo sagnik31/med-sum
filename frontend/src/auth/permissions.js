@@ -9,6 +9,7 @@ export const PERM = {
   documentRead: "document.read",
   documentDelete: "document.delete",
   documentUpload: "document.upload",
+  reviewWrite: "review.write",
   summaryRead: "summary.read",
   summaryGenerate: "summary.generate",
   staffManage: "staff.manage",

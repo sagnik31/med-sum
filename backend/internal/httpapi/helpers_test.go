@@ -62,6 +62,8 @@ type fakeStore struct {
 	insights  map[string]*db.Insight
 	records   map[string]*db.DocumentRecord
 	summaries map[string]*db.PatientSummary
+	flagged   map[string]int // document ID -> values awaiting review, for the queue
+	reviews   []db.RecordReview
 	failWith  error // returned by every method when set
 	// audit holds the events written, in order. failAudit fails every
 	// audit write; a change that comes with an event then changes nothing,
@@ -89,6 +91,7 @@ func newFakeStore() *fakeStore {
 		insights:  map[string]*db.Insight{},
 		records:   map[string]*db.DocumentRecord{},
 		summaries: map[string]*db.PatientSummary{},
+		flagged:   map[string]int{},
 	}
 }
 
@@ -752,6 +755,68 @@ func (f *fakeStore) GetDocumentRecord(_ context.Context, docID string) (*db.Docu
 	return nil, nil
 }
 
+// ListReviewQueue lists the organisation's documents in needs_review,
+// oldest first, with the flagged count the test set in flagged.
+func (f *fakeStore) ListReviewQueue(_ context.Context, orgID string) ([]db.ReviewQueueEntry, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return nil, f.failWith
+	}
+	out := []db.ReviewQueueEntry{}
+	for id, d := range f.documents {
+		ins := f.insights[id]
+		p := f.patients[d.PatientID]
+		if ins == nil || ins.Status != "needs_review" || p == nil || p.OrgID != orgID {
+			continue
+		}
+		e := db.ReviewQueueEntry{DocumentID: id, PatientID: p.ID, PatientName: p.FullName,
+			PatientMRN: p.MRN, OriginalName: d.OriginalName, UploadedAt: d.UploadedAt,
+			Flagged: f.flagged[id], Reason: "needs_review"}
+		if ins.UpdatedAt != nil {
+			e.QueuedAt = *ins.UpdatedAt
+		}
+		out = append(out, e)
+	}
+	sort.Slice(out, func(i, j int) bool {
+		if !out[i].QueuedAt.Equal(out[j].QueuedAt) {
+			return out[i].QueuedAt.Before(out[j].QueuedAt)
+		}
+		return out[i].DocumentID < out[j].DocumentID
+	})
+	return out, nil
+}
+
+// ApplyReview follows the real method's rules: the document must be the
+// organisation's and live, its processing ended and its record unchanged.
+func (f *fakeStore) ApplyReview(_ context.Context, orgID, docID string, recordUpdatedAt time.Time,
+	rv db.RecordReview, ev *db.AuditEvent) (time.Time, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return time.Time{}, f.failWith
+	}
+	d := f.documentIn(orgID, docID)
+	ins := f.insights[docID]
+	rec := f.records[docID]
+	if d == nil || ins == nil || rec == nil || (ins.Status != "verified" && ins.Status != "needs_review") ||
+		!rec.UpdatedAt.Equal(recordUpdatedAt) {
+		return time.Time{}, db.ErrReviewConflict
+	}
+	if f.failAudit != nil {
+		return time.Time{}, f.failAudit
+	}
+	rec.Record = rv.Record
+	rec.UpdatedAt = rv.At
+	ins.HTMLInsights = rv.HTML
+	if rv.Verified {
+		ins.Status = "verified"
+	}
+	f.reviews = append(f.reviews, rv)
+	f.logAudit(ev)
+	return rv.At, nil
+}
+
 // addDocument stores a document of the patient directly, bypassing the
 // upload route, as uploaded by the account.
 func (f *fakeStore) addDocument(p *db.Patient, uploadedBy, storagePath string) string {
@@ -764,7 +829,8 @@ func (f *fakeStore) addDocument(p *db.Patient, uploadedBy, storagePath string) s
 type aiCall struct {
 	Path  string
 	Token string
-	Body  map[string]string
+	Body  map[string]string // the body, when it is flat
+	Raw   []byte
 }
 
 // fakeAI stands in for the Python AI service.
@@ -772,19 +838,32 @@ type fakeAI struct {
 	mu     sync.Mutex
 	calls  []aiCall
 	status int // response status; 200 unless set
-	srv    *httptest.Server
+	// respond, when set, answers a route that returns JSON (review-apply):
+	// the status and body for a request's path and raw body; status 0
+	// falls through to the plain answer.
+	respond func(path string, raw []byte) (int, []byte)
+	srv     *httptest.Server
 }
 
 func newFakeAI(t *testing.T) *fakeAI {
 	t.Helper()
 	ai := &fakeAI{status: http.StatusOK}
 	ai.srv = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		raw, _ := io.ReadAll(r.Body)
 		var body map[string]string
-		_ = json.NewDecoder(r.Body).Decode(&body)
+		_ = json.Unmarshal(raw, &body)
 		ai.mu.Lock()
-		ai.calls = append(ai.calls, aiCall{Path: r.URL.Path, Token: r.Header.Get("X-Internal-Token"), Body: body})
-		status := ai.status
+		ai.calls = append(ai.calls, aiCall{Path: r.URL.Path, Token: r.Header.Get("X-Internal-Token"), Body: body, Raw: raw})
+		status, respond := ai.status, ai.respond
 		ai.mu.Unlock()
+		if respond != nil {
+			if code, out := respond(r.URL.Path, raw); code != 0 {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(code)
+				_, _ = w.Write(out)
+				return
+			}
+		}
 		w.WriteHeader(status)
 	}))
 	t.Cleanup(ai.srv.Close)

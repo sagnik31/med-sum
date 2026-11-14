@@ -47,7 +47,7 @@ EXPECTED_TABLES = {
     "patients",
     "patient_summaries", "documents",
     "insights", "pipeline_runs", "pipeline_steps", "pipeline_model_calls", "prompts",
-    "document_records", "jobs",
+    "document_records", "record_reviews", "jobs",
 }  # fmt: skip
 
 

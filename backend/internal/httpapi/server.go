@@ -70,6 +70,10 @@ type Store interface {
 	SoftDeleteDocument(ctx context.Context, orgID, docID, deletedBy string, now time.Time, ev *db.AuditEvent) (bool, error)
 	GetInsightByDocumentID(ctx context.Context, docID string) (*db.Insight, error)
 	GetDocumentRecord(ctx context.Context, docID string) (*db.DocumentRecord, error)
+
+	// Clinician review (review.go)
+	ListReviewQueue(ctx context.Context, orgID string) ([]db.ReviewQueueEntry, error)
+	ApplyReview(ctx context.Context, orgID, docID string, recordUpdatedAt time.Time, rv db.RecordReview, ev *db.AuditEvent) (time.Time, error)
 }
 
 // Config is what the server needs besides its store.
@@ -154,8 +158,12 @@ func NewServer(store Store, cfg Config) *Server {
 		http.MethodPost: {authz.PatientWrite, s.handleCreatePatient},
 	})))
 	s.mux.HandleFunc("/patients/", s.withSession(s.handlePatientByID))
-	// /documents/{id} (GET, DELETE) and its /insight, /record, /reprocess
+	// /documents/{id} (GET, DELETE) and its /insight, /record, /reprocess, /review
 	s.mux.HandleFunc("/documents/", s.withSession(s.handleDocumentByID))
+	// The documents waiting for a clinician's review (review.go)
+	s.mux.HandleFunc("/review/queue", s.withSession(s.byMethod(map[string]methodRoute{
+		http.MethodGet: {authz.ReviewWrite, s.handleReviewQueue},
+	})))
 
 	s.handler = s.withSecurityHeaders(s.withOrigins(s.withAuthRateLimit(s.mux)))
 	return s
@@ -368,6 +376,18 @@ func (s *Server) handleDocumentByID(w http.ResponseWriter, r *http.Request) {
 		}
 		if s.permit(w, r, authz.DocumentRead) {
 			s.handleGetDocumentRecord(w, r, docID)
+		}
+		return
+	}
+
+	// /documents/{id}/review: a clinician confirms or corrects a value
+	if len(parts) == 2 && parts[1] == "review" {
+		if r.Method != http.MethodPost {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		if s.permit(w, r, authz.ReviewWrite) {
+			s.handleReviewDocument(w, r, docID)
 		}
 		return
 	}

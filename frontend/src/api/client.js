@@ -274,3 +274,47 @@ export function triggerInsightGeneration(documentId) {
 export function reprocessDocument(documentId) {
   return apiRequest(`/documents/${enc(documentId)}/reprocess`, { method: "POST" });
 }
+
+// ---------- Clinician review API ----------
+
+// The organisation's documents waiting for review, longest waiting first:
+// { documents: [{ document_id, patient_id, patient_name, patient_mrn,
+// original_name, document_type, document_date, queued_at, flagged, reason }] }.
+export function fetchReviewQueue() {
+  return apiRequest("/review/queue");
+}
+
+// Confirm an item's reading ({ action: "confirm", item_id }) or correct one
+// field ({ action: "correct", item_id, field, value, note }). recordUpdatedAt
+// is the record's updated_at as loaded; a record changed since answers 409.
+// When a corrected value fails a check, nothing is saved and this throws a
+// ReviewFindings with what the checks found; send it again with
+// acceptFindings to keep the value. See docs/adr/0011-clinician-review.md.
+export async function reviewDocument(documentId, review, { recordUpdatedAt, acceptFindings = false }) {
+  try {
+    return await apiRequest(`/documents/${enc(documentId)}/review`, {
+      method: "POST",
+      json: { ...review, record_updated_at: recordUpdatedAt, accept_findings: acceptFindings },
+    });
+  } catch (err) {
+    const findings = err instanceof ApiError && err.status === 422 ? findingsOf(err.message) : null;
+    if (findings) throw new ReviewFindings(findings);
+    throw err;
+  }
+}
+
+export class ReviewFindings extends Error {
+  constructor(findings) {
+    super("The corrected value fails a check.");
+    this.findings = findings;
+  }
+}
+
+function findingsOf(text) {
+  try {
+    const body = JSON.parse(text);
+    return Array.isArray(body?.findings) ? body.findings : null;
+  } catch {
+    return null;
+  }
+}

@@ -15,6 +15,8 @@ import {
   sourceLines,
   statusLabel,
 } from "../record/recordView.js";
+import { correctableFields, headerTarget } from "../record/review.js";
+import ReviewControls, { CorrectionList } from "./ReviewControls.jsx";
 import SourcePanel from "./SourcePanel.jsx";
 
 function Status({ status, reasons }) {
@@ -74,7 +76,16 @@ function Fields({ fields, derived }) {
   );
 }
 
-function RecordView({ record, initialCitation }) {
+// The header values of one holder (the patient or the document) as
+// correctable fields.
+function headerFields(values) {
+  return values.map((v) => ({ field: headerTarget(v.key).field, label: v.label, value: v.text }));
+}
+
+// `onReview`, when given, shows the review controls: it is called with a
+// review ({action, item_id, field?, value?, note?}) and {acceptFindings},
+// and its promise settles when the review is saved (see ReviewControls).
+function RecordView({ record, initialCitation, onReview, sourceSlot }) {
   const [selected, setSelected] = useState(() => {
     if (!initialCitation) return null;
     return sourceLines(record.pages, initialCitation).found ? initialCitation : null;
@@ -87,7 +98,10 @@ function RecordView({ record, initialCitation }) {
   }
   const isSelected = (c) => selected !== null && citationKey(c) === citationKey(selected);
 
-  const header = [...patientValues(record), ...documentValues(record)];
+  const patient = patientValues(record);
+  const docValues = documentValues(record);
+  const header = [...patient, ...docValues];
+  const raw = (key, id) => (record[key] || []).find((i) => i.id === id);
   const date = documentDate(record);
   const groups = recordGroups(record);
 
@@ -117,6 +131,26 @@ function RecordView({ record, initialCitation }) {
                   {date.label} (derived): {date.value}
                 </li>
               )}
+              {[
+                ["patient", record.patient, patient, "Confirm the patient details"],
+                ["document", record.document, docValues, "Confirm the document details"],
+              ].map(([id, holder, values, label]) =>
+                holder && (holder.corrections?.length || holder.provenance?.reviewed_by || onReview) ? (
+                  <li key={id} className="px-3 py-2">
+                    <Status status={holder.provenance?.status} reasons={holder.provenance?.low_confidence_reasons ?? []} />
+                    <CorrectionList holder={holder} />
+                    {onReview && holder.provenance && (
+                      <ReviewControls
+                        itemId={id}
+                        holder={holder}
+                        fields={headerFields(values)}
+                        onReview={onReview}
+                        confirmLabel={label}
+                      />
+                    )}
+                  </li>
+                ) : null
+              )}
             </ul>
           </section>
         )}
@@ -137,6 +171,15 @@ function RecordView({ record, initialCitation }) {
                   <Fields fields={it.printed} />
                   <Fields fields={it.derived} derived />
                   <Status status={it.status} reasons={it.reasons} />
+                  <CorrectionList holder={raw(g.key, it.id)} />
+                  {onReview && it.status && (
+                    <ReviewControls
+                      itemId={it.id}
+                      holder={raw(g.key, it.id)}
+                      fields={correctableFields(g.key, raw(g.key, it.id).printed)}
+                      onReview={onReview}
+                    />
+                  )}
                 </li>
               ))}
             </ul>
@@ -151,6 +194,7 @@ function RecordView({ record, initialCitation }) {
       </div>
 
       <div className="md:sticky md:top-4 self-start min-w-0">
+        {sourceSlot && sourceSlot(page)}
         <SourcePanel pages={record.pages} page={page} citation={selected} onPage={setPage} />
       </div>
     </div>

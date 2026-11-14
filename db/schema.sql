@@ -503,6 +503,34 @@ CREATE TABLE document_records (
     CHECK ((record ->> 'schema_version')::integer = schema_version)
 );
 
+-- One row per clinician review of a record item: a confirmation of its
+-- reading, or a correction of one field. The review itself also goes into
+-- the record (provenance and corrections, next to what was read); these
+-- rows are the trail that outlives a reprocess, and what signal precision
+-- is counted from. signals are the item's low-confidence signal ids when
+-- it was reviewed (ids only, e.g. LC-04); findings are the names of the
+-- value checks a correction failed, which the clinician acknowledged.
+-- original and corrected hold the reading and the entered value (clinical
+-- data, like the record). See docs/adr/0011-clinician-review.md.
+CREATE TABLE record_reviews (
+    id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    document_id uuid NOT NULL REFERENCES documents (id) ON DELETE CASCADE,
+    run_id      uuid REFERENCES pipeline_runs (id) ON DELETE SET NULL,  -- the record's run
+    item_id     text NOT NULL CHECK (item_id ~ '^[a-z]+(-[0-9]+)?$'),
+    field       text CHECK (field ~ '^[a-z_]+(\[[0-9]+\])?$'),
+    action      text NOT NULL CHECK (action IN ('confirm', 'correct')),
+    original    text,
+    corrected   text,
+    note        text,
+    signals     text[] NOT NULL DEFAULT '{}',
+    findings    text[] NOT NULL DEFAULT '{}',
+    audit       boolean NOT NULL DEFAULT false,  -- reviewed as an audit sample
+    reviewer_id uuid REFERENCES staff_users (id) ON DELETE SET NULL,
+    reviewed_at timestamptz NOT NULL DEFAULT now(),
+    CHECK ((action = 'correct') = (field IS NOT NULL AND corrected IS NOT NULL))
+);
+CREATE INDEX record_reviews_document_idx ON record_reviews (document_id, reviewed_at);
+
 -- -------------------------------------------------------------------
 -- Document jobs: the queue the AI service's worker takes documents from,
 -- one job at a time. A worker claims a job for a lease and renews it while

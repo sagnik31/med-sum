@@ -1,0 +1,154 @@
+package db
+
+import (
+	"context"
+	"encoding/json"
+	"errors"
+	"time"
+
+	"github.com/jackc/pgx/v5"
+)
+
+// ----- Clinician review. See docs/adr/0011-clinician-review.md. -----
+
+// ErrReviewConflict is returned by ApplyReview when the record changed
+// since the caller read it (another review, or a reprocess), or the
+// document is being processed: nothing is written.
+var ErrReviewConflict = errors.New("the record changed or is being processed")
+
+// MaxReviewQueue caps the review queue's length.
+const MaxReviewQueue = 500
+
+// flaggedCount is the SQL for how many values of a record r still await
+// review: every provenance in it (the document, the patient and each item
+// of every group) whose status is low_confidence. Lax mode unwraps each
+// group's array, so one path reaches items and header holders alike.
+const flaggedCount = `(SELECT count(*) FROM jsonb_path_query(r.record,
+    'lax $.*.provenance.status ? (@ == "low_confidence")'))`
+
+// ReviewQueueEntry is one document waiting for a clinician.
+type ReviewQueueEntry struct {
+	DocumentID   string     `json:"document_id"`
+	PatientID    string     `json:"patient_id"`
+	PatientName  string     `json:"patient_name"`
+	PatientMRN   string     `json:"patient_mrn"`
+	OriginalName string     `json:"original_name"`
+	DocumentType *string    `json:"document_type"`
+	DocumentDate *string    `json:"document_date"` // as derived; null when undated
+	UploadedAt   time.Time  `json:"uploaded_at"`
+	QueuedAt     time.Time  `json:"queued_at"` // when it began waiting
+	Flagged      int        `json:"flagged"`   // values still awaiting review
+	Reason       string     `json:"reason"`    // needs_review, or audit (a sampled verified document)
+	UpdatedAt    *time.Time `json:"-"`
+}
+
+// ListReviewQueue lists the organisation's documents that wait for a
+// review, longest waiting first: every live document whose processing
+// ended in needs_review.
+func (s *Store) ListReviewQueue(ctx context.Context, orgID string) ([]ReviewQueueEntry, error) {
+	rows, err := s.pool.Query(ctx, `
+SELECT d.id, d.patient_id, p.full_name, p.mrn, d.original_name,
+       r.record -> 'document' ->> 'type',
+       r.record -> 'document' -> 'derived' ->> 'document_date',
+       d.uploaded_at, i.updated_at, COALESCE(`+flaggedCount+`, 0), 'needs_review'
+FROM documents d
+JOIN patients p ON p.id = d.patient_id
+JOIN insights i ON i.document_id = d.id AND i.status = 'needs_review'
+LEFT JOIN document_records r ON r.document_id = d.id
+WHERE p.org_id = $1 AND d.deleted_at IS NULL
+ORDER BY i.updated_at, d.id
+LIMIT $2`, orgID, MaxReviewQueue)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := []ReviewQueueEntry{}
+	for rows.Next() {
+		var e ReviewQueueEntry
+		if err := rows.Scan(&e.DocumentID, &e.PatientID, &e.PatientName, &e.PatientMRN, &e.OriginalName,
+			&e.DocumentType, &e.DocumentDate, &e.UploadedAt, &e.QueuedAt, &e.Flagged, &e.Reason); err != nil {
+			return nil, err
+		}
+		out = append(out, e)
+	}
+	return out, rows.Err()
+}
+
+// RecordReview is one review to store: the reviewed record and page the
+// AI service built, and the trail row.
+type RecordReview struct {
+	Record     json.RawMessage
+	HTML       string
+	Verified   bool // nothing awaits review any more: the document becomes verified
+	RunID      *string
+	ItemID     string
+	Field      *string
+	Action     string // confirm or correct
+	Original   *string
+	Corrected  *string
+	Note       *string
+	Signals    []string
+	Findings   []string
+	Audit      bool
+	ReviewerID string
+	At         time.Time
+}
+
+// ApplyReview stores a review of a live document of the organisation in
+// one transaction: the record (only if its updated_at is still
+// recordUpdatedAt), the page and, when Verified, the verified status
+// (only while the document's processing has ended: insights is
+// processing from the moment a job is queued until its run ends),
+// the record_reviews row and ev. It returns the record's new updated_at,
+// or ErrReviewConflict, writing nothing.
+func (s *Store) ApplyReview(ctx context.Context, orgID, docID string, recordUpdatedAt time.Time,
+	rv RecordReview, ev *AuditEvent) (time.Time, error) {
+	var updated time.Time
+	err := pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
+		tag, err := tx.Exec(ctx, `
+UPDATE insights i
+SET html_insights = $3,
+    status = CASE WHEN $4 THEN 'verified' ELSE i.status END,
+    updated_at = CASE WHEN $4 AND i.status <> 'verified' THEN $5 ELSE i.updated_at END
+FROM documents d JOIN patients p ON p.id = d.patient_id
+WHERE i.document_id = $1 AND d.id = i.document_id AND p.org_id = $2
+  AND d.deleted_at IS NULL AND i.status IN ('verified', 'needs_review')`,
+			docID, orgID, rv.HTML, rv.Verified, rv.At)
+		if err != nil {
+			return err
+		}
+		if tag.RowsAffected() != 1 {
+			return ErrReviewConflict
+		}
+		err = tx.QueryRow(ctx, `
+UPDATE document_records SET record = $2, updated_at = $4
+WHERE document_id = $1 AND updated_at = $3
+RETURNING updated_at`, docID, []byte(rv.Record), recordUpdatedAt, rv.At).Scan(&updated)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrReviewConflict
+		}
+		if err != nil {
+			return err
+		}
+		signals, findings := rv.Signals, rv.Findings
+		if signals == nil {
+			signals = []string{}
+		}
+		if findings == nil {
+			findings = []string{}
+		}
+		if _, err := tx.Exec(ctx, `
+INSERT INTO record_reviews (document_id, run_id, item_id, field, action, original, corrected,
+                            note, signals, findings, audit, reviewer_id, reviewed_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+			docID, rv.RunID, rv.ItemID, rv.Field, rv.Action, rv.Original, rv.Corrected,
+			rv.Note, signals, findings, rv.Audit, rv.ReviewerID, rv.At); err != nil {
+			return err
+		}
+		return writeAudit(ctx, tx, ev)
+	})
+	if err != nil {
+		return time.Time{}, err
+	}
+	return updated, nil
+}

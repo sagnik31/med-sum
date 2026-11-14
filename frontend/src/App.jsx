@@ -11,6 +11,7 @@ import InsightPage from "./pages/InsightPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import StaffPage from "./pages/StaffPage.jsx";
 import AuditPage from "./pages/AuditPage.jsx";
+import ReviewQueuePage from "./pages/ReviewQueuePage.jsx";
 import RequireAuth from "./auth/RequireAuth.jsx";
 import IdleWarning from "./components/IdleWarning.jsx";
 import { useAuth } from "./auth/context.js";
@@ -41,6 +42,11 @@ function Nav() {
           {can(user, PERM.patientRead) && (
             <Link to="/patients" className="hover:underline">
               Patients
+            </Link>
+          )}
+          {can(user, PERM.reviewWrite) && (
+            <Link to="/review" className="hover:underline">
+              Review
             </Link>
           )}
           {can(user, PERM.staffManage) && (
@@ -89,6 +95,7 @@ function App() {
           <Route path="/patients/:id" element={<RequireAuth perm={PERM.patientRead}><PatientPage /></RequireAuth>} />
           <Route path="/patients/:id/summary" element={<RequireAuth perm={PERM.summaryRead}><PatientSummaryPage /></RequireAuth>} />
           <Route path="/insights/:id" element={<RequireAuth perm={PERM.documentRead}><InsightPage /></RequireAuth>} />
+          <Route path="/review" element={<RequireAuth perm={PERM.reviewWrite}><ReviewQueuePage /></RequireAuth>} />
           <Route path="/admin/staff" element={<RequireAuth perm={PERM.staffManage}><StaffPage /></RequireAuth>} />
           <Route path="/admin/audit" element={<RequireAuth perm={PERM.auditRead}><AuditPage /></RequireAuth>} />
           <Route path="*" element={<NotFoundPage />} />

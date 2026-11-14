@@ -160,6 +160,20 @@ func TestTheAPIRoleCanRunTheAPIsQueries(t *testing.T) {
 	check("GetInsightByDocumentID", err)
 	_, err = s.GetDocumentRecord(ctx, doc.ID)
 	check("GetDocumentRecord", err)
+	// A review: the AI service wrote the insight and the record (as the owner here).
+	if _, err := owner.pool.Exec(ctx, `INSERT INTO insights (document_id, status) VALUES ($1, 'needs_review')`, doc.ID); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := owner.pool.Exec(ctx, `INSERT INTO document_records (document_id, schema_version, record, updated_at)
+VALUES ($1, 1, '{"schema_version": 1}', $2)`, doc.ID, now); err != nil {
+		t.Fatal(err)
+	}
+	_, err = s.ListReviewQueue(ctx, org)
+	check("ListReviewQueue", err)
+	_, err = s.ApplyReview(ctx, org, doc.ID, now, RecordReview{Record: []byte(`{"schema_version": 1}`),
+		HTML: "<p></p>", Verified: true, ItemID: "obs-1", Action: "confirm", ReviewerID: u.ID, At: now.Add(time.Second)},
+		ev(org, u.ID, "field_confirmed"))
+	check("ApplyReview", err)
 	ok, err := s.SoftDeleteDocument(ctx, org, doc.ID, u.ID, now, ev(org, u.ID, "document_deleted"))
 	if err != nil || !ok {
 		t.Fatalf("SoftDeleteDocument: %v %v", ok, err)
@@ -205,7 +219,12 @@ func TestTheAPIRoleIsRefusedTheRest(t *testing.T) {
 		`UPDATE staff_users SET email = 'x@y.test'`,
 		`UPDATE documents SET extracted_markdown = 'x'`,
 		`UPDATE documents SET patient_id = patient_id`,
-		`UPDATE insights SET status = 'failed'`,
+		`UPDATE insights SET error_message = 'x'`,
+		`UPDATE insights SET document_id = document_id`,
+		`UPDATE document_records SET run_id = NULL`,
+		`UPDATE record_reviews SET corrected = 'x'`,
+		`DELETE FROM record_reviews`,
+		`DELETE FROM document_records`,
 		`INSERT INTO patient_summaries (patient_id, status) SELECT id, 'failed' FROM patients`,
 		`SELECT * FROM jobs`,
 		`SELECT * FROM pipeline_steps`,
