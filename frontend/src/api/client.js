@@ -161,6 +161,19 @@ export function issueStaffLink(id) {
   return apiRequest(`/admin/users/${encodeURIComponent(id)}/reset-link`, { method: "POST" });
 }
 
+// The organisation's audit log, newest first: { events, next_before }.
+// filters: any of { actor, patient, from, to (YYYY-MM-DD), before }.
+export function fetchAuditEvents(filters = {}) {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(filters)) {
+    if (value !== undefined && value !== null && String(value).trim() !== "") {
+      params.set(key, String(value).trim());
+    }
+  }
+  const query = params.toString();
+  return apiRequest(`/admin/audit${query ? `?${query}` : ""}`);
+}
+
 // ---------- Patients API ----------
 //
 // Patients are records, not accounts. Every clinician of the organisation

@@ -49,7 +49,7 @@ func (s *Server) handleSessions(w http.ResponseWriter, r *http.Request) {
 		}
 		writeJSON(w, http.StatusOK, out)
 	case http.MethodDelete:
-		if err := s.db.DeleteUserSessions(ctx, p.UserID, p.tokenHash); err != nil {
+		if err := s.db.DeleteUserSessions(ctx, p.UserID, p.tokenHash, s.auditEvent(r, actSessionsEnded)); err != nil {
 			log.Printf("DeleteUserSessions error: %v", err)
 			http.Error(w, "internal error", http.StatusInternalServerError)
 			return
@@ -90,7 +90,7 @@ func (s *Server) handleSessionByID(w http.ResponseWriter, r *http.Request) {
 			current = bytes.Equal(x.TokenHash, p.tokenHash)
 		}
 	}
-	deleted, err := s.db.DeleteUserSession(ctx, p.UserID, id)
+	deleted, err := s.db.DeleteUserSession(ctx, p.UserID, id, on(s.auditEvent(r, actSessionEnded), targetSession, id))
 	if err != nil {
 		log.Printf("DeleteUserSession error: %v", err)
 		http.Error(w, "internal error", http.StatusInternalServerError)

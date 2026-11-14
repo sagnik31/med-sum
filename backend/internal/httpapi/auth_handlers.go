@@ -78,10 +78,19 @@ func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
 		fail() // never hash an oversized input
 		return
 	}
+	// A failure is recorded before it is answered; the email isn't kept,
+	// since an unknown one may be a typo of someone's address.
+	failUnknown := func(reason string) {
+		ev := with(s.auditEvent(r, actLoginFailed), map[string]any{"reason": reason})
+		ev.Outcome = db.OutcomeFailure
+		if s.recordAudit(w, r, ev) {
+			fail()
+		}
+	}
 	email, err := auth.NormalizeEmail(req.Email)
 	if err != nil {
 		s.hasher.VerifyDummy(req.Password)
-		fail()
+		failUnknown("unknown_account")
 		return
 	}
 
@@ -96,10 +105,26 @@ func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
 	// Unknown, not yet set up, disabled or locked: spend the same time as
 	// a real check, and say the same thing. A locked account's password is
 	// not checked at all, so guessing stops while it is locked.
-	if user == nil || user.Status != db.StatusActive || user.PasswordHash == nil ||
+	if user == nil {
+		s.hasher.VerifyDummy(req.Password)
+		failUnknown("unknown_account")
+		return
+	}
+	accountEvent := func(action, outcome string, details map[string]any) *db.AuditEvent {
+		ev := with(on(s.auditEvent(r, action), targetStaff, user.ID), details)
+		ev.ActorID, ev.OrgID, ev.Outcome = &user.ID, &user.OrgID, outcome
+		return ev
+	}
+	if user.Status != db.StatusActive || user.PasswordHash == nil ||
 		(user.LockedUntil != nil && now.Before(*user.LockedUntil)) {
 		s.hasher.VerifyDummy(req.Password)
-		fail()
+		reason := "not_active"
+		if user.LockedUntil != nil && now.Before(*user.LockedUntil) {
+			reason = "locked"
+		}
+		if s.recordAudit(w, r, accountEvent(actLoginFailed, db.OutcomeFailure, map[string]any{"reason": reason})) {
+			fail()
+		}
 		return
 	}
 
@@ -108,21 +133,24 @@ func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
 		log.Printf("password hash of user %s is unreadable: %v", user.ID, err)
 	}
 	if !ok {
-		if _, err := s.db.RecordLoginFailure(ctx, user.ID, maxLoginFailures, now.Add(lockDuration)); err != nil {
+		if _, err := s.db.RecordLoginFailure(ctx, user.ID, maxLoginFailures, now.Add(lockDuration),
+			accountEvent(actLoginFailed, db.OutcomeFailure, map[string]any{"reason": "wrong_password"})); err != nil {
 			log.Printf("RecordLoginFailure error: %v", err)
+			http.Error(w, "internal error", http.StatusInternalServerError)
+			return
 		}
 		fail()
 		return
 	}
 
-	if err := s.db.RecordLoginSuccess(ctx, user.ID, now); err != nil {
+	if err := s.db.RecordLoginSuccess(ctx, user.ID, now, accountEvent(actLoginSucceeded, db.OutcomeSuccess, nil)); err != nil {
 		log.Printf("RecordLoginSuccess error: %v", err)
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
 	if s.hasher.NeedsRehash(*user.PasswordHash) {
 		if hash, err := s.hasher.Hash(req.Password); err == nil {
-			if err := s.db.SetPasswordHash(ctx, user.ID, hash, now); err != nil {
+			if err := s.db.SetPasswordHash(ctx, user.ID, hash, now, nil); err != nil {
 				log.Printf("SetPasswordHash (rehash) error: %v", err)
 			}
 		}
@@ -145,7 +173,7 @@ func (s *Server) handleLogout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if hash := sessionTokenHash(r); hash != nil {
-		if err := s.db.DeleteSession(r.Context(), hash); err != nil {
+		if err := s.db.DeleteSession(r.Context(), hash, s.auditEvent(r, actLogout)); err != nil {
 			log.Printf("DeleteSession error: %v", err)
 			http.Error(w, "internal error", http.StatusInternalServerError)
 			return
@@ -201,8 +229,13 @@ func (s *Server) handleChangePassword(w http.ResponseWriter, r *http.Request) {
 	}
 	ok, _ := s.hasher.Verify(req.CurrentPassword, *user.PasswordHash)
 	if !ok {
-		if _, err := s.db.RecordLoginFailure(ctx, user.ID, maxLoginFailures, now.Add(lockDuration)); err != nil {
+		ev := with(on(s.auditEvent(r, actLoginFailed), targetStaff, user.ID),
+			map[string]any{"reason": "wrong_current_password"})
+		ev.Outcome = db.OutcomeFailure
+		if _, err := s.db.RecordLoginFailure(ctx, user.ID, maxLoginFailures, now.Add(lockDuration), ev); err != nil {
 			log.Printf("RecordLoginFailure error: %v", err)
+			http.Error(w, "internal error", http.StatusInternalServerError)
+			return
 		}
 		http.Error(w, "the current password is wrong", http.StatusForbidden)
 		return
@@ -221,12 +254,13 @@ func (s *Server) handleChangePassword(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
-	if err := s.db.SetPasswordHash(ctx, user.ID, hash, now); err != nil {
+	if err := s.db.SetPasswordHash(ctx, user.ID, hash, now,
+		on(s.auditEvent(r, actPasswordChanged), targetStaff, user.ID)); err != nil {
 		log.Printf("SetPasswordHash error: %v", err)
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
-	if err := s.db.DeleteUserSessions(ctx, user.ID, p.tokenHash); err != nil {
+	if err := s.db.DeleteUserSessions(ctx, user.ID, p.tokenHash, nil); err != nil { // part of the change above
 		log.Printf("DeleteUserSessions error: %v", err)
 	}
 	w.WriteHeader(http.StatusNoContent)
@@ -315,7 +349,8 @@ func (s *Server) handleSetup(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
-	if _, err := s.db.CompletePasswordSetup(r.Context(), hash, passwordHash, s.now()); err != nil {
+	if _, err := s.db.CompletePasswordSetup(r.Context(), hash, passwordHash, s.now(),
+		on(s.auditEvent(r, actPasswordSet), targetStaff, "")); err != nil {
 		if errors.Is(err, db.ErrTokenUnusable) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return

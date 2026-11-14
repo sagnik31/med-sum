@@ -54,32 +54,56 @@ func scanPatient(row pgx.Row) (*Patient, error) {
 	return &p, nil
 }
 
-// CreatePatient adds a patient to the organisation.
-func (s *Store) CreatePatient(ctx context.Context, orgID, createdBy string, f PatientFields) (*Patient, error) {
+// CreatePatient adds a patient to the organisation and writes ev (with
+// the new patient as its target) in the same transaction.
+func (s *Store) CreatePatient(ctx context.Context, orgID, createdBy string, f PatientFields, ev *AuditEvent) (*Patient, error) {
 	const q = `
 INSERT INTO patients AS p (org_id, mrn, full_name, date_of_birth, age_years, sex, created_by)
 VALUES ($1, $2, $3, $4::date, $5, $6, $7)
 RETURNING ` + patientColumns
-	p, err := scanPatient(s.pool.QueryRow(ctx, q, orgID, f.MRN, f.FullName, f.DateOfBirth, f.AgeYears, f.Sex, createdBy))
+	var p *Patient
+	err := pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
+		var err error
+		p, err = scanPatient(tx.QueryRow(ctx, q, orgID, f.MRN, f.FullName, f.DateOfBirth, f.AgeYears, f.Sex, createdBy))
+		if err != nil {
+			return err
+		}
+		return writeAudit(ctx, tx, ev.about(p.ID, p.ID))
+	})
 	if isUniqueViolation(err) {
 		return nil, ErrMRNTaken
 	}
-	return p, err
+	if err != nil {
+		return nil, err
+	}
+	return p, nil
 }
 
-// UpdatePatient replaces a patient's details. It returns nil when the
-// organisation has no such patient.
-func (s *Store) UpdatePatient(ctx context.Context, orgID, patientID string, f PatientFields) (*Patient, error) {
+// UpdatePatient replaces a patient's details and writes ev in the same
+// transaction. It returns nil, writing nothing, when the organisation has
+// no such patient.
+func (s *Store) UpdatePatient(ctx context.Context, orgID, patientID string, f PatientFields, ev *AuditEvent) (*Patient, error) {
 	const q = `
 UPDATE patients AS p
 SET mrn = $3, full_name = $4, date_of_birth = $5::date, age_years = $6, sex = $7, updated_at = now()
 WHERE p.id = $1 AND p.org_id = $2
 RETURNING ` + patientColumns
-	p, err := scanPatient(s.pool.QueryRow(ctx, q, patientID, orgID, f.MRN, f.FullName, f.DateOfBirth, f.AgeYears, f.Sex))
+	var p *Patient
+	err := pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
+		var err error
+		p, err = scanPatient(tx.QueryRow(ctx, q, patientID, orgID, f.MRN, f.FullName, f.DateOfBirth, f.AgeYears, f.Sex))
+		if err != nil || p == nil {
+			return err
+		}
+		return writeAudit(ctx, tx, ev)
+	})
 	if isUniqueViolation(err) {
 		return nil, ErrMRNTaken
 	}
-	return p, err
+	if err != nil {
+		return nil, err
+	}
+	return p, nil
 }
 
 // GetPatient returns the organisation's patient, or nil.

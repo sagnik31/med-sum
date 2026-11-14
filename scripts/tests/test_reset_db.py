@@ -43,7 +43,8 @@ def filled(db):
 
 
 EXPECTED_TABLES = {
-    "organizations", "staff_users", "sessions", "one_time_tokens", "patients",
+    "organizations", "staff_users", "sessions", "one_time_tokens", "audit_events",
+    "patients",
     "patient_summaries", "documents",
     "insights", "pipeline_runs", "pipeline_steps", "pipeline_model_calls", "prompts",
     "document_records", "jobs",

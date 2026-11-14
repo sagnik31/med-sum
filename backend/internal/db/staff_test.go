@@ -13,7 +13,7 @@ func mustAdmin(t *testing.T, s *Store, email string) *User {
 	t.Helper()
 	u, err := s.CreateUser(context.Background(), NewUser{
 		OrgID: mustOrg(t, s), Email: email, FullName: "Admin " + email, Roles: []string{RoleAdmin},
-	})
+	}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -48,7 +48,7 @@ func TestListUsersStaysInTheOrganisation(t *testing.T) {
 		t.Fatal(err)
 	}
 	if _, err := s.CreateUser(ctx, NewUser{OrgID: other.ID, Email: "x@other.test", FullName: "X",
-		Roles: []string{RoleClinician}}); err != nil {
+		Roles: []string{RoleClinician}}, nil); err != nil {
 		t.Fatal(err)
 	}
 
@@ -73,7 +73,7 @@ func TestUpdateUserChangesFieldsAndEndsSessionsOnARoleChange(t *testing.T) {
 
 	// Name and registration number alone keep the sessions.
 	got, err := s.UpdateUser(ctx, UserUpdate{OrgID: org, UserID: u.ID, FullName: strPtr("Dr Asha R"),
-		RegistrationNo: strPtr("MCI-1")})
+		RegistrationNo: strPtr("MCI-1")}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -87,7 +87,7 @@ func TestUpdateUserChangesFieldsAndEndsSessionsOnARoleChange(t *testing.T) {
 
 	// A role change ends them, except the kept one.
 	got, err = s.UpdateUser(ctx, UserUpdate{OrgID: org, UserID: u.ID, Roles: []string{RoleClinician, RoleAdmin},
-		RegistrationNo: strPtr(""), KeepSession: hashOf("b")})
+		RegistrationNo: strPtr(""), KeepSession: hashOf("b")}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -102,7 +102,7 @@ func TestUpdateUserChangesFieldsAndEndsSessionsOnARoleChange(t *testing.T) {
 	}
 
 	// Setting the same roles again is not a change.
-	if _, err := s.UpdateUser(ctx, UserUpdate{OrgID: org, UserID: u.ID, Roles: []string{RoleClinician, RoleAdmin}}); err != nil {
+	if _, err := s.UpdateUser(ctx, UserUpdate{OrgID: org, UserID: u.ID, Roles: []string{RoleClinician, RoleAdmin}}, nil); err != nil {
 		t.Fatal(err)
 	}
 	if n := sessionTokens(t, s, u.ID); n != 1 {
@@ -120,14 +120,14 @@ func TestUpdateUserDisablesAndEnables(t *testing.T) {
 	mustSession(t, s, "a", active.ID, t0)
 	for i, id := range []string{active.ID, invited.ID} {
 		if err := s.CreateOneTimeToken(ctx, OneTimeToken{TokenHash: hashOf("link" + string(rune('0'+i))), UserID: id,
-			Purpose: PurposeReset, CreatedAt: t0, ExpiresAt: t0.Add(time.Hour)}); err != nil {
+			Purpose: PurposeReset, CreatedAt: t0, ExpiresAt: t0.Add(time.Hour)}, nil); err != nil {
 			t.Fatal(err)
 		}
 	}
 
 	disabled, enabled := StatusDisabled, StatusActive
 	for _, id := range []string{active.ID, invited.ID} {
-		got, err := s.UpdateUser(ctx, UserUpdate{OrgID: org, UserID: id, Status: &disabled})
+		got, err := s.UpdateUser(ctx, UserUpdate{OrgID: org, UserID: id, Status: &disabled}, nil)
 		if err != nil || got.Status != StatusDisabled {
 			t.Fatalf("disable: %+v, %v", got, err)
 		}
@@ -143,11 +143,11 @@ func TestUpdateUserDisablesAndEnables(t *testing.T) {
 	// Enabled again: the account with a password is active, the one
 	// without is invited (the schema forbids an active account with no
 	// password).
-	got, err := s.UpdateUser(ctx, UserUpdate{OrgID: org, UserID: active.ID, Status: &enabled})
+	got, err := s.UpdateUser(ctx, UserUpdate{OrgID: org, UserID: active.ID, Status: &enabled}, nil)
 	if err != nil || got.Status != StatusActive {
 		t.Errorf("enable active: %+v, %v", got, err)
 	}
-	got, err = s.UpdateUser(ctx, UserUpdate{OrgID: org, UserID: invited.ID, Status: &enabled})
+	got, err = s.UpdateUser(ctx, UserUpdate{OrgID: org, UserID: invited.ID, Status: &enabled}, nil)
 	if err != nil || got.Status != StatusInvited {
 		t.Errorf("enable invited: %+v, %v", got, err)
 	}
@@ -165,7 +165,7 @@ func TestUpdateUserKeepsAnActiveAdmin(t *testing.T) {
 		"demote":      {OrgID: org, UserID: first.ID, Roles: []string{RoleClinician}},
 		"demote+name": {OrgID: org, UserID: first.ID, Roles: []string{RoleClinician}, FullName: strPtr("Changed")},
 	} {
-		if _, err := s.UpdateUser(ctx, upd); !errors.Is(err, ErrLastAdmin) {
+		if _, err := s.UpdateUser(ctx, upd, nil); !errors.Is(err, ErrLastAdmin) {
 			t.Errorf("%s: err = %v, want ErrLastAdmin", name, err)
 		}
 	}
@@ -175,21 +175,21 @@ func TestUpdateUserKeepsAnActiveAdmin(t *testing.T) {
 
 	// An invited admin can't log in, so doesn't count.
 	invited, err := s.CreateUser(ctx, NewUser{OrgID: org, Email: "invited@hospital.test", FullName: "I",
-		Roles: []string{RoleAdmin}})
+		Roles: []string{RoleAdmin}}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := s.UpdateUser(ctx, UserUpdate{OrgID: org, UserID: first.ID, Status: &disabled}); !errors.Is(err, ErrLastAdmin) {
+	if _, err := s.UpdateUser(ctx, UserUpdate{OrgID: org, UserID: first.ID, Status: &disabled}, nil); !errors.Is(err, ErrLastAdmin) {
 		t.Errorf("with only an invited second admin: err = %v", err)
 	}
 	// Demoting the invited one is fine: it wasn't an active admin.
-	if _, err := s.UpdateUser(ctx, UserUpdate{OrgID: org, UserID: invited.ID, Roles: []string{RoleClinician}}); err != nil {
+	if _, err := s.UpdateUser(ctx, UserUpdate{OrgID: org, UserID: invited.ID, Roles: []string{RoleClinician}}, nil); err != nil {
 		t.Errorf("demote invited admin: %v", err)
 	}
 
 	// With a second active admin, the first can go.
 	mustAdmin(t, s, "second@hospital.test")
-	if _, err := s.UpdateUser(ctx, UserUpdate{OrgID: org, UserID: first.ID, Status: &disabled}); err != nil {
+	if _, err := s.UpdateUser(ctx, UserUpdate{OrgID: org, UserID: first.ID, Status: &disabled}, nil); err != nil {
 		t.Errorf("with two admins: %v", err)
 	}
 }
@@ -203,7 +203,7 @@ func TestUpdateUserIgnoresOtherOrganisations(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, id := range []string{u.ID, "not-a-uuid", "00000000-0000-4000-8000-000000000000"} {
-		got, err := s.UpdateUser(ctx, UserUpdate{OrgID: other.ID, UserID: id, FullName: strPtr("Hijacked")})
+		got, err := s.UpdateUser(ctx, UserUpdate{OrgID: other.ID, UserID: id, FullName: strPtr("Hijacked")}, nil)
 		if got != nil || err != nil {
 			t.Errorf("%s: %+v, %v; want nil, nil", id, got, err)
 		}
@@ -236,11 +236,11 @@ func TestListAndDeleteUserSessions(t *testing.T) {
 
 	theirs, _ := s.ListUserSessions(ctx, other.ID)
 	for _, id := range []string{theirs[0].ID, "not-a-uuid"} {
-		if ok, err := s.DeleteUserSession(ctx, me.ID, id); ok || err != nil {
+		if ok, err := s.DeleteUserSession(ctx, me.ID, id, nil); ok || err != nil {
 			t.Errorf("delete %q as me: %v, %v; want false, nil", id, ok, err)
 		}
 	}
-	if ok, err := s.DeleteUserSession(ctx, me.ID, sessions[1].ID); !ok || err != nil {
+	if ok, err := s.DeleteUserSession(ctx, me.ID, sessions[1].ID, nil); !ok || err != nil {
 		t.Errorf("delete mine: %v, %v", ok, err)
 	}
 	if n := sessionTokens(t, s, me.ID); n != 1 {

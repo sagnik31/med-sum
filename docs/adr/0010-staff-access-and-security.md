@@ -1,6 +1,6 @@
 # 0010. Staff access: admin-issued accounts, server-side sessions, permissions in code, scope in SQL
 
-- **Status:** Accepted, 2026-11-08; confirmed 2026-11-13, when a second factor was dropped from the scope. Built: accounts, passwords, sessions, CSRF protection, the permission layer, staff management, patient records with organisation scope in SQL, and soft delete (by the uploader only; the patient summary is rebuilt without the document). Not built yet: the audit log, the per-IP login limit, the AI service's localhost bind and moving development secrets out of the run scripts.
+- **Status:** Accepted, 2026-11-08; confirmed 2026-11-13, when a second factor was dropped from the scope. Built: accounts, passwords, sessions, CSRF protection, the permission layer, staff management, patient records with organisation scope in SQL, soft delete (by the uploader only; the patient summary is rebuilt without the document), and the audit log. Not built yet: the per-IP login limit, the AI service's localhost bind and moving development secrets out of the run scripts.
 
 ## Context
 
@@ -27,7 +27,7 @@ The first version logged in with a phone number and an OTP field nothing checked
 
 **Admins see no clinical data.** Another organisation's resource answers **404, not 403**, so ids can't be probed.
 
-**Audit log.** `audit_events` (time, organisation, actor, action, target, patient, outcome, IP, user agent, small details; **never clinical content**), append-only by a trigger that rejects UPDATE and DELETE. One row per login success or failure, lockout, logout, staff change, and **every read and write of patient data**. Mutations write it in their transaction; reads write it before returning data and **fail closed** (500).
+**Audit log.** `audit_events` (time, organisation, actor, action, target, patient, outcome, IP, user agent, small details; **never clinical content**), append-only by a trigger that rejects UPDATE and DELETE. One row per login success or failure, lockout, logout, staff change, and **every read and write of patient data**. Mutations write it in their transaction; reads write it before returning data and **fail closed** (500). As built: the columns carry no foreign keys, so purging a patient or an account keeps their trail; a refused permission and a refused delete are rows too (outcome `denied`); a search keeps only whether there was one and the count; a failed login with an unknown email has no organisation, so it is in the table but on no admin's page; and the trigger doesn't stop `TRUNCATE` by the schema's owner, which the API's own role can't do.
 
 **The browser never calls the AI service.** Only the Go API does, after its checks, with a shared secret in `X-Internal-Token` compared in constant time; the AI service takes ids, never paths or content from the browser, and is to listen on localhost only.
 

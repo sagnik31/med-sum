@@ -61,6 +61,15 @@ COLUMNS: dict[str, dict[str, str]] = {
         **_cols(SECRET, "token_hash"),
         **_cols(SAFE, "user_id purpose created_at expires_at used_at created_by"),
     },
+    # Ids and outcomes only; details holds counts, field names and reasons.
+    "audit_events": {
+        **_cols(
+            SAFE,
+            "id at org_id actor_id action target_type target_id patient_id outcome"
+            " details",
+        ),
+        **_cols(PERSONAL, "ip user_agent"),
+    },
     "documents": {
         **_cols(
             SAFE,

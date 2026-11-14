@@ -186,11 +186,11 @@ func (c *ctl) createUser(ctx context.Context, args []string, forcedRole string) 
 	if v := strings.TrimSpace(*regNo); v != "" {
 		nu.RegistrationNo = &v
 	}
-	u, err := c.store.CreateUser(ctx, nu)
+	u, err := c.store.CreateUser(ctx, nu, cliEvent(org, "staff_invited", map[string]any{"roles": roles}))
 	if err != nil {
 		return err
 	}
-	link, err := c.issueLink(ctx, u.ID, db.PurposeSetup)
+	link, err := c.issueLink(ctx, u, db.PurposeSetup)
 	if err != nil {
 		return err
 	}
@@ -223,7 +223,7 @@ func (c *ctl) resetLink(ctx context.Context, args []string) error {
 	if u.Status == db.StatusInvited {
 		purpose = db.PurposeSetup
 	}
-	link, err := c.issueLink(ctx, u.ID, purpose)
+	link, err := c.issueLink(ctx, u, purpose)
 	if err != nil {
 		return err
 	}
@@ -237,7 +237,7 @@ func (c *ctl) resetLink(ctx context.Context, args []string) error {
 
 // issueLink stores a new one-time token for the account (replacing its
 // unused ones) and returns the link.
-func (c *ctl) issueLink(ctx context.Context, userID, purpose string) (string, error) {
+func (c *ctl) issueLink(ctx context.Context, u *db.User, purpose string) (string, error) {
 	token, hash, err := auth.NewToken()
 	if err != nil {
 		return "", err
@@ -248,8 +248,8 @@ func (c *ctl) issueLink(ctx context.Context, userID, purpose string) (string, er
 	}
 	now := c.now()
 	if err := c.store.CreateOneTimeToken(ctx, db.OneTimeToken{
-		TokenHash: hash, UserID: userID, Purpose: purpose, CreatedAt: now, ExpiresAt: now.Add(ttl),
-	}); err != nil {
+		TokenHash: hash, UserID: u.ID, Purpose: purpose, CreatedAt: now, ExpiresAt: now.Add(ttl),
+	}, cliTarget(cliEvent(u.OrgID, "link_issued", map[string]any{"purpose": purpose}), u.ID)); err != nil {
 		return "", err
 	}
 	return auth.SetPasswordLink(c.appURL, token), nil
@@ -307,15 +307,17 @@ func (c *ctl) seedDev(ctx context.Context, args []string) error {
 			return err
 		}
 		if u == nil {
-			u, err = c.store.CreateUser(ctx, db.NewUser{OrgID: orgID, Email: a.email, FullName: a.name, Roles: a.roles})
+			u, err = c.store.CreateUser(ctx, db.NewUser{OrgID: orgID, Email: a.email, FullName: a.name, Roles: a.roles},
+				cliEvent(orgID, "staff_invited", map[string]any{"roles": a.roles}))
 			if err != nil {
 				return err
 			}
 		}
-		if err := c.store.SetPasswordHash(ctx, u.ID, hash, c.now()); err != nil {
+		if err := c.store.SetPasswordHash(ctx, u.ID, hash, c.now(), cliTarget(cliEvent(orgID, "password_set", nil), u.ID)); err != nil {
 			return err
 		}
-		if err := c.store.SetUserStatus(ctx, u.ID, db.StatusActive); err != nil {
+		if err := c.store.SetUserStatus(ctx, u.ID, db.StatusActive,
+			cliTarget(cliEvent(orgID, "staff_updated", map[string]any{"status": db.StatusActive}), u.ID)); err != nil {
 			return err
 		}
 		fmt.Fprintf(c.out, "%-36s %s\n", a.email, strings.Join(a.roles, ", "))
@@ -339,4 +341,24 @@ func (c *ctl) devOrg(ctx context.Context) (string, error) {
 		return "", err
 	}
 	return org.ID, nil
+}
+
+// cliEvent is an audit event for a change made from this command line:
+// there is no logged-in actor, so details say where it came from.
+// See docs/adr/0010-staff-access-and-security.md.
+func cliEvent(orgID, action string, details map[string]any) *db.AuditEvent {
+	if details == nil {
+		details = map[string]any{}
+	}
+	details["via"] = "medsumctl"
+	return &db.AuditEvent{OrgID: &orgID, Action: action, Outcome: db.OutcomeSuccess,
+		TargetType: &staffTarget, Details: details}
+}
+
+var staffTarget = "staff_user"
+
+// cliTarget sets the event's target account.
+func cliTarget(ev *db.AuditEvent, userID string) *db.AuditEvent {
+	ev.TargetID = &userID
+	return ev
 }

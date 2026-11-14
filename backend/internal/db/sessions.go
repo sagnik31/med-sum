@@ -68,18 +68,40 @@ func (s *Store) TouchSession(ctx context.Context, tokenHash []byte, now time.Tim
 	return err
 }
 
-// DeleteSession removes one session (logout, or an expired session).
-func (s *Store) DeleteSession(ctx context.Context, tokenHash []byte) error {
-	_, err := s.pool.Exec(ctx, `DELETE FROM sessions WHERE token_hash = $1`, tokenHash)
-	return err
+// DeleteSession removes one session (logout, or an expired session) and
+// writes ev in the same transaction (nil for an expired session).
+//
+// The event's actor is the session's account, since a logout can come
+// without a usable session; nothing is written when there was no session.
+func (s *Store) DeleteSession(ctx context.Context, tokenHash []byte, ev *AuditEvent) error {
+	return pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
+		var userID, orgID string
+		err := tx.QueryRow(ctx, `
+DELETE FROM sessions s USING staff_users u
+WHERE s.token_hash = $1 AND u.id = s.user_id
+RETURNING u.id::text, u.org_id::text`, tokenHash).Scan(&userID, &orgID)
+		if errors.Is(err, pgx.ErrNoRows) || (err == nil && ev == nil) {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		ev.ActorID, ev.OrgID = &userID, &orgID
+		return writeAudit(ctx, tx, ev)
+	})
 }
 
 // DeleteUserSessions removes every session of the account except the one
-// whose hash is keep (nil keeps none).
-func (s *Store) DeleteUserSessions(ctx context.Context, userID string, keep []byte) error {
-	_, err := s.pool.Exec(ctx,
-		`DELETE FROM sessions WHERE user_id = $1 AND ($2::bytea IS NULL OR token_hash <> $2)`, userID, keep)
-	return err
+// whose hash is keep (nil keeps none), and writes ev in the same
+// transaction.
+func (s *Store) DeleteUserSessions(ctx context.Context, userID string, keep []byte, ev *AuditEvent) error {
+	return pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
+		if _, err := tx.Exec(ctx,
+			`DELETE FROM sessions WHERE user_id = $1 AND ($2::bytea IS NULL OR token_hash <> $2)`, userID, keep); err != nil {
+			return err
+		}
+		return writeAudit(ctx, tx, ev)
+	})
 }
 
 // ListUserSessions returns the account's sessions, most recently used
@@ -100,14 +122,25 @@ ORDER BY last_seen_at DESC, created_at DESC`, userID)
 }
 
 // DeleteUserSession removes one session by id, if it belongs to the
-// account, and reports whether it did. A malformed id removes nothing.
-func (s *Store) DeleteUserSession(ctx context.Context, userID, sessionID string) (bool, error) {
-	tag, err := s.pool.Exec(ctx,
-		`DELETE FROM sessions WHERE user_id = $1 AND id::text = $2`, userID, sessionID)
+// account, and reports whether it did; ev is written in the same
+// transaction when it did. A malformed id removes nothing.
+func (s *Store) DeleteUserSession(ctx context.Context, userID, sessionID string, ev *AuditEvent) (bool, error) {
+	var deleted bool
+	err := pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
+		tag, err := tx.Exec(ctx,
+			`DELETE FROM sessions WHERE user_id = $1 AND id::text = $2`, userID, sessionID)
+		if err != nil {
+			return err
+		}
+		if deleted = tag.RowsAffected() > 0; !deleted {
+			return nil
+		}
+		return writeAudit(ctx, tx, ev)
+	})
 	if err != nil {
 		return false, err
 	}
-	return tag.RowsAffected() > 0, nil
+	return deleted, nil
 }
 
 // DeleteExpiredSessions removes sessions past their absolute expiry or
@@ -138,17 +171,20 @@ type OneTimeToken struct {
 }
 
 // CreateOneTimeToken stores a setup or reset token for an account and
-// removes the account's earlier unused ones, so only the newest link works.
-func (s *Store) CreateOneTimeToken(ctx context.Context, t OneTimeToken) error {
+// removes the account's earlier unused ones, so only the newest link
+// works. ev is written in the same transaction.
+func (s *Store) CreateOneTimeToken(ctx context.Context, t OneTimeToken, ev *AuditEvent) error {
 	return pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
 		if _, err := tx.Exec(ctx,
 			`DELETE FROM one_time_tokens WHERE user_id = $1 AND used_at IS NULL`, t.UserID); err != nil {
 			return err
 		}
-		_, err := tx.Exec(ctx, `
+		if _, err := tx.Exec(ctx, `
 INSERT INTO one_time_tokens (token_hash, user_id, purpose, created_at, expires_at, created_by)
-VALUES ($1, $2, $3, $4, $5, $6)`, t.TokenHash, t.UserID, t.Purpose, t.CreatedAt, t.ExpiresAt, t.CreatedBy)
-		return err
+VALUES ($1, $2, $3, $4, $5, $6)`, t.TokenHash, t.UserID, t.Purpose, t.CreatedAt, t.ExpiresAt, t.CreatedBy); err != nil {
+			return err
+		}
+		return writeAudit(ctx, tx, ev)
 	})
 }
 
@@ -171,8 +207,9 @@ var ErrTokenUnusable = errors.New("this link is invalid or has expired")
 
 // CompletePasswordSetup uses a setup or reset token: in one transaction it
 // marks the token used, sets the password hash, activates an invited
-// account, clears any lock and removes the account's sessions.
-func (s *Store) CompletePasswordSetup(ctx context.Context, tokenHash []byte, passwordHash string, now time.Time) (string, error) {
+// account, clears any lock and removes the account's sessions. ev is
+// written in the same transaction, with the account as its actor.
+func (s *Store) CompletePasswordSetup(ctx context.Context, tokenHash []byte, passwordHash string, now time.Time, ev *AuditEvent) (string, error) {
 	var userID string
 	err := pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
 		err := tx.QueryRow(ctx, `
@@ -185,20 +222,27 @@ RETURNING user_id`, tokenHash, now).Scan(&userID)
 		if err != nil {
 			return err
 		}
-		tag, err := tx.Exec(ctx, `
+		var orgID string
+		err = tx.QueryRow(ctx, `
 UPDATE staff_users SET
     password_hash = $2, password_changed_at = $3,
     status = CASE WHEN status = 'invited' THEN 'active' ELSE status END,
     failed_logins = 0, locked_until = NULL
-WHERE id = $1 AND status <> 'disabled'`, userID, passwordHash, now)
+WHERE id = $1 AND status <> 'disabled'
+RETURNING org_id::text`, userID, passwordHash, now).Scan(&orgID)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrTokenUnusable
+		}
 		if err != nil {
 			return err
 		}
-		if tag.RowsAffected() == 0 {
-			return ErrTokenUnusable
+		if _, err = tx.Exec(ctx, `DELETE FROM sessions WHERE user_id = $1`, userID); err != nil {
+			return err
 		}
-		_, err = tx.Exec(ctx, `DELETE FROM sessions WHERE user_id = $1`, userID)
-		return err
+		if ev != nil {
+			ev.ActorID, ev.OrgID = &userID, &orgID
+		}
+		return writeAudit(ctx, tx, ev.about(userID, ""))
 	})
 	if err != nil {
 		return "", err

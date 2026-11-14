@@ -314,6 +314,50 @@
                   }
                 ]
               }
+            },
+            {
+              "name": "Audit Log",
+              "id": "8e7e1c6e-d4ff-4dec-8cd6-d9ddae17b86b",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{backend_url}}/admin/audit?actor=&patient=&from=&to=&before=",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "audit"
+                  ],
+                  "query": [
+                    {
+                      "key": "actor",
+                      "value": "",
+                      "description": "A staff account id"
+                    },
+                    {
+                      "key": "patient",
+                      "value": "",
+                      "description": "A patient id"
+                    },
+                    {
+                      "key": "from",
+                      "value": "",
+                      "description": "YYYY-MM-DD, inclusive"
+                    },
+                    {
+                      "key": "to",
+                      "value": "",
+                      "description": "YYYY-MM-DD, inclusive"
+                    },
+                    {
+                      "key": "before",
+                      "value": "",
+                      "description": "next_before of the previous page"
+                    }
+                  ]
+                }
+              }
             }
           ]
         },

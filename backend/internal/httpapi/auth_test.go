@@ -199,7 +199,7 @@ func TestLoginRehashesAnOldHash(t *testing.T) {
 		t.Fatal(err)
 	}
 	oldHash, _ := older.Hash(testPassword)
-	_ = e.store.SetPasswordHash(context.Background(), u.ID, oldHash, e.now())
+	_ = e.store.SetPasswordHash(context.Background(), u.ID, oldHash, e.now(), nil)
 
 	e.loginAs("asha@hospital.test", testPassword)
 

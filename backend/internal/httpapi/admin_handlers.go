@@ -64,7 +64,7 @@ func (s *Server) issueLink(r *http.Request, u *db.User, adminID string) (*linkRe
 	now := s.now()
 	err = s.db.CreateOneTimeToken(r.Context(), db.OneTimeToken{
 		TokenHash: hash, UserID: u.ID, Purpose: purpose, CreatedAt: now, ExpiresAt: now.Add(ttl), CreatedBy: &adminID,
-	})
+	}, with(on(s.auditEvent(r, actLinkIssued), targetStaff, u.ID), map[string]any{"purpose": purpose}))
 	if err != nil {
 		return nil, err
 	}
@@ -174,7 +174,8 @@ func (s *Server) handleCreateStaff(w http.ResponseWriter, r *http.Request) {
 	if regNo != "" {
 		nu.RegistrationNo = &regNo
 	}
-	user, err := s.db.CreateUser(r.Context(), nu)
+	user, err := s.db.CreateUser(r.Context(), nu,
+		with(on(s.auditEvent(r, actStaffInvited), targetStaff, ""), map[string]any{"roles": roles}))
 	if errors.Is(err, db.ErrEmailTaken) {
 		http.Error(w, err.Error(), http.StatusConflict)
 		return
@@ -199,7 +200,7 @@ func (s *Server) handleCreateStaff(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleStaffByID(w http.ResponseWriter, r *http.Request) {
 	// The permission comes first, so a clinician learns nothing about
 	// which ids exist.
-	if !permit(w, r, authz.StaffManage) {
+	if !s.permit(w, r, authz.StaffManage) {
 		return
 	}
 	rest := strings.TrimPrefix(r.URL.Path, "/admin/users/")
@@ -282,7 +283,8 @@ func (s *Server) handleUpdateStaff(w http.ResponseWriter, r *http.Request, id st
 		upd.KeepSession = p.tokenHash
 	}
 
-	user, err := s.db.UpdateUser(r.Context(), upd)
+	user, err := s.db.UpdateUser(r.Context(), upd,
+		with(on(s.auditEvent(r, actStaffUpdated), targetStaff, id), staffChanges(upd)))
 	if errors.Is(err, db.ErrLastAdmin) {
 		http.Error(w, err.Error(), http.StatusConflict)
 		return
@@ -324,4 +326,27 @@ func (s *Server) handleStaffLink(w http.ResponseWriter, r *http.Request, id stri
 		return
 	}
 	writeJSON(w, http.StatusOK, link)
+}
+
+// staffChanges describes a staff update for the audit log: the new roles
+// and status, and which other fields were set (not their values).
+func staffChanges(upd db.UserUpdate) map[string]any {
+	d := map[string]any{}
+	if upd.Roles != nil {
+		d["roles"] = upd.Roles
+	}
+	if upd.Status != nil {
+		d["status"] = *upd.Status
+	}
+	set := []string{}
+	if upd.FullName != nil {
+		set = append(set, "full_name")
+	}
+	if upd.RegistrationNo != nil {
+		set = append(set, "registration_no")
+	}
+	if len(set) > 0 {
+		d["fields"] = set
+	}
+	return d
 }

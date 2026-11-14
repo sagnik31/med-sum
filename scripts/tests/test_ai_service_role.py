@@ -122,6 +122,7 @@ def test_the_checkpoint_setup_runs_as_the_role(as_role, role):
         "SELECT email FROM staff_users",
         "SELECT * FROM sessions",
         "SELECT * FROM one_time_tokens",
+        "SELECT * FROM audit_events",
         "SELECT * FROM organizations",
         "UPDATE staff_users SET full_name = 'x'",
         "SELECT created_by FROM patients",

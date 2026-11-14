@@ -55,8 +55,8 @@ func isActiveAdmin(status string, roles []string) bool {
 // the roles or status ends the account's sessions (except KeepSession), and
 // disabling it also removes its unused setup and reset links. It
 // returns ErrLastAdmin, changing nothing, if the organisation would be
-// left without an active admin.
-func (s *Store) UpdateUser(ctx context.Context, upd UserUpdate) (*User, error) {
+// left without an active admin. ev is written in the same transaction.
+func (s *Store) UpdateUser(ctx context.Context, upd UserUpdate, ev *AuditEvent) (*User, error) {
 	var out *User
 	err := pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
 		// The organisation row serialises staff changes, so two admins
@@ -127,7 +127,10 @@ UPDATE staff_users SET roles = $2, status = $3, full_name = $4, registration_no 
 		}
 		out, err = scanUser(tx.QueryRow(ctx, `SELECT `+userColumns+`
 FROM staff_users u JOIN organizations o ON o.id = u.org_id WHERE u.id = $1`, cur.ID))
-		return err
+		if err != nil {
+			return err
+		}
+		return writeAudit(ctx, tx, ev)
 	})
 	if err != nil {
 		return nil, err

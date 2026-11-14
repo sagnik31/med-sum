@@ -77,16 +77,23 @@ type NewDocument struct {
 }
 
 // CreateDocument records an upload for a patient of the organisation, and
-// says which earlier document it duplicates. It returns nil when the
-// organisation has no such patient.
-func (s *Store) CreateDocument(ctx context.Context, orgID string, nd NewDocument) (*Document, error) {
+// says which earlier document it duplicates. ev, with the new document as
+// its target, is written in the same transaction. It returns nil, writing
+// nothing, when the organisation has no such patient.
+func (s *Store) CreateDocument(ctx context.Context, orgID string, nd NewDocument, ev *AuditEvent) (*Document, error) {
 	var id string
-	err := s.pool.QueryRow(ctx, `
+	err := pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
+		err := tx.QueryRow(ctx, `
 INSERT INTO documents (patient_id, uploaded_by, original_name, content_type, storage_path, sha256)
 SELECT p.id, $3, $4, $5, $6, $7 FROM patients p WHERE p.id = $1 AND p.org_id = $2
 RETURNING id`,
-		nd.PatientID, orgID, nd.UploadedBy, nd.OriginalName, nd.ContentType, nd.StoragePath, nd.SHA256,
-	).Scan(&id)
+			nd.PatientID, orgID, nd.UploadedBy, nd.OriginalName, nd.ContentType, nd.StoragePath, nd.SHA256,
+		).Scan(&id)
+		if err != nil {
+			return err
+		}
+		return writeAudit(ctx, tx, ev.about(id, nd.PatientID))
+	})
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, nil
 	}
@@ -129,16 +136,28 @@ ORDER BY d.uploaded_at DESC, d.id`, patientID, orgID)
 }
 
 // SoftDeleteDocument marks a live document of the organisation deleted,
-// by the given account. It reports whether a row was marked. The row and
-// its file stay; every query that shows or uses documents leaves it out.
-func (s *Store) SoftDeleteDocument(ctx context.Context, orgID, docID, deletedBy string, now time.Time) (bool, error) {
-	tag, err := s.pool.Exec(ctx, `
+// by the given account, and writes ev in the same transaction. It reports
+// whether a row was marked (nothing is written when none was). The row
+// and its file stay; every query that shows or uses documents leaves it
+// out.
+func (s *Store) SoftDeleteDocument(ctx context.Context, orgID, docID, deletedBy string, now time.Time, ev *AuditEvent) (bool, error) {
+	var marked bool
+	err := pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
+		tag, err := tx.Exec(ctx, `
 UPDATE documents d SET deleted_at = $4, deleted_by = $3, updated_at = $4
 FROM patients p
 WHERE d.id = $1 AND p.id = d.patient_id AND p.org_id = $2 AND d.deleted_at IS NULL`,
-		docID, orgID, deletedBy, now)
+			docID, orgID, deletedBy, now)
+		if err != nil {
+			return err
+		}
+		if marked = tag.RowsAffected() == 1; !marked {
+			return nil
+		}
+		return writeAudit(ctx, tx, ev)
+	})
 	if err != nil {
 		return false, err
 	}
-	return tag.RowsAffected() == 1, nil
+	return marked, nil
 }

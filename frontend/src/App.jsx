@@ -10,6 +10,7 @@ import PatientSummaryPage from "./pages/PatientSummaryPage.jsx";
 import InsightPage from "./pages/InsightPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import StaffPage from "./pages/StaffPage.jsx";
+import AuditPage from "./pages/AuditPage.jsx";
 import RequireAuth from "./auth/RequireAuth.jsx";
 import { useAuth } from "./auth/context.js";
 import { PERM, can, homePath } from "./auth/permissions.js";
@@ -44,6 +45,11 @@ function Nav() {
           {can(user, PERM.staffManage) && (
             <Link to="/admin/staff" className="hover:underline">
               Staff
+            </Link>
+          )}
+          {can(user, PERM.auditRead) && (
+            <Link to="/admin/audit" className="hover:underline">
+              Audit log
             </Link>
           )}
           <Link to="/account" className="hover:underline" title={user.email}>
@@ -82,6 +88,7 @@ function App() {
           <Route path="/patients/:id/summary" element={<RequireAuth perm={PERM.summaryRead}><PatientSummaryPage /></RequireAuth>} />
           <Route path="/insights/:id" element={<RequireAuth perm={PERM.documentRead}><InsightPage /></RequireAuth>} />
           <Route path="/admin/staff" element={<RequireAuth perm={PERM.staffManage}><StaffPage /></RequireAuth>} />
+          <Route path="/admin/audit" element={<RequireAuth perm={PERM.auditRead}><AuditPage /></RequireAuth>} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>

@@ -25,6 +25,7 @@ This page maps every place a document's content enters, is stored and is deleted
 
 - **Logs.** Console and file logs carry ids, counts, statuses and timings only. A step's error text is stored in the database and never logged ([0006](adr/0006-durable-traceable-runs.md)).
 - **`pipeline_model_calls`.** Sizes, token counts, options and timings; never the prompt, the reply or an image.
+- **`audit_events`.** Who did what to which record, by id; never a name, a value or a file name. A search is recorded as whether there was one and how many patients matched, since the search text may be a name.
 - **`prompts`.** The pipeline's own instructions, never document content. A step's document text goes in a separate message, so prompt rows can outlive the documents that used them ([0006](adr/0006-durable-traceable-runs.md)).
 - **The browser, except through the API.** The browser never calls the AI service ([0010](adr/0010-staff-access-and-security.md)).
 - **A cloud model.** None is configured, and `llm.chat` refuses one unless the documents are marked synthetic. It never sends one a page image ([0005](adr/0005-local-models-with-fallback.md)).
@@ -48,13 +49,13 @@ Logs carry only safe and telemetry fields, and every log message is masked by pa
 - **Least-privilege database role.** The AI service connects as `medsum_ai`, which can't read accounts, sessions or password hashes, can't delete application rows (only its own checkpoints), and can't alter tables ([0008](adr/0008-patient-data-protection.md)).
 - **Accounts.** Server-side sessions in an HttpOnly cookie, CSRF protection, and permissions checked in code ([0010](adr/0010-staff-access-and-security.md)).
 - **Deletion is accountable, and a purge is complete.** Only the uploader can delete a document. Deleting it in the app hides it from every screen, the pipeline and the summary, but keeps its rows and file, with who deleted it and when ([0010](adr/0010-staff-access-and-security.md)). Purging a patient's records at the database leaves no row that names their documents in any schema, and a test checks this.
+- **Every access is recorded.** Each read or change of patient data, and each login, logout and staff change, writes an audit row; a read that can't be recorded is refused, and a change commits with its row or not at all. The table refuses UPDATE and DELETE ([0010](adr/0010-staff-access-and-security.md)).
 - **Organisations are kept apart in SQL.** Every query that finds a patient or a document filters on the caller's organisation, and another organisation's ids answer 404 ([0010](adr/0010-staff-access-and-security.md)).
 - **Duplicates are visible.** The same file uploaded twice for one patient is flagged and counted once in the summary.
 
 ## What isn't protected yet
 
 - **No encryption at rest.** The database and the uploads folder are plain on disk; protecting them is left to the disk.
-- **No audit log.** Who read or changed which patient's data isn't recorded yet ([0010](adr/0010-staff-access-and-security.md)).
 - **Step rows hold some content.** A transcribe step keeps its page's lines and a parse step its reply, so `pipeline_steps.input` and `output` are clinical. Steps that would repeat another table's content store a hash instead.
 - **Development secrets** are in the development configuration, and the AI service's localhost-only bind is not built yet ([0010](adr/0010-staff-access-and-security.md)).
 
@@ -66,7 +67,7 @@ India's Digital Personal Data Protection Act, 2023, and its rules are the frame 
 - erasure when the purpose is served or consent is withdrawn (purging a patient's records removes everything stored about them; deleting a document in the app only hides it, so the record of what was uploaded stays accountable);
 - telling the board and the people concerned about a breach.
 
-The system does not yet meet every duty a deployment would carry. It has no consent records, no audit log, no encryption at rest, no retention schedule, and no export of a patient's data on request. Those belong with real patient data, not with this synthetic showcase, and are listed above under what isn't protected. Nothing here is legal advice.
+The system does not yet meet every duty a deployment would carry. It has no consent records, no encryption at rest, no retention schedule, and no export of a patient's data on request. Those belong with real patient data, not with this synthetic showcase, and are listed above under what isn't protected. Nothing here is legal advice.
 
 ## Threat model: a document that tries to steer the models
 

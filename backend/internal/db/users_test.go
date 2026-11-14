@@ -18,10 +18,10 @@ func hashOf(s string) []byte {
 func activate(t *testing.T, s *Store, id string) {
 	t.Helper()
 	ctx := context.Background()
-	if err := s.SetPasswordHash(ctx, id, "$argon2id$v=19$m=64,t=1,p=1$c2FsdA$a2V5", t0); err != nil {
+	if err := s.SetPasswordHash(ctx, id, "$argon2id$v=19$m=64,t=1,p=1$c2FsdA$a2V5", t0, nil); err != nil {
 		t.Fatal(err)
 	}
-	if err := s.SetUserStatus(ctx, id, StatusActive); err != nil {
+	if err := s.SetUserStatus(ctx, id, StatusActive, nil); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -33,7 +33,7 @@ func TestCreateUserThenFindIt(t *testing.T) {
 	org := mustOrg(t, s)
 
 	u, err := s.CreateUser(ctx, NewUser{OrgID: org, Email: "asha@hospital.test", FullName: "Dr Asha Rao",
-		RegistrationNo: &reg, Roles: []string{RoleClinician, RoleAdmin}})
+		RegistrationNo: &reg, Roles: []string{RoleClinician, RoleAdmin}}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -60,7 +60,7 @@ func TestCreateUserRefusesADuplicateEmail(t *testing.T) {
 	mustUser(t, s, "asha@hospital.test")
 
 	_, err := s.CreateUser(context.Background(), NewUser{OrgID: mustOrg(t, s), Email: "asha@hospital.test",
-		FullName: "Someone Else", Roles: []string{RoleClinician}})
+		FullName: "Someone Else", Roles: []string{RoleClinician}}, nil)
 
 	if !errors.Is(err, ErrEmailTaken) {
 		t.Errorf("error = %v, want ErrEmailTaken", err)
@@ -88,14 +88,14 @@ func TestUserConstraints(t *testing.T) {
 	}
 	for name, nu := range bad {
 		t.Run(name, func(t *testing.T) {
-			if _, err := s.CreateUser(ctx, nu); err == nil {
+			if _, err := s.CreateUser(ctx, nu, nil); err == nil {
 				t.Error("the row was accepted")
 			}
 		})
 	}
 	// An account can't be active without a password.
 	u := mustUser(t, s, "d@hospital.test")
-	if err := s.SetUserStatus(ctx, u.ID, StatusActive); err == nil {
+	if err := s.SetUserStatus(ctx, u.ID, StatusActive, nil); err == nil {
 		t.Error("an account without a password became active")
 	}
 }
@@ -107,12 +107,12 @@ func TestLoginFailuresLockAfterTheLimit(t *testing.T) {
 	lock := t0.Add(15 * time.Minute)
 
 	for i := 1; i <= 4; i++ {
-		locked, err := s.RecordLoginFailure(ctx, u.ID, 5, lock)
+		locked, err := s.RecordLoginFailure(ctx, u.ID, 5, lock, nil)
 		if err != nil || locked != nil {
 			t.Fatalf("failure %d: locked = %v, err = %v", i, locked, err)
 		}
 	}
-	locked, err := s.RecordLoginFailure(ctx, u.ID, 5, lock)
+	locked, err := s.RecordLoginFailure(ctx, u.ID, 5, lock, nil)
 	if err != nil || locked == nil || !locked.Equal(lock) {
 		t.Fatalf("5th failure: locked = %v, err = %v; want %v", locked, err, lock)
 	}
@@ -121,7 +121,7 @@ func TestLoginFailuresLockAfterTheLimit(t *testing.T) {
 		t.Errorf("failed_logins = %d after the lock, want 0 (counting starts again)", got.FailedLogins)
 	}
 
-	if err := s.RecordLoginSuccess(ctx, u.ID, t0.Add(time.Hour)); err != nil {
+	if err := s.RecordLoginSuccess(ctx, u.ID, t0.Add(time.Hour), nil); err != nil {
 		t.Fatal(err)
 	}
 	got, _ = s.GetUserByID(ctx, u.ID)
@@ -158,7 +158,7 @@ func TestSessionLifecycle(t *testing.T) {
 		t.Errorf("last_seen_at = %v after a touch", got.LastSeenAt)
 	}
 
-	if err := s.DeleteSession(ctx, sess.TokenHash); err != nil {
+	if err := s.DeleteSession(ctx, sess.TokenHash, nil); err != nil {
 		t.Fatal(err)
 	}
 	if got, err := s.GetSession(ctx, sess.TokenHash); got != nil || err != nil {
@@ -178,7 +178,7 @@ func TestDeleteUserSessionsKeepsOne(t *testing.T) {
 		}
 	}
 
-	if err := s.DeleteUserSessions(ctx, me.ID, hashOf("b")); err != nil {
+	if err := s.DeleteUserSessions(ctx, me.ID, hashOf("b"), nil); err != nil {
 		t.Fatal(err)
 	}
 	for token, want := range map[string]bool{"a": false, "b": true, "c": false, "d": true} {
@@ -188,7 +188,7 @@ func TestDeleteUserSessionsKeepsOne(t *testing.T) {
 		}
 	}
 
-	if err := s.DeleteUserSessions(ctx, me.ID, nil); err != nil {
+	if err := s.DeleteUserSessions(ctx, me.ID, nil, nil); err != nil {
 		t.Fatal(err)
 	}
 	if got, _ := s.GetSession(ctx, hashOf("b")); got != nil {
@@ -204,7 +204,7 @@ func TestDisablingAnAccountRemovesItsSessions(t *testing.T) {
 	_ = s.CreateSession(ctx, Session{TokenHash: hashOf("a"), UserID: u.ID, CreatedAt: t0, LastSeenAt: t0,
 		ExpiresAt: t0.Add(time.Hour)})
 
-	if err := s.SetUserStatus(ctx, u.ID, StatusDisabled); err != nil {
+	if err := s.SetUserStatus(ctx, u.ID, StatusDisabled, nil); err != nil {
 		t.Fatal(err)
 	}
 	if got, _ := s.GetSession(ctx, hashOf("a")); got != nil {
@@ -258,7 +258,7 @@ func TestOneTimeTokenSetsThePasswordOnce(t *testing.T) {
 		ExpiresAt: t0.Add(time.Hour)})
 	tok := OneTimeToken{TokenHash: hashOf("setup"), UserID: u.ID, Purpose: PurposeSetup, CreatedAt: t0,
 		ExpiresAt: t0.Add(72 * time.Hour)}
-	if err := s.CreateOneTimeToken(ctx, tok); err != nil {
+	if err := s.CreateOneTimeToken(ctx, tok, nil); err != nil {
 		t.Fatal(err)
 	}
 
@@ -266,7 +266,7 @@ func TestOneTimeTokenSetsThePasswordOnce(t *testing.T) {
 	if err != nil || usable == nil || usable.ID != u.ID {
 		t.Fatalf("GetUsableToken = %+v, %v", usable, err)
 	}
-	id, err := s.CompletePasswordSetup(ctx, tok.TokenHash, "$argon2id$v=19$m=64,t=1,p=1$c2FsdA$a2V5", t0.Add(time.Hour))
+	id, err := s.CompletePasswordSetup(ctx, tok.TokenHash, "$argon2id$v=19$m=64,t=1,p=1$c2FsdA$a2V5", t0.Add(time.Hour), nil)
 	if err != nil || id != u.ID {
 		t.Fatalf("CompletePasswordSetup = %q, %v", id, err)
 	}
@@ -279,7 +279,7 @@ func TestOneTimeTokenSetsThePasswordOnce(t *testing.T) {
 	}
 
 	if _, err := s.CompletePasswordSetup(ctx, tok.TokenHash, "$argon2id$v=19$m=64,t=1,p=1$c2FsdA$eA",
-		t0.Add(2*time.Hour)); !errors.Is(err, ErrTokenUnusable) {
+		t0.Add(2*time.Hour), nil); !errors.Is(err, ErrTokenUnusable) {
 		t.Errorf("second use: %v, want ErrTokenUnusable", err)
 	}
 	if usable, _ := s.GetUsableToken(ctx, tok.TokenHash, t0.Add(2*time.Hour)); usable != nil {
@@ -293,20 +293,20 @@ func TestOneTimeTokenExpiresAndANewOneReplacesIt(t *testing.T) {
 	u := mustUser(t, s, "asha@hospital.test")
 	first := OneTimeToken{TokenHash: hashOf("first"), UserID: u.ID, Purpose: PurposeSetup, CreatedAt: t0,
 		ExpiresAt: t0.Add(time.Hour)}
-	_ = s.CreateOneTimeToken(ctx, first)
+	_ = s.CreateOneTimeToken(ctx, first, nil)
 
 	if got, _ := s.GetUsableToken(ctx, first.TokenHash, t0.Add(time.Hour)); got != nil {
 		t.Error("a token is usable at its expiry time")
 	}
-	if _, err := s.CompletePasswordSetup(ctx, first.TokenHash, "x", t0.Add(2*time.Hour)); !errors.Is(err, ErrTokenUnusable) {
+	if _, err := s.CompletePasswordSetup(ctx, first.TokenHash, "x", t0.Add(2*time.Hour), nil); !errors.Is(err, ErrTokenUnusable) {
 		t.Errorf("expired token: %v, want ErrTokenUnusable", err)
 	}
 
 	second := first
 	second.TokenHash, second.ExpiresAt = hashOf("second"), t0.Add(72*time.Hour)
 	_ = s.CreateOneTimeToken(ctx, OneTimeToken{TokenHash: hashOf("again"), UserID: u.ID, Purpose: PurposeSetup,
-		CreatedAt: t0, ExpiresAt: t0.Add(72 * time.Hour)})
-	_ = s.CreateOneTimeToken(ctx, second)
+		CreatedAt: t0, ExpiresAt: t0.Add(72 * time.Hour)}, nil)
+	_ = s.CreateOneTimeToken(ctx, second, nil)
 	if got, _ := s.GetUsableToken(ctx, hashOf("again"), t0); got != nil {
 		t.Error("an older unused link still works after a new one was issued")
 	}
@@ -322,13 +322,13 @@ func TestOneTimeTokenOfADisabledAccountIsUnusable(t *testing.T) {
 	activate(t, s, u.ID)
 	tok := OneTimeToken{TokenHash: hashOf("reset"), UserID: u.ID, Purpose: PurposeReset, CreatedAt: t0,
 		ExpiresAt: t0.Add(24 * time.Hour)}
-	_ = s.CreateOneTimeToken(ctx, tok)
-	_ = s.SetUserStatus(ctx, u.ID, StatusDisabled)
+	_ = s.CreateOneTimeToken(ctx, tok, nil)
+	_ = s.SetUserStatus(ctx, u.ID, StatusDisabled, nil)
 
 	if got, _ := s.GetUsableToken(ctx, tok.TokenHash, t0); got != nil {
 		t.Error("a disabled account's link is usable")
 	}
-	if _, err := s.CompletePasswordSetup(ctx, tok.TokenHash, "x", t0); !errors.Is(err, ErrTokenUnusable) {
+	if _, err := s.CompletePasswordSetup(ctx, tok.TokenHash, "x", t0, nil); !errors.Is(err, ErrTokenUnusable) {
 		t.Errorf("error = %v, want ErrTokenUnusable", err)
 	}
 	// The failed attempt left the token unused (the transaction rolled back).

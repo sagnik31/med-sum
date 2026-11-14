@@ -63,6 +63,11 @@ type fakeStore struct {
 	records   map[string]*db.DocumentRecord
 	summaries map[string]*db.PatientSummary
 	failWith  error // returned by every method when set
+	// audit holds the events written, in order. failAudit fails every
+	// audit write; a change that comes with an event then changes nothing,
+	// as its transaction would roll back.
+	audit     []db.AuditEvent
+	failAudit error
 	// failCreateDocument is returned by CreateDocument alone, so an upload
 	// gets as far as writing its file before the database fails.
 	failCreateDocument error
@@ -171,39 +176,56 @@ func (f *fakeStore) GetUserByID(_ context.Context, id string) (*db.User, error) 
 	return &copied, nil
 }
 
-func (f *fakeStore) RecordLoginFailure(_ context.Context, userID string, maxFailures int, lockUntil time.Time) (*time.Time, error) {
+func (f *fakeStore) RecordLoginFailure(_ context.Context, userID string, maxFailures int, lockUntil time.Time, ev *db.AuditEvent) (*time.Time, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
 		return nil, f.failWith
 	}
+	if ev != nil && f.failAudit != nil {
+		return nil, f.failAudit
+	}
 	u := f.users[userID]
 	u.FailedLogins++
+	f.logAudit(ev)
 	if u.FailedLogins >= maxFailures {
 		u.FailedLogins = 0
 		u.LockedUntil = &lockUntil
+		if ev != nil {
+			lock := *ev
+			lock.Action = db.ActionAccountLocked
+			f.logAudit(&lock)
+		}
 	}
 	return u.LockedUntil, nil
 }
 
-func (f *fakeStore) RecordLoginSuccess(_ context.Context, userID string, now time.Time) error {
+func (f *fakeStore) RecordLoginSuccess(_ context.Context, userID string, now time.Time, ev *db.AuditEvent) error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
 		return f.failWith
+	}
+	if ev != nil && f.failAudit != nil {
+		return f.failAudit
 	}
 	u := f.users[userID]
 	u.FailedLogins, u.LockedUntil, u.LastLoginAt = 0, nil, &now
+	f.logAudit(ev)
 	return nil
 }
 
-func (f *fakeStore) SetPasswordHash(_ context.Context, userID, hash string, _ time.Time) error {
+func (f *fakeStore) SetPasswordHash(_ context.Context, userID, hash string, _ time.Time, ev *db.AuditEvent) error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
 		return f.failWith
 	}
+	if ev != nil && f.failAudit != nil {
+		return f.failAudit
+	}
 	f.users[userID].PasswordHash = &hash
+	f.logAudit(ev)
 	return nil
 }
 
@@ -248,27 +270,43 @@ func (f *fakeStore) TouchSession(_ context.Context, tokenHash []byte, now time.T
 	return nil
 }
 
-func (f *fakeStore) DeleteSession(_ context.Context, tokenHash []byte) error {
+func (f *fakeStore) DeleteSession(_ context.Context, tokenHash []byte, ev *db.AuditEvent) error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
 		return f.failWith
 	}
+	if ev != nil && f.failAudit != nil {
+		return f.failAudit
+	}
+	sess, ok := f.sessions[string(tokenHash)]
+	if !ok {
+		return nil
+	}
 	delete(f.sessions, string(tokenHash))
+	if ev != nil {
+		u := f.users[sess.UserID]
+		ev.ActorID, ev.OrgID = &u.ID, &u.OrgID
+		f.logAudit(ev)
+	}
 	return nil
 }
 
-func (f *fakeStore) DeleteUserSessions(_ context.Context, userID string, keep []byte) error {
+func (f *fakeStore) DeleteUserSessions(_ context.Context, userID string, keep []byte, ev *db.AuditEvent) error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
 		return f.failWith
+	}
+	if ev != nil && f.failAudit != nil {
+		return f.failAudit
 	}
 	for k, sess := range f.sessions {
 		if sess.UserID == userID && (keep == nil || k != string(keep)) {
 			delete(f.sessions, k)
 		}
 	}
+	f.logAudit(ev)
 	return nil
 }
 
@@ -342,11 +380,14 @@ func (f *fakeStore) GetUsableToken(_ context.Context, tokenHash []byte, now time
 	return &copied, nil
 }
 
-func (f *fakeStore) CompletePasswordSetup(_ context.Context, tokenHash []byte, passwordHash string, now time.Time) (string, error) {
+func (f *fakeStore) CompletePasswordSetup(_ context.Context, tokenHash []byte, passwordHash string, now time.Time, ev *db.AuditEvent) (string, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
 		return "", f.failWith
+	}
+	if ev != nil && f.failAudit != nil {
+		return "", f.failAudit
 	}
 	t, u := f.usable(tokenHash, now)
 	if u == nil {
@@ -363,7 +404,71 @@ func (f *fakeStore) CompletePasswordSetup(_ context.Context, tokenHash []byte, p
 			delete(f.sessions, k)
 		}
 	}
+	if ev != nil {
+		id, org := u.ID, u.OrgID
+		ev.ActorID, ev.OrgID, ev.TargetID = &id, &org, &id
+		f.logAudit(ev)
+	}
 	return u.ID, nil
+}
+
+// ----- the audit log -----
+
+// logAudit keeps an event; call it holding f.mu. nil writes nothing.
+func (f *fakeStore) logAudit(ev *db.AuditEvent) {
+	if ev == nil {
+		return
+	}
+	e := *ev
+	e.ID = int64(len(f.audit) + 1)
+	f.audit = append(f.audit, e)
+}
+
+func (f *fakeStore) RecordAudit(_ context.Context, ev db.AuditEvent) error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return f.failWith
+	}
+	if f.failAudit != nil {
+		return f.failAudit
+	}
+	f.logAudit(&ev)
+	return nil
+}
+
+func (f *fakeStore) ListAuditEvents(_ context.Context, orgID string, filter db.AuditFilter) ([]db.AuditEvent, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return nil, f.failWith
+	}
+	out := []db.AuditEvent{}
+	for i := len(f.audit) - 1; i >= 0 && len(out) < filter.Limit; i-- {
+		e := f.audit[i]
+		switch {
+		case e.OrgID == nil || *e.OrgID != orgID,
+			filter.ActorID != "" && (e.ActorID == nil || *e.ActorID != filter.ActorID),
+			filter.PatientID != "" && (e.PatientID == nil || *e.PatientID != filter.PatientID),
+			filter.From != nil && e.At.Before(*filter.From),
+			filter.To != nil && !e.At.Before(*filter.To),
+			filter.BeforeID > 0 && e.ID >= filter.BeforeID:
+			continue
+		}
+		out = append(out, e)
+	}
+	return out, nil
+}
+
+// auditActions lists the actions of the events written so far.
+func (f *fakeStore) auditActions() []string {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	out := []string{}
+	for _, e := range f.audit {
+		out = append(out, e.Action)
+	}
+	return out
 }
 
 // ----- patients, documents and summaries -----
@@ -374,7 +479,7 @@ func (f *fakeStore) CompletePasswordSetup(_ context.Context, tokenHash []byte, p
 
 // addPatient stores a patient in the organisation and returns it.
 func (f *fakeStore) addPatient(orgID, mrn string) *db.Patient {
-	p, err := f.CreatePatient(context.Background(), orgID, "", db.PatientFields{MRN: mrn, FullName: "Patient " + mrn})
+	p, err := f.CreatePatient(context.Background(), orgID, "", db.PatientFields{MRN: mrn, FullName: "Patient " + mrn}, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -391,11 +496,14 @@ func (f *fakeStore) patientIn(orgID, patientID string) *db.Patient {
 	return p
 }
 
-func (f *fakeStore) CreatePatient(_ context.Context, orgID, createdBy string, pf db.PatientFields) (*db.Patient, error) {
+func (f *fakeStore) CreatePatient(_ context.Context, orgID, createdBy string, pf db.PatientFields, ev *db.AuditEvent) (*db.Patient, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
 		return nil, f.failWith
+	}
+	if ev != nil && f.failAudit != nil {
+		return nil, f.failAudit
 	}
 	for _, p := range f.patients {
 		if p.OrgID == orgID && p.MRN == pf.MRN {
@@ -409,15 +517,22 @@ func (f *fakeStore) CreatePatient(_ context.Context, orgID, createdBy string, pf
 		p.CreatedBy = &createdBy
 	}
 	f.patients[p.ID] = p
+	if ev != nil {
+		ev.TargetID, ev.PatientID = &p.ID, &p.ID
+		f.logAudit(ev)
+	}
 	copied := *p
 	return &copied, nil
 }
 
-func (f *fakeStore) UpdatePatient(_ context.Context, orgID, patientID string, pf db.PatientFields) (*db.Patient, error) {
+func (f *fakeStore) UpdatePatient(_ context.Context, orgID, patientID string, pf db.PatientFields, ev *db.AuditEvent) (*db.Patient, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
 		return nil, f.failWith
+	}
+	if ev != nil && f.failAudit != nil {
+		return nil, f.failAudit
 	}
 	p := f.patientIn(orgID, patientID)
 	if p == nil {
@@ -430,6 +545,7 @@ func (f *fakeStore) UpdatePatient(_ context.Context, orgID, patientID string, pf
 	}
 	p.MRN, p.FullName, p.DateOfBirth, p.AgeYears, p.Sex = pf.MRN, pf.FullName, pf.DateOfBirth, pf.AgeYears, pf.Sex
 	p.UpdatedAt = time.Now()
+	f.logAudit(ev)
 	copied := *p
 	return &copied, nil
 }
@@ -511,11 +627,14 @@ func (f *fakeStore) documentIn(orgID, docID string) *db.Document {
 	return d
 }
 
-func (f *fakeStore) CreateDocument(_ context.Context, orgID string, nd db.NewDocument) (*db.Document, error) {
+func (f *fakeStore) CreateDocument(_ context.Context, orgID string, nd db.NewDocument, ev *db.AuditEvent) (*db.Document, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
 		return nil, f.failWith
+	}
+	if ev != nil && f.failAudit != nil {
+		return nil, f.failAudit
 	}
 	if f.failCreateDocument != nil {
 		return nil, f.failCreateDocument
@@ -543,6 +662,10 @@ func (f *fakeStore) CreateDocument(_ context.Context, orgID string, nd db.NewDoc
 		}
 	}
 	f.documents[d.ID] = d
+	if ev != nil {
+		ev.TargetID, ev.PatientID = &d.ID, &d.PatientID
+		f.logAudit(ev)
+	}
 	copied := *d
 	copied.DuplicateOf = f.duplicateOf(d)
 	return &copied, nil
@@ -586,16 +709,20 @@ func (f *fakeStore) ListPatientDocuments(_ context.Context, orgID, patientID str
 	return docs, nil
 }
 
-func (f *fakeStore) SoftDeleteDocument(_ context.Context, orgID, docID, deletedBy string, _ time.Time) (bool, error) {
+func (f *fakeStore) SoftDeleteDocument(_ context.Context, orgID, docID, deletedBy string, _ time.Time, ev *db.AuditEvent) (bool, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
 		return false, f.failWith
 	}
+	if ev != nil && f.failAudit != nil {
+		return false, f.failAudit
+	}
 	if f.documentIn(orgID, docID) == nil {
 		return false, nil
 	}
 	f.deleted[docID] = deletedBy
+	f.logAudit(ev)
 	return true, nil
 }
 
@@ -629,7 +756,7 @@ func (f *fakeStore) GetDocumentRecord(_ context.Context, docID string) (*db.Docu
 // upload route, as uploaded by the account.
 func (f *fakeStore) addDocument(p *db.Patient, uploadedBy, storagePath string) string {
 	d, _ := f.CreateDocument(context.Background(), p.OrgID, db.NewDocument{PatientID: p.ID, UploadedBy: uploadedBy,
-		OriginalName: "report.pdf", ContentType: "application/pdf", StoragePath: storagePath})
+		OriginalName: "report.pdf", ContentType: "application/pdf", StoragePath: storagePath}, nil)
 	return d.ID
 }
 

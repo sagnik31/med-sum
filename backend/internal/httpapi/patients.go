@@ -61,7 +61,7 @@ func (s *Server) handlePatientByID(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	byMethod(routes)(w, r)
+	s.byMethod(routes)(w, r)
 }
 
 // loadPatient returns the caller's organisation's patient, or answers 404
@@ -94,11 +94,20 @@ func (s *Server) handleListPatients(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
+	// The search text can be a name, so only whether there was one is kept.
+	if !s.recordAudit(w, r, with(s.auditEvent(r, actPatientsListed),
+		map[string]any{"results": len(patients), "searched": q != ""})) {
+		return
+	}
 	writeJSON(w, http.StatusOK, patients)
 }
 
 func (s *Server) handleGetPatient(w http.ResponseWriter, r *http.Request, id string) {
-	if patient := s.loadPatient(w, r, id); patient != nil {
+	patient := s.loadPatient(w, r, id)
+	if patient == nil {
+		return
+	}
+	if s.recordAudit(w, r, s.patientEvent(r, actPatientViewed, id)) {
 		writeJSON(w, http.StatusOK, patient)
 	}
 }
@@ -214,7 +223,8 @@ func (s *Server) handleCreatePatient(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, msg, http.StatusBadRequest)
 		return
 	}
-	patient, err := s.db.CreatePatient(r.Context(), p.OrgID, p.UserID, f)
+	patient, err := s.db.CreatePatient(r.Context(), p.OrgID, p.UserID, f,
+		on(s.auditEvent(r, actPatientCreated), targetPatient, ""))
 	if errors.Is(err, db.ErrMRNTaken) {
 		http.Error(w, err.Error(), http.StatusConflict)
 		return
@@ -245,7 +255,8 @@ func (s *Server) handleUpdatePatient(w http.ResponseWriter, r *http.Request, id 
 		http.Error(w, msg, http.StatusBadRequest)
 		return
 	}
-	patient, err := s.db.UpdatePatient(r.Context(), p.OrgID, id, f)
+	patient, err := s.db.UpdatePatient(r.Context(), p.OrgID, id, f,
+		with(s.patientEvent(r, actPatientUpdated, id), map[string]any{"fields": changedPatientFields(cur, f)}))
 	if errors.Is(err, db.ErrMRNTaken) {
 		http.Error(w, err.Error(), http.StatusConflict)
 		return
@@ -273,6 +284,9 @@ func (s *Server) handleListPatientDocuments(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		log.Printf("ListPatientDocuments error: %v", err)
 		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+	if !s.recordAudit(w, r, with(s.patientEvent(r, actDocumentsListed, id), map[string]any{"results": len(docs)})) {
 		return
 	}
 	writeJSON(w, http.StatusOK, docs)
@@ -308,11 +322,17 @@ func (s *Server) handleGetPatientSummary(w http.ResponseWriter, r *http.Request,
 	if resp.Status == "failed" {
 		resp.ErrorMessage = summary.Error
 	}
-	writeJSON(w, http.StatusOK, resp)
+	if s.recordAudit(w, r, s.patientEvent(r, actSummaryViewed, id)) {
+		writeJSON(w, http.StatusOK, resp)
+	}
 }
 
 func (s *Server) handleGeneratePatientSummary(w http.ResponseWriter, r *http.Request, id string) {
 	if s.loadPatient(w, r, id) == nil {
+		return
+	}
+	// Recorded before the AI service is asked, as it writes no audit row.
+	if !s.recordAudit(w, r, s.patientEvent(r, actSummaryRequested, id)) {
 		return
 	}
 	if err := s.requestPatientSummary(r, id); err != nil {
@@ -333,4 +353,32 @@ func (s *Server) requestPatientSummary(r *http.Request, patientID string) error 
 		return fmt.Errorf("patient summary: %w", err)
 	}
 	return nil
+}
+
+// patientEvent is an audit event about one patient.
+func (s *Server) patientEvent(r *http.Request, action, patientID string) *db.AuditEvent {
+	return forPatient(on(s.auditEvent(r, action), targetPatient, patientID), patientID)
+}
+
+// changedPatientFields names the fields an update changes, for the audit
+// log, which keeps no values.
+func changedPatientFields(cur *db.Patient, f db.PatientFields) []string {
+	same := func(a, b *string) bool { return (a == nil && b == nil) || (a != nil && b != nil && *a == *b) }
+	changed := []string{}
+	if cur.MRN != f.MRN {
+		changed = append(changed, "mrn")
+	}
+	if cur.FullName != f.FullName {
+		changed = append(changed, "full_name")
+	}
+	if !same(cur.DateOfBirth, f.DateOfBirth) {
+		changed = append(changed, "date_of_birth")
+	}
+	if (cur.AgeYears == nil) != (f.AgeYears == nil) || (cur.AgeYears != nil && *cur.AgeYears != *f.AgeYears) {
+		changed = append(changed, "age_years")
+	}
+	if !same(cur.Sex, f.Sex) {
+		changed = append(changed, "sex")
+	}
+	return changed
 }

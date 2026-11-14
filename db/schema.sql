@@ -78,6 +78,42 @@ CREATE TABLE one_time_tokens (
 );
 CREATE INDEX one_time_tokens_user_id_idx ON one_time_tokens (user_id);
 
+-- The audit log: one row per login, logout, lockout, password or staff
+-- change, and every read or change of patient data, written by the API
+-- (a change in its own transaction, a read before the data is returned).
+-- It holds ids, never clinical content: details carries only counts,
+-- field names and reasons. Rows are never changed or removed, so the
+-- columns have no foreign keys (a purged patient's trail stays) and a
+-- trigger refuses UPDATE and DELETE. See docs/adr/0010-staff-access-and-security.md.
+CREATE TABLE audit_events (
+    id          bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    at          timestamptz NOT NULL DEFAULT now(),
+    org_id      uuid,           -- none for a login with an unknown email
+    actor_id    uuid,           -- the staff account; none when unknown
+    action      text NOT NULL CHECK (action ~ '^[a-z_]+$'),
+    target_type text,
+    target_id   text,
+    patient_id  uuid,
+    outcome     text NOT NULL CHECK (outcome IN ('success', 'failure', 'denied')),
+    ip          inet,
+    user_agent  text,
+    details     jsonb CHECK (details IS NULL OR jsonb_typeof(details) = 'object')
+);
+CREATE INDEX audit_events_org_idx ON audit_events (org_id, id DESC);
+CREATE INDEX audit_events_actor_idx ON audit_events (actor_id, id DESC);
+CREATE INDEX audit_events_patient_idx ON audit_events (patient_id, id DESC);
+
+CREATE FUNCTION audit_events_append_only() RETURNS trigger
+LANGUAGE plpgsql AS $$
+BEGIN
+    RAISE EXCEPTION 'audit_events is append-only: % refused', TG_OP;
+END;
+$$;
+
+CREATE TRIGGER audit_events_no_update_or_delete
+    BEFORE UPDATE OR DELETE ON audit_events
+    FOR EACH ROW EXECUTE FUNCTION audit_events_append_only();
+
 -- -------------------------------------------------------------------
 -- Patients: records, not accounts. A clinician creates one and uploads its
 -- documents; every clinician of the organisation sees every patient of

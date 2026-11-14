@@ -40,7 +40,8 @@ type citationResult struct {
 
 func (s *Server) handleGetDocumentRecord(w http.ResponseWriter, r *http.Request, docID string) {
 	ctx := r.Context()
-	if s.loadDocument(w, r, docID) == nil {
+	doc := s.loadDocument(w, r, docID)
+	if doc == nil {
 		return
 	}
 
@@ -75,6 +76,9 @@ func (s *Server) handleGetDocumentRecord(w http.ResponseWriter, r *http.Request,
 		return
 	}
 
+	if !s.recordAudit(w, r, s.documentEvent(r, actRecordViewed, doc)) {
+		return
+	}
 	writeJSON(w, http.StatusOK, recordResponse{
 		DocumentID:    docID,
 		Status:        status,

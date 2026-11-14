@@ -29,7 +29,7 @@
 --   pipeline_* views   reads
 --   langgraph schema   creates and migrates its checkpoint tables, and reads,
 --                      writes and deletes checkpoints
--- Nothing on organizations, sessions or one_time_tokens.
+-- Nothing on organizations, sessions, one_time_tokens or audit_events.
 -- Keep this list in step with the service's queries; tests/test_ai_service_role.py
 -- runs the service's database work as this role.
 

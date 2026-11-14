@@ -12,6 +12,7 @@ export const PERM = {
   summaryRead: "summary.read",
   summaryGenerate: "summary.generate",
   staffManage: "staff.manage",
+  auditRead: "audit.read",
 };
 
 export function can(user, perm) {

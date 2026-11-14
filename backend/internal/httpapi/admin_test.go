@@ -383,7 +383,7 @@ func TestTheLastAdminCantBeRemoved(t *testing.T) {
 	e := newTestEnv(t)
 	admin := e.store.addUser(testAdmin, db.StatusActive, db.RoleAdmin)
 	disabled := db.StatusDisabled
-	_, err := e.store.UpdateUser(t.Context(), db.UserUpdate{OrgID: "org-1", UserID: admin.ID, Status: &disabled})
+	_, err := e.store.UpdateUser(t.Context(), db.UserUpdate{OrgID: "org-1", UserID: admin.ID, Status: &disabled}, nil)
 	if err != db.ErrLastAdmin {
 		t.Errorf("err = %v, want ErrLastAdmin", err)
 	}

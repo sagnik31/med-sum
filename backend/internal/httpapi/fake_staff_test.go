@@ -28,26 +28,33 @@ func (f *fakeStore) ListUserSessions(_ context.Context, userID string) ([]db.Ses
 	return out, nil
 }
 
-func (f *fakeStore) DeleteUserSession(_ context.Context, userID, sessionID string) (bool, error) {
+func (f *fakeStore) DeleteUserSession(_ context.Context, userID, sessionID string, ev *db.AuditEvent) (bool, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
 		return false, f.failWith
 	}
+	if ev != nil && f.failAudit != nil {
+		return false, f.failAudit
+	}
 	for k, sess := range f.sessions {
 		if sess.UserID == userID && sess.ID == sessionID {
 			delete(f.sessions, k)
+			f.logAudit(ev)
 			return true, nil
 		}
 	}
 	return false, nil
 }
 
-func (f *fakeStore) CreateOneTimeToken(_ context.Context, t db.OneTimeToken) error {
+func (f *fakeStore) CreateOneTimeToken(_ context.Context, t db.OneTimeToken, ev *db.AuditEvent) error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
 		return f.failWith
+	}
+	if ev != nil && f.failAudit != nil {
+		return f.failAudit
 	}
 	for k, old := range f.tokens {
 		if old.UserID == t.UserID && old.UsedAt == nil {
@@ -55,6 +62,7 @@ func (f *fakeStore) CreateOneTimeToken(_ context.Context, t db.OneTimeToken) err
 		}
 	}
 	f.tokens[string(t.TokenHash)] = &fakeToken{OneTimeToken: t}
+	f.logAudit(ev)
 	return nil
 }
 
@@ -87,11 +95,14 @@ func (f *fakeStore) ListUsers(_ context.Context, orgID string) ([]db.User, error
 	return out, nil
 }
 
-func (f *fakeStore) CreateUser(_ context.Context, nu db.NewUser) (*db.User, error) {
+func (f *fakeStore) CreateUser(_ context.Context, nu db.NewUser, ev *db.AuditEvent) (*db.User, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
 		return nil, f.failWith
+	}
+	if ev != nil && f.failAudit != nil {
+		return nil, f.failAudit
 	}
 	orgName := ""
 	for _, u := range f.users {
@@ -105,6 +116,10 @@ func (f *fakeStore) CreateUser(_ context.Context, nu db.NewUser) (*db.User, erro
 	u := &db.User{ID: f.newID(), OrgID: nu.OrgID, OrgName: orgName, Email: nu.Email, FullName: nu.FullName,
 		RegistrationNo: nu.RegistrationNo, Roles: nu.Roles, Status: db.StatusInvited}
 	f.users[u.ID] = u
+	if ev != nil {
+		ev.TargetID = &u.ID
+		f.logAudit(ev)
+	}
 	copied := *u
 	return &copied, nil
 }
@@ -113,11 +128,14 @@ func fakeActiveAdmin(status string, roles []string) bool {
 	return status == db.StatusActive && slices.Contains(roles, db.RoleAdmin)
 }
 
-func (f *fakeStore) UpdateUser(_ context.Context, upd db.UserUpdate) (*db.User, error) {
+func (f *fakeStore) UpdateUser(_ context.Context, upd db.UserUpdate, ev *db.AuditEvent) (*db.User, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
 		return nil, f.failWith
+	}
+	if ev != nil && f.failAudit != nil {
+		return nil, f.failAudit
 	}
 	cur, ok := f.users[upd.UserID]
 	if !ok || cur.OrgID != upd.OrgID {
@@ -169,6 +187,7 @@ func (f *fakeStore) UpdateUser(_ context.Context, upd db.UserUpdate) (*db.User, 
 			}
 		}
 	}
+	f.logAudit(ev)
 	copied := *cur
 	return &copied, nil
 }

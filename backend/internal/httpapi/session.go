@@ -146,7 +146,7 @@ func (s *Server) withSession(next http.HandlerFunc) http.HandlerFunc {
 		}
 		now := s.now()
 		if !sessionLive(sess.Session, now) || sess.User.Status != db.StatusActive {
-			if err := s.db.DeleteSession(ctx, hash); err != nil {
+			if err := s.db.DeleteSession(ctx, hash, nil); err != nil {
 				log.Printf("DeleteSession error: %v", err)
 			}
 			s.clearSessionCookie(w)

@@ -31,37 +31,43 @@ type Store interface {
 	// Accounts and sessions
 	GetUserByEmail(ctx context.Context, email string) (*db.User, error)
 	GetUserByID(ctx context.Context, id string) (*db.User, error)
-	RecordLoginFailure(ctx context.Context, userID string, maxFailures int, lockUntil time.Time) (*time.Time, error)
-	RecordLoginSuccess(ctx context.Context, userID string, now time.Time) error
-	SetPasswordHash(ctx context.Context, userID, hash string, now time.Time) error
+	RecordLoginFailure(ctx context.Context, userID string, maxFailures int, lockUntil time.Time, ev *db.AuditEvent) (*time.Time, error)
+	RecordLoginSuccess(ctx context.Context, userID string, now time.Time, ev *db.AuditEvent) error
+	SetPasswordHash(ctx context.Context, userID, hash string, now time.Time, ev *db.AuditEvent) error
 	CreateSession(ctx context.Context, sess db.Session) error
 	GetSession(ctx context.Context, tokenHash []byte) (*db.SessionWithUser, error)
 	TouchSession(ctx context.Context, tokenHash []byte, now time.Time) error
-	DeleteSession(ctx context.Context, tokenHash []byte) error
-	DeleteUserSessions(ctx context.Context, userID string, keep []byte) error
+	DeleteSession(ctx context.Context, tokenHash []byte, ev *db.AuditEvent) error
+	DeleteUserSessions(ctx context.Context, userID string, keep []byte, ev *db.AuditEvent) error
 	DeleteExpiredSessions(ctx context.Context, now time.Time, idle time.Duration) (int64, error)
 	ListUserSessions(ctx context.Context, userID string) ([]db.Session, error)
-	DeleteUserSession(ctx context.Context, userID, sessionID string) (bool, error)
+	DeleteUserSession(ctx context.Context, userID, sessionID string, ev *db.AuditEvent) (bool, error)
 	GetUsableToken(ctx context.Context, tokenHash []byte, now time.Time) (*db.User, error)
-	CompletePasswordSetup(ctx context.Context, tokenHash []byte, passwordHash string, now time.Time) (string, error)
-	CreateOneTimeToken(ctx context.Context, t db.OneTimeToken) error
+	CompletePasswordSetup(ctx context.Context, tokenHash []byte, passwordHash string, now time.Time, ev *db.AuditEvent) (string, error)
+	CreateOneTimeToken(ctx context.Context, t db.OneTimeToken, ev *db.AuditEvent) error
 
 	// Staff management, always within one organisation
 	ListUsers(ctx context.Context, orgID string) ([]db.User, error)
-	CreateUser(ctx context.Context, nu db.NewUser) (*db.User, error)
-	UpdateUser(ctx context.Context, upd db.UserUpdate) (*db.User, error)
+	CreateUser(ctx context.Context, nu db.NewUser, ev *db.AuditEvent) (*db.User, error)
+	UpdateUser(ctx context.Context, upd db.UserUpdate, ev *db.AuditEvent) (*db.User, error)
+
+	// The audit log. A method that changes something takes the event to
+	// write in its own transaction (nil only on maintenance paths);
+	// RecordAudit writes one on its own, for reads.
+	RecordAudit(ctx context.Context, ev db.AuditEvent) error
+	ListAuditEvents(ctx context.Context, orgID string, f db.AuditFilter) ([]db.AuditEvent, error)
 
 	// Patients, documents and summaries. Every method that finds a patient
 	// or a document takes the caller's organisation and filters on it.
-	CreatePatient(ctx context.Context, orgID, createdBy string, f db.PatientFields) (*db.Patient, error)
-	UpdatePatient(ctx context.Context, orgID, patientID string, f db.PatientFields) (*db.Patient, error)
+	CreatePatient(ctx context.Context, orgID, createdBy string, f db.PatientFields, ev *db.AuditEvent) (*db.Patient, error)
+	UpdatePatient(ctx context.Context, orgID, patientID string, f db.PatientFields, ev *db.AuditEvent) (*db.Patient, error)
 	GetPatient(ctx context.Context, orgID, patientID string) (*db.Patient, error)
 	ListPatients(ctx context.Context, orgID, query string) ([]db.Patient, error)
 	GetPatientSummary(ctx context.Context, patientID string) (*db.PatientSummary, error)
-	CreateDocument(ctx context.Context, orgID string, nd db.NewDocument) (*db.Document, error)
+	CreateDocument(ctx context.Context, orgID string, nd db.NewDocument, ev *db.AuditEvent) (*db.Document, error)
 	GetDocument(ctx context.Context, orgID, docID string) (*db.Document, error)
 	ListPatientDocuments(ctx context.Context, orgID, patientID string) ([]db.Document, error)
-	SoftDeleteDocument(ctx context.Context, orgID, docID, deletedBy string, now time.Time) (bool, error)
+	SoftDeleteDocument(ctx context.Context, orgID, docID, deletedBy string, now time.Time, ev *db.AuditEvent) (bool, error)
 	GetInsightByDocumentID(ctx context.Context, docID string) (*db.Insight, error)
 	GetDocumentRecord(ctx context.Context, docID string) (*db.DocumentRecord, error)
 }
@@ -130,15 +136,18 @@ func NewServer(store Store, cfg Config) *Server {
 	s.mux.HandleFunc("/auth/sessions/", s.withSession(s.handleSessionByID))
 
 	// Staff management (admins)
-	s.mux.HandleFunc("/admin/users", s.withSession(byMethod(map[string]methodRoute{
+	s.mux.HandleFunc("/admin/users", s.withSession(s.byMethod(map[string]methodRoute{
 		http.MethodGet:  {authz.StaffManage, s.handleListStaff},
 		http.MethodPost: {authz.StaffManage, s.handleCreateStaff},
 	})))
 	s.mux.HandleFunc("/admin/users/", s.withSession(s.handleStaffByID))
+	s.mux.HandleFunc("/admin/audit", s.withSession(s.byMethod(map[string]methodRoute{
+		http.MethodGet: {authz.AuditRead, s.handleListAudit},
+	})))
 
 	// Patients (patients.go): /patients, /patients/{id}, and the patient's
 	// /documents (list, upload) and /summary (fetch, build)
-	s.mux.HandleFunc("/patients", s.withSession(byMethod(map[string]methodRoute{
+	s.mux.HandleFunc("/patients", s.withSession(s.byMethod(map[string]methodRoute{
 		http.MethodGet:  {authz.PatientRead, s.handleListPatients},
 		http.MethodPost: {authz.PatientWrite, s.handleCreatePatient},
 	})))
@@ -248,7 +257,7 @@ func (s *Server) handleUploadDocument(w http.ResponseWriter, r *http.Request, pa
 		ContentType:  header.Header.Get("Content-Type"),
 		StoragePath:  storagePath,
 		SHA256:       hex.EncodeToString(hash.Sum(nil)),
-	})
+	}, forPatient(on(s.auditEvent(r, actDocumentUploaded), targetDocument, ""), patientID))
 	if err != nil || doc == nil {
 		_ = os.Remove(storagePath)
 		if err != nil {
@@ -336,11 +345,11 @@ func (s *Server) handleDocumentByID(w http.ResponseWriter, r *http.Request) {
 	if len(parts) == 2 && parts[1] == "insight" {
 		switch r.Method {
 		case http.MethodGet:
-			if permit(w, r, authz.DocumentRead) {
+			if s.permit(w, r, authz.DocumentRead) {
 				s.handleGetDocumentInsight(w, r, docID)
 			}
 		case http.MethodPost:
-			if permit(w, r, authz.DocumentReprocess) {
+			if s.permit(w, r, authz.DocumentReprocess) {
 				s.handleGenerateDocumentInsight(w, r, docID)
 			}
 		default:
@@ -355,7 +364,7 @@ func (s *Server) handleDocumentByID(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			return
 		}
-		if permit(w, r, authz.DocumentRead) {
+		if s.permit(w, r, authz.DocumentRead) {
 			s.handleGetDocumentRecord(w, r, docID)
 		}
 		return
@@ -367,7 +376,7 @@ func (s *Server) handleDocumentByID(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			return
 		}
-		if permit(w, r, authz.DocumentReprocess) {
+		if s.permit(w, r, authz.DocumentReprocess) {
 			s.handleReprocessDocument(w, r, docID)
 		}
 		return
@@ -381,13 +390,14 @@ func (s *Server) handleDocumentByID(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		if permit(w, r, authz.DocumentRead) {
-			if doc := s.loadDocument(w, r, docID); doc != nil {
+		if s.permit(w, r, authz.DocumentRead) {
+			if doc := s.loadDocument(w, r, docID); doc != nil &&
+				s.recordAudit(w, r, s.documentEvent(r, actDocumentViewed, doc)) {
 				writeJSON(w, http.StatusOK, doc)
 			}
 		}
 	case http.MethodDelete:
-		if permit(w, r, authz.DocumentDelete) {
+		if s.permit(w, r, authz.DocumentDelete) {
 			s.handleDeleteDocument(w, r, docID)
 		}
 	default:
@@ -424,10 +434,16 @@ func (s *Server) handleDeleteDocument(w http.ResponseWriter, r *http.Request, do
 		return
 	}
 	if doc.UploadedBy == nil || *doc.UploadedBy != p.UserID {
-		http.Error(w, "only the clinician who uploaded a document can delete it", http.StatusForbidden)
+		ev := s.documentEvent(r, actDocumentDeleted, doc)
+		ev.Outcome = db.OutcomeDenied
+		ev.Details = map[string]any{"reason": "not_uploader"}
+		if s.recordAudit(w, r, ev) {
+			http.Error(w, "only the clinician who uploaded a document can delete it", http.StatusForbidden)
+		}
 		return
 	}
-	ok, err := s.db.SoftDeleteDocument(r.Context(), p.OrgID, docID, p.UserID, s.now())
+	ok, err := s.db.SoftDeleteDocument(r.Context(), p.OrgID, docID, p.UserID, s.now(),
+		s.documentEvent(r, actDocumentDeleted, doc))
 	if err != nil {
 		log.Printf("SoftDeleteDocument error: %v", err)
 		http.Error(w, "internal error", http.StatusInternalServerError)
@@ -459,7 +475,8 @@ type insightResponse struct {
 
 func (s *Server) handleGetDocumentInsight(w http.ResponseWriter, r *http.Request, docID string) {
 	ctx := r.Context()
-	if s.loadDocument(w, r, docID) == nil {
+	doc := s.loadDocument(w, r, docID)
+	if doc == nil {
 		return
 	}
 
@@ -474,6 +491,9 @@ func (s *Server) handleGetDocumentInsight(w http.ResponseWriter, r *http.Request
 	// No insight row: no job has claimed this document yet. The client
 	// requests processing (POST); a request that races a queued job is
 	// harmless because the AI service claims each document once.
+	if !s.recordAudit(w, r, s.documentEvent(r, actInsightViewed, doc)) {
+		return
+	}
 	if ins == nil {
 		resp := insightResponse{
 			DocumentID: docID,
@@ -513,7 +533,12 @@ func insightEnded(status string) bool {
 // never calls it directly: requests come through here, where the organisation is
 // checked, and carry the shared internal token.
 func (s *Server) handleGenerateDocumentInsight(w http.ResponseWriter, r *http.Request, docID string) {
-	if s.loadDocument(w, r, docID) == nil {
+	doc := s.loadDocument(w, r, docID)
+	if doc == nil {
+		return
+	}
+	// Recorded before the AI service is asked, as it writes no audit row.
+	if !s.recordAudit(w, r, s.documentEvent(r, actInsightRequested, doc)) {
 		return
 	}
 
@@ -532,7 +557,11 @@ func (s *Server) handleGenerateDocumentInsight(w http.ResponseWriter, r *http.Re
 // when the pipeline has changed. A document with a job already queued or
 // running is left to it.
 func (s *Server) handleReprocessDocument(w http.ResponseWriter, r *http.Request, docID string) {
-	if s.loadDocument(w, r, docID) == nil {
+	doc := s.loadDocument(w, r, docID)
+	if doc == nil {
+		return
+	}
+	if !s.recordAudit(w, r, s.documentEvent(r, actDocumentReprocess, doc)) {
 		return
 	}
 	err := s.callInsightsService(r.Context(), "/internal/reprocess-document", map[string]string{"document_id": docID})
@@ -542,6 +571,11 @@ func (s *Server) handleReprocessDocument(w http.ResponseWriter, r *http.Request,
 		return
 	}
 	writeJSON(w, http.StatusAccepted, map[string]string{"status": "accepted", "document_id": docID})
+}
+
+// documentEvent is an audit event about one document, and so its patient.
+func (s *Server) documentEvent(r *http.Request, action string, doc *db.Document) *db.AuditEvent {
+	return forPatient(on(s.auditEvent(r, action), targetDocument, doc.ID), doc.PatientID)
 }
 
 // requestInsight asks the AI service to process a document. The AI service
