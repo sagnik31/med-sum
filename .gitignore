@@ -13,3 +13,7 @@ scripts/logs/
 
 # Eval reports (generated)
 scripts/evals/results/
+
+# Per-service secrets (copy .env.example)
+backend/.env.local
+scripts/.env.local

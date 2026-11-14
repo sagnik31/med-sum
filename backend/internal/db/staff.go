@@ -50,6 +50,10 @@ func isActiveAdmin(status string, roles []string) bool {
 	return status == StatusActive && slices.Contains(roles, RoleAdmin)
 }
 
+// staffChangeLock is the first key of UpdateUser's advisory lock; the
+// second is the organisation.
+const staffChangeLock int32 = 4801
+
 // UpdateUser applies the change in one transaction and returns the
 // account, or nil if the organisation has no such account. A change to
 // the roles or status ends the account's sessions (except KeepSession), and
@@ -59,9 +63,12 @@ func isActiveAdmin(status string, roles []string) bool {
 func (s *Store) UpdateUser(ctx context.Context, upd UserUpdate, ev *AuditEvent) (*User, error) {
 	var out *User
 	err := pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
-		// The organisation row serialises staff changes, so two admins
-		// demoting each other at once can't both succeed.
-		if _, err := tx.Exec(ctx, `SELECT 1 FROM organizations WHERE id = $1 FOR UPDATE`, upd.OrgID); err != nil {
+		// A lock per organisation serialises staff changes, so two admins
+		// demoting each other at once can't both succeed. An advisory lock,
+		// not a row lock on organizations, so the API's role needs no
+		// UPDATE there (db/api_role.sql).
+		if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock($1, hashtext($2::text))`,
+			staffChangeLock, upd.OrgID); err != nil {
 			return err
 		}
 		cur, err := scanUser(tx.QueryRow(ctx, `SELECT `+userColumns+`

@@ -19,6 +19,23 @@ export function onUnauthorized(handler) {
   return () => window.removeEventListener(UNAUTHORIZED_EVENT, handler);
 }
 
+// Fired with the seconds the session has left (from the API's
+// X-Session-Expires-In header) after every request that carried a session,
+// so the app can warn before the idle timeout. See IdleWarning.jsx.
+const SESSION_EXPIRY_EVENT = "medsum:session-expiry";
+
+export function onSessionExpiry(handler) {
+  const listener = (e) => handler(e.detail);
+  window.addEventListener(SESSION_EXPIRY_EVENT, listener);
+  return () => window.removeEventListener(SESSION_EXPIRY_EVENT, listener);
+}
+
+function reportSessionExpiry(response) {
+  const value = response.headers.get("X-Session-Expires-In");
+  if (value === null || !/^\d+$/.test(value)) return;
+  window.dispatchEvent(new CustomEvent(SESSION_EXPIRY_EVENT, { detail: Number(value) }));
+}
+
 export class ApiError extends Error {
   constructor(status, message) {
     super(message);
@@ -51,6 +68,7 @@ async function apiRequest(
     body,
     credentials: "include",
   });
+  reportSessionExpiry(response);
 
   if (!response.ok) {
     const text = (await response.text().catch(() => "")).trim();

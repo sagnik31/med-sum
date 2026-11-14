@@ -1,7 +1,17 @@
-$env:INTERNAL_API_TOKEN = "dev-internal-token"  # must match backend/run.ps1
-# Development only: without DATABASE_URL, the service then uses the local
-# med_sum database as postgres (scripts/src/settings.py). Anywhere else, set
-# DATABASE_URL, ideally to the medsum_ai role (README, "Database roles").
-$env:MEDSUM_ENV = "dev"
+# Reads .env.local (KEY=VALUE lines; # starts a comment) into the
+# environment. Secrets live there, untracked, never in this script.
+$envFile = Join-Path $PSScriptRoot ".env.local"
+if (-not (Test-Path $envFile)) {
+    Write-Error "Missing $envFile. Copy .env.example to .env.local and fill it in."
+    exit 1
+}
+foreach ($line in Get-Content $envFile) {
+    $line = $line.Trim()
+    if ($line -eq "" -or $line.StartsWith("#")) { continue }
+    $name, $value = $line -split "=", 2
+    Set-Item -Path "Env:$($name.Trim())" -Value $value.Trim()
+}
+
+# Listens on 127.0.0.1 only: only the Go backend on this machine calls it.
 # Uses the virtual environment from the README's setup steps (scripts\.venv).
-.\.venv\Scripts\python.exe -m uvicorn insights_service:app --app-dir src --reload --port 9000
+.\.venv\Scripts\python.exe -m uvicorn insights_service:app --app-dir src --reload --host 127.0.0.1 --port 9000

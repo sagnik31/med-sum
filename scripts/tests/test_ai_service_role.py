@@ -154,13 +154,44 @@ def test_a_reset_grants_the_role_again(db, database_url, role, monkeypatch, tmp_
     monkeypatch.setattr(reset_db, "AI_SERVICE_ROLE_FILE", role_file)
     monkeypatch.setattr(reset_db, "AI_SERVICE_ROLE", name)
 
-    assert reset_db.reset_database(database_url) is True
+    assert name in reset_db.reset_database(database_url)
 
     with psycopg.connect(url, autocommit=True) as conn:
         assert conn.execute("SELECT count(*) FROM jobs").fetchone() == (0,)
 
 
-def test_a_reset_without_the_role_grants_nothing(database_url, monkeypatch):
+def test_a_reset_without_the_roles_grants_nothing(database_url, monkeypatch):
     monkeypatch.setattr(reset_db, "AI_SERVICE_ROLE", "medsum_no_such_role")
+    monkeypatch.setattr(reset_db, "API_ROLE", "medsum_no_such_api_role")
 
-    assert reset_db.reset_database(database_url) is False
+    assert reset_db.reset_database(database_url) == []
+
+
+def test_a_reset_grants_the_api_role_again(db, database_url, monkeypatch, tmp_path):
+    name = f"medsum_api_test_{uuid.uuid4().hex[:8]}"
+    role_file = tmp_path / "api_role.sql"
+    role_file.write_text(
+        reset_db.API_ROLE_FILE.read_text(encoding="utf-8").replace("medsum_api", name),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(reset_db, "API_ROLE_FILE", role_file)
+    monkeypatch.setattr(reset_db, "API_ROLE", name)
+    with db.cursor() as cur:
+        cur.execute("SELECT rolsuper OR rolcreaterole FROM pg_roles"
+                    " WHERE rolname = current_user")  # fmt: skip
+        if not cur.fetchone()[0]:
+            pytest.skip("the test connection can't create roles")
+        cur.execute(role_file.read_text(encoding="utf-8"))
+    try:
+        assert name in reset_db.reset_database(database_url)
+        with db.cursor() as cur:
+            cur.execute(
+                "SELECT has_table_privilege(%s, 'audit_events', 'INSERT'),"
+                " has_table_privilege(%s, 'audit_events', 'DELETE')",
+                (name, name),
+            )
+            assert cur.fetchone() == (True, False)
+    finally:
+        with db.cursor() as cur:
+            cur.execute(f"DROP OWNED BY {name}")
+            cur.execute(f"DROP ROLE {name}")

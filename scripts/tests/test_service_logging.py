@@ -42,6 +42,7 @@ def line_with(log, event: str) -> dict:
 # -------------------------------------------------------------------
 # The app needs a database URL to start; without the worker it never connects.
 UNUSED_URL = "postgres://medsum_ai@localhost:5432/unused"
+TOKEN = "t" * 32
 
 
 def test_starting_the_app_sends_json_lines_to_the_log_file(
@@ -49,8 +50,9 @@ def test_starting_the_app_sends_json_lines_to_the_log_file(
 ):
     log_file = tmp_path / "logs" / "medsum.jsonl"
     monkeypatch.setattr(config, "LOG_FILE", str(log_file))
-    monkeypatch.setattr(service, "INTERNAL_API_TOKEN", "t")
+    monkeypatch.setattr(service, "INTERNAL_API_TOKEN", "")
     monkeypatch.setenv("DATABASE_URL", UNUSED_URL)
+    monkeypatch.setenv("INTERNAL_API_TOKEN", TOKEN)
 
     with TestClient(service.app):  # runs the lifespan
         pass
@@ -63,18 +65,18 @@ def test_starting_the_app_sends_json_lines_to_the_log_file(
     assert any(getattr(h, "_medsum_json", False) for h in root_logger.handlers)
 
 
-def test_a_missing_internal_token_is_warned_about_at_start_up(
+def test_the_token_is_never_logged_at_start_up(
     tmp_path, monkeypatch, root_logger, json_log
 ):
     monkeypatch.setattr(config, "LOG_FILE", str(tmp_path / "medsum.jsonl"))
     monkeypatch.setattr(service, "INTERNAL_API_TOKEN", "")
     monkeypatch.setenv("DATABASE_URL", UNUSED_URL)
+    monkeypatch.setenv("INTERNAL_API_TOKEN", TOKEN)
 
     with TestClient(service.app):
-        pass
+        assert service.INTERNAL_API_TOKEN == TOKEN
 
-    warning = line_with(json_log, "internal_token_missing")
-    assert warning["level"] == "WARNING"
+    assert TOKEN not in json_log.getvalue()
 
 
 def test_importing_the_service_configures_no_logging(root_logger):

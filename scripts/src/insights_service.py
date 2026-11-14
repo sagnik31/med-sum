@@ -66,7 +66,9 @@ def _obs(event: str, **fields) -> dict:
 # FastAPI app + internal auth
 # -------------------------------------------------------------------
 # Shared with the Go backend (same variable name there).
-INTERNAL_API_TOKEN = os.environ.get("INTERNAL_API_TOKEN", "")
+# Set from settings when the app starts, which refuses to start without a
+# strong one; tests that skip the start-up set it themselves.
+INTERNAL_API_TOKEN = ""
 
 
 def worker_enabled() -> bool:
@@ -76,15 +78,12 @@ def worker_enabled() -> bool:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Fails here, at start-up, when DATABASE_URL is missing outside
-    # MEDSUM_ENV=dev, instead of at the first job.
-    settings.load()
+    # MEDSUM_ENV=dev or INTERNAL_API_TOKEN is missing or short, instead of
+    # at the first job or call.
+    global INTERNAL_API_TOKEN
+    INTERNAL_API_TOKEN = settings.load().internal_api_token
     configure_logging(log_file=config.LOG_FILE)
     logger.info("service started", extra=_obs("service_started"))
-    if not INTERNAL_API_TOKEN:
-        logger.warning(
-            "INTERNAL_API_TOKEN is not set; /internal/* will reject all calls",
-            extra=_obs("internal_token_missing"),
-        )
     worker = None
     if worker_enabled():
         checkpoints.setup()  # the checkpoint tables, created or migrated

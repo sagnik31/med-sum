@@ -27,6 +27,7 @@ const testDBName = "med_sum_test_go"
 
 var (
 	testStore   *Store
+	testDBURL   string // the throwaway database, as the admin connection's role
 	unavailable string // why the database tests are skipped
 )
 
@@ -84,6 +85,7 @@ func setupTestDB() (func(), error) {
 	}
 	u.Path = "/" + testDBName
 	testURL := u.String()
+	testDBURL = testURL
 
 	_, thisFile, _, _ := runtime.Caller(0)
 	schema := filepath.Join(filepath.Dir(thisFile), "..", "..", "..", "db", "schema.sql")

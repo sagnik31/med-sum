@@ -25,6 +25,7 @@ const (
 	actStaffUpdated    = "staff_updated"
 	actLinkIssued      = "link_issued"
 	actAccessDenied    = "access_denied"
+	actRateLimited     = "rate_limited"
 
 	actPatientsListed     = "patients_listed"
 	actPatientCreated     = "patient_created"

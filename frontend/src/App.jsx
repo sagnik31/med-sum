@@ -12,6 +12,7 @@ import NotFoundPage from "./pages/NotFoundPage.jsx";
 import StaffPage from "./pages/StaffPage.jsx";
 import AuditPage from "./pages/AuditPage.jsx";
 import RequireAuth from "./auth/RequireAuth.jsx";
+import IdleWarning from "./components/IdleWarning.jsx";
 import { useAuth } from "./auth/context.js";
 import { PERM, can, homePath } from "./auth/permissions.js";
 
@@ -76,6 +77,7 @@ function App() {
       <header className="bg-white border-b shadow-sm">
         <Nav />
       </header>
+      <IdleWarning />
 
       <main className="max-w-4xl mx-auto px-4 py-6">
         <Routes>

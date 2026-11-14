@@ -30,6 +30,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SCHEMA_FILE = PROJECT_ROOT / "db" / "schema.sql"
 AI_SERVICE_ROLE_FILE = PROJECT_ROOT / "db" / "ai_service_role.sql"
 AI_SERVICE_ROLE = "medsum_ai"
+API_ROLE_FILE = PROJECT_ROOT / "db" / "api_role.sql"
+API_ROLE = "medsum_api"
 UPLOADS_DIR = PROJECT_ROOT / "backend" / "uploads"
 LOCAL_HOSTS = {"", "localhost", "127.0.0.1", "::1"}
 
@@ -86,21 +88,26 @@ def load_schema(conn) -> None:
         cur.execute(SCHEMA_FILE.read_text(encoding="utf-8"))
 
 
-def grant_ai_service_role(conn) -> None:
-    """Create the AI service's role if missing, and grant its privileges."""
+def service_roles() -> list[tuple[str, Path]]:
+    """Each service's least-privilege role and the file that grants it."""
+    return [(AI_SERVICE_ROLE, AI_SERVICE_ROLE_FILE), (API_ROLE, API_ROLE_FILE)]
+
+
+def grant_role(conn, role_file: Path) -> None:
+    """Create a service's role if missing, and grant its privileges."""
     with conn.cursor() as cur:
-        cur.execute(AI_SERVICE_ROLE_FILE.read_text(encoding="utf-8"))
+        cur.execute(role_file.read_text(encoding="utf-8"))
 
 
-def reset_database(url: str) -> bool:
+def reset_database(url: str) -> list[str]:
     """
     Drop everything in the reset schemas and load db/schema.sql, in one
     transaction; then create the checkpoint tables, which need a
     connection of their own (their indexes are built concurrently).
 
-    Dropping the tables drops their grants, so when the AI service's role
-    exists (db/ai_service_role.sql) its grants are applied again; returns
-    whether they were.
+    Dropping the tables drops their grants, so each service role that
+    exists (db/ai_service_role.sql, db/api_role.sql) is granted its
+    privileges again; returns the roles that were.
     """
     check_local(url)
     # Leaving the block commits and closes the connection (psycopg 3).
@@ -110,12 +117,14 @@ def reset_database(url: str) -> bool:
             cur.execute(f'CREATE SCHEMA "{schema}"')
         load_schema(conn)
     checkpoints.setup(url)
+    granted = []
     with psycopg.connect(url) as conn, conn.cursor() as cur:
-        cur.execute("SELECT 1 FROM pg_roles WHERE rolname = %s", (AI_SERVICE_ROLE,))
-        if cur.fetchone() is None:
-            return False
-        grant_ai_service_role(conn)
-    return True
+        for role, role_file in service_roles():
+            cur.execute("SELECT 1 FROM pg_roles WHERE rolname = %s", (role,))
+            if cur.fetchone() is not None:
+                grant_role(conn, role_file)
+                granted.append(role)
+    return granted
 
 
 def _upload_files(uploads: Path) -> list[Path]:
@@ -164,10 +173,8 @@ def main(argv: list[str] | None = None) -> int:
     granted = reset_database(url)
     deleted = clear_uploads(args.uploads)
     print(f"Reset {p.database} from db/schema.sql; deleted {deleted} uploaded files.")
-    if granted:
-        print(
-            f"Granted {AI_SERVICE_ROLE} its privileges again (db/ai_service_role.sql)."
-        )
+    for role in granted:
+        print(f"Granted {role} its privileges again.")
     return 0
 
 

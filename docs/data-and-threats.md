@@ -46,7 +46,7 @@ Logs carry only safe and telemetry fields, and every log message is masked by pa
 
 ## What is protected
 
-- **Least-privilege database role.** The AI service connects as `medsum_ai`, which can't read accounts, sessions or password hashes, can't delete application rows (only its own checkpoints), and can't alter tables ([0008](adr/0008-patient-data-protection.md)).
+- **Least-privilege database roles.** The AI service connects as `medsum_ai`, which can't read accounts, sessions or password hashes, can't delete application rows (only its own checkpoints), and can't alter tables. The Go API connects as `medsum_api`, which can't hard-delete patients, documents or accounts, change or delete audit rows, read the pipeline tables, or alter tables ([0008](adr/0008-patient-data-protection.md)).
 - **Accounts.** Server-side sessions in an HttpOnly cookie, CSRF protection, and permissions checked in code ([0010](adr/0010-staff-access-and-security.md)).
 - **Deletion is accountable, and a purge is complete.** Only the uploader can delete a document. Deleting it in the app hides it from every screen, the pipeline and the summary, but keeps its rows and file, with who deleted it and when ([0010](adr/0010-staff-access-and-security.md)). Purging a patient's records at the database leaves no row that names their documents in any schema, and a test checks this.
 - **Every access is recorded.** Each read or change of patient data, and each login, logout and staff change, writes an audit row; a read that can't be recorded is refused, and a change commits with its row or not at all. The table refuses UPDATE and DELETE ([0010](adr/0010-staff-access-and-security.md)).
@@ -57,7 +57,7 @@ Logs carry only safe and telemetry fields, and every log message is masked by pa
 
 - **No encryption at rest.** The database and the uploads folder are plain on disk; protecting them is left to the disk.
 - **Step rows hold some content.** A transcribe step keeps its page's lines and a parse step its reply, so `pipeline_steps.input` and `output` are clinical. Steps that would repeat another table's content store a hash instead.
-- **Development secrets** are in the development configuration, and the AI service's localhost-only bind is not built yet ([0010](adr/0010-staff-access-and-security.md)).
+- **Secrets are in files on the developer's machine.** The internal token and database passwords live in each service's untracked `.env.local`; there is no secrets manager ([0010](adr/0010-staff-access-and-security.md)).
 
 ## The legal frame: India's DPDP Act
 

@@ -80,6 +80,10 @@ The app is for hospital staff; patients have no accounts. A patient is a record 
 - **Audit log:** every login (and failed login), lockout, logout, password and staff change, and every read or change of patient data writes one row to `audit_events`: who, what, which record and patient, the outcome, the address and browser. It holds ids, never clinical content (no names, values or file names; details are counts, field names and reasons). A change writes its row in its own transaction, so both commit or neither does; a read writes its row before the data is sent, and is refused (500) when it can't. A trigger refuses UPDATE and DELETE on the table. Admins read their organisation's log on the Audit log page, filtered by staff account, patient and dates.
 - **Your sessions:** the Account page lists where you are logged in and can log out any of those sessions, or all but the current one.
 - **CSRF:** besides `SameSite=Strict`, every request that changes something must carry an `X-Requested-With` header, which another site can't add without passing a CORS check that only `ALLOWED_ORIGINS` pass.
+- **Login attempts per address:** each address gets 10 attempts a minute on the routes that check a password or a link (`POST /auth/login`, `/auth/password`, `/auth/setup`, `/auth/setup/info`); more answer 429 with `Retry-After`, and the refusal is audited. This slows guessing across accounts, which the per-account lockout doesn't. The count is kept in memory, per API process.
+- **Security headers** on every API response: `Content-Security-Policy: default-src 'none'; frame-ancestors 'none'`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`, `Cache-Control: no-store` (responses carry patient data), and HSTS when cookies are `Secure`. The Vite server sends the framing, sniffing and referrer headers for the app's own pages.
+- **Idle warning:** every response to a logged-in request says how many seconds the session has left (`X-Session-Expires-In`); two minutes before the end the app asks whether to stay signed in.
+- **Secrets:** each service reads its secrets from an untracked `.env.local` (copied from the committed `.env.example`), never from a committed script. Both services refuse to start without `INTERNAL_API_TOKEN` of at least 32 characters; the AI service listens on `127.0.0.1` only, as only the Go API calls it.
 
 ## Tech stack
 
@@ -160,7 +164,9 @@ cd ..
 
 Each service runs in its own terminal.
 
-**Windows (PowerShell).** Each directory has a `run.ps1` that sets development values for the environment variables:
+Secrets aren't in the repository. Copy `backend/.env.example` to `backend/.env.local` and `scripts/.env.example` to `scripts/.env.local`, and put the same `INTERNAL_API_TOKEN` in both (at least 32 characters; `python -c "import secrets; print(secrets.token_hex(32))"` makes one). In `backend/.env.local`, set `DATABASE_URL` to the `medsum_api` role once it exists (see [Database roles](#database-roles)); until then, the `postgres` URL from step 2 works. Both `.env.local` files are gitignored.
+
+**Windows (PowerShell).** Each directory has a `run.ps1` that reads its `.env.local` and starts the service:
 
 ```powershell
 cd backend;  .\run.ps1     # Go API on http://localhost:8080
@@ -173,8 +179,7 @@ cd frontend; .\run.ps1     # Web app on http://localhost:5173
 ```bash
 # Terminal 1: Go API on http://localhost:8080
 cd backend
-export DATABASE_URL="postgres://postgres:postgres@localhost:5432/med_sum?sslmode=disable"
-export INTERNAL_API_TOKEN="dev-internal-token"
+set -a; . ./.env.local; set +a   # DATABASE_URL, INTERNAL_API_TOKEN, ...
 go run ./cmd/server
 ```
 
@@ -182,9 +187,8 @@ go run ./cmd/server
 # Terminal 2: AI service on http://localhost:9000
 cd scripts
 source .venv/bin/activate
-export INTERNAL_API_TOKEN="dev-internal-token"   # must match the backend
-export MEDSUM_ENV=dev   # without DATABASE_URL, use the local med_sum database
-uvicorn insights_service:app --app-dir src --reload --port 9000
+set -a; . ./.env.local; set +a   # INTERNAL_API_TOKEN (the backend's), MEDSUM_ENV=dev
+uvicorn insights_service:app --app-dir src --reload --host 127.0.0.1 --port 9000
 ```
 
 ```bash
@@ -220,8 +224,8 @@ On PowerShell, set the same variables with `$env:NAME = "value"`.
 | Variable | Used by | Default |
 |---|---|---|
 | `DATABASE_URL` | Backend (required), AI service (required unless `MEDSUM_ENV=dev`) | none. With `MEDSUM_ENV=dev` the AI service falls back to the local `med_sum` database as `postgres`; otherwise it refuses to start. Point the AI service at the `medsum_ai` role (see [Database roles](#database-roles)) |
-| `INTERNAL_API_TOKEN` | Backend (required), AI service | none; must be the same in both services |
-| `HTTP_ADDRESS` | Backend | `:8080` |
+| `INTERNAL_API_TOKEN` | Backend and AI service (both required) | none; the same in both services, at least 32 characters, or neither starts |
+| `HTTP_ADDRESS` | Backend | `:8080` (`backend/.env.example` uses `127.0.0.1:8080`) |
 | `UPLOADS_DIR` | Backend | `./uploads` (resolved to an absolute path) |
 | `INSIGHTS_SERVICE_URL` | Backend | `http://localhost:9000` |
 | `ALLOWED_ORIGINS` | Backend | `http://localhost:5173`; comma-separated browser origins that may call the API |
@@ -239,7 +243,7 @@ On PowerShell, set the same variables with `$env:NAME = "value"`.
 | `MEDSUM_LOG_FILE` | AI service logs (`observability`) | `scripts/logs/medsum.jsonl`; JSON log lines (ids, events, timings) without patient content, also on stderr. Set up when the service starts |
 | `VITE_API_BASE_URL` | Frontend | `/api`, set in `frontend/.env.local`; the Vite dev server proxies it to the backend |
 
-The AI service reads its database settings in one place, `scripts/src/settings.py`, and checks them when it starts: outside `MEDSUM_ENV=dev`, a missing `DATABASE_URL` stops it at start-up instead of connecting somewhere by default.
+The AI service reads its database settings and its token in one place, `scripts/src/settings.py`, and checks them when it starts: outside `MEDSUM_ENV=dev`, a missing `DATABASE_URL` stops it at start-up instead of connecting somewhere by default, and a missing or short `INTERNAL_API_TOKEN` stops it everywhere. The Go server checks its own in `cmd/server/config.go`.
 
 ### Database roles
 
@@ -250,7 +254,16 @@ psql -U postgres -d med_sum -f db/ai_service_role.sql
 psql -U postgres -d med_sum -c "\password medsum_ai"
 ```
 
-Then start the AI service with `DATABASE_URL="postgres://medsum_ai:<password>@localhost:5432/med_sum?sslmode=disable"`. The script is safe to run again, and `python -m reset_db` runs it after a reset when the role exists, since dropping the tables drops their grants. `scripts/tests/test_ai_service_role.py` runs a document job and a patient summary as the role and checks what it is refused. The Go backend and the admin tools (`reset_db`, `medsumctl`) still connect as the schema's owner.
+Then start the AI service with `DATABASE_URL="postgres://medsum_ai:<password>@localhost:5432/med_sum?sslmode=disable"`. The script is safe to run again, and `python -m reset_db` runs it after a reset when the role exists, since dropping the tables drops their grants. `scripts/tests/test_ai_service_role.py` runs a document job and a patient summary as the role and checks what it is refused.
+
+The Go API has its own role, `medsum_api` ([`db/api_role.sql`](db/api_role.sql)), created and given a password the same way:
+
+```bash
+psql -U postgres -d med_sum -f db/api_role.sql
+psql -U postgres -d med_sum -c "\password medsum_api"
+```
+
+It reads and writes accounts, sessions, links, patients and documents, adds and reads audit rows, and reads the AI service's results. It can't delete a patient, a document or an account (deleting a document in the app is an update), change or delete an audit row, change an organisation, read the jobs, prompts or pipeline tables, or create, alter or drop a table. `reset_db` grants it again after a reset when it exists, and `backend/internal/db/role_test.go` runs every query the API makes as the role and checks what it is refused. The admin tools (`reset_db`, `medsumctl`) connect as the schema's owner.
 | `MEDSUM_API_TARGET` | Frontend (Vite proxy) | `http://localhost:8080` |
 
 ## API
@@ -293,7 +306,7 @@ Patient, document and summary routes need the clinician role and `/admin/*` the 
 
 The AI service exposes `GET /health` (with each model's circuit-breaker state) and three internal routes: `POST /internal/generate-insights` and `POST /internal/reprocess-document` queue a document, and `POST /internal/generate-patient-summary` starts a patient's summary. All three require an `X-Internal-Token` header.
 
-A Postman collection is in [`postman/collections/`](postman/collections/med-sum.postman_collection.json). It uses the variables `backend_url`, `ai_service_url`, `email`, `password` and `internal_api_token`; Postman keeps the session cookie from the login request.
+A Postman collection is in [`postman/collections/`](postman/collections/med-sum.postman_collection.json). It uses the variables `backend_url`, `ai_service_url`, `email`, `password` and `internal_api_token` (your `.env.local` value; the collection holds none). Log in first: Postman keeps the `medsum_session` cookie from that response and sends it with every later request, and each request that changes something carries `X-Requested-With: med-sum`.
 
 ## Project structure
 
@@ -383,7 +396,7 @@ All of these run from `scripts/src`.
 
 ## Limitations
 
-- **Authentication is not finished.** Accounts, sessions, roles, staff management, patient records shared within an organisation and the audit log work; there is no second factor. A failed login with an unknown email is recorded without an organisation, so no admin sees it on the Audit log page. The first admin of an organisation is created from the command line. Medical registration numbers are not verified. There is no email, so setup and reset links are handed over by whoever creates them.
+- **Access control is built for one hospital on one machine.** Accounts, sessions, roles, staff management, patient records shared within an organisation, the audit log and the hardening above work. What it leaves out: medical registration numbers are not verified; there is no email, so setup and reset links are handed over by an admin; there is no second factor; every clinician of an organisation sees every patient of it (no per-patient or per-department restrictions, and no break-glass access); the first admin of an organisation is created from the command line; uploads and the database are not encrypted at rest; TLS is the deployer's job; the login limit is per API process; and a failed login with an unknown email is recorded without an organisation, so no admin sees it on the Audit log page.
 - **Vision misreads are only caught where a PDF has a text layer.** A scan or photo has no independent text to compare the model's reading with, so a value read wrongly but consistently passes the checks. With a text layer, each value is looked for in its own row (next to its test or medicine name), with the row's own reference range taken out, so a misread that matches a number in another row, or a bound of its own range, is still caught; one that matches a number in its test name or unit passes. The fault check caught 110 of 130 such misreads, and all 20 it missed were on pages without a text layer.
 - **A page too long for one call is joined only when its halves agree exactly.** A capped page is read again as a top and a bottom half that overlap, and joined only on a run of identical lines found in one place. A page in two columns can't be joined that way (each half reads part of one column, then part of the other), and neither can long paragraphs, which the model writes as single long lines that rarely come out the same twice. Such a page keeps no lines and goes to review.
 - **Some wrong values pass the checks.** Every row of a results table must become a result, so a row the parse leaves out goes back to the parse, then to review. A result printed as a line of text rather than a table row has no such check: leaving it out is only an information note, so the document can still end verified (the 6 dropped results the fault check missed are all of this kind). A value equal to one of its own range bounds is sent to review when its row prints that number only inside the range (98 of 98 range bounds taken for the value were caught); one printed in its own cell as well is taken as the real value.

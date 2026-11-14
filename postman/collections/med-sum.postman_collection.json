@@ -916,9 +916,9 @@
     },
     {
       "key": "internal_api_token",
-      "value": "dev-internal-token",
+      "value": "",
       "type": "string",
-      "description": "Must match INTERNAL_API_TOKEN of the AI service"
+      "description": "INTERNAL_API_TOKEN from your .env.local (at least 32 characters)"
     }
   ]
 }

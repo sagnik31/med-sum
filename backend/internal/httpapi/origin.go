@@ -33,6 +33,7 @@ func (s *Server) withOrigins(next http.Handler) http.Handler {
 			h.Set("Access-Control-Allow-Headers", "Content-Type, "+csrfHeader)
 			h.Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
 			h.Set("Access-Control-Max-Age", "600")
+			h.Set("Access-Control-Expose-Headers", sessionExpiresHeader)
 		}
 		if r.Method == http.MethodOptions {
 			// A preflight from an origin not on the list gets no CORS

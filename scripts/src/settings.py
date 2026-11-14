@@ -8,6 +8,10 @@ databases are. Every module reads them from here, never from os.environ.
 - MEDSUM_EVAL_ADMIN_URL: a server connection for the eval runner, which
   creates and drops its own throwaway database there. Only the eval runner
   needs it.
+- INTERNAL_API_TOKEN: the secret the Go backend sends on /internal/*
+  calls. Required everywhere, development included (each service reads it
+  from its untracked .env.local), and at least MIN_TOKEN_LENGTH characters,
+  so the service never starts with a guessable token.
 - MEDSUM_ENV: "dev" on a developer's machine. Only then may a missing URL
   fall back to the local development database (DEV_DATABASE_URL,
   DEV_ADMIN_URL). Anything else, including no MEDSUM_ENV at all, fails
@@ -20,11 +24,15 @@ can point DATABASE_URL at a throwaway database.
 
 import os
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 DEV = "dev"
 DEV_DATABASE_URL = "postgres://postgres:postgres@localhost:5432/med_sum?sslmode=disable"
 DEV_ADMIN_URL = "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable"
+
+
+# The shortest INTERNAL_API_TOKEN accepted, as in the Go backend.
+MIN_TOKEN_LENGTH = 32
 
 
 class SettingsError(RuntimeError):
@@ -35,6 +43,7 @@ class SettingsError(RuntimeError):
 class Settings:
     env: str  # MEDSUM_ENV, "" when unset
     database_url: str
+    internal_api_token: str = field(repr=False)
 
     @property
     def is_dev(self) -> bool:
@@ -73,7 +82,27 @@ def eval_admin_url(environ: Mapping[str, str] | None = None) -> str:
     )
 
 
+def internal_api_token(environ: Mapping[str, str] | None = None) -> str:
+    """INTERNAL_API_TOKEN; there is no development default."""
+    environ = os.environ if environ is None else environ
+    token = environ.get("INTERNAL_API_TOKEN", "").strip()
+    if not token:
+        raise SettingsError(
+            "INTERNAL_API_TOKEN is not set. Set it in scripts/.env.local (see"
+            " .env.example), the same as the Go backend's."
+        )
+    if len(token) < MIN_TOKEN_LENGTH:
+        raise SettingsError(
+            f"INTERNAL_API_TOKEN must be at least {MIN_TOKEN_LENGTH} characters."
+        )
+    return token
+
+
 def load(environ: Mapping[str, str] | None = None) -> Settings:
     """Every setting the service needs to start; SettingsError if one is missing."""
     environ = os.environ if environ is None else environ
-    return Settings(env=_env(environ), database_url=database_url(environ))
+    return Settings(
+        env=_env(environ),
+        database_url=database_url(environ),
+        internal_api_token=internal_api_token(environ),
+    )

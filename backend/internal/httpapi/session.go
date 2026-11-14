@@ -153,11 +153,15 @@ func (s *Server) withSession(next http.HandlerFunc) http.HandlerFunc {
 			http.Error(w, "session expired; log in again", http.StatusUnauthorized)
 			return
 		}
+		lastSeen := sess.LastSeenAt
 		if now.Sub(sess.LastSeenAt) >= touchEvery {
 			if err := s.db.TouchSession(ctx, hash, now); err != nil {
 				log.Printf("TouchSession error: %v", err)
+			} else {
+				lastSeen = now
 			}
 		}
+		setSessionExpires(w, sess.Session, lastSeen, now)
 		p := &Principal{
 			UserID:    sess.User.ID,
 			OrgID:     sess.User.OrgID,

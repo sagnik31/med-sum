@@ -97,6 +97,7 @@ type Server struct {
 	httpClient     *http.Client
 	mux            *http.ServeMux
 	handler        http.Handler
+	authLimiter    *rateLimiter
 }
 
 func NewServer(store Store, cfg Config) *Server {
@@ -112,6 +113,7 @@ func NewServer(store Store, cfg Config) *Server {
 		now:            cfg.Now,
 		httpClient:     &http.Client{Timeout: 10 * time.Second},
 		mux:            http.NewServeMux(),
+		authLimiter:    newRateLimiter(authAttemptsPerWindow, authWindow),
 	}
 	if s.now == nil {
 		s.now = time.Now
@@ -155,7 +157,7 @@ func NewServer(store Store, cfg Config) *Server {
 	// /documents/{id} (GET, DELETE) and its /insight, /record, /reprocess
 	s.mux.HandleFunc("/documents/", s.withSession(s.handleDocumentByID))
 
-	s.handler = s.withOrigins(s.mux)
+	s.handler = s.withSecurityHeaders(s.withOrigins(s.withAuthRateLimit(s.mux)))
 	return s
 }
 
