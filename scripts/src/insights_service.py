@@ -233,7 +233,7 @@ def claim_patient_summary(user_id: str) -> datetime | None:
         with conn.cursor() as cur:
             cur.execute(
                 """
-                UPDATE users
+                UPDATE staff_users
                 SET patient_insights_status = 'processing',
                     patient_insights_error = NULL,
                     patient_insights_updated_at = NOW()
@@ -254,7 +254,7 @@ def claim_patient_summary(user_id: str) -> datetime | None:
 # The uploader of a document, if they have a patient summary (asked for
 # at least once) and no document job left open.
 _SUMMARY_TO_REFRESH = """
-SELECT u.id FROM documents d JOIN users u ON u.id = d.user_id
+SELECT u.id FROM documents d JOIN staff_users u ON u.id = d.user_id
 WHERE d.id = %s
   AND u.patient_insights_status IS NOT NULL
   AND NOT EXISTS (
@@ -300,7 +300,7 @@ def refresh_after_document(job) -> None:
 # over must not overwrite the newer run's summary or mark it failed. Same
 # rule as document jobs (document_jobs: every write conditional on the claim).
 _FINISH_SUMMARY = """
-UPDATE users
+UPDATE staff_users
 SET patient_insights = %(html)s,
     patient_insights_status = 'completed',
     patient_insights_updated_at = NOW()
@@ -310,7 +310,7 @@ WHERE id = %(user_id)s
 """
 
 _FAIL_SUMMARY = """
-UPDATE users
+UPDATE staff_users
 SET patient_insights_status = 'failed',
     patient_insights_error = %(error)s,
     patient_insights_updated_at = NOW()

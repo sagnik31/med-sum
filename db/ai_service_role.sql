@@ -15,7 +15,7 @@
 --
 -- What the service does with each table, and so what it is granted:
 --   documents          reads them; writes the transcription (extracted_markdown)
---   users              reads id and full_name (the expected patient) and the
+--   staff_users        reads id and full_name (the expected patient) and the
 --                      patient_insights* columns; writes only the latter
 --   insights, jobs, document_records, pipeline_runs, pipeline_steps,
 --   pipeline_model_calls  reads and writes (no deletes: rows go with their
@@ -53,10 +53,10 @@ GRANT UPDATE (extracted_markdown, updated_at) ON documents TO medsum_ai;
 
 GRANT SELECT (id, full_name, patient_insights, patient_insights_status,
               patient_insights_error, patient_insights_updated_at)
-    ON users TO medsum_ai;
+    ON staff_users TO medsum_ai;
 GRANT UPDATE (patient_insights, patient_insights_status, patient_insights_error,
               patient_insights_updated_at)
-    ON users TO medsum_ai;
+    ON staff_users TO medsum_ai;
 
 GRANT SELECT, INSERT, UPDATE
     ON insights, jobs, document_records,

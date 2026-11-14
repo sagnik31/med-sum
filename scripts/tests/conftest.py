@@ -234,7 +234,7 @@ def db(database_url, monkeypatch):
     conn = psycopg.connect(database_url, autocommit=True)
     with conn.cursor() as cur:
         cur.execute(
-            "TRUNCATE organizations, users, documents, insights, prompts CASCADE"
+            "TRUNCATE organizations, staff_users, documents, insights, prompts CASCADE"
         )
         cur.execute(
             "TRUNCATE langgraph.checkpoints, langgraph.checkpoint_blobs,"

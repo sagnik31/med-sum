@@ -16,7 +16,7 @@ This page maps every place a document's content enters, is stored and is deleted
 | `pipeline_steps` | each step's input, output, findings and error (transcriptions, parses, the record) | with its document (cascade) |
 | `document_records` | the structured record | with its document (cascade) |
 | `insights` | the rendered document page | with its document (cascade) |
-| `users.patient_insights` | the patient summary page | rebuilt from the remaining documents |
+| `staff_users.patient_insights` | the patient summary page | rebuilt from the remaining documents |
 | `langgraph` schema | checkpoints of the graph's state while a run is open | when the run ends, and when its document is deleted ([0008](adr/0008-patient-data-protection.md)) |
 | `med_sum_evals`, `med_sum_test_py`, `med_sum_test_go` | synthetic documents only | dropped after each eval run or test session |
 

@@ -32,7 +32,7 @@ def _cols(cls: str, names: str) -> dict[str, str]:
 
 COLUMNS: dict[str, dict[str, str]] = {
     "organizations": _cols(SAFE, "id name created_at"),
-    "users": {
+    "staff_users": {
         **_cols(
             SAFE,
             "id org_id roles status password_changed_at failed_logins"

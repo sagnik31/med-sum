@@ -43,7 +43,7 @@ func (s *Store) GetSession(ctx context.Context, tokenHash []byte) (*SessionWithU
 SELECT s.token_hash, s.id, s.user_id, s.created_at, s.last_seen_at, s.expires_at,
        COALESCE(s.ip, ''), COALESCE(s.user_agent, ''), ` + userColumns + `
 FROM sessions s
-JOIN users u ON u.id = s.user_id
+JOIN staff_users u ON u.id = s.user_id
 JOIN organizations o ON o.id = u.org_id
 WHERE s.token_hash = $1;
 `
@@ -159,7 +159,7 @@ func (s *Store) GetUsableToken(ctx context.Context, tokenHash []byte, now time.T
 	return scanUser(s.pool.QueryRow(ctx, `
 SELECT `+userColumns+`
 FROM one_time_tokens t
-JOIN users u ON u.id = t.user_id
+JOIN staff_users u ON u.id = t.user_id
 JOIN organizations o ON o.id = u.org_id
 WHERE t.token_hash = $1 AND t.used_at IS NULL AND t.expires_at > $2 AND u.status <> 'disabled'`,
 		tokenHash, now))
@@ -186,7 +186,7 @@ RETURNING user_id`, tokenHash, now).Scan(&userID)
 			return err
 		}
 		tag, err := tx.Exec(ctx, `
-UPDATE users SET
+UPDATE staff_users SET
     password_hash = $2, password_changed_at = $3,
     status = CASE WHEN status = 'invited' THEN 'active' ELSE status END,
     failed_logins = 0, locked_until = NULL

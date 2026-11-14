@@ -43,7 +43,7 @@ def filled(db):
 
 
 EXPECTED_TABLES = {
-    "organizations", "users", "sessions", "one_time_tokens", "documents",
+    "organizations", "staff_users", "sessions", "one_time_tokens", "documents",
     "insights", "pipeline_runs", "pipeline_steps", "pipeline_model_calls", "prompts",
     "document_records", "jobs",
 }  # fmt: skip
@@ -55,7 +55,7 @@ def test_without_yes_nothing_is_deleted(filled, database_url, uploads, capsys):
     )
 
     out = capsys.readouterr().out
-    assert "users: 1 rows" in out and "documents: 1 rows" in out
+    assert "staff_users: 1 rows" in out and "documents: 1 rows" in out
     assert "2 files" in out and "Nothing deleted" in out
     assert count(filled, "documents") == 1
     assert len(list(uploads.iterdir())) == 3

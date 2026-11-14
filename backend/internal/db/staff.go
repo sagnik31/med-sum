@@ -15,7 +15,7 @@ var ErrLastAdmin = errors.New("this would leave the organisation without an acti
 // ListUsers returns the organisation's accounts, by name.
 func (s *Store) ListUsers(ctx context.Context, orgID string) ([]User, error) {
 	rows, err := s.pool.Query(ctx, `SELECT `+userColumns+`
-FROM users u JOIN organizations o ON o.id = u.org_id
+FROM staff_users u JOIN organizations o ON o.id = u.org_id
 WHERE u.org_id = $1
 ORDER BY lower(u.full_name), u.email`, orgID)
 	if err != nil {
@@ -65,7 +65,7 @@ func (s *Store) UpdateUser(ctx context.Context, upd UserUpdate) (*User, error) {
 			return err
 		}
 		cur, err := scanUser(tx.QueryRow(ctx, `SELECT `+userColumns+`
-FROM users u JOIN organizations o ON o.id = u.org_id
+FROM staff_users u JOIN organizations o ON o.id = u.org_id
 WHERE u.id::text = $1 AND u.org_id = $2`, upd.UserID, upd.OrgID))
 		if err != nil || cur == nil {
 			return err
@@ -84,7 +84,7 @@ WHERE u.id::text = $1 AND u.org_id = $2`, upd.UserID, upd.OrgID))
 		if isActiveAdmin(cur.Status, cur.Roles) && !isActiveAdmin(status, roles) {
 			var others int
 			if err := tx.QueryRow(ctx, `
-SELECT count(*) FROM users
+SELECT count(*) FROM staff_users
 WHERE org_id = $1 AND id <> $2 AND status = 'active' AND 'admin' = ANY (roles)`,
 				upd.OrgID, cur.ID).Scan(&others); err != nil {
 				return err
@@ -106,7 +106,7 @@ WHERE org_id = $1 AND id <> $2 AND status = 'active' AND 'admin' = ANY (roles)`,
 			}
 		}
 		if _, err := tx.Exec(ctx, `
-UPDATE users SET roles = $2, status = $3, full_name = $4, registration_no = $5 WHERE id = $1`,
+UPDATE staff_users SET roles = $2, status = $3, full_name = $4, registration_no = $5 WHERE id = $1`,
 			cur.ID, roles, status, fullName, regNo); err != nil {
 			return err
 		}
@@ -126,7 +126,7 @@ UPDATE users SET roles = $2, status = $3, full_name = $4, registration_no = $5 W
 			}
 		}
 		out, err = scanUser(tx.QueryRow(ctx, `SELECT `+userColumns+`
-FROM users u JOIN organizations o ON o.id = u.org_id WHERE u.id = $1`, cur.ID))
+FROM staff_users u JOIN organizations o ON o.id = u.org_id WHERE u.id = $1`, cur.ID))
 		return err
 	})
 	if err != nil {

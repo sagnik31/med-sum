@@ -118,12 +118,12 @@ def test_the_checkpoint_setup_runs_as_the_role(as_role, role):
 @pytest.mark.parametrize(
     "statement",
     [
-        "SELECT password_hash FROM users",
-        "SELECT email FROM users",
+        "SELECT password_hash FROM staff_users",
+        "SELECT email FROM staff_users",
         "SELECT * FROM sessions",
         "SELECT * FROM one_time_tokens",
         "SELECT * FROM organizations",
-        "UPDATE users SET full_name = 'x'",
+        "UPDATE staff_users SET full_name = 'x'",
         "UPDATE documents SET storage_path = '/elsewhere'",
         "INSERT INTO documents (user_id, original_name, content_type, storage_path)"
         " VALUES (gen_random_uuid(), 'a', 'b', 'c')",

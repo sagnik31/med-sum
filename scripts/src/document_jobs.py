@@ -283,7 +283,7 @@ def _document_state(conn, document_id: str) -> dict:
     with conn.cursor() as cur:
         cur.execute(
             "SELECT d.storage_path, u.full_name FROM documents d"
-            " LEFT JOIN users u ON u.id = d.user_id WHERE d.id = %s",
+            " LEFT JOIN staff_users u ON u.id = d.user_id WHERE d.id = %s",
             (document_id,),
         )
         row = cur.fetchone()

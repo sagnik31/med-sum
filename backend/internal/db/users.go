@@ -29,7 +29,7 @@ const (
 	RoleAdmin     = "admin"
 )
 
-// User maps to the `users` table: a staff account.
+// User maps to the `staff_users` table: a staff account.
 type User struct {
 	ID             string
 	OrgID          string
@@ -116,7 +116,7 @@ func scanUser(row pgx.Row) (*User, error) {
 func (s *Store) CreateUser(ctx context.Context, nu NewUser) (*User, error) {
 	const q = `
 WITH u AS (
-    INSERT INTO users (org_id, email, full_name, registration_no, roles, created_by)
+    INSERT INTO staff_users (org_id, email, full_name, registration_no, roles, created_by)
     VALUES ($1, $2, $3, $4, $5, $6)
     RETURNING *
 )
@@ -132,13 +132,13 @@ SELECT ` + userColumns + ` FROM u JOIN organizations o ON o.id = u.org_id;
 // GetUserByEmail returns the account with that (normalised) email, or nil.
 func (s *Store) GetUserByEmail(ctx context.Context, email string) (*User, error) {
 	return scanUser(s.pool.QueryRow(ctx,
-		`SELECT `+userColumns+` FROM users u JOIN organizations o ON o.id = u.org_id WHERE u.email = $1`, email))
+		`SELECT `+userColumns+` FROM staff_users u JOIN organizations o ON o.id = u.org_id WHERE u.email = $1`, email))
 }
 
 // GetUserByID returns the account, or nil.
 func (s *Store) GetUserByID(ctx context.Context, id string) (*User, error) {
 	return scanUser(s.pool.QueryRow(ctx,
-		`SELECT `+userColumns+` FROM users u JOIN organizations o ON o.id = u.org_id WHERE u.id = $1`, id))
+		`SELECT `+userColumns+` FROM staff_users u JOIN organizations o ON o.id = u.org_id WHERE u.id = $1`, id))
 }
 
 // RecordLoginFailure counts a failed password for the account. The
@@ -146,7 +146,7 @@ func (s *Store) GetUserByID(ctx context.Context, id string) (*User, error) {
 // starts the count again. It returns the lock time, if one is set.
 func (s *Store) RecordLoginFailure(ctx context.Context, userID string, maxFailures int, lockUntil time.Time) (*time.Time, error) {
 	const q = `
-UPDATE users SET
+UPDATE staff_users SET
     failed_logins = CASE WHEN failed_logins + 1 >= $2 THEN 0 ELSE failed_logins + 1 END,
     locked_until  = CASE WHEN failed_logins + 1 >= $2 THEN $3 ELSE locked_until END
 WHERE id = $1
@@ -163,14 +163,14 @@ RETURNING locked_until;
 // last_login_at.
 func (s *Store) RecordLoginSuccess(ctx context.Context, userID string, now time.Time) error {
 	_, err := s.pool.Exec(ctx,
-		`UPDATE users SET failed_logins = 0, locked_until = NULL, last_login_at = $2 WHERE id = $1`, userID, now)
+		`UPDATE staff_users SET failed_logins = 0, locked_until = NULL, last_login_at = $2 WHERE id = $1`, userID, now)
 	return err
 }
 
 // SetPasswordHash replaces the account's password hash.
 func (s *Store) SetPasswordHash(ctx context.Context, userID, hash string, now time.Time) error {
 	_, err := s.pool.Exec(ctx,
-		`UPDATE users SET password_hash = $2, password_changed_at = $3 WHERE id = $1`, userID, hash, now)
+		`UPDATE staff_users SET password_hash = $2, password_changed_at = $3 WHERE id = $1`, userID, hash, now)
 	return err
 }
 
@@ -178,7 +178,7 @@ func (s *Store) SetPasswordHash(ctx context.Context, userID, hash string, now ti
 // its sessions in the same transaction.
 func (s *Store) SetUserStatus(ctx context.Context, userID, status string) error {
 	return pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
-		if _, err := tx.Exec(ctx, `UPDATE users SET status = $2 WHERE id = $1`, userID, status); err != nil {
+		if _, err := tx.Exec(ctx, `UPDATE staff_users SET status = $2 WHERE id = $1`, userID, status); err != nil {
 			return err
 		}
 		if status == StatusDisabled {
@@ -201,7 +201,7 @@ type PatientSummary struct {
 func (s *Store) GetPatientSummary(ctx context.Context, userID string) (*PatientSummary, error) {
 	const q = `
 SELECT patient_insights, patient_insights_status, patient_insights_error, patient_insights_updated_at
-FROM users
+FROM staff_users
 WHERE id = $1;
 `
 	var p PatientSummary

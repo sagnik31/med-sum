@@ -50,7 +50,7 @@ def summary_row(db, user_id):
         cur.execute(
             """
             SELECT patient_insights, patient_insights_status, patient_insights_error
-            FROM users WHERE id = %s
+            FROM staff_users WHERE id = %s
             """,
             (user_id,),
         )
@@ -140,7 +140,7 @@ def test_a_stale_summary_job_is_taken_over(db, client, summary_jobs):
     with db.cursor() as cur:
         cur.execute(
             """
-            UPDATE users SET patient_insights_status = 'processing',
+            UPDATE staff_users SET patient_insights_status = 'processing',
                              patient_insights_updated_at = NOW() - interval '31 minutes'
             WHERE id = %s
             """,
@@ -230,7 +230,7 @@ def take_over(db, user_id):
     """Another run claims the summary, as after STALE_PROCESSING_AFTER."""
     with db.cursor() as cur:
         cur.execute(
-            "UPDATE users SET patient_insights_updated_at ="
+            "UPDATE staff_users SET patient_insights_updated_at ="
             " patient_insights_updated_at - interval '31 minutes' WHERE id = %s",
             (user_id,),
         )
@@ -301,7 +301,7 @@ def service_build():
 def set_summary(db, user_id, status, html="old summary", minutes_ago=0):
     with db.cursor() as cur:
         cur.execute(
-            "UPDATE users SET patient_insights = %s, patient_insights_status = %s,"
+            "UPDATE staff_users SET patient_insights = %s, patient_insights_status = %s,"
             " patient_insights_updated_at = NOW() - make_interval(mins => %s)"
             " WHERE id = %s",
             (html, status, minutes_ago, user_id),

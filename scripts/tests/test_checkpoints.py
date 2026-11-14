@@ -141,7 +141,7 @@ def test_a_reset_empties_the_checkpoints_and_recreates_their_tables(db, database
 def test_the_reset_plan_lists_the_checkpoint_tables(db, database_url, tmp_path):
     plan = reset_db.plan(database_url, tmp_path)
 
-    assert "users" in plan.rows and "documents" in plan.rows
+    assert "staff_users" in plan.rows and "documents" in plan.rows
     assert {f"langgraph.{t}" for t in CHECKPOINT_TABLES} <= set(plan.rows)
     # public first, so the application's tables lead the printed list
     assert list(plan.rows)[0].count(".") == 0

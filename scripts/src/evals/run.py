@@ -223,7 +223,7 @@ def add_eval_user(url: str) -> str:
         )
         (org,) = cur.fetchone()
         cur.execute(
-            "INSERT INTO users (org_id, email, full_name) VALUES (%s, %s, %s) "
+            "INSERT INTO staff_users (org_id, email, full_name) VALUES (%s, %s, %s) "
             "RETURNING id",
             (org, "evals@hospital.test", UPLOADED_BY),
         )

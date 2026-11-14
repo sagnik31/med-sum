@@ -108,7 +108,7 @@ func store(t *testing.T) *Store {
 	if unavailable != "" {
 		t.Skip("database tests skipped: " + unavailable)
 	}
-	if _, err := testStore.pool.Exec(context.Background(), "TRUNCATE organizations, users, documents, insights CASCADE"); err != nil {
+	if _, err := testStore.pool.Exec(context.Background(), "TRUNCATE organizations, staff_users, documents, insights CASCADE"); err != nil {
 		t.Fatal(err)
 	}
 	return testStore

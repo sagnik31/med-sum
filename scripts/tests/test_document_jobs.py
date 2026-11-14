@@ -36,7 +36,7 @@ def add_document(db, doc_id: str = "d02") -> str:
         )
         (org,) = cur.fetchone()
         cur.execute(
-            "INSERT INTO users (org_id, email, full_name) VALUES (%s, %s, %s)"
+            "INSERT INTO staff_users (org_id, email, full_name) VALUES (%s, %s, %s)"
             " RETURNING id",
             (org, f"{doc_id}-{time.monotonic_ns()}@hospital.test", name),
         )

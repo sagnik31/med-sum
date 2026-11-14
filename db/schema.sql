@@ -23,7 +23,7 @@ CREATE TABLE organizations (
 -- a one-time setup link. Until patients become records of their own,
 -- each account is also the patient whose documents it uploads,
 -- and the cumulative patient summary lives on this row.
-CREATE TABLE users (
+CREATE TABLE staff_users (
     id                          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     org_id                      uuid NOT NULL REFERENCES organizations (id),
     email                       text NOT NULL UNIQUE
@@ -39,7 +39,7 @@ CREATE TABLE users (
     password_changed_at         timestamptz,
     failed_logins               integer NOT NULL DEFAULT 0 CHECK (failed_logins >= 0),
     locked_until                timestamptz,
-    created_by                  uuid REFERENCES users (id) ON DELETE SET NULL,
+    created_by                  uuid REFERENCES staff_users (id) ON DELETE SET NULL,
     created_at                  timestamptz NOT NULL DEFAULT now(),
     last_login_at               timestamptz,
     patient_insights            text,          -- the summary's HTML
@@ -48,7 +48,7 @@ CREATE TABLE users (
     patient_insights_updated_at timestamptz,
     CHECK (status <> 'active' OR password_hash IS NOT NULL)
 );
-CREATE INDEX users_org_id_idx ON users (org_id);
+CREATE INDEX staff_users_org_id_idx ON staff_users (org_id);
 
 -- Login sessions. The cookie holds 32 random bytes; only their SHA-256 is
 -- stored, so these rows can't be used to log in. A session ends after 30
@@ -57,7 +57,7 @@ CREATE INDEX users_org_id_idx ON users (org_id);
 CREATE TABLE sessions (
     token_hash   bytea PRIMARY KEY CHECK (octet_length(token_hash) = 32),
     id           uuid NOT NULL UNIQUE DEFAULT gen_random_uuid(),  -- names a session to its owner
-    user_id      uuid NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    user_id      uuid NOT NULL REFERENCES staff_users (id) ON DELETE CASCADE,
     created_at   timestamptz NOT NULL,
     last_seen_at timestamptz NOT NULL,
     expires_at   timestamptz NOT NULL,
@@ -73,12 +73,12 @@ CREATE INDEX sessions_expires_at_idx ON sessions (expires_at);
 -- a new link for an account removes its unused ones.
 CREATE TABLE one_time_tokens (
     token_hash bytea PRIMARY KEY CHECK (octet_length(token_hash) = 32),
-    user_id    uuid NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    user_id    uuid NOT NULL REFERENCES staff_users (id) ON DELETE CASCADE,
     purpose    text NOT NULL CHECK (purpose IN ('setup', 'reset')),
     created_at timestamptz NOT NULL,
     expires_at timestamptz NOT NULL,
     used_at    timestamptz,
-    created_by uuid REFERENCES users (id) ON DELETE SET NULL,
+    created_by uuid REFERENCES staff_users (id) ON DELETE SET NULL,
     CHECK (expires_at > created_at)
 );
 CREATE INDEX one_time_tokens_user_id_idx ON one_time_tokens (user_id);
@@ -88,7 +88,7 @@ CREATE INDEX one_time_tokens_user_id_idx ON one_time_tokens (user_id);
 -- -------------------------------------------------------------------
 CREATE TABLE documents (
     id                 uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id            uuid NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    user_id            uuid NOT NULL REFERENCES staff_users (id) ON DELETE CASCADE,
     original_name      text NOT NULL,
     content_type       text NOT NULL,
     storage_path       text NOT NULL,          -- absolute; never sent to clients
