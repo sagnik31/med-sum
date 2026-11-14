@@ -9,7 +9,10 @@ import (
 	"strings"
 )
 
-const actDocumentFileViewed = "document_file_viewed"
+const (
+	actDocumentFileViewed = "document_file_viewed"
+	actProcessingViewed   = "processing_viewed"
+)
 
 // ----- The original upload: GET /documents/{id}/file -----
 
@@ -83,4 +86,27 @@ func insideDir(dir, path string) bool {
 	}
 	rel, err := filepath.Rel(filepath.Clean(dir), filepath.Clean(path))
 	return err == nil && rel != "." && !strings.HasPrefix(rel, "..") && !filepath.IsAbs(rel)
+}
+
+// ----- How a document was processed: GET /documents/{id}/processing -----
+
+// handleGetProcessing returns the document's latest run with its steps in
+// order (status, model and role, duration, attempt, model calls, the
+// validator findings that failed a step), or {"run": null} before any
+// run. It holds no document content. See docs/adr/0006-durable-traceable-runs.md.
+func (s *Server) handleGetProcessing(w http.ResponseWriter, r *http.Request, docID string) {
+	doc := s.loadDocument(w, r, docID)
+	if doc == nil {
+		return
+	}
+	run, err := s.db.GetProcessing(r.Context(), docID)
+	if err != nil {
+		log.Printf("GetProcessing error: %v", err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+	if !s.recordAudit(w, r, s.documentEvent(r, actProcessingViewed, doc)) {
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"document_id": docID, "run": run})
 }

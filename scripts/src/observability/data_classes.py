@@ -93,8 +93,11 @@ COLUMNS: dict[str, dict[str, str]] = {
         **_cols(TELEMETRY, "error"),
     },  # fmt: skip
     "record_reviews": {
-        **_cols(SAFE, "id document_id run_id item_id field action signals findings"
-                      " audit reviewer_id reviewed_at"),
+        **_cols(
+            SAFE,
+            "id document_id run_id item_id field action signals findings"
+            " audit reviewer_id reviewed_at",
+        ),
         **_cols(CLINICAL, "original corrected note"),
     },  # fmt: skip
     "document_records": {

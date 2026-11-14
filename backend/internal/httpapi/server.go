@@ -71,6 +71,8 @@ type Store interface {
 	GetInsightByDocumentID(ctx context.Context, docID string) (*db.Insight, error)
 	GetDocumentRecord(ctx context.Context, docID string) (*db.DocumentRecord, error)
 
+	GetProcessing(ctx context.Context, docID string) (*db.ProcessingRun, error)
+
 	// Clinician review (review.go)
 	ListReviewQueue(ctx context.Context, orgID string) ([]db.ReviewQueueEntry, error)
 	ApplyReview(ctx context.Context, orgID, docID string, recordUpdatedAt time.Time, rv db.RecordReview, ev *db.AuditEvent) (time.Time, error)
@@ -376,6 +378,18 @@ func (s *Server) handleDocumentByID(w http.ResponseWriter, r *http.Request) {
 		}
 		if s.permit(w, r, authz.DocumentRead) {
 			s.handleGetDocumentRecord(w, r, docID)
+		}
+		return
+	}
+
+	// /documents/{id}/processing: how the latest run went, step by step
+	if len(parts) == 2 && parts[1] == "processing" {
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		if s.permit(w, r, authz.DocumentRead) {
+			s.handleGetProcessing(w, r, docID)
 		}
 		return
 	}

@@ -51,20 +51,21 @@ func TestMain(m *testing.M) {
 // sessions and one-time tokens by their hash; insights by document ID;
 // patients and their summaries by patient ID.
 type fakeStore struct {
-	mu        sync.Mutex
-	nextID    int
-	users     map[string]*db.User
-	sessions  map[string]*db.Session
-	tokens    map[string]*fakeToken
-	patients  map[string]*db.Patient
-	documents map[string]*db.Document
-	deleted   map[string]string // soft-deleted document ID -> who deleted it
-	insights  map[string]*db.Insight
-	records   map[string]*db.DocumentRecord
-	summaries map[string]*db.PatientSummary
-	flagged   map[string]int // document ID -> values awaiting review, for the queue
-	reviews   []db.RecordReview
-	failWith  error // returned by every method when set
+	mu         sync.Mutex
+	nextID     int
+	users      map[string]*db.User
+	sessions   map[string]*db.Session
+	tokens     map[string]*fakeToken
+	patients   map[string]*db.Patient
+	documents  map[string]*db.Document
+	deleted    map[string]string // soft-deleted document ID -> who deleted it
+	insights   map[string]*db.Insight
+	records    map[string]*db.DocumentRecord
+	summaries  map[string]*db.PatientSummary
+	flagged    map[string]int // document ID -> values awaiting review, for the queue
+	reviews    []db.RecordReview
+	processing map[string]*db.ProcessingRun
+	failWith   error // returned by every method when set
 	// audit holds the events written, in order. failAudit fails every
 	// audit write; a change that comes with an event then changes nothing,
 	// as its transaction would roll back.
@@ -82,16 +83,17 @@ type fakeToken struct {
 
 func newFakeStore() *fakeStore {
 	return &fakeStore{
-		users:     map[string]*db.User{},
-		sessions:  map[string]*db.Session{},
-		tokens:    map[string]*fakeToken{},
-		patients:  map[string]*db.Patient{},
-		documents: map[string]*db.Document{},
-		deleted:   map[string]string{},
-		insights:  map[string]*db.Insight{},
-		records:   map[string]*db.DocumentRecord{},
-		summaries: map[string]*db.PatientSummary{},
-		flagged:   map[string]int{},
+		users:      map[string]*db.User{},
+		sessions:   map[string]*db.Session{},
+		tokens:     map[string]*fakeToken{},
+		patients:   map[string]*db.Patient{},
+		documents:  map[string]*db.Document{},
+		deleted:    map[string]string{},
+		insights:   map[string]*db.Insight{},
+		records:    map[string]*db.DocumentRecord{},
+		summaries:  map[string]*db.PatientSummary{},
+		flagged:    map[string]int{},
+		processing: map[string]*db.ProcessingRun{},
 	}
 }
 
@@ -753,6 +755,16 @@ func (f *fakeStore) GetDocumentRecord(_ context.Context, docID string) (*db.Docu
 		return &copied, nil
 	}
 	return nil, nil
+}
+
+// GetProcessing returns what the test stored in processing.
+func (f *fakeStore) GetProcessing(_ context.Context, docID string) (*db.ProcessingRun, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return nil, f.failWith
+	}
+	return f.processing[docID], nil
 }
 
 // ListReviewQueue lists the organisation's documents in needs_review,

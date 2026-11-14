@@ -698,6 +698,32 @@
                   }
                 ]
               }
+            },
+            {
+              "name": "Processing Details",
+              "id": "c77b71bf-4b21-43a6-b24b-d0e475583707",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{backend_url}}/documents/:id/processing",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "documents",
+                    ":id",
+                    "processing"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "Document ID"
+                    }
+                  ]
+                },
+                "header": []
+              }
             }
           ],
           "id": "b3039118-3f4c-42cd-b6c9-31ad13f8b8ba"

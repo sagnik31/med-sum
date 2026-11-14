@@ -275,6 +275,12 @@ export function reprocessDocument(documentId) {
   return apiRequest(`/documents/${enc(documentId)}/reprocess`, { method: "POST" });
 }
 
+// How the document's latest run went, step by step: { document_id, run }
+// (run is null before any run).
+export function fetchProcessing(documentId) {
+  return apiRequest(`/documents/${encodeURIComponent(documentId)}/processing`);
+}
+
 // ---------- Clinician review API ----------
 
 // The organisation's documents waiting for review, longest waiting first:

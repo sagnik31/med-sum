@@ -29,8 +29,10 @@
 --                      stores a clinician's review: the reviewed record, the
 --                      page built from it and the verified status
 --   record_reviews     adds review rows and reads them; never changes one
+--   document_processing_steps  reads it (the latest run's steps, with no
+--                      document content); none of the pipeline tables under it
 --   patient_summaries  reads them (the AI service writes them)
--- Nothing on jobs, prompts, the pipeline tables and views, or the
+-- Nothing on jobs, prompts, the pipeline tables and their other views, or the
 -- langgraph schema. Keep this list in step with the API's queries;
 -- backend/internal/db/role_test.go runs them as this role.
 
@@ -80,3 +82,5 @@ GRANT UPDATE (html_insights, status, updated_at) ON insights TO medsum_api;
 GRANT UPDATE (record, updated_at) ON document_records TO medsum_api;
 
 GRANT SELECT, INSERT ON record_reviews TO medsum_api;
+
+GRANT SELECT ON document_processing_steps TO medsum_api;

@@ -487,6 +487,51 @@ SELECT c.model,
 FROM pipeline_model_calls c
 GROUP BY c.model;
 
+-- What the "Processing details" panel shows for a document: each step of
+-- its latest run, in order, with its status, model and role, duration,
+-- attempt (a repair is attempt 2 or more), model calls, and the validator
+-- findings that failed it (error or flag: validator, severity, item and
+-- field, never the message, which quotes the document). error is the
+-- step's masked error text. runs counts every run of the document. The API
+-- reads this view and none of the tables under it.
+-- See docs/adr/0006-durable-traceable-runs.md.
+CREATE VIEW document_processing_steps AS
+SELECT r.document_id,
+       r.id                                                   AS run_id,
+       r.graph_version,
+       r.started_at                                           AS run_started_at,
+       r.ended_at                                             AS run_ended_at,
+       r.end_state,
+       r.models_used,
+       (SELECT count(*) FROM pipeline_runs o
+        WHERE o.document_id = r.document_id)                  AS runs,
+       s.seq,
+       s.node,
+       s.attempt,
+       s.page,
+       s.status,
+       s.model,
+       s.model_role,
+       s.started_at,
+       s.ended_at,
+       (extract(epoch FROM (s.ended_at - s.started_at)) * 1000)::bigint
+                                                              AS duration_ms,
+       (SELECT count(*) FROM pipeline_model_calls c
+        WHERE c.step_id = s.id)                               AS model_calls,
+       COALESCE((SELECT jsonb_agg(jsonb_build_object(
+                     'validator', f ->> 'validator', 'severity', f ->> 'severity',
+                     'item_id', f ->> 'item_id', 'field', f ->> 'field'))
+                 FROM jsonb_array_elements(s.findings) f
+                 WHERE f ->> 'severity' IN ('error', 'flag')), '[]'::jsonb)
+                                                              AS failures,
+       s.error
+FROM pipeline_runs r
+JOIN pipeline_steps s ON s.run_id = r.id
+WHERE r.id = (SELECT o.id FROM pipeline_runs o
+              WHERE o.document_id = r.document_id
+              ORDER BY o.started_at DESC, o.id DESC
+              LIMIT 1);
+
 -- -------------------------------------------------------------------
 -- The structured record of a document: one JSONB value per document,
 -- with its schema version (see docs/adr/0003-printed-and-derived-values.md). Reprocessing replaces

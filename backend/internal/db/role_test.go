@@ -168,6 +168,8 @@ func TestTheAPIRoleCanRunTheAPIsQueries(t *testing.T) {
 VALUES ($1, 1, '{"schema_version": 1}', $2)`, doc.ID, now); err != nil {
 		t.Fatal(err)
 	}
+	_, err = s.GetProcessing(ctx, doc.ID)
+	check("GetProcessing", err)
 	_, err = s.ListReviewQueue(ctx, org)
 	check("ListReviewQueue", err)
 	_, err = s.ApplyReview(ctx, org, doc.ID, now, RecordReview{Record: []byte(`{"schema_version": 1}`),
