@@ -17,11 +17,15 @@ thread per AI service process, one document at a time.
 - Every write for a job (lease, run id, result, failure) is conditional on
   the worker still holding the claim; a worker that lost it gets
   LostClaim and writes nothing more.
+- A run that ends verified is picked for a clinician's audit at
+  MEDSUM_AUDIT_SAMPLE_RATE (default 0.10), in the same transaction as its
+  result: see audit_sampled.
 
 Log lines carry ids, counts and statuses only; error messages go to the
 database (jobs.error, insights.error_message), never the log.
 """
 
+import hashlib
 import logging
 import os
 import threading
@@ -44,6 +48,17 @@ LEASE = os.environ.get("MEDSUM_JOB_LEASE", "5 minutes")
 HEARTBEAT_S = float(os.environ.get("MEDSUM_JOB_HEARTBEAT_S", "60"))
 MAX_ATTEMPTS = int(os.environ.get("MEDSUM_JOB_MAX_ATTEMPTS", "3"))
 POLL_S = 5.0
+
+
+def _sample_rate(raw: str) -> float:
+    rate = float(raw)
+    if not 0.0 <= rate <= 1.0:
+        raise ValueError(f"MEDSUM_AUDIT_SAMPLE_RATE must be between 0 and 1, not {raw}")
+    return rate
+
+
+# The share of verified documents that go back to a clinician as an audit.
+AUDIT_SAMPLE_RATE = _sample_rate(os.environ.get("MEDSUM_AUDIT_SAMPLE_RATE", "0.10"))
 
 # Insight statuses a document stays in until it is reprocessed.
 END_STATES = ("verified", "needs_review")
@@ -214,13 +229,36 @@ def set_run(conn, job: Job, worker: str, run_id: str) -> None:
               {"run": run_id})  # fmt: skip
 
 
-def complete(conn, job: Job, worker: str, final: dict) -> None:
+def audit_sampled(run_id: str, rate: float | None = None) -> bool:
+    """
+    Whether a verified run goes back to a clinician as an audit. The pick
+    comes from a hash of the run's id, not a random draw, so a run resumed
+    by another worker is picked the same way; over many runs it picks the
+    given share (default AUDIT_SAMPLE_RATE). A verified document was never
+    looked at by anyone, so only such a sample can show how many wrong
+    values get through without a signal. See docs/adr/0011-clinician-review.md.
+    """
+    rate = AUDIT_SAMPLE_RATE if rate is None else rate
+    digest = hashlib.sha256(f"audit-sample:{run_id}".encode()).digest()
+    return int.from_bytes(digest[:8], "big") / 2**64 < rate
+
+
+def complete(
+    conn, job: Job, worker: str, final: dict, *, run_id: str | None = None
+) -> bool:
     """
     Store the run's result, in one transaction with ending the job: the
-    end state and insight page on insights, and the transcription as plain
+    end state and insight page on insights, the transcription as plain
     text in documents.extracted_markdown (a copy for reading; a reprocess
-    reuses the transcribe steps of earlier runs, not this column).
+    reuses the transcribe steps of earlier runs, not this column), and,
+    for a verified run picked by audit_sampled, its audit sample. Returns
+    whether it was picked.
     """
+    sampled = (
+        final["end_state"] == "verified"
+        and run_id is not None
+        and audit_sampled(run_id)
+    )
     with conn.transaction(), conn.cursor() as cur:
         _held(cur, job, worker,
               "UPDATE jobs SET status = 'done', claimed_by = NULL,"
@@ -232,6 +270,13 @@ def complete(conn, job: Job, worker: str, final: dict) -> None:
             " WHERE id = %s",
             (plain_text(final.get("transcriptions", [])), job.document_id),
         )
+        if sampled:
+            cur.execute(
+                "INSERT INTO audit_samples (run_id, document_id) VALUES (%s, %s)"
+                " ON CONFLICT DO NOTHING",
+                (run_id, job.document_id),
+            )
+    return sampled
 
 
 def fail(conn, job: Job, worker: str, message: str) -> None:
@@ -385,11 +430,12 @@ def process(job: Job, worker: str, *, build=None, heartbeat_s: float = HEARTBEAT
                 finally:
                     if run_id is not None:
                         _delete_thread(saver, run_id)
-            complete(conn, job, worker, final)
+            sampled = complete(conn, job, worker, final, run_id=run_id)
             logger.info(
                 "document job completed",
                 extra=_obs("job_completed", document_id=job.document_id,
-                           job_id=job.id, end_state=final["end_state"]),
+                           job_id=job.id, end_state=final["end_state"],
+                           audit_sampled=sampled),
             )  # fmt: skip
         except LostClaim:
             logger.warning(

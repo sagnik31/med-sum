@@ -76,6 +76,7 @@ type Store interface {
 	// Clinician review (review.go)
 	ListReviewQueue(ctx context.Context, orgID string) ([]db.ReviewQueueEntry, error)
 	ApplyReview(ctx context.Context, orgID, docID string, recordUpdatedAt time.Time, rv db.RecordReview, ev *db.AuditEvent) (time.Time, error)
+	CompleteAudit(ctx context.Context, orgID, docID, userID string, at time.Time, ev *db.AuditEvent) error
 }
 
 // Config is what the server needs besides its store.
@@ -414,6 +415,18 @@ func (s *Server) handleDocumentByID(w http.ResponseWriter, r *http.Request) {
 		}
 		if s.permit(w, r, authz.ReviewWrite) {
 			s.handleReviewDocument(w, r, docID)
+		}
+		return
+	}
+
+	// /documents/{id}/audit-complete: a clinician finishes an audit sample
+	if len(parts) == 2 && parts[1] == "audit-complete" {
+		if r.Method != http.MethodPost {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		if s.permit(w, r, authz.ReviewWrite) {
+			s.handleCompleteAudit(w, r, docID)
 		}
 		return
 	}

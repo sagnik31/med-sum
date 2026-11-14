@@ -62,6 +62,7 @@ LOG_FIELDS = frozenset(
         "item_id",
         "action",
         "flagged",
+        "audit_sampled",  # a verified run picked for a clinician's audit
         "quality_kind",
         "quality_failures",
         # One model round trip (model_call_ended): counts and timings only.

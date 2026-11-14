@@ -99,6 +99,9 @@ COLUMNS: dict[str, dict[str, str]] = {
             " audit reviewer_id reviewed_at",
         ),
         **_cols(CLINICAL, "original corrected note"),
+    },
+    "audit_samples": {
+        **_cols(SAFE, "run_id document_id sampled_at completed_at completed_by"),
     },  # fmt: skip
     "document_records": {
         **_cols(SAFE, "document_id schema_version run_id created_at updated_at"),
@@ -158,7 +161,8 @@ LOG_FIELDS: dict[str, str] = {
                        " model_wall_ms model_total_ms steps_left_running"
                        " steps_interrupted documents markdown_chars html_chars"
                        " not_included awaiting overview unknown_numbers"
-                       " unknown_words reprocess result action flagged"),
+                       " unknown_words reprocess result action flagged"
+                       " audit_sampled"),
 }  # fmt: skip
 
 

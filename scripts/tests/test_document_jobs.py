@@ -7,6 +7,7 @@ worker's run resumed from its checkpoint by another, and the worker thread.
 
 import json
 import time
+import uuid
 
 import pytest
 
@@ -571,3 +572,62 @@ def test_a_checkpoint_that_cant_be_deleted_is_logged_not_raised(json_log):
 
     line = line_with(json_log, "checkpoints_not_deleted")
     assert line["run_id"] == "r1"
+
+
+# -------------------------------------------------------------------
+# Audit samples
+# -------------------------------------------------------------------
+def test_the_audit_pick_is_fixed_by_the_run_and_takes_about_the_rate():
+    runs = [str(uuid.uuid5(uuid.NAMESPACE_URL, f"run-{i}")) for i in range(5000)]
+    picked = [r for r in runs if jobs.audit_sampled(r, 0.10)]
+    assert 0.08 < len(picked) / len(runs) < 0.12
+    assert picked == [r for r in runs if jobs.audit_sampled(r, 0.10)]
+    assert not any(jobs.audit_sampled(r, 0.0) for r in runs[:100])
+    assert all(jobs.audit_sampled(r, 1.0) for r in runs[:100])
+
+
+@pytest.mark.parametrize("raw", ["-0.1", "1.5", "ten"])
+def test_a_sample_rate_outside_0_to_1_is_refused(raw):
+    with pytest.raises(ValueError):
+        jobs._sample_rate(raw)
+
+
+def audit_samples_of(db, document_id):
+    with db.cursor() as cur:
+        cur.execute(
+            "SELECT run_id::text, completed_at FROM audit_samples"
+            " WHERE document_id = %s",
+            (document_id,),
+        )
+        return cur.fetchall()
+
+
+@pytest.mark.parametrize("rate, sampled", [(1.0, True), (0.0, False)])
+def test_a_verified_run_picked_for_audit_is_stored_with_its_result(
+    db, model_client, monkeypatch, json_log, rate, sampled
+):
+    monkeypatch.setattr(jobs, "AUDIT_SAMPLE_RATE", rate)
+    doc = add_document(db)
+    jobs.enqueue(db, doc)
+    job = jobs.claim_next(db, "A")
+    replies_for(model_client)
+
+    jobs.process(job, "A")
+
+    assert insight_row(db, doc)[0] == "verified"
+    run_id = job_row(db, doc)["run_id"]
+    assert audit_samples_of(db, doc) == ([(run_id, None)] if sampled else [])
+    assert line_with(json_log, "job_completed")["audit_sampled"] is sampled
+
+
+def test_a_run_that_needs_review_is_never_sampled(db, monkeypatch):
+    monkeypatch.setattr(jobs, "AUDIT_SAMPLE_RATE", 1.0)
+    doc = add_document(db)
+    jobs.enqueue(db, doc)
+    job = jobs.claim_next(db, "A")
+    with start_run(doc, "test") as run:
+        run.finish("needs_review")
+
+    assert not jobs.complete(db, job, "A", {"end_state": "needs_review"},
+                             run_id=run.id)  # fmt: skip
+    assert audit_samples_of(db, doc) == []

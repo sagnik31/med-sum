@@ -913,6 +913,38 @@
                 },
                 "header": []
               }
+            },
+            {
+              "name": "Finish Audit",
+              "id": "50a1bd0a-e3b3-4dc3-a7e1-5de8096426e8",
+              "request": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{backend_url}}/documents/:id/audit-complete",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "documents",
+                    ":id",
+                    "audit-complete"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "Document ID"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "X-Requested-With",
+                    "value": "med-sum",
+                    "type": "text"
+                  }
+                ]
+              }
             }
           ]
         }

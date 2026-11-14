@@ -65,7 +65,8 @@ type fakeStore struct {
 	flagged    map[string]int // document ID -> values awaiting review, for the queue
 	reviews    []db.RecordReview
 	processing map[string]*db.ProcessingRun
-	failWith   error // returned by every method when set
+	auditOpen  map[string]bool // document ID -> an open audit sample
+	failWith   error           // returned by every method when set
 	// audit holds the events written, in order. failAudit fails every
 	// audit write; a change that comes with an event then changes nothing,
 	// as its transaction would roll back.
@@ -94,6 +95,7 @@ func newFakeStore() *fakeStore {
 		summaries:  map[string]*db.PatientSummary{},
 		flagged:    map[string]int{},
 		processing: map[string]*db.ProcessingRun{},
+		auditOpen:  map[string]bool{},
 	}
 }
 
@@ -757,6 +759,24 @@ func (f *fakeStore) GetDocumentRecord(_ context.Context, docID string) (*db.Docu
 	return nil, nil
 }
 
+// CompleteAudit closes the open audit sample the test set in auditOpen.
+func (f *fakeStore) CompleteAudit(_ context.Context, orgID, docID, _ string, _ time.Time, ev *db.AuditEvent) error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return f.failWith
+	}
+	if f.documentIn(orgID, docID) == nil || !f.auditOpen[docID] {
+		return db.ErrNoOpenAudit
+	}
+	if f.failAudit != nil {
+		return f.failAudit
+	}
+	f.auditOpen[docID] = false
+	f.logAudit(ev)
+	return nil
+}
+
 // GetProcessing returns what the test stored in processing.
 func (f *fakeStore) GetProcessing(_ context.Context, docID string) (*db.ProcessingRun, error) {
 	f.mu.Lock()
@@ -779,12 +799,18 @@ func (f *fakeStore) ListReviewQueue(_ context.Context, orgID string) ([]db.Revie
 	for id, d := range f.documents {
 		ins := f.insights[id]
 		p := f.patients[d.PatientID]
-		if ins == nil || ins.Status != "needs_review" || p == nil || p.OrgID != orgID {
+		if ins == nil || p == nil || p.OrgID != orgID {
+			continue
+		}
+		reason := "needs_review"
+		if ins.Status == "verified" && f.auditOpen[id] {
+			reason = "audit"
+		} else if ins.Status != "needs_review" {
 			continue
 		}
 		e := db.ReviewQueueEntry{DocumentID: id, PatientID: p.ID, PatientName: p.FullName,
 			PatientMRN: p.MRN, OriginalName: d.OriginalName, UploadedAt: d.UploadedAt,
-			Flagged: f.flagged[id], Reason: "needs_review"}
+			Flagged: f.flagged[id], Reason: reason}
 		if ins.UpdatedAt != nil {
 			e.QueuedAt = *ins.UpdatedAt
 		}

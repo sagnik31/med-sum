@@ -296,6 +296,12 @@ export function fetchReviewQueue() {
 // When a corrected value fails a check, nothing is saved and this throws a
 // ReviewFindings with what the checks found; send it again with
 // acceptFindings to keep the value. See docs/adr/0011-clinician-review.md.
+// Finish the audit of a verified document sampled for one; it leaves the
+// queue. 409 when it is not waiting for an audit.
+export function completeAudit(documentId) {
+  return apiRequest(`/documents/${encodeURIComponent(documentId)}/audit-complete`, { method: "POST" });
+}
+
 export async function reviewDocument(documentId, review, { recordUpdatedAt, acceptFindings = false }) {
   try {
     return await apiRequest(`/documents/${enc(documentId)}/review`, {

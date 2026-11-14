@@ -576,6 +576,62 @@ CREATE TABLE record_reviews (
 );
 CREATE INDEX record_reviews_document_idx ON record_reviews (document_id, reviewed_at);
 
+-- A share of the documents the pipeline verified go back to a clinician
+-- as an audit: a verified document was never looked at, so only a sample
+-- can tell how many errors get through unflagged. The AI service picks
+-- them when a run ends verified, from a hash of the run's id (so a
+-- resumed run picks the same way), at MEDSUM_AUDIT_SAMPLE_RATE. A sample
+-- is open until a clinician finishes the audit; reviews made while it is
+-- open are stored with audit set. A reprocess makes a new run, and the
+-- queue shows only a sample of the document's current record.
+-- See docs/adr/0011-clinician-review.md.
+CREATE TABLE audit_samples (
+    run_id       uuid PRIMARY KEY REFERENCES pipeline_runs (id) ON DELETE CASCADE,
+    document_id  uuid NOT NULL REFERENCES documents (id) ON DELETE CASCADE,
+    sampled_at   timestamptz NOT NULL DEFAULT now(),
+    completed_at timestamptz,
+    completed_by uuid REFERENCES staff_users (id) ON DELETE SET NULL,
+    CHECK (completed_by IS NULL OR completed_at IS NOT NULL)
+);
+CREATE INDEX audit_samples_open_idx ON audit_samples (document_id) WHERE completed_at IS NULL;
+
+-- How often each low-confidence signal was right, from review outcomes: an
+-- item raised by a signal that the clinician corrected (any field of it)
+-- was a true catch; one only confirmed was a false alarm. Each item counts
+-- once per run, whatever number of reviews it took. Audit reviews are left
+-- out (their items raised no signal). Counts only, no values.
+CREATE VIEW review_signal_precision AS
+WITH outcomes AS (
+    SELECT p.org_id, s.signal, r.document_id, r.run_id, r.item_id,
+           bool_or(r.action = 'correct') AS corrected
+    FROM record_reviews r
+    CROSS JOIN LATERAL unnest(r.signals) AS s (signal)
+    JOIN documents d ON d.id = r.document_id
+    JOIN patients p ON p.id = d.patient_id
+    WHERE NOT r.audit
+    GROUP BY p.org_id, s.signal, r.document_id, r.run_id, r.item_id
+)
+SELECT org_id, signal,
+       count(*)                           AS reviewed,
+       count(*) FILTER (WHERE corrected)     AS corrected,
+       count(*) FILTER (WHERE NOT corrected) AS confirmed
+FROM outcomes
+GROUP BY org_id, signal;
+
+-- Each audit sample and whether an error got through: a correction made
+-- during the audit means the verified document held a wrong value that no
+-- signal raised. finished is false while the audit is open.
+CREATE VIEW audit_sample_outcomes AS
+SELECT p.org_id, s.document_id, s.run_id, s.sampled_at, s.completed_at,
+       s.completed_at IS NOT NULL AS finished,
+       EXISTS (SELECT 1 FROM record_reviews r
+               WHERE r.document_id = s.document_id AND r.audit
+                 AND r.action = 'correct' AND r.reviewed_at >= s.sampled_at
+                 AND (s.completed_at IS NULL OR r.reviewed_at <= s.completed_at)) AS escaped
+FROM audit_samples s
+JOIN documents d ON d.id = s.document_id
+JOIN patients p ON p.id = d.patient_id;
+
 -- -------------------------------------------------------------------
 -- Document jobs: the queue the AI service's worker takes documents from,
 -- one job at a time. A worker claims a job for a lease and renews it while

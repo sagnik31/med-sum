@@ -27,9 +27,15 @@
 --   prompts            reads and adds (a prompt's text is written once, on
 --                      first use, and never changed)
 --   pipeline_* views   reads
+--   audit_samples      adds them (a share of verified runs, sampled for audit);
+--                      never reads or changes one
+--   review_signal_precision, audit_sample_outcomes  reads (counts and
+--                      ids for the review report; record_reviews itself,
+--                      which holds clinical values, is not granted)
 --   langgraph schema   creates and migrates its checkpoint tables, and reads,
 --                      writes and deletes checkpoints
--- Nothing on organizations, sessions, one_time_tokens or audit_events.
+-- Nothing on organizations, sessions, one_time_tokens, audit_events or
+-- record_reviews.
 -- Keep this list in step with the service's queries; tests/test_ai_service_role.py
 -- runs the service's database work as this role.
 
@@ -65,6 +71,8 @@ GRANT SELECT, INSERT, UPDATE
     TO medsum_ai;
 
 GRANT SELECT, INSERT ON prompts TO medsum_ai;
+GRANT INSERT ON audit_samples TO medsum_ai;
+GRANT SELECT ON review_signal_precision, audit_sample_outcomes TO medsum_ai;
 
 GRANT SELECT
     ON pipeline_run_model_totals, pipeline_document_model_totals,

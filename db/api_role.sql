@@ -29,6 +29,8 @@
 --                      stores a clinician's review: the reviewed record, the
 --                      page built from it and the verified status
 --   record_reviews     adds review rows and reads them; never changes one
+--   audit_samples      reads them (the AI service adds them); finishes an
+--                      audit (completed_at, completed_by)
 --   document_processing_steps  reads it (the latest run's steps, with no
 --                      document content); none of the pipeline tables under it
 --   patient_summaries  reads them (the AI service writes them)
@@ -82,5 +84,7 @@ GRANT UPDATE (html_insights, status, updated_at) ON insights TO medsum_api;
 GRANT UPDATE (record, updated_at) ON document_records TO medsum_api;
 
 GRANT SELECT, INSERT ON record_reviews TO medsum_api;
+GRANT SELECT ON audit_samples TO medsum_api;
+GRANT UPDATE (completed_at, completed_by) ON audit_samples TO medsum_api;
 
 GRANT SELECT ON document_processing_steps TO medsum_api;

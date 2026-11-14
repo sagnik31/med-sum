@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchReviewQueue } from "../api/client.js";
 import ApiErrorNotice from "../components/ApiErrorNotice.jsx";
-import { queueLabel } from "../record/review.js";
+import { queueLabel, reviewLink } from "../record/review.js";
 
 const TYPE_LABELS = { lab_report: "Lab report", prescription: "Prescription", other: "Other" };
 
@@ -56,7 +56,7 @@ function ReviewQueuePage() {
                   <div className="text-xs text-slate-500 font-mono">{e.patient_mrn}</div>
                 </td>
                 <td className="py-2 pr-2">
-                  <Link to={`/insights/${e.document_id}?review=1`} className="text-blue-600 hover:underline">
+                  <Link to={reviewLink(e)} className="text-blue-600 hover:underline">
                     {e.original_name}
                   </Link>
                   <div className="text-xs text-slate-500">

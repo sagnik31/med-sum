@@ -97,6 +97,24 @@ def test_a_document_job_runs_as_the_role(db, as_role, model_client):
         assert cur.fetchone()[0] == 0
 
 
+def test_the_role_adds_an_audit_sample_and_reads_the_review_counts(
+    db, as_role, model_client, monkeypatch
+):
+    monkeypatch.setattr(jobs, "AUDIT_SAMPLE_RATE", 1.0)
+    doc = add_document(db)
+    jobs.enqueue(as_role, doc)
+    job = jobs.claim_next(as_role, "A")
+    replies_for(model_client)
+
+    jobs.process(job, "A")
+
+    with db.cursor() as cur:
+        cur.execute("SELECT count(*) FROM audit_samples WHERE document_id = %s", (doc,))
+        assert cur.fetchone() == (1,)
+    as_role.execute("SELECT * FROM review_signal_precision").fetchall()
+    as_role.execute("SELECT * FROM audit_sample_outcomes").fetchall()
+
+
 def test_the_patient_summary_runs_as_the_role(db, as_role, model_client):
     user = add_user(db)
     add_processed(db, user, "d09", "2024-09-06 10:00+05:30")
@@ -139,6 +157,10 @@ def test_the_checkpoint_setup_runs_as_the_role(as_role, role):
         "DROP TABLE jobs",
         "ALTER TABLE insights ADD COLUMN x int",
         "CREATE TABLE public.extra (id int)",
+        "SELECT * FROM record_reviews",
+        "SELECT * FROM audit_samples",
+        "UPDATE audit_samples SET completed_at = now()",
+        "DELETE FROM audit_samples",
     ],
 )
 def test_what_the_service_has_no_business_with_is_refused(db, as_role, statement):

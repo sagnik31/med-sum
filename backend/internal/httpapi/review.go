@@ -28,6 +28,7 @@ const (
 	actReviewQueueViewed = "review_queue_viewed"
 	actFieldConfirmed    = "field_confirmed"
 	actFieldCorrected    = "field_corrected"
+	actAuditCompleted    = "audit_completed"
 )
 
 // ----- GET /review/queue -----
@@ -221,6 +222,34 @@ func (s *Server) handleReviewDocument(w http.ResponseWriter, r *http.Request, do
 		DocumentID: docID, Status: newStatus, RecordUpdatedAt: updated,
 		Flagged: applied.Flagged, Findings: applied.Findings,
 	})
+}
+
+// ----- POST /documents/{id}/audit-complete -----
+
+// handleCompleteAudit finishes the audit of a verified document sampled
+// for one, once the clinician has checked it (confirming or correcting
+// values as in any review). The document leaves the queue; whether the
+// audit found an error comes from its reviews. See
+// docs/adr/0011-clinician-review.md.
+func (s *Server) handleCompleteAudit(w http.ResponseWriter, r *http.Request, docID string) {
+	p, _ := principalFromContext(r.Context())
+	doc := s.loadDocument(w, r, docID)
+	if doc == nil {
+		return
+	}
+	now := time.Now().UTC()
+	err := s.db.CompleteAudit(r.Context(), p.OrgID, docID, p.UserID, now,
+		s.documentEvent(r, actAuditCompleted, doc))
+	if errors.Is(err, db.ErrNoOpenAudit) {
+		http.Error(w, "this document is not waiting for an audit", http.StatusConflict)
+		return
+	}
+	if err != nil {
+		log.Printf("CompleteAudit error: %v", err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"document_id": docID, "completed_at": now})
 }
 
 // problem says what is wrong with the request's shape, or "".

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useSearchParams, Link } from "react-router-dom";
 import {
+  completeAudit,
   fetchDocument,
   fetchDocumentRecord,
   getInsight,
@@ -44,6 +45,11 @@ function InsightPage() {
   const canReview = can(user, PERM.reviewWrite);
   const [reviewing, setReviewing] = useState(searchParamsHasReview());
   const [reviewed, setReviewed] = useState(0);
+  // An audit sample (the queue links with &audit=1): a verified document a
+  // clinician checks value by value, then marks finished.
+  const [auditing, setAuditing] = useState(searchParamsHas("audit"));
+  const [auditError, setAuditError] = useState(null);
+  const [auditDone, setAuditDone] = useState(false);
   // The original upload beside the transcription; always on in review mode.
   const [showOriginal, setShowOriginal] = useState(false);
   // A link from the patient summary names the lines to show (?page=&lines=).
@@ -144,6 +150,17 @@ function InsightPage() {
     if (data?.insights_html) setInsight(data.insights_html);
   }
 
+  async function handleFinishAudit() {
+    setAuditError(null);
+    try {
+      await completeAudit(id);
+      setAuditing(false);
+      setAuditDone(true);
+    } catch (err) {
+      setAuditError(err);
+    }
+  }
+
   async function handleReprocess() {
     setError(null);
     try {
@@ -206,8 +223,30 @@ function InsightPage() {
               every correction.
             </span>
           )}
+          {auditing && (
+            <button
+              type="button"
+              onClick={handleFinishAudit}
+              className="rounded px-3 py-1 border font-medium bg-white text-emerald-700 border-emerald-300"
+            >
+              Finish audit
+            </button>
+          )}
         </div>
       )}
+
+      {auditing && (
+        <p className="mb-4 text-sm bg-sky-50 border border-sky-100 rounded-md px-3 py-2 text-sky-800">
+          This verified document was picked at random for an audit. Check every value against the original,
+          correct any that are wrong, then finish the audit.
+        </p>
+      )}
+      {auditDone && (
+        <p className="mb-4 text-sm bg-emerald-50 border border-emerald-100 rounded-md px-3 py-2 text-emerald-800">
+          Audit finished. The document has left the review queue.
+        </p>
+      )}
+      <ApiErrorNotice error={auditError} />
 
       {!loading && !error && (status === "ready" || status === "needs_review") && (
         <div className="mb-4">
@@ -296,9 +335,14 @@ function InsightPage() {
   );
 }
 
-// The review queue links here with ?review=1, opening in review mode.
+// The review queue links here with ?review=1, opening in review mode
+// (and &audit=1 for an audit sample).
 function searchParamsHasReview() {
-  return new URLSearchParams(window.location.search).get("review") === "1";
+  return searchParamsHas("review");
+}
+
+function searchParamsHas(name) {
+  return new URLSearchParams(window.location.search).get(name) === "1";
 }
 
 export default InsightPage;

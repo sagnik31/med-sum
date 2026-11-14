@@ -44,19 +44,30 @@ type ReviewQueueEntry struct {
 
 // ListReviewQueue lists the organisation's documents that wait for a
 // review, longest waiting first: every live document whose processing
-// ended in needs_review.
+// ended in needs_review, and every verified one sampled for an audit
+// whose audit is still open (only a sample of the document's current
+// record: a reprocess leaves the old one behind).
 func (s *Store) ListReviewQueue(ctx context.Context, orgID string) ([]ReviewQueueEntry, error) {
 	rows, err := s.pool.Query(ctx, `
 SELECT d.id, d.patient_id, p.full_name, p.mrn, d.original_name,
        r.record -> 'document' ->> 'type',
        r.record -> 'document' -> 'derived' ->> 'document_date',
-       d.uploaded_at, i.updated_at, COALESCE(`+flaggedCount+`, 0), 'needs_review'
-FROM documents d
+       d.uploaded_at, w.queued_at, COALESCE(`+flaggedCount+`, 0), w.reason
+FROM (
+    SELECT i.document_id, i.updated_at AS queued_at, 'needs_review' AS reason
+    FROM insights i WHERE i.status = 'needs_review'
+    UNION ALL
+    SELECT a.document_id, a.sampled_at, 'audit'
+    FROM audit_samples a
+    JOIN insights i ON i.document_id = a.document_id AND i.status = 'verified'
+    JOIN document_records dr ON dr.document_id = a.document_id AND dr.run_id = a.run_id
+    WHERE a.completed_at IS NULL
+) w
+JOIN documents d ON d.id = w.document_id
 JOIN patients p ON p.id = d.patient_id
-JOIN insights i ON i.document_id = d.id AND i.status = 'needs_review'
 LEFT JOIN document_records r ON r.document_id = d.id
 WHERE p.org_id = $1 AND d.deleted_at IS NULL
-ORDER BY i.updated_at, d.id
+ORDER BY w.queued_at, d.id
 LIMIT $2`, orgID, MaxReviewQueue)
 	if err != nil {
 		return nil, err
@@ -89,7 +100,6 @@ type RecordReview struct {
 	Note       *string
 	Signals    []string
 	Findings   []string
-	Audit      bool
 	ReviewerID string
 	At         time.Time
 }
@@ -99,7 +109,8 @@ type RecordReview struct {
 // recordUpdatedAt), the page and, when Verified, the verified status
 // (only while the document's processing has ended: insights is
 // processing from the moment a job is queued until its run ends),
-// the record_reviews row and ev. It returns the record's new updated_at,
+// the record_reviews row (marked audit while the document is an open
+// audit sample) and ev. It returns the record's new updated_at,
 // or ErrReviewConflict, writing nothing.
 func (s *Store) ApplyReview(ctx context.Context, orgID, docID string, recordUpdatedAt time.Time,
 	rv RecordReview, ev *AuditEvent) (time.Time, error) {
@@ -140,9 +151,11 @@ RETURNING updated_at`, docID, []byte(rv.Record), recordUpdatedAt, rv.At).Scan(&u
 		if _, err := tx.Exec(ctx, `
 INSERT INTO record_reviews (document_id, run_id, item_id, field, action, original, corrected,
                             note, signals, findings, audit, reviewer_id, reviewed_at)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+        EXISTS (SELECT 1 FROM audit_samples WHERE document_id = $1 AND completed_at IS NULL),
+        $11, $12)`,
 			docID, rv.RunID, rv.ItemID, rv.Field, rv.Action, rv.Original, rv.Corrected,
-			rv.Note, signals, findings, rv.Audit, rv.ReviewerID, rv.At); err != nil {
+			rv.Note, signals, findings, rv.ReviewerID, rv.At); err != nil {
 			return err
 		}
 		return writeAudit(ctx, tx, ev)
@@ -151,4 +164,29 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
 		return time.Time{}, err
 	}
 	return updated, nil
+}
+
+// ErrNoOpenAudit is returned by CompleteAudit when the document has no
+// audit sample left open.
+var ErrNoOpenAudit = errors.New("the document is not an open audit sample")
+
+// CompleteAudit finishes the open audit of a live document of the
+// organisation, with ev, in one transaction. Reviews after it are no
+// longer audit reviews, and the document leaves the queue. It returns
+// ErrNoOpenAudit, writing nothing, when there is no open sample.
+func (s *Store) CompleteAudit(ctx context.Context, orgID, docID, userID string, at time.Time, ev *AuditEvent) error {
+	return pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
+		tag, err := tx.Exec(ctx, `
+UPDATE audit_samples a SET completed_at = $4, completed_by = $3
+FROM documents d JOIN patients p ON p.id = d.patient_id
+WHERE a.document_id = $1 AND a.completed_at IS NULL AND d.id = a.document_id
+  AND p.org_id = $2 AND d.deleted_at IS NULL`, docID, orgID, userID, at)
+		if err != nil {
+			return err
+		}
+		if tag.RowsAffected() == 0 {
+			return ErrNoOpenAudit
+		}
+		return writeAudit(ctx, tx, ev)
+	})
 }

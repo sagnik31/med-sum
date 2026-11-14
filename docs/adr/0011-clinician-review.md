@@ -20,6 +20,12 @@ The pipeline sends a document to `needs_review` when a deterministic signal fire
 
 **The review shows the original upload**, not page images rendered again: `GET /documents/{id}/file` (permission `document.read`, organisation-scoped like every document route, audited as `document_file_viewed` before a byte is sent) serves the stored file with the type its extension had when the upload checked it against the file's first bytes, under a generic file name. Images show directly; a PDF opens in the browser's own viewer at the page being checked (`#page=N`). It is the one API response that may be framed: its content security policy names the app's origins in `frame-ancestors` and drops `X-Frame-Options`, and still allows no script and no load from elsewhere. Every other response, its refusals included, keeps `frame-ancestors 'none'` (ADR 0010).
 
+**Measuring the signals from reviews.** Every review row keeps the signal ids its item carried, so each signal's precision comes from use: of the items a signal raised, the share a clinician corrected (a corrected field of the item is a true catch; an item only confirmed was a false alarm). Each item counts once per run, however many reviews it took. The view `review_signal_precision` holds the counts per organisation and signal, and `python -m evals.review_signals` reports them with Wilson intervals. Precision says nothing about what the signals miss: a verified document is never looked at.
+
+**So a share of verified documents is audited.** When a run ends verified, the AI service picks it for an audit at `MEDSUM_AUDIT_SAMPLE_RATE` (default 0.10), from a hash of the run's id rather than a random draw, so a resumed run picks the same way, and stores an `audit_samples` row in the same transaction as the result. The review queue lists open samples beside the documents that need review, marked "audit"; a clinician checks every value, corrects any that are wrong (those reviews are stored with `audit` set) and finishes the audit (`POST /documents/{id}/audit-complete`, audited). A correction during an audit is an error that got through unflagged; the view `audit_sample_outcomes` and the same report give that escape rate. A sample is of one run: a reprocessed document's old sample leaves the queue.
+
+**A reviewed document can become an eval case.** `python -m evals.export_review <document_id> <out_dir>` writes a copy of the upload, a key built from the reviewed view, and a case file naming the reviewed items, fields and signals (never the values). It is a candidate: someone checks the key by hand before it joins the dataset. It runs only under `MEDSUM_ENV=dev`, where every document is synthetic, since it copies a patient's document out of the database.
+
 **Reprocessing** replaces the record, so its reviews start again; the `record_reviews` rows of the earlier run stay.
 
 **The record's schema version stays 1.** `SourceDocument` gained an optional `corrections` list with a default, which every stored record reads the same without; the version is bumped when a field is removed, renamed, made required or changes meaning.
@@ -32,6 +38,8 @@ The pipeline sends a document to `needs_review` when a deterministic signal fire
 - **Refusing a corrected value that fails a check.** A printed flag that disagrees with the right value is the document's problem; the clinician decides.
 - **Page images rendered again from the PDF for the review.** A second copy of what the browser can show from the file itself, and a rendering bug would put a wrong image beside the values.
 - **A second approver.** Not how a ward works for this kind of check; the trail says who did it.
+- **A random draw for the audit sample.** A run resumed by another worker would draw again; the hash of the run's id gives the same share and the same answer every time.
+- **Counting precision per review row.** A field confirmed and then corrected would count once each way; the item's outcome is what the signal predicted.
 - **The AI service writing the review.** It would need write access to the audit log, and the audit row would no longer share the write's transaction.
 
 ## Consequences
@@ -39,6 +47,8 @@ The pipeline sends a document to `needs_review` when a deterministic signal fire
 - The summary is only as current as its last rebuild: it is rebuilt when a review leaves a document verified, not after every correction of a document still awaiting review (whose values are still marked awaiting review there).
 - Correction text is clinical data inside the record; the audit row holds the item id and field name only (ADR 0008).
 - A correction of a test's name can move a remark off that test; the reviewed view links remarks again.
+- An audit costs a clinician a full check of a document that needed none; the rate is the dial between that time and how tightly the escape rate is known. At 10% of a few hundred verified documents, the interval stays wide for a long time.
+- The AI service's role can add audit samples and read the two views, never `record_reviews` itself, which holds corrected values.
 
 ## What would change it
 

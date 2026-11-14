@@ -176,6 +176,12 @@ VALUES ($1, 1, '{"schema_version": 1}', $2)`, doc.ID, now); err != nil {
 		HTML: "<p></p>", Verified: true, ItemID: "obs-1", Action: "confirm", ReviewerID: u.ID, At: now.Add(time.Second)},
 		ev(org, u.ID, "field_confirmed"))
 	check("ApplyReview", err)
+	// An audit sample (the AI service adds them; the owner here), finished.
+	if _, err := owner.pool.Exec(ctx, `WITH r AS (INSERT INTO pipeline_runs (document_id, graph_version) VALUES ($1, 'test') RETURNING id)
+INSERT INTO audit_samples (run_id, document_id) SELECT id, $1 FROM r`, doc.ID); err != nil {
+		t.Fatal(err)
+	}
+	check("CompleteAudit", s.CompleteAudit(ctx, org, doc.ID, u.ID, now, ev(org, u.ID, "audit_completed")))
 	ok, err := s.SoftDeleteDocument(ctx, org, doc.ID, u.ID, now, ev(org, u.ID, "document_deleted"))
 	if err != nil || !ok {
 		t.Fatalf("SoftDeleteDocument: %v %v", ok, err)
@@ -226,6 +232,10 @@ func TestTheAPIRoleIsRefusedTheRest(t *testing.T) {
 		`UPDATE document_records SET run_id = NULL`,
 		`UPDATE record_reviews SET corrected = 'x'`,
 		`DELETE FROM record_reviews`,
+		`INSERT INTO audit_samples (run_id, document_id) VALUES (gen_random_uuid(), gen_random_uuid())`,
+		`UPDATE audit_samples SET run_id = run_id`,
+		`DELETE FROM audit_samples`,
+		`SELECT * FROM review_signal_precision`,
 		`DELETE FROM document_records`,
 		`INSERT INTO patient_summaries (patient_id, status) SELECT id, 'failed' FROM patients`,
 		`SELECT * FROM jobs`,

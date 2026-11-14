@@ -138,6 +138,13 @@ export function queueLabel(entry) {
   return n === 1 ? "1 value to review" : `${n} values to review`;
 }
 
+// Where a queue entry opens: the document in review mode, marked as an
+// audit for an audit sample.
+export function reviewLink(entry) {
+  const audit = entry.reason === "audit" ? "&audit=1" : "";
+  return `/insights/${encodeURIComponent(entry.document_id)}?review=1${audit}`;
+}
+
 // The original upload's URL; a PDF opens at `page` when one is given.
 export function originalFileUrl(base, documentId, page) {
   const url = `${base}/documents/${encodeURIComponent(documentId)}/file`;

@@ -12,6 +12,7 @@ import {
   isPdfName,
   originalFileUrl,
   queueLabel,
+  reviewLink,
   reviewNote,
 } from "./review.js";
 
@@ -99,4 +100,9 @@ test("the original opens at the cited page", () => {
   assert.equal(originalFileUrl("/api", "abc", null), "/api/documents/abc/file");
   assert.equal(originalFileUrl("/api", "a/b", 0), "/api/documents/a%2Fb/file");
   assert.ok(isPdfName("Report.PDF") && !isPdfName("scan.png") && !isPdfName(null));
+});
+
+test("an audit sample opens marked as an audit", () => {
+  assert.equal(reviewLink({ document_id: "d1", reason: "needs_review" }), "/insights/d1?review=1");
+  assert.equal(reviewLink({ document_id: "d1", reason: "audit" }), "/insights/d1?review=1&audit=1");
 });
