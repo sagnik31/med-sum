@@ -291,7 +291,7 @@ func TestADisabledAccountLosesItsSession(t *testing.T) {
 	id, session := e.login("asha@hospital.test")
 	e.store.users[id].Status = db.StatusDisabled
 
-	if code := e.do(http.MethodGet, "/documents", session, nil, "").Code; code != http.StatusUnauthorized {
+	if code := e.do(http.MethodGet, "/patients", session, nil, "").Code; code != http.StatusUnauthorized {
 		t.Errorf("a disabled account's session was accepted: %d", code)
 	}
 	if e.store.sessionsOf(id) != 0 {
@@ -538,9 +538,11 @@ func TestStateChangingRequestsNeedTheCSRFHeader(t *testing.T) {
 		{http.MethodPost, "/auth/login"},
 		{http.MethodPost, "/auth/logout"},
 		{http.MethodPost, "/auth/setup"},
-		{http.MethodPost, "/documents"},
+		{http.MethodPost, "/patients"},
+		{http.MethodPatch, "/patients/" + unknownID},
+		{http.MethodPost, "/patients/" + unknownID + "/documents"},
+		{http.MethodPost, "/patients/" + unknownID + "/summary"},
 		{http.MethodDelete, "/documents/" + unknownID},
-		{http.MethodPost, "/user/insights"},
 	} {
 		req := httptest.NewRequest(r.method, r.path, strings.NewReader("{}"))
 		req.AddCookie(&http.Cookie{Name: sessionCookie, Value: session})
@@ -561,8 +563,9 @@ func TestStateChangingRequestsNeedTheCSRFHeader(t *testing.T) {
 func TestRequestsFromOtherOriginsAreRefused(t *testing.T) {
 	e := newTestEnv(t)
 	_, session := e.login("asha@hospital.test")
+	summary := "/patients/" + e.store.addPatient("org-1", "SH-1").ID + "/summary"
 	send := func(origin string) int {
-		req := httptest.NewRequest(http.MethodPost, "/user/insights", nil)
+		req := httptest.NewRequest(http.MethodPost, summary, nil)
 		req.AddCookie(&http.Cookie{Name: sessionCookie, Value: session})
 		req.Header.Set(csrfHeader, csrfValue)
 		if origin != "" {

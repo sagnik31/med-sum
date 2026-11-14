@@ -8,7 +8,7 @@ import psycopg
 import pytest
 
 import llm
-from db_rows import add_account
+from db_rows import add_patient
 from observability import start_run
 from pipeline import nodes, store
 from pipeline import pages as page_files
@@ -19,9 +19,9 @@ from test_pipeline_nodes import file_of
 def new_document(db, email: str = "clinician@hospital.test") -> str:
     with db.cursor() as cur:
         cur.execute(
-            "INSERT INTO documents (user_id, original_name, content_type, storage_path)"
+            "INSERT INTO documents (patient_id, original_name, content_type, storage_path)"
             " VALUES (%s, 'a.pdf', 'application/pdf', '/x') RETURNING id",
-            (add_account(db, email),),
+            (add_patient(db, email),),
         )
         return str(cur.fetchone()[0])
 

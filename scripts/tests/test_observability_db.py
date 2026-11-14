@@ -14,7 +14,7 @@ import pytest
 
 import llm
 from dataset_records import DOC_IDS, key
-from db_rows import add_account
+from db_rows import add_patient
 from observability import (
     RunError,
     check_provenance,
@@ -35,10 +35,10 @@ SECRET = "Asha Rao, Hb 13.2"  # stands in for patient content
 
 def add_document(db) -> str:
     """A document row to hang runs on."""
-    user_id = add_account(db)
+    user_id = add_patient(db)
     with db.cursor() as cur:
         cur.execute(
-            "INSERT INTO documents (user_id, original_name, content_type, storage_path)"
+            "INSERT INTO documents (patient_id, original_name, content_type, storage_path)"
             " VALUES (%s, 'report.pdf', 'application/pdf', '/tmp/x.pdf') RETURNING id",
             (user_id,),
         )

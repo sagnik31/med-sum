@@ -67,7 +67,7 @@ def test_a_reprocess_is_requested_as_one(client, scheduled):
     [
         ("/internal/generate-insights", {"document_id": "doc-1"}),
         ("/internal/reprocess-document", {"document_id": "doc-1"}),
-        ("/internal/generate-user-insights", {"user_id": "user-1"}),
+        ("/internal/generate-patient-summary", {"patient_id": "patient-1"}),
     ],
 )
 @pytest.mark.parametrize(

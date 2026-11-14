@@ -74,16 +74,34 @@ class Outcome:
     error: str | None = None
 
 
+# A dataset document's row, uploaded by the eval account to its patient's
+# record (made on first use, in the account's organisation, from the
+# manifest: the same details the patient-match check is given).
+_INSERT_DOCUMENT = """
+WITH u AS (SELECT org_id FROM staff_users WHERE id = %(user)s),
+p AS (
+    INSERT INTO patients (org_id, mrn, full_name, date_of_birth, sex, created_by)
+    SELECT org_id, %(mrn)s, %(name)s, %(born)s, %(sex)s, %(user)s FROM u
+    ON CONFLICT (org_id, mrn) DO UPDATE SET full_name = EXCLUDED.full_name
+    RETURNING id)
+INSERT INTO documents (patient_id, uploaded_by, original_name, content_type, storage_path)
+SELECT p.id, %(user)s, %(file)s, %(type)s, %(path)s FROM p
+RETURNING id
+"""
+
+
 def insert_document(user_id: str, doc_id: str, dataset_dir: Path = DATASET_DIR) -> str:
-    """A documents row for a dataset document; its id."""
+    """A documents row for a dataset document, uploaded by the account; its id."""
     entry = documents(dataset_dir)[doc_id]
+    patient = expected_patient(doc_id, dataset_dir)
     with psycopg.connect(settings.database_url(), autocommit=True) as conn:
         with conn.cursor() as cur:
             cur.execute(
-                "INSERT INTO documents (user_id, original_name, content_type,"
-                " storage_path) VALUES (%s, %s, %s, %s) RETURNING id",
-                (user_id, entry["file"].split("/")[-1], entry["content_type"],
-                 str(dataset_dir / entry["file"])),
+                _INSERT_DOCUMENT,
+                {"user": user_id, "mrn": patient.mrn, "name": patient.name,
+                 "born": patient.date_of_birth, "sex": patient.sex,
+                 "file": entry["file"].split("/")[-1], "type": entry["content_type"],
+                 "path": str(dataset_dir / entry["file"])},
             )  # fmt: skip
             return str(cur.fetchone()[0])
 

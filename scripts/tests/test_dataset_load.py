@@ -11,16 +11,23 @@ PASSWORD = "a long dev password"
 
 
 class FakeBackend:
-    def __init__(self, fail_upload: int | None = None):
+    """The backend's login, patient and upload routes, in memory."""
+
+    def __init__(self, fail_upload: int | None = None, existing: dict | None = None):
         self.requests: list[httpx.Request] = []
         self.fail_upload = fail_upload
         self.uploads = 0
+        self.patients = dict(existing or {})  # MRN -> id
 
     def __call__(self, request: httpx.Request) -> httpx.Response:
         self.requests.append(request)
-        if request.headers.get("X-Requested-With") != "med-sum":
+        path = request.url.path
+        if (
+            request.method != "GET"
+            and request.headers.get("X-Requested-With") != "med-sum"
+        ):
             return httpx.Response(403, text="missing X-Requested-With header")
-        if request.url.path == "/auth/login":
+        if path == "/auth/login":
             body = json.loads(request.content)
             if body["password"] != PASSWORD:
                 return httpx.Response(401, text="invalid email or password")
@@ -32,7 +39,30 @@ class FakeBackend:
                     "Path=/; HttpOnly; SameSite=Strict"
                 },
             )
-        if request.url.path == "/documents":
+        if (
+            request.headers.get("Cookie")
+            != f"medsum_session=session-{load.CLINICIAN_EMAIL}"
+        ):
+            return httpx.Response(401)
+        if path == "/patients" and request.method == "POST":
+            body = json.loads(request.content)
+            if body["mrn"] in self.patients:
+                return httpx.Response(
+                    409, text="a patient with this MRN already exists"
+                )
+            self.patients[body["mrn"]] = f"patient-{len(self.patients) + 1}"
+            return httpx.Response(201, json={"id": self.patients[body["mrn"]], **body})
+        if path == "/patients" and request.method == "GET":
+            q = request.url.params["q"]
+            return httpx.Response(
+                200,
+                json=[
+                    {"id": i, "mrn": m}
+                    for m, i in self.patients.items()
+                    if m.startswith(q)
+                ],
+            )
+        if path.startswith("/patients/") and path.endswith("/documents"):
             self.uploads += 1
             if self.uploads == self.fail_upload:
                 return httpx.Response(415, text="file content does not match")
@@ -46,23 +76,28 @@ def client_for(backend) -> httpx.Client:
     )
 
 
-def test_each_patient_logs_in_once_and_uploads_in_order():
+def test_the_clinician_creates_each_patient_and_uploads_to_it_in_order():
     backend = FakeBackend()
     patients, uploads = load.plan()
 
     created = load.load(client_for(backend), PASSWORD)
 
     logins = [r for r in backend.requests if r.url.path == "/auth/login"]
-    assert sorted(json.loads(r.content)["email"] for r in logins) == sorted(
-        f"patient-{key}@med-sum.test" for key in patients
-    )
+    assert [json.loads(r.content)["email"] for r in logins] == [load.CLINICIAN_EMAIL]
 
-    posted = [r for r in backend.requests if r.url.path == "/documents"]
+    made = [json.loads(r.content) for r in backend.requests
+            if r.url.path == "/patients" and r.method == "POST"]  # fmt: skip
+    assert made == [
+        {"mrn": p["mrn"], "full_name": p["name"], "date_of_birth": p["date_of_birth"],
+         "sex": p["sex"]}
+        for p in patients.values()
+    ]  # fmt: skip
+
+    posted = [r for r in backend.requests if r.url.path.endswith("/documents")]
     assert len(posted) == len(uploads)
     for request, upload in zip(posted, uploads):
-        email = load.account_email(upload.patient)
-        # Exactly this patient's session, never another's from the jar.
-        assert request.headers["Cookie"] == f"medsum_session=session-{email}"
+        mrn = patients[upload.patient]["mrn"]
+        assert request.url.path == f"/patients/{backend.patients[mrn]}/documents"
         body = request.read()
         assert f'filename="{upload.file.name}"'.encode() in body
         assert f"Content-Type: {upload.content_type}".encode() in body
@@ -71,9 +106,21 @@ def test_each_patient_logs_in_once_and_uploads_in_order():
     assert created[uploads[0].document] == "uuid-1"
 
 
+def test_a_second_load_finds_the_patients_by_mrn():
+    patients, uploads = load.plan()
+    existing = {p["mrn"]: f"old-{p['key']}" for p in patients.values()}
+    backend = FakeBackend(existing=existing)
+
+    load.load(client_for(backend), PASSWORD)
+
+    assert backend.patients == existing
+    first = next(r for r in backend.requests if r.url.path.endswith("/documents"))
+    assert first.url.path == f"/patients/old-{uploads[0].patient}/documents"
+
+
 def test_uploads_interleave_patients():
-    # The upload order mixes patients on purpose, so the session switching
-    # in the test above is really exercised.
+    # The upload order mixes patients on purpose, so uploads go to the right
+    # record as the patient changes.
     _, uploads = load.plan()
     switches = sum(a.patient != b.patient for a, b in zip(uploads, uploads[1:]))
     assert switches > len({u.patient for u in uploads})

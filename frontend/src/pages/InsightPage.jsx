@@ -2,10 +2,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
+  fetchDocument,
   getInsight,
   reprocessDocument,
   triggerInsightGeneration,
 } from "../api/client.js";
+import ApiErrorNotice from "../components/ApiErrorNotice.jsx";
 import HtmlFrame from "../components/HtmlFrame.jsx";
 
 // How often to check a document that is still being processed.
@@ -16,10 +18,24 @@ function InsightPage() {
   const [loading, setLoading] = useState(true);
   const [insight, setInsight] = useState("");
   const [status, setStatus] = useState("checking");
-  const [error, setError] = useState("");
+  // An ApiError (with its status), or null.
+  const [error, setError] = useState(null);
   const [failure, setFailure] = useState("");
+  // The document: its name and its patient, for the way back.
+  const [doc, setDoc] = useState(null);
   // Bumped by Retry to restart the polling loop.
   const [attempt, setAttempt] = useState(0);
+
+  useEffect(() => {
+    if (!id) return;
+    let cancelled = false;
+    fetchDocument(id)
+      .then((d) => !cancelled && setDoc(d))
+      .catch(() => {}); // the insight request below reports the error
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
 
   useEffect(() => {
     if (!id) return;
@@ -27,7 +43,7 @@ function InsightPage() {
     let timer;
 
     setLoading(true);
-    setError("");
+    setError(null);
     setFailure("");
     setInsight("");
     setStatus("checking");
@@ -59,7 +75,7 @@ function InsightPage() {
       } catch (err) {
         console.error(err);
         if (!cancelled) {
-          setError(err.message || "Failed to fetch or generate insight.");
+          setError(err);
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -74,31 +90,32 @@ function InsightPage() {
   }, [id, attempt]);
 
   async function handleReprocess() {
-    setError("");
+    setError(null);
     try {
       await reprocessDocument(id);
       setAttempt((n) => n + 1);
     } catch (err) {
       console.error(err);
-      setError(err.message || "Failed to request reprocessing.");
+      setError(err);
     }
   }
 
   async function handleRetry() {
-    setError("");
+    setError(null);
     try {
       await triggerInsightGeneration(id);
       setAttempt((n) => n + 1);
     } catch (err) {
       console.error(err);
-      setError(err.message || "Failed to retry insight generation.");
+      setError(err);
     }
   }
 
   return (
     <div className="bg-white rounded-xl shadow p-6">
-      <h1 className="text-xl font-semibold mb-2">Insights</h1>
+      <h1 className="text-xl font-semibold mb-2">{doc?.original_name || "Document"}</h1>
       <p className="text-sm text-slate-600 mb-4">
+        {doc?.uploaded_by_name && <>Uploaded by {doc.uploaded_by_name} · </>}
         Document ID: <span className="font-mono">{id}</span>
       </p>
 
@@ -106,11 +123,7 @@ function InsightPage() {
         <p className="text-sm text-slate-600">Checking for insights…</p>
       )}
 
-      {error && (
-        <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-100 rounded-md px-3 py-2">
-          {error}
-        </div>
-      )}
+      <ApiErrorNotice error={error} />
 
       {!loading && !error && status === "needs_review" && (
         <div className="mb-4 text-sm bg-amber-50 border border-amber-100 rounded-md px-3 py-2 text-amber-800">
@@ -157,10 +170,10 @@ function InsightPage() {
 
       <div className="mt-4">
         <Link
-          to="/documents"
+          to={doc ? `/patients/${doc.patient_id}` : "/patients"}
           className="text-blue-600 hover:underline text-sm font-medium"
         >
-          ← Back to Documents
+          {doc ? "← Back to the patient" : "← Back to patients"}
         </Link>
       </div>
     </div>

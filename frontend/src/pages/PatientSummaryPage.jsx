@@ -1,48 +1,55 @@
-import React, { useEffect, useState } from "react";
-import { fetchUserInsights, triggerUserInsights } from "../api/client";
-import { Link } from "react-router-dom";
+// src/pages/PatientSummaryPage.jsx
+import React, { useCallback, useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { fetchPatient, fetchPatientSummary, triggerPatientSummary } from "../api/client.js";
+import { useAuth } from "../auth/context.js";
+import { PERM, can } from "../auth/permissions.js";
+import ApiErrorNotice from "../components/ApiErrorNotice.jsx";
 import HtmlFrame from "../components/HtmlFrame.jsx";
 
 // How often to check while the summary is being generated.
 const POLL_MS = 5000;
 
-function UserInsightsPage() {
+// One patient's cumulative summary, built from their processed documents.
+function PatientSummaryPage() {
+  const { id } = useParams();
+  const { user } = useAuth();
+  const [patient, setPatient] = useState(null);
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(null);
   const [starting, setStarting] = useState(false);
 
+  const loadSummary = useCallback(async () => {
+    try {
+      setSummary(await fetchPatientSummary(id));
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
+
   useEffect(() => {
+    fetchPatient(id).then(setPatient).catch(() => {}); // loadSummary reports errors
     loadSummary();
-  }, []);
+  }, [id, loadSummary]);
 
   // Keep checking while a summary is being generated.
   useEffect(() => {
     if (summary?.status !== "processing") return;
     const timer = setTimeout(loadSummary, POLL_MS);
     return () => clearTimeout(timer);
-  }, [summary]);
-
-  async function loadSummary() {
-    try {
-      setSummary(await fetchUserInsights());
-    } catch (err) {
-      console.error(err);
-      setError(err.message || "Failed to load the patient summary.");
-    } finally {
-      setLoading(false);
-    }
-  }
+  }, [summary, loadSummary]);
 
   async function handleGenerate() {
     setStarting(true);
-    setError("");
+    setError(null);
     try {
-      await triggerUserInsights();
+      await triggerPatientSummary(id);
       await loadSummary();
     } catch (err) {
-      console.error(err);
-      setError(err.message || "Failed to start the patient summary.");
+      setError(err);
     } finally {
       setStarting(false);
     }
@@ -54,12 +61,14 @@ function UserInsightsPage() {
   return (
     <div className="bg-white rounded-xl shadow p-6">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-semibold">Patient Summary</h1>
+        <h1 className="text-xl font-semibold">
+          Patient summary{patient && <span className="text-slate-500 font-normal">: {patient.full_name}</span>}
+        </h1>
         <Link
-          to="/documents"
+          to={`/patients/${id}`}
           className="text-sm text-slate-600 hover:text-slate-900 hover:underline"
         >
-          &larr; Back to Documents
+          &larr; Back to the patient
         </Link>
       </div>
 
@@ -75,6 +84,7 @@ function UserInsightsPage() {
             </p>
             <button
               onClick={handleGenerate}
+              hidden={!can(user, PERM.summaryGenerate)}
               disabled={processing || starting}
               className="px-4 py-1.5 text-sm rounded-md bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-60"
             >
@@ -86,11 +96,7 @@ function UserInsightsPage() {
             </button>
           </div>
 
-          {error && (
-            <div className="mb-4 bg-red-50 border border-red-100 rounded-md p-3 text-sm text-red-600">
-              {error}
-            </div>
-          )}
+          <ApiErrorNotice error={error} backTo="/patients" />
 
           {processing && (
             <div className="mb-4 text-sm bg-yellow-50 border border-yellow-100 rounded-md px-3 py-2 text-yellow-800">
@@ -120,4 +126,4 @@ function UserInsightsPage() {
   );
 }
 
-export default UserInsightsPage;
+export default PatientSummaryPage;

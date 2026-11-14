@@ -34,14 +34,19 @@ func TestProtectedRoutesNeedASession(t *testing.T) {
 	routes := []struct{ method, path string }{
 		{http.MethodGet, "/auth/me"},
 		{http.MethodPost, "/auth/password"},
-		{http.MethodGet, "/documents"},
-		{http.MethodPost, "/documents"},
+		{http.MethodGet, "/patients"},
+		{http.MethodPost, "/patients"},
+		{http.MethodGet, "/patients/" + unknownID},
+		{http.MethodPatch, "/patients/" + unknownID},
+		{http.MethodGet, "/patients/" + unknownID + "/documents"},
+		{http.MethodPost, "/patients/" + unknownID + "/documents"},
+		{http.MethodGet, "/patients/" + unknownID + "/summary"},
+		{http.MethodPost, "/patients/" + unknownID + "/summary"},
+		{http.MethodGet, "/documents/" + unknownID},
 		{http.MethodDelete, "/documents/" + unknownID},
 		{http.MethodGet, "/documents/" + unknownID + "/insight"},
 		{http.MethodPost, "/documents/" + unknownID + "/insight"},
 		{http.MethodGet, "/documents/" + unknownID + "/record"},
-		{http.MethodGet, "/user/insights"},
-		{http.MethodPost, "/user/insights"},
 	}
 	for _, r := range routes {
 		if rec := e.do(r.method, r.path, "", nil, ""); rec.Code != http.StatusUnauthorized {
@@ -64,12 +69,13 @@ func TestDocumentRouting(t *testing.T) {
 		{http.MethodGet, "/documents/not-a-uuid", http.StatusBadRequest},
 		{http.MethodGet, "/documents/not-a-uuid/insight", http.StatusBadRequest},
 		{http.MethodGet, "/documents/", http.StatusNotFound},
+		{http.MethodGet, "/documents/" + unknownID, http.StatusNotFound},
 		{http.MethodGet, "/documents/" + unknownID + "/other", http.StatusNotFound},
 		{http.MethodGet, "/documents/" + unknownID + "/insight/extra", http.StatusNotFound},
-		{http.MethodGet, "/documents/" + unknownID, http.StatusMethodNotAllowed},
+		{http.MethodPut, "/documents/" + unknownID, http.StatusMethodNotAllowed},
 		{http.MethodPut, "/documents/" + unknownID + "/insight", http.StatusMethodNotAllowed},
-		{http.MethodPut, "/documents", http.StatusMethodNotAllowed},
-		{http.MethodDelete, "/user/insights", http.StatusMethodNotAllowed},
+		// The caller-owned summary route of before patient records is gone.
+		{http.MethodGet, "/user/insights", http.StatusNotFound},
 	}
 	for _, tt := range tests {
 		if rec := e.do(tt.method, tt.path, auth, nil, ""); rec.Code != tt.wantCode {
@@ -78,99 +84,165 @@ func TestDocumentRouting(t *testing.T) {
 	}
 }
 
-// ----- Listing and deleting documents -----
+// ----- A single document -----
 
-func TestListShowsOnlyTheCallersDocuments(t *testing.T) {
+func TestGetDocumentReturnsItWithoutServerSideFields(t *testing.T) {
 	e := newTestEnv(t)
 	me, auth := e.login("me@hospital.test")
-	other, _ := e.login("other@hospital.test")
-	mine := e.store.addDocument(me, "a.pdf")
-	e.store.addDocument(other, "b.pdf")
-	e.store.insights[mine] = &db.Insight{DocumentID: mine, Status: "verified"}
+	p := e.store.addPatient("org-1", "SH-1")
+	doc := e.store.addDocument(p, me, "secret/path/a.pdf")
 
-	rec := e.do(http.MethodGet, "/documents", auth, nil, "")
+	rec := e.do(http.MethodGet, "/documents/"+doc, auth, nil, "")
 
-	docs := decodeJSON[[]db.Document](t, rec)
-	if len(docs) != 1 || docs[0].ID != mine {
-		t.Fatalf("listed %+v, want only %s", docs, mine)
+	got := decodeJSON[db.Document](t, rec)
+	if got.ID != doc || got.PatientID != p.ID || got.UploadedBy == nil || *got.UploadedBy != me ||
+		got.UploadedByName == nil || *got.UploadedByName != "Dr me@hospital.test" {
+		t.Errorf("document = %+v", got)
 	}
-	if docs[0].InsightStatus != "verified" {
-		t.Errorf("insight_status = %q, want verified", docs[0].InsightStatus)
-	}
-	if strings.Contains(rec.Body.String(), "a.pdf") {
+	if strings.Contains(rec.Body.String(), "secret/path") {
 		t.Error("response leaks the storage path")
 	}
 }
 
-func TestAnEmptyListIsAnEmptyArray(t *testing.T) {
+// Every clinician of the organisation sees every patient's documents.
+func TestAColleagueSeesTheDocument(t *testing.T) {
 	e := newTestEnv(t)
-	_, auth := e.login("me@hospital.test")
+	me, _ := e.login("me@hospital.test")
+	_, colleague := e.login("colleague@hospital.test")
+	doc := e.store.addDocument(e.store.addPatient("org-1", "SH-1"), me, "a.pdf")
 
-	rec := e.do(http.MethodGet, "/documents", auth, nil, "")
-
-	if got := strings.TrimSpace(rec.Body.String()); got != "[]" {
-		t.Errorf("body = %q, want []", got)
+	for _, path := range []string{"/documents/" + doc, "/documents/" + doc + "/insight"} {
+		if rec := e.do(http.MethodGet, path, colleague, nil, ""); rec.Code != http.StatusOK {
+			t.Errorf("GET %s by a colleague = %d, want 200", path, rec.Code)
+		}
 	}
 }
 
-func TestDeleteRemovesTheDocumentAndItsFile(t *testing.T) {
+// A document of another organisation answers 404 on every route, as if
+// it didn't exist, and nothing reaches the AI service.
+func TestAnotherOrganisationsDocumentIsNotFoundOnEveryRoute(t *testing.T) {
+	e := newTestEnv(t)
+	_, auth := e.login("me@hospital.test")
+	them := e.store.addUserIn("org-2", "them@other.test", db.StatusActive)
+	theirs := e.store.addDocument(e.store.addPatient("org-2", "SH-1"), them.ID, "b.pdf")
+	e.store.insights[theirs] = &db.Insight{DocumentID: theirs, Status: "verified", HTMLInsights: "<p>private</p>"}
+	e.store.records[theirs] = &db.DocumentRecord{DocumentID: theirs, SchemaVersion: 1, Record: []byte(`{"private": true}`)}
+
+	for _, r := range []struct{ method, path string }{
+		{http.MethodGet, "/documents/" + theirs},
+		{http.MethodDelete, "/documents/" + theirs},
+		{http.MethodGet, "/documents/" + theirs + "/insight"},
+		{http.MethodPost, "/documents/" + theirs + "/insight"},
+		{http.MethodGet, "/documents/" + theirs + "/record"},
+		{http.MethodPost, "/documents/" + theirs + "/reprocess"},
+	} {
+		rec := e.do(r.method, r.path, auth, nil, "")
+		if rec.Code != http.StatusNotFound {
+			t.Errorf("%s %s = %d, want 404", r.method, r.path, rec.Code)
+		}
+		if strings.Contains(rec.Body.String(), "private") {
+			t.Errorf("%s %s leaked another organisation's data", r.method, r.path)
+		}
+	}
+	if len(e.ai.received()) != 0 {
+		t.Error("processing was requested for another organisation's document")
+	}
+	if _, gone := e.store.deleted[theirs]; gone {
+		t.Error("another organisation's document was deleted")
+	}
+}
+
+// ----- Deleting a document -----
+
+func TestDeleteIsSoftAndKeepsTheFile(t *testing.T) {
 	e := newTestEnv(t)
 	me, auth := e.login("me@hospital.test")
 	path := filepath.Join(e.uploads, "a.pdf")
 	if err := os.WriteFile(path, pdfBytes, 0o644); err != nil {
 		t.Fatal(err)
 	}
-	doc := e.store.addDocument(me, path)
+	p := e.store.addPatient("org-1", "SH-1")
+	doc := e.store.addDocument(p, me, path)
 
 	rec := e.do(http.MethodDelete, "/documents/"+doc, auth, nil, "")
 
 	if rec.Code != http.StatusNoContent {
 		t.Fatalf("status = %d, want 204", rec.Code)
 	}
-	if _, err := os.Stat(path); !os.IsNotExist(err) {
-		t.Error("file was not removed")
+	if e.store.deleted[doc] != me {
+		t.Errorf("deleted by %q, want %s", e.store.deleted[doc], me)
 	}
-	if _, ok := e.store.documents[doc]; ok {
-		t.Error("document was not deleted")
+	if _, err := os.Stat(path); err != nil {
+		t.Errorf("the file of a soft-deleted document was removed: %v", err)
+	}
+	for _, path := range []string{"/documents/" + doc, "/documents/" + doc + "/insight"} {
+		if rec := e.do(http.MethodGet, path, auth, nil, ""); rec.Code != http.StatusNotFound {
+			t.Errorf("GET %s after delete = %d, want 404", path, rec.Code)
+		}
+	}
+	if docs := decodeJSON[[]db.Document](t, e.do(http.MethodGet, "/patients/"+p.ID+"/documents", auth, nil, "")); len(docs) != 0 {
+		t.Errorf("a deleted document is still listed: %+v", docs)
+	}
+	if rec := e.do(http.MethodDelete, "/documents/"+doc, auth, nil, ""); rec.Code != http.StatusNotFound {
+		t.Errorf("second delete = %d, want 404", rec.Code)
+	}
+	if len(e.ai.received()) != 0 {
+		t.Error("a summary was rebuilt for a patient who never had one")
 	}
 }
 
-func TestDeleteKeepsAFileAnotherDocumentShares(t *testing.T) {
+func TestOnlyTheUploaderCanDeleteADocument(t *testing.T) {
+	e := newTestEnv(t)
+	me, _ := e.login("me@hospital.test")
+	_, colleague := e.login("colleague@hospital.test")
+	doc := e.store.addDocument(e.store.addPatient("org-1", "SH-1"), me, "a.pdf")
+
+	rec := e.do(http.MethodDelete, "/documents/"+doc, colleague, nil, "")
+
+	if rec.Code != http.StatusForbidden || !strings.Contains(rec.Body.String(), "uploaded") {
+		t.Errorf("delete by a colleague = %d %q, want 403", rec.Code, rec.Body)
+	}
+	if _, gone := e.store.deleted[doc]; gone {
+		t.Error("a colleague deleted the document")
+	}
+}
+
+func TestADocumentWithNoUploaderCantBeDeleted(t *testing.T) {
+	e := newTestEnv(t)
+	_, auth := e.login("me@hospital.test")
+	doc := e.store.addDocument(e.store.addPatient("org-1", "SH-1"), "", "a.pdf")
+
+	if rec := e.do(http.MethodDelete, "/documents/"+doc, auth, nil, ""); rec.Code != http.StatusForbidden {
+		t.Errorf("status = %d, want 403", rec.Code)
+	}
+}
+
+func TestDeleteRebuildsThePatientsSummary(t *testing.T) {
 	e := newTestEnv(t)
 	me, auth := e.login("me@hospital.test")
-	path := filepath.Join(e.uploads, "shared.pdf")
-	if err := os.WriteFile(path, pdfBytes, 0o644); err != nil {
-		t.Fatal(err)
-	}
-	doc := e.store.addDocument(me, path)
-	e.store.addDocument(me, path)
+	p := e.store.addPatient("org-1", "SH-1")
+	doc := e.store.addDocument(p, me, "a.pdf")
+	e.store.summaries[p.ID] = &db.PatientSummary{HTML: strPtr("<p>s</p>"), Status: strPtr("completed")}
 
 	if rec := e.do(http.MethodDelete, "/documents/"+doc, auth, nil, ""); rec.Code != http.StatusNoContent {
 		t.Fatalf("status = %d, want 204", rec.Code)
 	}
-	if _, err := os.Stat(path); err != nil {
-		t.Errorf("shared file was removed: %v", err)
+	calls := e.ai.received()
+	if len(calls) != 1 || calls[0].Path != "/internal/generate-patient-summary" || calls[0].Body["patient_id"] != p.ID {
+		t.Errorf("AI calls = %+v, want one summary rebuild for %s", calls, p.ID)
 	}
 }
 
-func TestDeleteOfAnotherUsersDocumentIsNotFound(t *testing.T) {
+func TestDeleteStandsWhenTheSummaryCantBeRebuilt(t *testing.T) {
 	e := newTestEnv(t)
-	_, auth := e.login("me@hospital.test")
-	other, _ := e.login("other@hospital.test")
-	path := filepath.Join(e.uploads, "theirs.pdf")
-	if err := os.WriteFile(path, pdfBytes, 0o644); err != nil {
-		t.Fatal(err)
-	}
-	doc := e.store.addDocument(other, path)
+	me, auth := e.login("me@hospital.test")
+	p := e.store.addPatient("org-1", "SH-1")
+	doc := e.store.addDocument(p, me, "a.pdf")
+	e.store.summaries[p.ID] = &db.PatientSummary{Status: strPtr("completed")}
+	e.ai.status = http.StatusServiceUnavailable
 
-	if rec := e.do(http.MethodDelete, "/documents/"+doc, auth, nil, ""); rec.Code != http.StatusNotFound {
-		t.Fatalf("status = %d, want 404", rec.Code)
-	}
-	if _, ok := e.store.documents[doc]; !ok {
-		t.Error("another user's document was deleted")
-	}
-	if _, err := os.Stat(path); err != nil {
-		t.Error("another user's file was removed")
+	if rec := e.do(http.MethodDelete, "/documents/"+doc, auth, nil, ""); rec.Code != http.StatusNoContent {
+		t.Fatalf("status = %d, want 204", rec.Code)
 	}
 }
 
@@ -194,7 +266,7 @@ func TestGetInsightReportsTheJobStatus(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			e := newTestEnv(t)
 			me, auth := e.login("me@hospital.test")
-			doc := e.store.addDocument(me, "a.pdf")
+			doc := e.store.addDocument(e.store.addPatient("org-1", "SH-1"), me, "a.pdf")
 			if tt.insight != nil {
 				tt.insight.DocumentID = doc
 				e.store.insights[doc] = tt.insight
@@ -216,31 +288,10 @@ func TestGetInsightReportsTheJobStatus(t *testing.T) {
 	}
 }
 
-func TestInsightRoutesHideOtherUsersDocuments(t *testing.T) {
-	e := newTestEnv(t)
-	_, auth := e.login("me@hospital.test")
-	other, _ := e.login("other@hospital.test")
-	theirs := e.store.addDocument(other, "b.pdf")
-	e.store.insights[theirs] = &db.Insight{DocumentID: theirs, Status: "verified", HTMLInsights: "<p>private</p>"}
-
-	for _, method := range []string{http.MethodGet, http.MethodPost} {
-		rec := e.do(method, "/documents/"+theirs+"/insight", auth, nil, "")
-		if rec.Code != http.StatusNotFound {
-			t.Errorf("%s = %d, want 404", method, rec.Code)
-		}
-		if strings.Contains(rec.Body.String(), "private") {
-			t.Errorf("%s leaked another user's insight", method)
-		}
-	}
-	if len(e.ai.received()) != 0 {
-		t.Error("processing was requested for another user's document")
-	}
-}
-
 func TestGenerateInsightForwardsToTheAIService(t *testing.T) {
 	e := newTestEnv(t)
 	me, auth := e.login("me@hospital.test")
-	doc := e.store.addDocument(me, "a.pdf")
+	doc := e.store.addDocument(e.store.addPatient("org-1", "SH-1"), me, "a.pdf")
 
 	rec := e.do(http.MethodPost, "/documents/"+doc+"/insight", auth, nil, "")
 
@@ -257,7 +308,7 @@ func TestGenerateInsightForwardsToTheAIService(t *testing.T) {
 func TestReprocessForwardsToTheAIService(t *testing.T) {
 	e := newTestEnv(t)
 	me, auth := e.login("me@hospital.test")
-	doc := e.store.addDocument(me, "a.pdf")
+	doc := e.store.addDocument(e.store.addPatient("org-1", "SH-1"), me, "a.pdf")
 	e.store.insights[doc] = &db.Insight{DocumentID: doc, Status: "verified"}
 
 	rec := e.do(http.MethodPost, "/documents/"+doc+"/reprocess", auth, nil, "")
@@ -272,26 +323,10 @@ func TestReprocessForwardsToTheAIService(t *testing.T) {
 	}
 }
 
-func TestReprocessHidesOtherUsersDocuments(t *testing.T) {
-	e := newTestEnv(t)
-	_, auth := e.login("me@hospital.test")
-	other, _ := e.login("other@hospital.test")
-	theirs := e.store.addDocument(other, "b.pdf")
-
-	rec := e.do(http.MethodPost, "/documents/"+theirs+"/reprocess", auth, nil, "")
-
-	if rec.Code != http.StatusNotFound {
-		t.Errorf("status = %d, want 404", rec.Code)
-	}
-	if len(e.ai.received()) != 0 {
-		t.Error("reprocessing was requested for another user's document")
-	}
-}
-
 func TestReprocessIsPostOnly(t *testing.T) {
 	e := newTestEnv(t)
 	me, auth := e.login("me@hospital.test")
-	doc := e.store.addDocument(me, "a.pdf")
+	doc := e.store.addDocument(e.store.addPatient("org-1", "SH-1"), me, "a.pdf")
 
 	rec := e.do(http.MethodGet, "/documents/"+doc+"/reprocess", auth, nil, "")
 
@@ -303,7 +338,7 @@ func TestReprocessIsPostOnly(t *testing.T) {
 func TestReprocessReportsAnUnavailableAIService(t *testing.T) {
 	e := newTestEnv(t)
 	me, auth := e.login("me@hospital.test")
-	doc := e.store.addDocument(me, "a.pdf")
+	doc := e.store.addDocument(e.store.addPatient("org-1", "SH-1"), me, "a.pdf")
 	e.ai.status = http.StatusInternalServerError
 
 	rec := e.do(http.MethodPost, "/documents/"+doc+"/reprocess", auth, nil, "")
@@ -321,52 +356,13 @@ func TestGenerateInsightReportsAnUnavailableAIService(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			e := newTestEnv(t)
 			me, auth := e.login("me@hospital.test")
-			doc := e.store.addDocument(me, "a.pdf")
+			doc := e.store.addDocument(e.store.addPatient("org-1", "SH-1"), me, "a.pdf")
 			breakAI(e.ai)
 
 			rec := e.do(http.MethodPost, "/documents/"+doc+"/insight", auth, nil, "")
 
 			if rec.Code != http.StatusBadGateway {
 				t.Errorf("status = %d, want 502", rec.Code)
-			}
-		})
-	}
-}
-
-// ----- Patient summary -----
-
-func TestGetPatientSummaryReportsItsStatus(t *testing.T) {
-	tests := []struct {
-		name     string
-		summary  *db.PatientSummary
-		want     string
-		wantHTML string
-		wantErr  string
-	}{
-		{"never requested", nil, "none", "", ""},
-		{"summary from before statuses existed", &db.PatientSummary{HTML: strPtr("<p>s</p>")}, "completed", "<p>s</p>", ""},
-		{"completed", &db.PatientSummary{HTML: strPtr("<p>s</p>"), Status: strPtr("completed")}, "completed", "<p>s</p>", ""},
-		{"regenerating keeps the last summary", &db.PatientSummary{HTML: strPtr("<p>old</p>"), Status: strPtr("processing")}, "processing", "<p>old</p>", ""},
-		{"failed", &db.PatientSummary{Status: strPtr("failed"), Error: strPtr("no documents")}, "failed", "", "no documents"},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			e := newTestEnv(t)
-			me, auth := e.login("me@hospital.test")
-			if tt.summary != nil {
-				e.store.summaries[me] = tt.summary
-			}
-
-			resp := decodeJSON[patientInsightResponse](t, e.do(http.MethodGet, "/user/insights", auth, nil, ""))
-
-			if resp.Status != tt.want {
-				t.Errorf("status = %q, want %q", resp.Status, tt.want)
-			}
-			if got := deref(resp.InsightsHTML); got != tt.wantHTML {
-				t.Errorf("insights_html = %q, want %q", got, tt.wantHTML)
-			}
-			if got := deref(resp.ErrorMessage); got != tt.wantErr {
-				t.Errorf("error_message = %q, want %q", got, tt.wantErr)
 			}
 		})
 	}
@@ -379,46 +375,22 @@ func deref(s *string) string {
 	return *s
 }
 
-func TestPatientSummaryIsRequestedForTheCallerOnly(t *testing.T) {
-	e := newTestEnv(t)
-	me, auth := e.login("me@hospital.test")
-
-	// A user_id in the body must not change whose summary is generated.
-	rec := e.do(http.MethodPost, "/user/insights", auth,
-		strings.NewReader(`{"user_id": "someone-else"}`), "application/json")
-
-	if rec.Code != http.StatusAccepted {
-		t.Fatalf("status = %d, want 202", rec.Code)
-	}
-	calls := e.ai.received()
-	if len(calls) != 1 || calls[0].Path != "/internal/generate-user-insights" ||
-		calls[0].Token != testInternalToken || calls[0].Body["user_id"] != me {
-		t.Errorf("AI calls = %+v, want one for %s", calls, me)
-	}
-}
-
-func TestPatientSummaryReportsAnUnavailableAIService(t *testing.T) {
-	e := newTestEnv(t)
-	_, auth := e.login("me@hospital.test")
-	e.ai.status = http.StatusServiceUnavailable
-
-	if rec := e.do(http.MethodPost, "/user/insights", auth, nil, ""); rec.Code != http.StatusBadGateway {
-		t.Errorf("status = %d, want 502", rec.Code)
-	}
-}
-
 func TestDatabaseErrorsAreInternalErrorsWithoutDetails(t *testing.T) {
 	e := newTestEnv(t)
 	me, auth := e.login("me@hospital.test")
-	doc := e.store.addDocument(me, "a.pdf")
+	p := e.store.addPatient("org-1", "SH-1")
+	doc := e.store.addDocument(p, me, "a.pdf")
 	e.store.failWith = os.ErrPermission
 
 	for _, r := range []struct{ method, path string }{
-		{http.MethodGet, "/documents"},
+		{http.MethodGet, "/patients"},
+		{http.MethodGet, "/patients/" + p.ID},
+		{http.MethodGet, "/patients/" + p.ID + "/documents"},
+		{http.MethodGet, "/patients/" + p.ID + "/summary"},
+		{http.MethodGet, "/documents/" + doc},
 		{http.MethodDelete, "/documents/" + doc},
 		{http.MethodGet, "/documents/" + doc + "/insight"},
 		{http.MethodPost, "/documents/" + doc + "/insight"},
-		{http.MethodGet, "/user/insights"},
 	} {
 		rec := e.do(r.method, r.path, auth, nil, "")
 		if rec.Code != http.StatusInternalServerError {

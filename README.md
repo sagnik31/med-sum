@@ -69,12 +69,13 @@ The reasons behind these and the project's other main design choices, with the a
 
 ### Accounts and login
 
-The app is for hospital staff; patients have no accounts.
+The app is for hospital staff; patients have no accounts. A patient is a record that the clinicians of one organisation share.
 
 - **Accounts are created, never signed up for.** `medsumctl create-admin` and `create-user` create an account and print a one-time setup link (valid for 72 hours) that the person opens to choose their own password; `medsumctl reset-link` issues a reset link (24 hours). The token is in the link's URL fragment, which browsers don't send to servers, and only its SHA-256 is stored.
 - **Passwords** are hashed with argon2id (OWASP parameters). They need at least 12 characters, and common ones are refused. Five wrong passwords in a row lock the account for 15 minutes. Every failed login gets the same answer, and an unknown email takes as long to refuse as a wrong password, so the login form can't be used to find out which accounts exist.
 - **Sessions** are rows in the database, not tokens the browser can read. The browser holds a random value in an `HttpOnly`, `SameSite=Strict` cookie; the database holds only its hash. A session ends after 30 minutes without a request or 12 hours after login. Logging out, changing the password or disabling the account ends sessions at once.
-- **Roles:** a *clinician* works with documents and summaries; an *admin* manages staff accounts and sees no clinical data. Someone who needs both holds both roles. The API checks a permission on every route (`backend/internal/authz`), and the frontend shows only the pages the account may use.
+- **Patients:** a clinician finds a patient by name or MRN (the hospital's patient ID) or adds one, with a date of birth or, when that isn't known, an age, and uploads documents to that patient's record. The pipeline checks the name, ID and date of birth printed on each document against the record. Another organisation's patients and documents answer 404, and the organisation is checked in the SQL of every query, not in the handlers. Only the clinician who uploaded a document can delete it; deleting hides it everywhere and rebuilds the patient summary, but keeps its rows and file, so what was uploaded stays accountable.
+- **Roles:** a *clinician* works with patients, documents and summaries; an *admin* manages staff accounts and sees no clinical data. Someone who needs both holds both roles. The API checks a permission on every route (`backend/internal/authz`), and the frontend shows only the pages the account may use.
 - **Staff management:** an admin invites staff from the Staff page, which shows a setup link to pass on, and can change roles, disable or enable an account, or issue a password reset link. Disabling an account or changing its roles logs it out everywhere. Admins can't disable themselves or drop their own admin role, and an organisation always keeps at least one active admin.
 - **Your sessions:** the Account page lists where you are logged in and can log out any of those sessions, or all but the current one.
 - **CSRF:** besides `SameSite=Strict`, every request that changes something must carry an `X-Requested-With` header, which another site can't add without passing a CORS check that only `ALLOWED_ORIGINS` pass.
@@ -193,7 +194,7 @@ npm run dev
 
 ### 6. Create the development accounts
 
-There is no sign-up and there are no default passwords. For local development, `medsumctl seed-dev` creates an organisation ("Dev Hospital"), an admin (`dev-admin@med-sum.test`), a clinician (`dev-clinician@med-sum.test`) and one account per synthetic patient (see [Synthetic dataset](#synthetic-dataset)), all with the password you choose (at least 12 characters):
+There is no sign-up and there are no default passwords. For local development, `medsumctl seed-dev` creates an organisation ("Dev Hospital"), an admin (`dev-admin@med-sum.test`), and a clinician (`dev-clinician@med-sum.test`), both with the password you choose (at least 12 characters):
 
 ```bash
 cd backend
@@ -208,9 +209,10 @@ On PowerShell, set the same variables with `$env:NAME = "value"`.
 ### 7. Try it out
 
 1. Open http://localhost:5173 and log in as `dev-clinician@med-sum.test` with your `MEDSUM_DEV_PASSWORD`.
-2. Upload a lab report or prescription as a PDF, JPG or PNG. Processing starts straight away; the document list shows its status and updates itself. On a CPU each page takes a few minutes.
-3. Open the document once it shows **Verified** or **Needs review** to read the values extracted from it; a document that needs review says which values to check and why.
-4. Open **Patient summary** and choose **Generate summary** to combine every processed document.
+2. On **Patients**, choose **New patient** and give at least an MRN and a name (synthetic ones: see [Synthetic dataset](#synthetic-dataset)), or open an existing patient.
+3. Upload a lab report or prescription as a PDF, JPG or PNG to the patient. Processing starts straight away; the document list shows its status and updates itself. On a CPU each page takes a few minutes.
+4. Open the document once it shows **Verified** or **Needs review** to read the values extracted from it; a document that needs review says which values to check and why.
+5. Open the patient's **Patient summary** and choose **Generate summary** to combine every processed document.
 
 ## Configuration
 
@@ -240,7 +242,7 @@ The AI service reads its database settings in one place, `scripts/src/settings.p
 
 ### Database roles
 
-The development setup connects as `postgres`, a superuser. Anywhere else, give the AI service its own role, `medsum_ai`, with only the privileges it uses ([`db/ai_service_role.sql`](db/ai_service_role.sql)). It can read documents and write their transcription, read and write processing state (insights, jobs, records, pipeline runs and steps, model calls) and its checkpoints, and read only the account columns the patient summary needs. It cannot read emails, password hashes, sessions or setup links, delete or truncate rows, or create, alter or drop tables in `public`. Create it once per database, as a superuser, after loading the schema, then give it a password:
+The development setup connects as `postgres`, a superuser. Anywhere else, give the AI service its own role, `medsum_ai`, with only the privileges it uses ([`db/ai_service_role.sql`](db/ai_service_role.sql)). It can read documents and write their transcription, read and write processing state (insights, jobs, records, pipeline runs and steps, model calls) and its checkpoints, and read the patient details the checks and the summary need, plus the uploader's name. It cannot read emails, password hashes, sessions or setup links, delete or truncate rows, or create, alter or drop tables in `public`. Create it once per database, as a superuser, after loading the schema, then give it a password:
 
 ```bash
 psql -U postgres -d med_sum -f db/ai_service_role.sql
@@ -270,19 +272,24 @@ All backend routes except `/healthz`, `/auth/login`, `/auth/logout` and `/auth/s
 | `POST` | `/admin/users` | Invite `{email, full_name, registration_no?, roles}`; returns the account and its setup link (admins) |
 | `PATCH` | `/admin/users/{id}` | Change `{roles?, status?, full_name?, registration_no?}`; `status` is `active` or `disabled` (admins) |
 | `POST` | `/admin/users/{id}/reset-link` | A new setup link (invited account) or reset link (active account) (admins) |
-| `GET` | `/documents` | List the user's documents, newest first, each with its `insight_status` |
-| `POST` | `/documents` | Upload a PDF, JPG or PNG (multipart field `file`, max 20 MB) and start processing it. The same file uploaded again for the same patient is accepted and names the first as `duplicate_of` (also in the list); the patient summary counts it once |
-| `DELETE` | `/documents/{id}` | Delete a document and its file; everything stored about it goes too, the pipeline's checkpoints included |
+| `GET` | `/patients?q=` | Your organisation's patients (up to 200), by part of the name or the start of the MRN; no `q` lists them all |
+| `POST` | `/patients` | Add a patient `{mrn, full_name, date_of_birth?, age_years?, sex?}` (`date_of_birth` as `YYYY-MM-DD`, or `age_years` when it isn't known, not both; `sex` is `F`, `M` or `O`). 409 when the MRN is taken |
+| `GET` | `/patients/{id}` | One patient |
+| `PATCH` | `/patients/{id}` | Change any of those fields; `null` clears an optional one |
+| `GET` | `/patients/{id}/documents` | The patient's documents, newest first, each with its `insight_status`, uploader and `duplicate_of` |
+| `POST` | `/patients/{id}/documents` | Upload a PDF, JPG or PNG (multipart field `file`, max 20 MB) and start processing it. The same file uploaded again for the same patient is accepted and names the first as `duplicate_of`; the patient summary counts it once |
+| `GET` | `/patients/{id}/summary` | The patient summary and its status (`none`, `processing`, `completed`, `failed`) |
+| `POST` | `/patients/{id}/summary` | Start generating the patient summary |
+| `GET` | `/documents/{id}` | One document: name, patient, uploader, status |
+| `DELETE` | `/documents/{id}` | Delete a document you uploaded (403 for anyone else's). It disappears from the patient's record and the summary is rebuilt; its rows and file are kept |
 | `GET` | `/documents/{id}/insight` | Get the summary and its status (`not_started`, `processing`, `verified`, `needs_review`, `failed`) |
 | `POST` | `/documents/{id}/insight` | Start or retry processing |
 | `GET` | `/documents/{id}/record` | The document's structured record as stored: every printed and derived value, the page transcriptions, and each item's provenance. `citations` lists every value's page, lines and quoted text with its item's review status (`validated`, `low_confidence`, ...) and the reasons it was flagged. 404 before the document has a record |
 | `POST` | `/documents/{id}/reprocess` | Process the document again from the start, as a new run |
-| `GET` | `/user/insights` | Get the cumulative patient summary and its status (`none`, `processing`, `completed`, `failed`) |
-| `POST` | `/user/insights` | Start generating the cumulative patient summary |
 
-Document and summary routes need the clinician role and `/admin/*` the admin role; without it the answer is 403. Accounts in another organisation are answered with 404.
+Patient, document and summary routes need the clinician role and `/admin/*` the admin role; without it the answer is 403. Patients, documents and accounts in another organisation are answered with 404.
 
-The AI service exposes `GET /health` (with each model's circuit-breaker state) and three internal routes: `POST /internal/generate-insights` and `POST /internal/reprocess-document` queue a document, and `POST /internal/generate-user-insights` starts the patient summary. All three require an `X-Internal-Token` header.
+The AI service exposes `GET /health` (with each model's circuit-breaker state) and three internal routes: `POST /internal/generate-insights` and `POST /internal/reprocess-document` queue a document, and `POST /internal/generate-patient-summary` starts a patient's summary. All three require an `X-Internal-Token` header.
 
 A Postman collection is in [`postman/collections/`](postman/collections/med-sum.postman_collection.json). It uses the variables `backend_url`, `ai_service_url`, `email`, `password` and `internal_api_token`; Postman keeps the session cookie from the login request.
 
@@ -355,7 +362,7 @@ The tests never call a model: model calls are replaced with fakes, so Ollama nee
 
 ### Synthetic dataset
 
-[`scripts/evals/dataset/`](scripts/evals/dataset/README.md) holds 25 fictional documents (lab reports and prescriptions for 6 patients) with an answer key and expected transcription for each. Regenerate it with `python -m dataset.build` from `scripts/src`. `python -m dataset.load` shows what it would upload through the backend; `--yes` uploads it, which starts processing on the AI service (live model runs). It logs in as each patient's development account, so run `medsumctl seed-dev` first and set `MEDSUM_DEV_PASSWORD`.
+[`scripts/evals/dataset/`](scripts/evals/dataset/README.md) holds 25 fictional documents (lab reports and prescriptions for 6 patients) with an answer key and expected transcription for each. Regenerate it with `python -m dataset.build` from `scripts/src`. `python -m dataset.load` shows what it would upload through the backend; `--yes` uploads it, which starts processing on the AI service (live model runs). It logs in as the development clinician, creates each dataset patient's record from the manifest (or finds it by MRN) and uploads that patient's documents to it, so run `medsumctl seed-dev` first and set `MEDSUM_DEV_PASSWORD`.
 
 Each document in the manifest also says how it should end (`expected_end_state`, and the routing signals it is built to raise: an undated prescription, a report printed for another patient, an unsupported document type) and which split it belongs to. d02 and d09 are `dev`: every prompt check so far ran on them. d18-d24 are `held_out`: two further patients, printed in layouts the other documents don't use (results as lines rather than a table, patient details in a key-value table or several to a line, the range before the unit, flags as words or arrows, two columns, numbered medicine lines, the strength in its own column, a table continued on the next page, dates with the month in words). No prompt or check is changed because of them; they show whether the numbers hold on layouts the pipeline wasn't built on. The other 16 are `test`, and reports show the three apart. One of them, d25, is a 60-result check-up with 27 results on each of its first two pages, so each of those pages is parsed in two parts. Its fourth page is the laboratory's test menu in small print, built to run past a page call's output cap (about 5,200 tokens), so it is read again in halves. The held-out keys first showed three reading gaps: "Glycated Haemoglobin (HbA1c)" and "TSH (Ultrasensitive)" weren't recognised as HbA1c and TSH, and "Allergy: None known" wasn't read as no known allergies. They were closed as general rules, each with test cases of its own on other names and phrasings (a trailing qualifier in brackets is ignored when it can't name a different test; more ways of printing "no known allergies"), and a test lists any remaining difference between the code and the held-out keys (none today).
 
@@ -374,7 +381,7 @@ All of these run from `scripts/src`.
 
 ## Limitations
 
-- **Authentication is not finished.** Accounts, sessions, roles and staff management work, but each account still sees only the documents it uploaded (patient records shared within an organisation come later), and there is no audit log and no second factor. The first admin of an organisation is created from the command line. Medical registration numbers are not verified. There is no email, so setup and reset links are handed over by whoever creates them.
+- **Authentication is not finished.** Accounts, sessions, roles, staff management and patient records shared within an organisation work, but there is no audit log yet and no second factor. The first admin of an organisation is created from the command line. Medical registration numbers are not verified. There is no email, so setup and reset links are handed over by whoever creates them.
 - **Vision misreads are only caught where a PDF has a text layer.** A scan or photo has no independent text to compare the model's reading with, so a value read wrongly but consistently passes the checks. With a text layer, each value is looked for in its own row (next to its test or medicine name), with the row's own reference range taken out, so a misread that matches a number in another row, or a bound of its own range, is still caught; one that matches a number in its test name or unit passes. The fault check caught 110 of 130 such misreads, and all 20 it missed were on pages without a text layer.
 - **A page too long for one call is joined only when its halves agree exactly.** A capped page is read again as a top and a bottom half that overlap, and joined only on a run of identical lines found in one place. A page in two columns can't be joined that way (each half reads part of one column, then part of the other), and neither can long paragraphs, which the model writes as single long lines that rarely come out the same twice. Such a page keeps no lines and goes to review.
 - **Some wrong values pass the checks.** Every row of a results table must become a result, so a row the parse leaves out goes back to the parse, then to review. A result printed as a line of text rather than a table row has no such check: leaving it out is only an information note, so the document can still end verified (the 6 dropped results the fault check missed are all of this kind). A value equal to one of its own range bounds is sent to review when its row prints that number only inside the range (98 of 98 range bounds taken for the value were caught); one printed in its own cell as well is taken as the real value.
@@ -388,7 +395,7 @@ All of these run from `scripts/src`.
 
 The next phase focuses on doctors and hospital groups:
 
-- Patient records with organisation-scoped access, an audit log and a second factor
+- An audit log of every read and write of patient data
 - Citations shown on screen, and a review screen where a clinician confirms or corrects flagged values
 - Live eval runs on both models, reported for the dev, test and held-out documents apart
 

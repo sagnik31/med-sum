@@ -6,7 +6,7 @@
 //	medsumctl create-user  --email a@b.in --name "Dr A" [--roles clinician,admin] [--org ID] [--registration-no X]
 //	medsumctl create-admin --email a@b.in --name "A"    [--org ID]
 //	medsumctl reset-link   --email a@b.in
-//	medsumctl seed-dev     [--manifest ../scripts/evals/dataset/manifest.json]
+//	medsumctl seed-dev
 //
 // create-user, create-admin and reset-link print a one-time link to hand to
 // the person; it is the only way to set a password, so no password is ever
@@ -15,7 +15,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -264,22 +263,8 @@ const (
 	devClinicianEmail = "dev-clinician@med-sum.test"
 )
 
-// devPatientEmail is the interim account of a synthetic patient: until
-// patients are records, each one's documents are uploaded by an
-// account of its own.
-func devPatientEmail(key string) string { return "patient-" + key + "@med-sum.test" }
-
-type manifest struct {
-	Patients []struct {
-		Key  string `json:"key"`
-		Name string `json:"name"`
-	} `json:"patients"`
-}
-
 func (c *ctl) seedDev(ctx context.Context, args []string) error {
 	fs := flag.NewFlagSet("seed-dev", flag.ContinueOnError)
-	manifestPath := fs.String("manifest", "../scripts/evals/dataset/manifest.json",
-		"synthetic dataset manifest; one account per patient")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -291,20 +276,11 @@ func (c *ctl) seedDev(ctx context.Context, args []string) error {
 		email, name string
 		roles       []string
 	}
+	// Patients are records, not accounts: the dataset loader creates them
+	// through the API as the development clinician.
 	accounts := []account{
 		{devAdminEmail, "Dev Admin", []string{db.RoleAdmin}},
 		{devClinicianEmail, "Dr Dev Clinician", []string{db.RoleClinician}},
-	}
-	raw, err := os.ReadFile(*manifestPath)
-	if err != nil {
-		return fmt.Errorf("read the dataset manifest: %w", err)
-	}
-	var m manifest
-	if err := json.Unmarshal(raw, &m); err != nil {
-		return fmt.Errorf("parse the dataset manifest: %w", err)
-	}
-	for _, p := range m.Patients {
-		accounts = append(accounts, account{devPatientEmail(p.Key), p.Name, []string{db.RoleClinician}})
 	}
 	for _, a := range accounts {
 		// Checked against every account, since the rule looks at the email.

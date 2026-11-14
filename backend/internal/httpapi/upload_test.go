@@ -88,13 +88,13 @@ func TestUploadSavesTheFileAndStartsProcessing(t *testing.T) {
 	userID, auth := e.login("me@hospital.test")
 	body, contentType := multipartFile(t, "file", "cbc.pdf", pdfBytes)
 
-	rec := e.do(http.MethodPost, "/documents", auth, body, contentType)
+	rec := e.do(http.MethodPost, e.uploadPath(), auth, body, contentType)
 
 	if rec.Code != http.StatusCreated {
 		t.Fatalf("status = %d, want 201: %s", rec.Code, rec.Body)
 	}
 	doc := decodeJSON[db.Document](t, rec)
-	if doc.UserID != userID || doc.OriginalName != "cbc.pdf" {
+	if doc.UploadedBy == nil || *doc.UploadedBy != userID || doc.PatientID != e.patient.ID || doc.OriginalName != "cbc.pdf" {
 		t.Errorf("document = %+v", doc)
 	}
 	if strings.Contains(rec.Body.String(), e.uploads) {
@@ -126,7 +126,7 @@ func TestTheSameFileUploadedAgainIsFlaggedNotRefused(t *testing.T) {
 	_, auth := e.login("me@hospital.test")
 	upload := func(name string, content []byte) (db.Document, string) {
 		body, contentType := multipartFile(t, "file", name, content)
-		rec := e.do(http.MethodPost, "/documents", auth, body, contentType)
+		rec := e.do(http.MethodPost, e.uploadPath(), auth, body, contentType)
 		if rec.Code != http.StatusCreated {
 			t.Fatalf("status = %d, want 201: %s", rec.Code, rec.Body)
 		}
@@ -161,7 +161,7 @@ func TestUploadSucceedsWhenTheAIServiceIsDown(t *testing.T) {
 	_, auth := e.login("me@hospital.test")
 	body, contentType := multipartFile(t, "file", "rx.png", pngBytes)
 
-	rec := e.do(http.MethodPost, "/documents", auth, body, contentType)
+	rec := e.do(http.MethodPost, e.uploadPath(), auth, body, contentType)
 
 	if rec.Code != http.StatusCreated {
 		t.Fatalf("status = %d, want 201", rec.Code)
@@ -193,7 +193,7 @@ func TestRejectedUploadsStoreNothing(t *testing.T) {
 			_, auth := e.login("me@hospital.test")
 			body, contentType := multipartFile(t, tt.field, tt.file, tt.content)
 
-			rec := e.do(http.MethodPost, "/documents", auth, body, contentType)
+			rec := e.do(http.MethodPost, e.uploadPath(), auth, body, contentType)
 
 			if rec.Code != tt.wantCode {
 				t.Fatalf("status = %d, want %d: %s", rec.Code, tt.wantCode, rec.Body)
@@ -212,7 +212,7 @@ func TestUploadIsNotAMultipartForm(t *testing.T) {
 	e := newTestEnv(t)
 	_, auth := e.login("me@hospital.test")
 
-	rec := e.do(http.MethodPost, "/documents", auth, strings.NewReader("{}"), "application/json")
+	rec := e.do(http.MethodPost, e.uploadPath(), auth, strings.NewReader("{}"), "application/json")
 
 	if rec.Code != http.StatusBadRequest {
 		t.Errorf("status = %d, want 400", rec.Code)
@@ -222,10 +222,11 @@ func TestUploadIsNotAMultipartForm(t *testing.T) {
 func TestUploadRemovesTheFileWhenTheDatabaseFails(t *testing.T) {
 	e := newTestEnv(t)
 	_, auth := e.login("me@hospital.test")
-	e.store.failWith = io.ErrUnexpectedEOF
+	path := e.uploadPath()
+	e.store.failCreateDocument = io.ErrUnexpectedEOF
 	body, contentType := multipartFile(t, "file", "cbc.pdf", pdfBytes)
 
-	rec := e.do(http.MethodPost, "/documents", auth, body, contentType)
+	rec := e.do(http.MethodPost, path, auth, body, contentType)
 
 	if rec.Code != http.StatusInternalServerError {
 		t.Fatalf("status = %d, want 500", rec.Code)

@@ -17,7 +17,7 @@ import insights_service as service
 import llm
 from dataset_records import key
 from summary.build import load_inputs
-from db_rows import add_account
+from db_rows import add_patient
 from test_service_logging import line_with
 
 TOKEN = "test-internal-token"
@@ -27,34 +27,33 @@ TOKEN = "test-internal-token"
 # Helpers
 # -------------------------------------------------------------------
 def add_user(db, email="clinician@hospital.test") -> str:
-    return add_account(db, email)
+    """A patient record (created by the account with that email)."""
+    return add_patient(db, email)
 
 
-def add_document(db, user_id, path, markdown=None, uploaded_at=None) -> str:
+def add_document(db, patient_id, path, markdown=None, uploaded_at=None) -> str:
     with db.cursor() as cur:
         cur.execute(
             """
             INSERT INTO documents
-                (user_id, original_name, content_type, storage_path,
+                (patient_id, original_name, content_type, storage_path,
                  extracted_markdown, uploaded_at)
             VALUES (%s, 'report.pdf', 'application/pdf', %s, %s, COALESCE(%s, NOW()))
             RETURNING id
             """,
-            (user_id, str(path), markdown, uploaded_at),
+            (patient_id, str(path), markdown, uploaded_at),
         )
         return str(cur.fetchone()[0])
 
 
-def summary_row(db, user_id):
+def summary_row(db, patient_id):
+    """The patient's summary (html, status, error); all None without a row."""
     with db.cursor() as cur:
         cur.execute(
-            """
-            SELECT patient_insights, patient_insights_status, patient_insights_error
-            FROM staff_users WHERE id = %s
-            """,
-            (user_id,),
+            "SELECT html, status, error FROM patient_summaries WHERE patient_id = %s",
+            (patient_id,),
         )
-        return cur.fetchone()
+        return cur.fetchone() or (None, None, None)
 
 
 @pytest.fixture
@@ -71,8 +70,8 @@ def add_processed(db, user_id, doc_id, uploaded_at, status="verified") -> str:
     record.document.document_id = doc
     with db.cursor() as cur:
         cur.execute(
-            "INSERT INTO insights (document_id, user_id, status) VALUES (%s, %s, %s)",
-            (doc, user_id, status),
+            "INSERT INTO insights (document_id, status) VALUES (%s, %s)",
+            (doc, status),
         )
         cur.execute(
             "INSERT INTO document_records (document_id, schema_version, record)"
@@ -101,7 +100,7 @@ def summary_jobs(monkeypatch):
 
 
 def run_summary(user_id):
-    """Claim the user's summary, as the endpoint does, and build it."""
+    """Claim the patient's summary, as the endpoint does, and build it."""
     claim = service.claim_patient_summary(user_id)
     assert claim is not None
     service.run_patient_summary(user_id, claim)
@@ -109,8 +108,8 @@ def run_summary(user_id):
 
 def request_summary(client, user_id):
     return client.post(
-        "/internal/generate-user-insights",
-        json={"user_id": user_id},
+        "/internal/generate-patient-summary",
+        json={"patient_id": user_id},
         headers={"X-Internal-Token": TOKEN},
     )
 
@@ -140,9 +139,9 @@ def test_a_stale_summary_job_is_taken_over(db, client, summary_jobs):
     with db.cursor() as cur:
         cur.execute(
             """
-            UPDATE staff_users SET patient_insights_status = 'processing',
-                             patient_insights_updated_at = NOW() - interval '31 minutes'
-            WHERE id = %s
+            UPDATE patient_summaries SET status = 'processing',
+                             updated_at = NOW() - interval '31 minutes'
+            WHERE patient_id = %s
             """,
             (user,),
         )
@@ -194,6 +193,33 @@ def test_a_file_uploaded_twice_counts_once(db, model_client):
     assert [i.document_id for i in inputs] == [first, other]
 
 
+def test_a_deleted_document_is_left_out_and_its_copy_stands_in(db, model_client):
+    user = add_user(db)
+    first = add_processed(db, user, "d01", "2025-06-01 10:00+05:30")
+    again = add_processed(db, user, "d01", "2025-06-05 10:00+05:30")
+    gone = add_processed(db, user, "d04", "2025-06-06 10:00+05:30")
+    with db.cursor() as cur:
+        cur.execute("UPDATE documents SET sha256 = repeat('a', 64) WHERE id IN (%s, %s)",
+                    (first, again))  # fmt: skip
+        # Deleting is soft: the rows stay, marked.
+        cur.execute("UPDATE documents SET deleted_at = NOW() WHERE id IN (%s, %s)",
+                    (first, gone))  # fmt: skip
+        inputs = load_inputs(db, user)
+    assert [i.document_id for i in inputs] == [again]
+
+
+def test_the_summary_covers_one_patient_only(db, model_client):
+    meera, other = add_user(db), add_user(db)
+    mine = add_processed(db, meera, "d01", "2025-06-01 10:00+05:30")
+    add_processed(db, other, "d04", "2025-06-06 10:00+05:30")
+    inputs = load_inputs(db, meera)
+    assert [i.document_id for i in inputs] == [mine]
+
+
+def test_no_summary_is_claimed_for_an_unknown_patient(db):
+    assert service.claim_patient_summary("00000000-0000-4000-8000-000000000000") is None
+
+
 def test_a_rejected_overview_leaves_the_summary_complete_without_it(
     db, model_client, json_log
 ):
@@ -230,8 +256,8 @@ def take_over(db, user_id):
     """Another run claims the summary, as after STALE_PROCESSING_AFTER."""
     with db.cursor() as cur:
         cur.execute(
-            "UPDATE staff_users SET patient_insights_updated_at ="
-            " patient_insights_updated_at - interval '31 minutes' WHERE id = %s",
+            "UPDATE patient_summaries SET updated_at ="
+            " updated_at - interval '31 minutes' WHERE patient_id = %s",
             (user_id,),
         )
     newer = service.claim_patient_summary(user_id)
@@ -257,7 +283,7 @@ def test_a_run_that_lost_its_claim_does_not_write_its_summary(
     service.run_patient_summary(user, old)
 
     assert summary_row(db, user) == (None, "processing", None)
-    assert line_with(json_log, "summary_claim_lost")["user_id"] == user
+    assert line_with(json_log, "summary_claim_lost")["patient_id"] == user
 
 
 def test_a_run_that_lost_its_claim_does_not_mark_the_newer_one_failed(
@@ -270,7 +296,7 @@ def test_a_run_that_lost_its_claim_does_not_mark_the_newer_one_failed(
     service.run_patient_summary(user, old)
 
     assert summary_row(db, user) == (None, "processing", None)
-    assert line_with(json_log, "summary_claim_lost")["user_id"] == user
+    assert line_with(json_log, "summary_claim_lost")["patient_id"] == user
 
 
 def test_the_run_holding_the_claim_still_writes_after_a_late_one_gave_up(
@@ -301,10 +327,11 @@ def service_build():
 def set_summary(db, user_id, status, html="old summary", minutes_ago=0):
     with db.cursor() as cur:
         cur.execute(
-            "UPDATE staff_users SET patient_insights = %s, patient_insights_status = %s,"
-            " patient_insights_updated_at = NOW() - make_interval(mins => %s)"
-            " WHERE id = %s",
-            (html, status, minutes_ago, user_id),
+            "INSERT INTO patient_summaries (patient_id, html, status, updated_at)"
+            " VALUES (%s, %s, %s, NOW() - make_interval(mins => %s))"
+            " ON CONFLICT (patient_id) DO UPDATE SET html = EXCLUDED.html,"
+            " status = EXCLUDED.status, updated_at = EXCLUDED.updated_at",
+            (user_id, html, status, minutes_ago),
         )
 
 
@@ -373,7 +400,7 @@ def test_a_summary_being_built_is_left_to_that_run(db, model_client, json_log):
 
     assert summary_row(db, user)[1] == "processing"
     assert model_client.calls == []
-    assert line_with(json_log, "summary_refresh_skipped")["user_id"] == user
+    assert line_with(json_log, "summary_refresh_skipped")["patient_id"] == user
 
 
 def test_a_stale_summary_run_is_taken_over(db, model_client):

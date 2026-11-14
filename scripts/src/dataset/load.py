@@ -1,7 +1,8 @@
 """
-Upload the synthetic dataset through the backend's normal routes: log in
-as each patient's development account, then upload their documents in the
-manifest's upload order. Run from scripts/src:
+Load the synthetic dataset through the backend's normal routes: log in as
+the development clinician, create each synthetic patient's record (or find
+it by MRN, if an earlier load made it), then upload the documents to their
+patients in the manifest's upload order. Run from scripts/src:
 
     python -m dataset.load            # show what would be uploaded
     python -m dataset.load --yes      # upload
@@ -10,10 +11,9 @@ Uploading starts processing on the AI service at once, so --yes means
 live model runs (minutes per page on a CPU) and writes to whatever
 database the backend uses.
 
-The accounts come from `medsumctl seed-dev` (backend/cmd/medsumctl), with
-the password in MEDSUM_DEV_PASSWORD. Until patients are records of their
-own, each synthetic patient's documents are
-uploaded by an account of its own, patient-<key>@med-sum.test.
+The clinician account comes from `medsumctl seed-dev` (backend/cmd/medsumctl),
+with the password in MEDSUM_DEV_PASSWORD. Patients are records, not
+accounts: a clinician creates them and uploads their documents.
 """
 
 import argparse
@@ -25,11 +25,13 @@ from pathlib import Path
 
 import httpx
 
-from dataset.build import DATASET_DIR, account_email
+from dataset.build import DATASET_DIR
 
 SESSION_COOKIE = "medsum_session"
 # The backend refuses state-changing requests without it (CSRF check).
 CSRF_HEADERS = {"X-Requested-With": "med-sum"}
+# The account medsumctl seed-dev creates (devClinicianEmail).
+CLINICIAN_EMAIL = "dev-clinician@med-sum.test"
 
 
 @dataclass
@@ -67,30 +69,51 @@ def log_in(client: httpx.Client, email: str, password: str) -> str:
     session = response.cookies.get(SESSION_COOKIE)
     if not session:
         raise RuntimeError(f"logging in as {email} set no session cookie")
-    # Sessions are sent explicitly per request, so the client's own cookie
-    # jar must not carry one patient's session into another's upload.
+    # The session is sent explicitly with each request.
     client.cookies.clear()
     return session
+
+
+def patient_record(client: httpx.Client, headers: dict, patient: dict) -> str:
+    """
+    The backend id of a dataset patient: created with the manifest's
+    details, or, when the MRN is already taken (an earlier load), the
+    existing record with that MRN.
+    """
+    response = client.post(
+        "/patients",
+        headers=headers,
+        json={
+            "mrn": patient["mrn"],
+            "full_name": patient["name"],
+            "date_of_birth": patient["date_of_birth"],
+            "sex": patient["sex"],
+        },
+    )
+    if response.status_code != 409:
+        response.raise_for_status()
+        return response.json()["id"]
+    found = client.get("/patients", headers=headers, params={"q": patient["mrn"]})
+    found.raise_for_status()
+    for row in found.json():
+        if row["mrn"] == patient["mrn"]:
+            return row["id"]
+    raise RuntimeError(f"MRN {patient['mrn']} is taken but no patient has it")
 
 
 def load(
     client: httpx.Client, password: str, dataset_dir: Path = DATASET_DIR
 ) -> dict[str, str]:
     """Upload everything; returns dataset id -> the backend's document id."""
-    _, uploads = plan(dataset_dir)
-    sessions: dict[str, str] = {}
+    patients, uploads = plan(dataset_dir)
+    session = log_in(client, CLINICIAN_EMAIL, password)
+    headers = {**CSRF_HEADERS, "Cookie": f"{SESSION_COOKIE}={session}"}
+    records = {key: patient_record(client, headers, p) for key, p in patients.items()}
     created: dict[str, str] = {}
     for upload in uploads:
-        if upload.patient not in sessions:
-            sessions[upload.patient] = log_in(
-                client, account_email(upload.patient), password
-            )
         response = client.post(
-            "/documents",
-            headers={
-                **CSRF_HEADERS,
-                "Cookie": f"{SESSION_COOKIE}={sessions[upload.patient]}",
-            },
+            f"/patients/{records[upload.patient]}/documents",
+            headers=headers,
             files={
                 "file": (
                     upload.file.name,

@@ -27,8 +27,11 @@ PRIMARY, FALLBACK = llm.PRIMARY_MODEL, llm.FALLBACK_MODEL
 # Rows
 # -------------------------------------------------------------------
 def add_document(db, doc_id: str = "d02") -> str:
-    """A dataset document, uploaded by an account named as its patient (as seed-dev does)."""
-    name = expected_patient(doc_id).name
+    """
+    A dataset document, uploaded by a clinician to its patient's record,
+    which holds the manifest's details (as dataset.load makes it).
+    """
+    patient = expected_patient(doc_id)
     with db.cursor() as cur:
         cur.execute(
             "INSERT INTO organizations (name) VALUES ('Test Hospital')"
@@ -38,13 +41,21 @@ def add_document(db, doc_id: str = "d02") -> str:
         cur.execute(
             "INSERT INTO staff_users (org_id, email, full_name) VALUES (%s, %s, %s)"
             " RETURNING id",
-            (org, f"{doc_id}-{time.monotonic_ns()}@hospital.test", name),
+            (org, f"{doc_id}-{time.monotonic_ns()}@hospital.test", "Dr Test"),
         )
         (user,) = cur.fetchone()
         cur.execute(
-            "INSERT INTO documents (user_id, original_name, content_type, storage_path)"
-            " VALUES (%s, 'a', 'image/png', %s) RETURNING id",
-            (user, str(DATASET_DIR / DOCS[doc_id]["file"])),
+            "INSERT INTO patients (org_id, mrn, full_name, date_of_birth, sex)"
+            " VALUES (%s, %s, %s, %s, %s)"
+            " ON CONFLICT (org_id, mrn) DO UPDATE SET mrn = EXCLUDED.mrn RETURNING id",
+            (org, patient.mrn, patient.name, patient.date_of_birth, patient.sex),
+        )
+        (patient_id,) = cur.fetchone()
+        cur.execute(
+            "INSERT INTO documents (patient_id, uploaded_by, original_name,"
+            " content_type, storage_path) VALUES (%s, %s, 'a', 'image/png', %s)"
+            " RETURNING id",
+            (patient_id, user, str(DATASET_DIR / DOCS[doc_id]["file"])),
         )
         return str(cur.fetchone()[0])
 
@@ -314,6 +325,28 @@ def test_a_deleted_document_s_job_is_gone_with_it(db, model_client):
 
     assert job_row(db, doc) is None
     assert model_client.calls == []
+
+
+def test_a_soft_deleted_document_is_not_processed(db, model_client):
+    doc = add_document(db)
+    jobs.enqueue(db, doc)
+    job = jobs.claim_next(db, "A")
+    with db.cursor() as cur:
+        cur.execute("UPDATE documents SET deleted_at = NOW() WHERE id = %s", (doc,))
+
+    jobs.process(job, "A")
+
+    assert model_client.calls == []
+    row = job_row(db, doc)
+    assert row["status"] == "failed" and row["error"] == "the document was deleted"
+
+
+def test_the_expected_patient_is_the_patient_record(db):
+    doc = add_document(db, "d02")
+    state = jobs._document_state(db, doc)
+    # Everything the patient-match check compares, not just a name.
+    assert state["expected_patient"] == expected_patient("d02")
+    assert state["uploaded_by"] == "Dr Test"
 
 
 def test_a_crashed_worker_s_run_is_resumed_by_the_next_and_its_late_write_refused(

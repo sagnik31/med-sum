@@ -13,7 +13,7 @@ from fastapi.testclient import TestClient
 import insights_service as service
 import llm
 import model_health
-from db_rows import add_account
+from db_rows import add_patient
 from observability import start_run
 from pipeline import nodes
 
@@ -179,9 +179,9 @@ def run(db):
     """An open pipeline run on a fresh documents row."""
     with db.cursor() as cur:
         cur.execute(
-            "INSERT INTO documents (user_id, original_name, content_type, storage_path)"
+            "INSERT INTO documents (patient_id, original_name, content_type, storage_path)"
             " VALUES (%s, 'a.pdf', 'application/pdf', '/x') RETURNING id",
-            (add_account(db),),
+            (add_patient(db),),
         )
         document_id = str(cur.fetchone()[0])
     with start_run(document_id, "test-breaker") as r:

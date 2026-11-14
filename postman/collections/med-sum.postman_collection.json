@@ -318,13 +318,176 @@
           ]
         },
         {
-          "name": "Documents",
+          "name": "Patients",
+          "id": "d64775cb-8b5c-4a3e-858b-60cc07ecd7b8",
           "item": [
             {
-              "name": "Upload Document",
-              "id": "05ae45d2-87a0-4fd2-b8fc-8180a57f5a26",
+              "name": "Search Patients",
+              "id": "c1ab4777-3e0d-4049-b765-f64c6e267e46",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{backend_url}}/patients?q=",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "patients"
+                  ],
+                  "query": [
+                    {
+                      "key": "q",
+                      "value": "",
+                      "description": "Part of the name, or the start of the MRN; empty lists all"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Create Patient",
+              "id": "d762c08e-5505-4c55-8dcd-df4b5fb68541",
               "request": {
                 "method": "POST",
+                "url": {
+                  "raw": "{{backend_url}}/patients",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "patients"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"mrn\": \"SYN-0001\",\n  \"full_name\": \"Test Patient\",\n  \"date_of_birth\": \"1980-01-31\",\n  \"age_years\": null,\n  \"sex\": \"F\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "header": [
+                  {
+                    "key": "X-Requested-With",
+                    "value": "med-sum",
+                    "type": "text"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "Get Patient",
+              "id": "eda3e5e4-2449-4449-8ef6-c65f22334388",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{backend_url}}/patients/:id",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "patients",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "Patient ID"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Update Patient",
+              "id": "f8de3b43-891f-496e-a20c-204ce1b431c0",
+              "request": {
+                "method": "PATCH",
+                "url": {
+                  "raw": "{{backend_url}}/patients/:id",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "patients",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "Patient ID"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"full_name\": \"Test Patient\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "header": [
+                  {
+                    "key": "X-Requested-With",
+                    "value": "med-sum",
+                    "type": "text"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "List Patient Documents",
+              "id": "68108c74-7dc6-44d0-80e4-ee98ba66cace",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{backend_url}}/patients/:id/documents",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "patients",
+                    ":id",
+                    "documents"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "Patient ID"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Upload Document",
+              "id": "e66f7943-779b-4421-95e3-2badad891717",
+              "request": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{backend_url}}/patients/:id/documents",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "patients",
+                    ":id",
+                    "documents"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "Patient ID"
+                    }
+                  ]
+                },
                 "body": {
                   "mode": "formdata",
                   "formdata": [
@@ -332,15 +495,6 @@
                       "key": "file",
                       "type": "file"
                     }
-                  ]
-                },
-                "url": {
-                  "raw": "{{backend_url}}/documents",
-                  "host": [
-                    "{{backend_url}}"
-                  ],
-                  "path": [
-                    "documents"
                   ]
                 },
                 "header": [
@@ -353,17 +507,87 @@
               }
             },
             {
-              "name": "List Documents",
-              "id": "9280bbe3-5ec2-45e2-813c-4193e6305d9d",
+              "name": "Get Patient Summary",
+              "id": "0748fcce-656e-4d6a-bfd2-9d4c330060f7",
               "request": {
                 "method": "GET",
                 "url": {
-                  "raw": "{{backend_url}}/documents",
+                  "raw": "{{backend_url}}/patients/:id/summary",
                   "host": [
                     "{{backend_url}}"
                   ],
                   "path": [
-                    "documents"
+                    "patients",
+                    ":id",
+                    "summary"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "Patient ID"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Generate Patient Summary",
+              "id": "fcf5dadb-3fc2-4d90-a084-066e33082b05",
+              "request": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{backend_url}}/patients/:id/summary",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "patients",
+                    ":id",
+                    "summary"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "Patient ID"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "X-Requested-With",
+                    "value": "med-sum",
+                    "type": "text"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Documents",
+          "item": [
+            {
+              "name": "Get Document",
+              "id": "62acc4c8-b2d1-4aa0-8953-a7f78a7a5b9a",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{backend_url}}/documents/:id",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "documents",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "Document ID"
+                    }
                   ]
                 }
               }
@@ -487,23 +711,6 @@
                 },
                 "description": "The document's structured record as stored (printed and derived values, provenance, page transcriptions) and a flat list of its citations, each with the item's review status and low-confidence reasons. 404 for another user's document or before a record exists."
               }
-            },
-            {
-              "name": "Get Patient Summaries",
-              "id": "f0c61940-4d09-468c-8a37-67f7b3a3b24e",
-              "request": {
-                "method": "GET",
-                "url": {
-                  "raw": "{{backend_url}}/user/insights",
-                  "host": [
-                    "{{backend_url}}"
-                  ],
-                  "path": [
-                    "user",
-                    "insights"
-                  ]
-                }
-              }
             }
           ],
           "id": "b555f06b-3bb6-4848-8154-9fed5adf7abf"
@@ -597,7 +804,7 @@
           }
         },
         {
-          "name": "Generate User Insights (Internal)",
+          "name": "Generate Patient Summary (Internal)",
           "id": "b341ee57-fed9-4e3e-86bd-ede26bd273ad",
           "request": {
             "method": "POST",
@@ -615,16 +822,21 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"user_id\": \"uuid-string\"\n}"
+              "raw": "{\n  \"patient_id\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
-              "raw": "{{ai_service_url}}/internal/generate-user-insights",
+              "raw": "{{ai_service_url}}/internal/generate-patient-summary",
               "host": [
                 "{{ai_service_url}}"
               ],
               "path": [
                 "internal",
-                "generate-user-insights"
+                "generate-patient-summary"
               ]
             }
           }

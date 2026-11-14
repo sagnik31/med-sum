@@ -11,7 +11,7 @@ import psycopg.rows
 import pytest
 
 from dataset_records import key
-from db_rows import add_account
+from db_rows import add_patient
 from observability.model_calls import OTEL_GENAI_ATTRIBUTES as OTEL
 
 
@@ -28,8 +28,8 @@ def run(db, sql, *params):
 
 @pytest.fixture
 def document(db):
-    user = add_account(db)
-    (doc,) = one(db, "INSERT INTO documents (user_id, original_name, content_type, "
+    user = add_patient(db)
+    (doc,) = one(db, "INSERT INTO documents (patient_id, original_name, content_type, "
                      "storage_path) VALUES (%s, 'a.pdf', 'application/pdf', '/x/a.pdf') "
                      "RETURNING id", user)  # fmt: skip
     return doc

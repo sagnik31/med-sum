@@ -15,7 +15,7 @@ import llm
 from dataset.build import DATASET_DIR
 from dataset.content import DOCUMENTS, PATIENTS
 from dataset_records import DOCS, expected_patient, key, part_replies
-from db_rows import add_account
+from db_rows import add_patient
 from evals import redaction
 from observability import context, data_classes, logs
 from observability.data_classes import COLUMNS, LOG_FIELDS, OUTSIDE_CLINICAL, TELEMETRY
@@ -193,9 +193,9 @@ def replies(doc_id: str) -> list[str]:
 def run_doc(db, doc_id, model_client, expected=None):
     with db.cursor() as cur:
         cur.execute(
-            "INSERT INTO documents (user_id, original_name, content_type,"
+            "INSERT INTO documents (patient_id, original_name, content_type,"
             " storage_path) VALUES (%s, 'a', 'application/pdf', '/x') RETURNING id",
-            (add_account(db, f"{doc_id}-{len(model_client.calls)}@hospital.test"),),
+            (add_patient(db, f"{doc_id}-{len(model_client.calls)}@hospital.test"),),
         )
         document_id = str(cur.fetchone()[0])
     model_client.replies[PRIMARY] = replies(doc_id) * 3  # room for repairs

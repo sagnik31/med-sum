@@ -19,7 +19,7 @@ import insights_service as service
 import llm
 from dataset.build import DATASET_DIR
 from dataset_records import DOCS
-from db_rows import add_account
+from db_rows import add_patient
 
 # Stands for document content: it must reach the database and never a log.
 SECRET = "Haemoglobin 9.1 for Asha Verma"
@@ -88,9 +88,9 @@ def test_importing_the_service_configures_no_logging(root_logger):
 def add_document(db) -> str:
     with db.cursor() as cur:
         cur.execute(
-            "INSERT INTO documents (user_id, original_name, content_type, storage_path)"
+            "INSERT INTO documents (patient_id, original_name, content_type, storage_path)"
             " VALUES (%s, %s, 'image/png', %s) RETURNING id",
-            (add_account(db), f"{SECRET}.png", str(DATASET_DIR / DOCS["d17"]["file"])),
+            (add_patient(db), f"{SECRET}.png", str(DATASET_DIR / DOCS["d17"]["file"])),
         )
         return str(cur.fetchone()[0])
 
@@ -144,10 +144,10 @@ def test_a_failed_document_job_logs_the_error_type_and_stores_the_message(
 
 
 def test_a_failed_patient_summary_logs_the_error_type_only(db, monkeypatch, json_log):
-    user = add_account(db)
+    user = add_patient(db)
     with db.cursor() as cur:
         cur.execute(
-            "INSERT INTO documents (user_id, original_name, content_type, storage_path,"
+            "INSERT INTO documents (patient_id, original_name, content_type, storage_path,"
             " extracted_markdown) VALUES (%s, 'a.pdf', 'application/pdf', '/x', %s)",
             (user, SECRET),
         )
@@ -160,7 +160,7 @@ def test_a_failed_patient_summary_logs_the_error_type_only(db, monkeypatch, json
     service.run_patient_summary(user, service.claim_patient_summary(user))
 
     assert events_of(json_log) == ["summary_started", "summary_failed"]
-    assert line_with(json_log, "summary_failed")["user_id"] == user
+    assert line_with(json_log, "summary_failed")["patient_id"] == user
     assert SECRET not in json_log.getvalue()
 
 

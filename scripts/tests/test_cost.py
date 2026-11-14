@@ -6,7 +6,7 @@ from decimal import Decimal
 
 import pytest
 
-from db_rows import add_account
+from db_rows import add_patient
 from observability.cost import PRICES, Price, cost_of, estimate_run_cost
 
 CLOUD = Price(date(2026, 1, 1), Decimal("0.30"), Decimal("0.075"), Decimal("2.50"))
@@ -46,10 +46,10 @@ def run_id(db) -> str:
     and an unpriced model."""
     with db.cursor() as cur:
         cur.execute(
-            "INSERT INTO documents (user_id, original_name, content_type,"
+            "INSERT INTO documents (patient_id, original_name, content_type,"
             " storage_path) VALUES (%s, 'a.pdf', 'application/pdf', '/x')"
             " RETURNING id",
-            (add_account(db),),
+            (add_patient(db),),
         )
         (document,) = cur.fetchone()
         cur.execute(

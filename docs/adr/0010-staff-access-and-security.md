@@ -1,6 +1,6 @@
 # 0010. Staff access: admin-issued accounts, server-side sessions, permissions in code, scope in SQL
 
-- **Status:** Accepted, 2026-11-08; confirmed 2026-11-13, when a second factor was dropped from the scope. Built: accounts, passwords, sessions, CSRF protection, the permission layer and staff management. Not built yet: patient records with organisation scope in SQL, soft delete, the audit log, the per-IP login limit, the AI service's localhost bind and moving development secrets out of the run scripts.
+- **Status:** Accepted, 2026-11-08; confirmed 2026-11-13, when a second factor was dropped from the scope. Built: accounts, passwords, sessions, CSRF protection, the permission layer, staff management, patient records with organisation scope in SQL, and soft delete (by the uploader only; the patient summary is rebuilt without the document). Not built yet: the audit log, the per-IP login limit, the AI service's localhost bind and moving development secrets out of the run scripts.
 
 ## Context
 

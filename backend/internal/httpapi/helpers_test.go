@@ -11,6 +11,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"sort"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -47,18 +49,23 @@ func TestMain(m *testing.M) {
 
 // fakeStore is an in-memory Store. Users and documents are keyed by ID;
 // sessions and one-time tokens by their hash; insights by document ID;
-// patient summaries by user ID.
+// patients and their summaries by patient ID.
 type fakeStore struct {
 	mu        sync.Mutex
 	nextID    int
 	users     map[string]*db.User
 	sessions  map[string]*db.Session
 	tokens    map[string]*fakeToken
+	patients  map[string]*db.Patient
 	documents map[string]*db.Document
+	deleted   map[string]string // soft-deleted document ID -> who deleted it
 	insights  map[string]*db.Insight
 	records   map[string]*db.DocumentRecord
 	summaries map[string]*db.PatientSummary
 	failWith  error // returned by every method when set
+	// failCreateDocument is returned by CreateDocument alone, so an upload
+	// gets as far as writing its file before the database fails.
+	failCreateDocument error
 }
 
 type fakeToken struct {
@@ -71,7 +78,9 @@ func newFakeStore() *fakeStore {
 		users:     map[string]*db.User{},
 		sessions:  map[string]*db.Session{},
 		tokens:    map[string]*fakeToken{},
+		patients:  map[string]*db.Patient{},
 		documents: map[string]*db.Document{},
+		deleted:   map[string]string{},
 		insights:  map[string]*db.Insight{},
 		records:   map[string]*db.DocumentRecord{},
 		summaries: map[string]*db.PatientSummary{},
@@ -357,27 +366,130 @@ func (f *fakeStore) CompletePasswordSetup(_ context.Context, tokenHash []byte, p
 	return u.ID, nil
 }
 
-// ----- documents and summaries -----
+// ----- patients, documents and summaries -----
+//
+// Like the real store, every lookup goes through the patient's
+// organisation, so the handler tests see the same 404s for another
+// organisation's rows; deleted documents are kept but never returned.
 
-func (f *fakeStore) GetPatientSummary(_ context.Context, userID string) (*db.PatientSummary, error) {
+// addPatient stores a patient in the organisation and returns it.
+func (f *fakeStore) addPatient(orgID, mrn string) *db.Patient {
+	p, err := f.CreatePatient(context.Background(), orgID, "", db.PatientFields{MRN: mrn, FullName: "Patient " + mrn})
+	if err != nil {
+		panic(err)
+	}
+	return p
+}
+
+// patientIn returns the stored patient if it is in the organisation;
+// call it holding f.mu.
+func (f *fakeStore) patientIn(orgID, patientID string) *db.Patient {
+	p, ok := f.patients[patientID]
+	if !ok || p.OrgID != orgID {
+		return nil
+	}
+	return p
+}
+
+func (f *fakeStore) CreatePatient(_ context.Context, orgID, createdBy string, pf db.PatientFields) (*db.Patient, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
 		return nil, f.failWith
 	}
-	if s, ok := f.summaries[userID]; ok {
+	for _, p := range f.patients {
+		if p.OrgID == orgID && p.MRN == pf.MRN {
+			return nil, db.ErrMRNTaken
+		}
+	}
+	now := time.Now()
+	p := &db.Patient{ID: f.newID(), OrgID: orgID, MRN: pf.MRN, FullName: pf.FullName,
+		DateOfBirth: pf.DateOfBirth, AgeYears: pf.AgeYears, Sex: pf.Sex, CreatedAt: now, UpdatedAt: now}
+	if createdBy != "" {
+		p.CreatedBy = &createdBy
+	}
+	f.patients[p.ID] = p
+	copied := *p
+	return &copied, nil
+}
+
+func (f *fakeStore) UpdatePatient(_ context.Context, orgID, patientID string, pf db.PatientFields) (*db.Patient, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return nil, f.failWith
+	}
+	p := f.patientIn(orgID, patientID)
+	if p == nil {
+		return nil, nil
+	}
+	for _, o := range f.patients {
+		if o.ID != p.ID && o.OrgID == orgID && o.MRN == pf.MRN {
+			return nil, db.ErrMRNTaken
+		}
+	}
+	p.MRN, p.FullName, p.DateOfBirth, p.AgeYears, p.Sex = pf.MRN, pf.FullName, pf.DateOfBirth, pf.AgeYears, pf.Sex
+	p.UpdatedAt = time.Now()
+	copied := *p
+	return &copied, nil
+}
+
+func (f *fakeStore) GetPatient(_ context.Context, orgID, patientID string) (*db.Patient, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return nil, f.failWith
+	}
+	p := f.patientIn(orgID, patientID)
+	if p == nil {
+		return nil, nil
+	}
+	copied := *p
+	return &copied, nil
+}
+
+func (f *fakeStore) ListPatients(_ context.Context, orgID, query string) ([]db.Patient, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return nil, f.failWith
+	}
+	q := strings.ToLower(strings.TrimSpace(query))
+	out := []db.Patient{}
+	for _, p := range f.patients {
+		if p.OrgID != orgID {
+			continue
+		}
+		if q == "" || strings.Contains(strings.ToLower(p.FullName), q) || strings.HasPrefix(strings.ToLower(p.MRN), q) {
+			out = append(out, *p)
+		}
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].FullName < out[j].FullName })
+	return out, nil
+}
+
+func (f *fakeStore) GetPatientSummary(_ context.Context, patientID string) (*db.PatientSummary, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return nil, f.failWith
+	}
+	if s, ok := f.summaries[patientID]; ok {
 		copied := *s
 		return &copied, nil
 	}
 	return &db.PatientSummary{}, nil
 }
 
-// duplicateOf is the first other document of d's user with d's file hash
-// (IDs increase, so the smallest earlier ID); call it holding f.mu.
+// duplicateOf is the first other live document of d's patient with d's
+// file hash (IDs increase, so the smallest earlier ID); call it holding f.mu.
 func (f *fakeStore) duplicateOf(d *db.Document) *string {
 	var first *string
 	for _, o := range f.documents {
-		if o.UserID == d.UserID && o.SHA256 != "" && o.SHA256 == d.SHA256 && o.ID < d.ID &&
+		if _, gone := f.deleted[o.ID]; gone {
+			continue
+		}
+		if o.PatientID == d.PatientID && o.SHA256 != "" && o.SHA256 == d.SHA256 && o.ID < d.ID &&
 			(first == nil || o.ID < *first) {
 			id := o.ID
 			first = &id
@@ -386,22 +498,49 @@ func (f *fakeStore) duplicateOf(d *db.Document) *string {
 	return first
 }
 
-func (f *fakeStore) CreateDocument(_ context.Context, userID, originalName, contentType, storagePath, sha256 string) (*db.Document, error) {
+// documentIn returns the stored live document if its patient is in the
+// organisation; call it holding f.mu.
+func (f *fakeStore) documentIn(orgID, docID string) *db.Document {
+	d, ok := f.documents[docID]
+	if !ok || f.patientIn(orgID, d.PatientID) == nil {
+		return nil
+	}
+	if _, gone := f.deleted[docID]; gone {
+		return nil
+	}
+	return d
+}
+
+func (f *fakeStore) CreateDocument(_ context.Context, orgID string, nd db.NewDocument) (*db.Document, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
 		return nil, f.failWith
 	}
+	if f.failCreateDocument != nil {
+		return nil, f.failCreateDocument
+	}
+	if f.patientIn(orgID, nd.PatientID) == nil {
+		return nil, nil
+	}
 	now := time.Now()
 	d := &db.Document{
 		ID:           f.newID(),
-		UserID:       userID,
-		OriginalName: originalName,
-		ContentType:  contentType,
-		StoragePath:  storagePath,
+		PatientID:    nd.PatientID,
+		OriginalName: nd.OriginalName,
+		ContentType:  nd.ContentType,
+		StoragePath:  nd.StoragePath,
 		UploadedAt:   now,
 		UpdatedAt:    now,
-		SHA256:       sha256,
+		SHA256:       nd.SHA256,
+	}
+	if nd.UploadedBy != "" {
+		by := nd.UploadedBy
+		d.UploadedBy = &by
+		if u, ok := f.users[by]; ok {
+			name := u.FullName
+			d.UploadedByName = &name
+		}
 	}
 	f.documents[d.ID] = d
 	copied := *d
@@ -409,59 +548,55 @@ func (f *fakeStore) CreateDocument(_ context.Context, userID, originalName, cont
 	return &copied, nil
 }
 
-func (f *fakeStore) ListDocumentsByUser(_ context.Context, userID string) ([]db.Document, error) {
+func (f *fakeStore) GetDocument(_ context.Context, orgID, docID string) (*db.Document, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return nil, f.failWith
+	}
+	d := f.documentIn(orgID, docID)
+	if d == nil {
+		return nil, nil
+	}
+	copied := *d
+	copied.DuplicateOf = f.duplicateOf(d)
+	return &copied, nil
+}
+
+func (f *fakeStore) ListPatientDocuments(_ context.Context, orgID, patientID string) ([]db.Document, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
 		return nil, f.failWith
 	}
 	docs := []db.Document{}
-	for _, d := range f.documents {
-		if d.UserID == userID {
-			copied := *d
-			copied.DuplicateOf = f.duplicateOf(d)
-			copied.InsightStatus = "not_started"
-			if ins, ok := f.insights[d.ID]; ok {
-				copied.InsightStatus = ins.Status
-			}
-			docs = append(docs, copied)
+	for id, d := range f.documents {
+		if d.PatientID != patientID || f.documentIn(orgID, id) == nil {
+			continue
 		}
+		copied := *d
+		copied.DuplicateOf = f.duplicateOf(d)
+		copied.InsightStatus = "not_started"
+		if ins, ok := f.insights[d.ID]; ok {
+			copied.InsightStatus = ins.Status
+		}
+		docs = append(docs, copied)
 	}
+	sort.Slice(docs, func(i, j int) bool { return docs[i].ID > docs[j].ID })
 	return docs, nil
 }
 
-func (f *fakeStore) GetDocumentByIDAndUser(_ context.Context, docID, userID string) (*db.Document, error) {
+func (f *fakeStore) SoftDeleteDocument(_ context.Context, orgID, docID, deletedBy string, _ time.Time) (bool, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
-		return nil, f.failWith
+		return false, f.failWith
 	}
-	d, ok := f.documents[docID]
-	if !ok || d.UserID != userID {
-		return nil, nil
+	if f.documentIn(orgID, docID) == nil {
+		return false, nil
 	}
-	copied := *d
-	return &copied, nil
-}
-
-func (f *fakeStore) DeleteDocumentByIDAndUser(_ context.Context, docID, userID string) (string, bool, error) {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	if f.failWith != nil {
-		return "", false, f.failWith
-	}
-	d, ok := f.documents[docID]
-	if !ok || d.UserID != userID {
-		return "", false, nil
-	}
-	delete(f.documents, docID)
-	shared := false
-	for _, other := range f.documents {
-		if other.StoragePath == d.StoragePath {
-			shared = true
-		}
-	}
-	return d.StoragePath, shared, nil
+	f.deleted[docID] = deletedBy
+	return true, nil
 }
 
 func (f *fakeStore) GetInsightByDocumentID(_ context.Context, docID string) (*db.Insight, error) {
@@ -490,9 +625,11 @@ func (f *fakeStore) GetDocumentRecord(_ context.Context, docID string) (*db.Docu
 	return nil, nil
 }
 
-// addDocument stores a document directly, bypassing the upload route.
-func (f *fakeStore) addDocument(userID, storagePath string) string {
-	d, _ := f.CreateDocument(context.Background(), userID, "report.pdf", "application/pdf", storagePath, "")
+// addDocument stores a document of the patient directly, bypassing the
+// upload route, as uploaded by the account.
+func (f *fakeStore) addDocument(p *db.Patient, uploadedBy, storagePath string) string {
+	d, _ := f.CreateDocument(context.Background(), p.OrgID, db.NewDocument{PatientID: p.ID, UploadedBy: uploadedBy,
+		OriginalName: "report.pdf", ContentType: "application/pdf", StoragePath: storagePath})
 	return d.ID
 }
 
@@ -541,9 +678,19 @@ type testEnv struct {
 	store   *fakeStore
 	ai      *fakeAI
 	uploads string
+	patient *db.Patient // the default patient of uploadPath
 
 	mu    sync.Mutex
 	clock time.Time
+}
+
+// uploadPath is the upload route of a patient in the test organisation,
+// created on first use.
+func (e *testEnv) uploadPath() string {
+	if e.patient == nil {
+		e.patient = e.store.addPatient("org-1", "SH-UPLOAD")
+	}
+	return "/patients/" + e.patient.ID + "/documents"
 }
 
 func newTestEnv(t *testing.T) *testEnv {

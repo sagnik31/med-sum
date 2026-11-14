@@ -28,15 +28,6 @@ CONTENT_TYPES = {"pdf": "application/pdf", "scan_pdf": "application/pdf",
                  "png": "image/png", "jpg": "image/jpeg"}  # fmt: skip
 
 
-def account_email(patient_key: str) -> str:
-    """
-    The development account a synthetic patient's documents are uploaded
-    by (medsumctl seed-dev creates it, dataset.load logs in as it), until
-    patients are records of their own.
-    """
-    return f"patient-{patient_key}@med-sum.test"
-
-
 def manifest() -> dict:
     keys = {doc.id: build_key(doc) for doc in DOCUMENTS}
     return {
@@ -144,8 +135,7 @@ def readme(data: dict) -> str:
         for d in data["documents"]
     )
     patients = "\n".join(
-        f"| {p['name']} | {p['sex']} | {p['date_of_birth']} | {p['mrn']} | "
-        f"`{account_email(p['key'])}` |"
+        f"| {p['name']} | {p['sex']} | {p['date_of_birth']} | {p['mrn']} |"
         for p in data["patients"]
     )
     pages = sum(d["pages"] for d in data["documents"])
@@ -172,8 +162,12 @@ check, and `test` for the rest; eval reports keep them apart.
 
 ## Patients
 
-| Name | Sex | Date of birth | MRN | Development account |
-| --- | --- | --- | --- | --- |
+Patient records, not accounts: `python -m dataset.load` creates each one
+through the API as the development clinician (`medsumctl seed-dev`), with
+these details, and uploads its documents to it.
+
+| Name | Sex | Date of birth | MRN |
+| --- | --- | --- | --- |
 {patients}
 
 ## Documents

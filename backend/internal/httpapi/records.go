@@ -39,21 +39,8 @@ type citationResult struct {
 }
 
 func (s *Server) handleGetDocumentRecord(w http.ResponseWriter, r *http.Request, docID string) {
-	userID, ok := userIDFromContext(r.Context())
-	if !ok {
-		http.Error(w, "unauthorized", http.StatusUnauthorized)
-		return
-	}
 	ctx := r.Context()
-
-	doc, err := s.db.GetDocumentByIDAndUser(ctx, docID, userID)
-	if err != nil {
-		log.Printf("GetDocumentByIDAndUser error: %v", err)
-		http.Error(w, "internal error", http.StatusInternalServerError)
-		return
-	}
-	if doc == nil {
-		http.Error(w, "not found", http.StatusNotFound)
+	if s.loadDocument(w, r, docID) == nil {
 		return
 	}
 

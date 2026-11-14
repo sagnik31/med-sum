@@ -110,8 +110,8 @@ def enqueue(conn, document_id: str, *, reprocess: bool = False) -> str:
             if job is None:
                 return "already_queued"
             cur.execute(
-                "INSERT INTO insights (document_id, user_id, status)"
-                " SELECT id, user_id, 'processing' FROM documents WHERE id = %s"
+                "INSERT INTO insights (document_id, status)"
+                " SELECT id, 'processing' FROM documents WHERE id = %s"
                 " ON CONFLICT (document_id) DO UPDATE SET status = 'processing',"
                 " error_message = NULL, updated_at = now()",
                 (document_id,),
@@ -181,9 +181,9 @@ def _park(conn, job: Job, worker: str) -> None:
 
 def _set_insight(cur, document_id, status, *, html=None, error=None) -> None:
     cur.execute(
-        "INSERT INTO insights (document_id, user_id, status, html_insights,"
+        "INSERT INTO insights (document_id, status, html_insights,"
         " error_message)"
-        " SELECT id, user_id, %(s)s, %(h)s, %(e)s FROM documents WHERE id = %(d)s"
+        " SELECT id, %(s)s, %(h)s, %(e)s FROM documents WHERE id = %(d)s"
         " ON CONFLICT (document_id) DO UPDATE SET status = EXCLUDED.status,"
         " html_insights = coalesce(EXCLUDED.html_insights, insights.html_insights),"
         " error_message = EXCLUDED.error_message, updated_at = now()",
@@ -280,23 +280,32 @@ class Heartbeat:
 
 
 def _document_state(conn, document_id: str) -> dict:
+    """
+    The graph's first state for a document: its file, who uploaded it, and
+    the patient record it was uploaded to, which the patient-match check
+    compares the printed details with (name, sex, date of birth or age, and
+    the MRN). A deleted document is not processed.
+    """
     with conn.cursor() as cur:
         cur.execute(
-            "SELECT d.storage_path, u.full_name FROM documents d"
-            " LEFT JOIN staff_users u ON u.id = d.user_id WHERE d.id = %s",
+            "SELECT d.storage_path, u.full_name, p.full_name, p.sex,"
+            " p.date_of_birth, p.age_years, p.mrn"
+            " FROM documents d JOIN patients p ON p.id = d.patient_id"
+            " LEFT JOIN staff_users u ON u.id = d.uploaded_by"
+            " WHERE d.id = %s AND d.deleted_at IS NULL",
             (document_id,),
         )
         row = cur.fetchone()
     if row is None:
         raise LookupError("the document was deleted")
-    path, uploader = row
-    # Until patients are records of their own, the uploader's name is all
-    # that is known of who the document is for.
+    path, uploader, name, sex, born, age, mrn = row
     return initial_state(
         document_id,
         file_path=path,
         uploaded_by=uploader,
-        expected_patient=ExpectedPatient(name=uploader) if uploader else None,
+        expected_patient=ExpectedPatient(
+            name=name, sex=sex, date_of_birth=born, age_years=age, mrn=mrn
+        ),
     )
 
 

@@ -7,16 +7,16 @@ Insights Generation Service (FastAPI)
     GET  /health
     POST /internal/generate-insights        (queue a document's job)
     POST /internal/reprocess-document       (queue it again, as a new run)
-    POST /internal/generate-user-insights   (background, per user)
+    POST /internal/generate-patient-summary (background, per patient)
 
 - Patient summaries: built on request, and rebuilt by the worker after a
-  document job ends when its uploader already has one and has no other
+  document job ends when its patient already has one and has no other
   document queued or running (refresh_after_document), so a batch of
   uploads rebuilds it once, at the end.
 
 - Internal only: /internal/* requires the X-Internal-Token header to match
   INTERNAL_API_TOKEN. No CORS, so browsers cannot call it; the Go backend
-  checks access to the document and forwards requests here.
+  checks the caller's organisation and forwards requests here.
 
 - Documents: a request queues a job (document_jobs, the jobs table), and a
   worker thread started with the app takes jobs one at a time and runs each
@@ -102,7 +102,7 @@ app = FastAPI(title="Insights Generation Service", lifespan=lifespan)
 
 
 def require_internal_token(x_internal_token: str = Header(default="")) -> None:
-    """Endpoints act on any document/user ID, so only the backend may call them."""
+    """Endpoints act on any document or patient ID, so only the backend may call them."""
     if not INTERNAL_API_TOKEN:
         raise HTTPException(
             status_code=503, detail="INTERNAL_API_TOKEN is not configured"
@@ -123,8 +123,8 @@ class GenerateInsightsRequest(BaseModel):
     document_id: str
 
 
-class GenerateUserInsightsRequest(BaseModel):
-    user_id: str
+class GeneratePatientSummaryRequest(BaseModel):
+    patient_id: str
 
 
 # -------------------------------------------------------------------
@@ -194,55 +194,58 @@ def reprocess_document_endpoint(req: GenerateInsightsRequest):
 
 
 @app.post(
-    "/internal/generate-user-insights", dependencies=[Depends(require_internal_token)]
+    "/internal/generate-patient-summary",
+    dependencies=[Depends(require_internal_token)],
 )
-def generate_user_insights_endpoint(
-    req: GenerateUserInsightsRequest,
+def generate_patient_summary_endpoint(
+    req: GeneratePatientSummaryRequest,
     background_tasks: BackgroundTasks,
 ):
     """
-    Queue the cumulative summary across all of a user's processed documents.
+    Queue the cumulative summary across all of a patient's processed
+    documents.
 
-    Called by the Go backend (POST /user/insights) for the logged-in user.
+    Called by the Go backend (POST /patients/{id}/summary, and after a
+    document of the patient is deleted), which checks the organisation.
     Plain `def` (not `async def`) on purpose: the DB call blocks, so FastAPI
     must run this in its threadpool or it freezes the event loop.
     """
     logger.info(
         "patient summary requested",
-        extra=_obs("summary_requested", user_id=req.user_id),
+        extra=_obs("summary_requested", patient_id=req.patient_id),
     )
 
-    claim = claim_patient_summary(req.user_id)
+    claim = claim_patient_summary(req.patient_id)
     if claim is not None:
-        background_tasks.add_task(run_patient_summary, req.user_id, claim)
+        background_tasks.add_task(run_patient_summary, req.patient_id, claim)
     return {"status": "accepted" if claim is not None else "already_processing"}
 
 
-def claim_patient_summary(user_id: str) -> datetime | None:
+def claim_patient_summary(patient_id: str) -> datetime | None:
     """
-    Mark the user's summary processing, unless a live run has it: one that
-    has gone stale (STALE_PROCESSING_AFTER) is taken over.
+    Mark the patient's summary processing (its patient_summaries row,
+    added on first request), unless a live run has it: one that has gone
+    stale (STALE_PROCESSING_AFTER) is taken over.
 
-    Returns the claim (the patient_insights_updated_at it set), or None when
-    a live run holds it. Nothing else writes that column while a run is
-    processing, so the timestamp identifies this claim: a takeover sets a
-    new one, at least STALE_PROCESSING_AFTER later.
+    Returns the claim (the updated_at it set), or None when a live run
+    holds it or there is no such patient. Nothing else writes that column
+    while a run is processing, so the timestamp identifies this claim: a
+    takeover sets a new one, at least STALE_PROCESSING_AFTER later.
     """
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
             cur.execute(
                 """
-                UPDATE staff_users
-                SET patient_insights_status = 'processing',
-                    patient_insights_error = NULL,
-                    patient_insights_updated_at = NOW()
-                WHERE id = %s
-                  AND (patient_insights_status IS DISTINCT FROM 'processing'
-                       OR patient_insights_updated_at < NOW() - %s::interval)
-                RETURNING patient_insights_updated_at
+                INSERT INTO patient_summaries AS s (patient_id, status, updated_at)
+                SELECT id, 'processing', NOW() FROM patients WHERE id = %s
+                ON CONFLICT (patient_id) DO UPDATE
+                SET status = 'processing', error = NULL, updated_at = NOW()
+                WHERE s.status <> 'processing'
+                   OR s.updated_at < NOW() - %s::interval
+                RETURNING s.updated_at
                 """,
-                (user_id, STALE_PROCESSING_AFTER),
+                (patient_id, STALE_PROCESSING_AFTER),
             )
             row = cur.fetchone()
         conn.commit()
@@ -251,23 +254,23 @@ def claim_patient_summary(user_id: str) -> datetime | None:
     return None if row is None else row[0]
 
 
-# The uploader of a document, if they have a patient summary (asked for
-# at least once) and no document job left open.
+# The patient of a document, if they have a patient summary (asked for at
+# least once) and no document job left open.
 _SUMMARY_TO_REFRESH = """
-SELECT u.id FROM documents d JOIN staff_users u ON u.id = d.user_id
+SELECT s.patient_id FROM documents d
+JOIN patient_summaries s ON s.patient_id = d.patient_id
 WHERE d.id = %s
-  AND u.patient_insights_status IS NOT NULL
   AND NOT EXISTS (
       SELECT 1 FROM jobs j JOIN documents o ON o.id = j.document_id
-      WHERE o.user_id = u.id AND j.status IN ('queued', 'running'))
+      WHERE o.patient_id = d.patient_id AND j.status IN ('queued', 'running'))
 """
 
 
 def refresh_after_document(job) -> None:
     """
-    After a document job (the worker's after_job): rebuild the uploader's
-    patient summary, in this thread, if they already have one and no other
-    document of theirs is queued or running. A summary someone else is
+    After a document job (the worker's after_job): rebuild the document's
+    patient's summary, in this thread, if they already have one and no
+    other document of theirs is queued or running. A summary someone else is
     building is left to that run.
     """
     conn = get_db_connection()
@@ -279,20 +282,22 @@ def refresh_after_document(job) -> None:
         conn.close()
     if row is None:
         return
-    user_id = str(row[0])
-    claim = claim_patient_summary(user_id)
+    patient_id = str(row[0])
+    claim = claim_patient_summary(patient_id)
     if claim is None:
         logger.info(
             "patient summary refresh skipped: one is being built",
-            extra=_obs("summary_refresh_skipped", user_id=user_id,
+            extra=_obs("summary_refresh_skipped", patient_id=patient_id,
                        document_id=job.document_id),
         )  # fmt: skip
         return
     logger.info(
         "patient summary refresh after a document",
-        extra=_obs("summary_refresh", user_id=user_id, document_id=job.document_id),
+        extra=_obs(
+            "summary_refresh", patient_id=patient_id, document_id=job.document_id
+        ),
     )
-    run_patient_summary(user_id, claim)
+    run_patient_summary(patient_id, claim)
 
 
 # The summary's result and failure are written only while the run still holds
@@ -300,30 +305,26 @@ def refresh_after_document(job) -> None:
 # over must not overwrite the newer run's summary or mark it failed. Same
 # rule as document jobs (document_jobs: every write conditional on the claim).
 _FINISH_SUMMARY = """
-UPDATE staff_users
-SET patient_insights = %(html)s,
-    patient_insights_status = 'completed',
-    patient_insights_updated_at = NOW()
-WHERE id = %(user_id)s
-  AND patient_insights_status = 'processing'
-  AND patient_insights_updated_at = %(claim)s
+UPDATE patient_summaries
+SET html = %(html)s, status = 'completed', updated_at = NOW()
+WHERE patient_id = %(patient_id)s
+  AND status = 'processing'
+  AND updated_at = %(claim)s
 """
 
 _FAIL_SUMMARY = """
-UPDATE staff_users
-SET patient_insights_status = 'failed',
-    patient_insights_error = %(error)s,
-    patient_insights_updated_at = NOW()
-WHERE id = %(user_id)s
-  AND patient_insights_status = 'processing'
-  AND patient_insights_updated_at = %(claim)s
+UPDATE patient_summaries
+SET status = 'failed', error = %(error)s, updated_at = NOW()
+WHERE patient_id = %(patient_id)s
+  AND status = 'processing'
+  AND updated_at = %(claim)s
 """
 
 
-def run_patient_summary(user_id: str, claim: datetime) -> None:
+def run_patient_summary(patient_id: str, claim: datetime) -> None:
     """
     Background job: the patient summary, built by code from the records of
-    every processed document of one user (summary/). Only the overview is
+    every processed document of one patient (summary/). Only the overview is
     model-written, and it is shown only if it passes its check.
 
     `claim` is what claim_patient_summary returned. If another run has taken
@@ -331,13 +332,13 @@ def run_patient_summary(user_id: str, claim: datetime) -> None:
     summary_claim_lost.
     """
     logger.info(
-        "patient summary started", extra=_obs("summary_started", user_id=user_id)
+        "patient summary started", extra=_obs("summary_started", patient_id=patient_id)
     )
     conn = get_db_connection()
     try:
         from summary.build import build_summary, load_inputs
 
-        inputs = load_inputs(conn, user_id)
+        inputs = load_inputs(conn, patient_id)
         result = build_summary(inputs, now=datetime.now(timezone.utc))
         if result.overview.outcome != "shown":
             check = result.overview.check
@@ -345,7 +346,7 @@ def run_patient_summary(user_id: str, claim: datetime) -> None:
                 "patient summary overview left out",
                 extra=_obs(
                     "summary_overview_left_out",
-                    user_id=user_id,
+                    patient_id=patient_id,
                     overview=result.overview.outcome,
                     unknown_numbers=check.unknown_numbers if check else None,
                     unknown_words=check.unknown_words if check else None,
@@ -356,16 +357,18 @@ def run_patient_summary(user_id: str, claim: datetime) -> None:
         with conn.cursor() as cur:
             cur.execute(
                 _FINISH_SUMMARY,
-                {"html": result.html, "user_id": user_id, "claim": claim},
+                {"html": result.html, "patient_id": patient_id, "claim": claim},
             )
             if cur.rowcount == 0:
-                raise LostClaim(f"patient summary claim for {user_id} was taken over")
+                raise LostClaim(
+                    f"patient summary claim for {patient_id} was taken over"
+                )
         conn.commit()
         logger.info(
             "patient summary completed",
             extra=_obs(
                 "summary_completed",
-                user_id=user_id,
+                patient_id=patient_id,
                 documents=len(result.facts.documents),
                 not_included=result.facts.not_included,
                 awaiting=result.facts.awaiting,
@@ -378,31 +381,32 @@ def run_patient_summary(user_id: str, claim: datetime) -> None:
         conn.rollback()
         logger.warning(
             "patient summary claim lost; result not written",
-            extra=_obs("summary_claim_lost", user_id=user_id),
+            extra=_obs("summary_claim_lost", patient_id=patient_id),
         )
     except Exception as e:
         logger.exception(
-            "patient summary failed", extra=_obs("summary_failed", user_id=user_id)
+            "patient summary failed",
+            extra=_obs("summary_failed", patient_id=patient_id),
         )
         try:
             conn.rollback()
             with conn.cursor() as cur:
                 cur.execute(
                     _FAIL_SUMMARY,
-                    {"error": redact(str(e) or type(e).__name__), "user_id": user_id,
-                     "claim": claim},
+                    {"error": redact(str(e) or type(e).__name__),
+                     "patient_id": patient_id, "claim": claim},
                 )  # fmt: skip
                 lost = cur.rowcount == 0
             conn.commit()
             if lost:
                 logger.warning(
                     "patient summary claim lost; failure not written",
-                    extra=_obs("summary_claim_lost", user_id=user_id),
+                    extra=_obs("summary_claim_lost", patient_id=patient_id),
                 )
         except Exception:
             logger.exception(
                 "could not record the failed patient summary",
-                extra=_obs("summary_failure_not_recorded", user_id=user_id),
+                extra=_obs("summary_failure_not_recorded", patient_id=patient_id),
             )
     finally:
         conn.close()

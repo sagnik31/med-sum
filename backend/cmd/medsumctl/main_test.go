@@ -29,12 +29,9 @@ func TestParseRoles(t *testing.T) {
 // The dataset loader (scripts/src/dataset/load.py) logs in with these
 // addresses; they must be valid account emails.
 func TestDevAccountEmailsAreValid(t *testing.T) {
-	for _, email := range []string{devAdminEmail, devClinicianEmail, devPatientEmail("meera")} {
+	for _, email := range []string{devAdminEmail, devClinicianEmail} {
 		if got, err := auth.NormalizeEmail(email); err != nil || got != email {
 			t.Errorf("%s: NormalizeEmail = %q, %v", email, got, err)
 		}
-	}
-	if got := devPatientEmail("meera"); got != "patient-meera@med-sum.test" {
-		t.Errorf("devPatientEmail = %q", got)
 	}
 }

@@ -14,7 +14,7 @@ import pytest
 from langgraph.graph import END, START, StateGraph
 
 import llm
-from db_rows import add_account
+from db_rows import add_patient
 from observability import RunError, current_run, current_step, resume_run, start_run
 from observability import context, traced
 from pipeline import checkpoints
@@ -30,9 +30,9 @@ class State(TypedDict):
 def document_id(db) -> str:
     with db.cursor() as cur:
         cur.execute(
-            "INSERT INTO documents (user_id, original_name, content_type, storage_path)"
+            "INSERT INTO documents (patient_id, original_name, content_type, storage_path)"
             " VALUES (%s, 'a.pdf', 'application/pdf', '/x') RETURNING id",
-            (add_account(db),),
+            (add_patient(db),),
         )
         return str(cur.fetchone()[0])
 

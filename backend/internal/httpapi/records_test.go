@@ -64,7 +64,7 @@ func addRecord(f *fakeStore, docID, record string) {
 func TestGetRecordReturnsTheRecordAndItsCitations(t *testing.T) {
 	e := newTestEnv(t)
 	me, auth := e.login("me@hospital.test")
-	doc := e.store.addDocument(me, "a.pdf")
+	doc := e.store.addDocument(e.store.addPatient("org-1", "SH-1"), me, "a.pdf")
 	addRecord(e.store, doc, testRecord)
 	e.store.insights[doc] = &db.Insight{DocumentID: doc, Status: "needs_review"}
 
@@ -145,11 +145,11 @@ func TestGetRecordReturnsTheRecordAndItsCitations(t *testing.T) {
 	}
 }
 
-func TestGetRecordOfAnotherUsersDocumentIsNotFound(t *testing.T) {
+func TestGetRecordOfAnotherOrganisationsDocumentIsNotFound(t *testing.T) {
 	e := newTestEnv(t)
 	_, auth := e.login("me@hospital.test")
-	other, _ := e.login("other@hospital.test")
-	theirs := e.store.addDocument(other, "b.pdf")
+	other := e.store.addUserIn("org-2", "other@other.test", db.StatusActive)
+	theirs := e.store.addDocument(e.store.addPatient("org-2", "SH-1"), other.ID, "b.pdf")
 	addRecord(e.store, theirs, testRecord)
 
 	rec := e.do(http.MethodGet, "/documents/"+theirs+"/record", auth, nil, "")
@@ -157,14 +157,14 @@ func TestGetRecordOfAnotherUsersDocumentIsNotFound(t *testing.T) {
 		t.Errorf("status = %d, want 404", rec.Code)
 	}
 	if strings.Contains(rec.Body.String(), "Asha Labs") {
-		t.Error("another user's record leaked")
+		t.Error("another organisation's record leaked")
 	}
 }
 
 func TestGetRecordBeforeOneExistsIsNotFound(t *testing.T) {
 	e := newTestEnv(t)
 	me, auth := e.login("me@hospital.test")
-	doc := e.store.addDocument(me, "a.pdf")
+	doc := e.store.addDocument(e.store.addPatient("org-1", "SH-1"), me, "a.pdf")
 	e.store.insights[doc] = &db.Insight{DocumentID: doc, Status: "processing"}
 
 	rec := e.do(http.MethodGet, "/documents/"+doc+"/record", auth, nil, "")
@@ -176,7 +176,7 @@ func TestGetRecordBeforeOneExistsIsNotFound(t *testing.T) {
 func TestGetRecordRouting(t *testing.T) {
 	e := newTestEnv(t)
 	me, auth := e.login("me@hospital.test")
-	doc := e.store.addDocument(me, "a.pdf")
+	doc := e.store.addDocument(e.store.addPatient("org-1", "SH-1"), me, "a.pdf")
 
 	if rec := e.do(http.MethodGet, "/documents/"+doc+"/record", "", nil, ""); rec.Code != http.StatusUnauthorized {
 		t.Errorf("without a session = %d, want 401", rec.Code)
@@ -195,7 +195,7 @@ func TestGetRecordRouting(t *testing.T) {
 func TestGetRecordIsForbiddenToAnAdmin(t *testing.T) {
 	e := newTestEnv(t)
 	adminID, auth := e.loginWith("admin@hospital.test", db.RoleAdmin)
-	doc := e.store.addDocument(adminID, "a.pdf")
+	doc := e.store.addDocument(e.store.addPatient("org-1", "SH-1"), adminID, "a.pdf")
 	addRecord(e.store, doc, testRecord)
 
 	if rec := e.do(http.MethodGet, "/documents/"+doc+"/record", auth, nil, ""); rec.Code != http.StatusForbidden {
@@ -206,7 +206,7 @@ func TestGetRecordIsForbiddenToAnAdmin(t *testing.T) {
 func TestGetRecordErrorsAreInternalWithoutDetails(t *testing.T) {
 	e := newTestEnv(t)
 	me, auth := e.login("me@hospital.test")
-	doc := e.store.addDocument(me, "a.pdf")
+	doc := e.store.addDocument(e.store.addPatient("org-1", "SH-1"), me, "a.pdf")
 	addRecord(e.store, doc, `{"observations": [{"id": "obs-1", "printed": {}}]}`)
 
 	rec := e.do(http.MethodGet, "/documents/"+doc+"/record", auth, nil, "")

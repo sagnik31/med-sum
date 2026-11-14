@@ -147,11 +147,40 @@ func mustUser(t *testing.T, s *Store, email string) *User {
 	return u
 }
 
-func mustDocument(t *testing.T, s *Store, userID, path string) *Document {
+// mustPatient creates a patient in the organisation, created by the account.
+func mustPatient(t *testing.T, s *Store, orgID, createdBy, mrn string) *Patient {
 	t.Helper()
-	d, err := s.CreateDocument(context.Background(), userID, "report.pdf", "application/pdf", path, fileHash(path))
+	p, err := s.CreatePatient(context.Background(), orgID, createdBy, PatientFields{MRN: mrn, FullName: "Patient " + mrn})
 	if err != nil {
 		t.Fatal(err)
+	}
+	return p
+}
+
+// mustOtherOrg returns a second organisation with a clinician in it.
+func mustOtherOrg(t *testing.T, s *Store) (orgID string, clinician *User) {
+	t.Helper()
+	o, err := s.CreateOrganization(context.Background(), "Other Hospital")
+	if err != nil {
+		t.Fatal(err)
+	}
+	u, err := s.CreateUser(context.Background(), NewUser{
+		OrgID: o.ID, Email: "elsewhere@other.test", FullName: "Dr Elsewhere", Roles: []string{RoleClinician},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return o.ID, u
+}
+
+func mustDocument(t *testing.T, s *Store, p *Patient, uploader *User, path string) *Document {
+	t.Helper()
+	d, err := s.CreateDocument(context.Background(), p.OrgID, NewDocument{
+		PatientID: p.ID, UploadedBy: uploader.ID, OriginalName: "report.pdf",
+		ContentType: "application/pdf", StoragePath: path, SHA256: fileHash(path),
+	})
+	if err != nil || d == nil {
+		t.Fatalf("CreateDocument = %+v, %v", d, err)
 	}
 	return d
 }
@@ -165,25 +194,136 @@ func fileHash(path string) string {
 func setInsight(t *testing.T, s *Store, docID, status string, errMsg *string) {
 	t.Helper()
 	_, err := s.pool.Exec(context.Background(), `
-INSERT INTO insights (document_id, user_id, status, error_message)
-SELECT id, user_id, $2, $3 FROM documents WHERE id = $1`, docID, status, errMsg)
+INSERT INTO insights (document_id, status, error_message) VALUES ($1, $2, $3)`, docID, status, errMsg)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
-// ----- Users -----
+// ----- Patients -----
 
-func TestGetPatientSummaryOfANewUserIsEmpty(t *testing.T) {
+func TestCreateAndUpdatePatient(t *testing.T) {
 	s := store(t)
-	u := mustUser(t, s, "me@hospital.test")
-
-	p, err := s.GetPatientSummary(context.Background(), u.ID)
+	ctx := context.Background()
+	me := mustUser(t, s, "me@hospital.test")
+	age := 54
+	p, err := s.CreatePatient(ctx, me.OrgID, me.ID, PatientFields{
+		MRN: "SH-1", FullName: "Meera Iyer", DateOfBirth: strPtr("1967-04-12"), Sex: strPtr("F"),
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if p.HTML != nil || p.Status != nil || p.Error != nil || p.UpdatedAt != nil {
-		t.Errorf("summary = %+v, want all empty", p)
+	if p.ID == "" || p.OrgID != me.OrgID || p.MRN != "SH-1" || p.DateOfBirth == nil || *p.DateOfBirth != "1967-04-12" ||
+		p.Sex == nil || *p.Sex != "F" || p.AgeYears != nil || p.CreatedBy == nil || *p.CreatedBy != me.ID {
+		t.Errorf("patient = %+v", p)
+	}
+
+	if _, err := s.CreatePatient(ctx, me.OrgID, me.ID, PatientFields{MRN: "SH-1", FullName: "Someone"}); err != ErrMRNTaken {
+		t.Errorf("same MRN again: err = %v, want ErrMRNTaken", err)
+	}
+	// Another organisation may use the same MRN.
+	otherOrg, them := mustOtherOrg(t, s)
+	if _, err := s.CreatePatient(ctx, otherOrg, them.ID, PatientFields{MRN: "SH-1", FullName: "Someone"}); err != nil {
+		t.Errorf("same MRN in another organisation: %v", err)
+	}
+
+	up, err := s.UpdatePatient(ctx, me.OrgID, p.ID, PatientFields{MRN: "SH-1", FullName: "Meera R Iyer", AgeYears: &age})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if up.FullName != "Meera R Iyer" || up.DateOfBirth != nil || up.AgeYears == nil || *up.AgeYears != 54 || !up.UpdatedAt.After(p.UpdatedAt) {
+		t.Errorf("updated = %+v", up)
+	}
+	if got, err := s.UpdatePatient(ctx, otherOrg, p.ID, PatientFields{MRN: "X", FullName: "X"}); err != nil || got != nil {
+		t.Errorf("update from another organisation = %+v, %v; want nil, nil", got, err)
+	}
+}
+
+func TestPatientDetailsAreChecked(t *testing.T) {
+	s := store(t)
+	ctx := context.Background()
+	me := mustUser(t, s, "me@hospital.test")
+	age := 30
+	bad := []PatientFields{
+		{MRN: "", FullName: "No MRN"},
+		{MRN: " SH-2", FullName: "Padded MRN"},
+		{MRN: "SH-3", FullName: ""},
+		{MRN: "SH-4", FullName: "Both", DateOfBirth: strPtr("1990-01-01"), AgeYears: &age},
+		{MRN: "SH-5", FullName: "Bad sex", Sex: strPtr("female")},
+	}
+	for _, f := range bad {
+		if _, err := s.CreatePatient(ctx, me.OrgID, me.ID, f); err == nil {
+			t.Errorf("accepted %+v", f)
+		}
+	}
+}
+
+func TestGetAndListPatientsStayInTheOrganisation(t *testing.T) {
+	s := store(t)
+	ctx := context.Background()
+	me := mustUser(t, s, "me@hospital.test")
+	meera, err := s.CreatePatient(ctx, me.OrgID, me.ID, PatientFields{MRN: "SH-100231", FullName: "Meera Iyer"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	rohan, err := s.CreatePatient(ctx, me.OrgID, me.ID, PatientFields{MRN: "SH-100232", FullName: "Rohan Kulkarni"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	otherOrg, them := mustOtherOrg(t, s)
+	theirs := mustPatient(t, s, otherOrg, them.ID, "OT-1")
+
+	if got, err := s.GetPatient(ctx, me.OrgID, meera.ID); err != nil || got == nil || got.ID != meera.ID {
+		t.Errorf("GetPatient = %+v, %v", got, err)
+	}
+	if got, err := s.GetPatient(ctx, me.OrgID, theirs.ID); err != nil || got != nil {
+		t.Errorf("another organisation's patient = %+v, %v; want nil, nil", got, err)
+	}
+
+	cases := map[string][]string{
+		"":          {meera.ID, rohan.ID}, // by name
+		"rohan":     {rohan.ID},
+		"KULK":      {rohan.ID},
+		"sh-100231": {meera.ID},
+		"100231":    {}, // the MRN matches from its start only
+		"OT-1":      {},
+		"%":         {},
+	}
+	for q, want := range cases {
+		got, err := s.ListPatients(ctx, me.OrgID, q)
+		if err != nil {
+			t.Fatal(err)
+		}
+		gotIDs := []string{}
+		for _, p := range got {
+			gotIDs = append(gotIDs, p.ID)
+		}
+		if fmt.Sprint(gotIDs) != fmt.Sprint(want) {
+			t.Errorf("ListPatients(%q) = %v, want %v", q, gotIDs, want)
+		}
+	}
+}
+
+func TestGetPatientSummaryOfANewPatientIsEmpty(t *testing.T) {
+	s := store(t)
+	me := mustUser(t, s, "me@hospital.test")
+	p := mustPatient(t, s, me.OrgID, me.ID, "SH-1")
+
+	sum, err := s.GetPatientSummary(context.Background(), p.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if sum.HTML != nil || sum.Status != nil || sum.Error != nil || sum.UpdatedAt != nil {
+		t.Errorf("summary = %+v, want all empty", sum)
+	}
+	_, err = s.pool.Exec(context.Background(),
+		`INSERT INTO patient_summaries (patient_id, html, status) VALUES ($1, '<p>s</p>', 'completed')`, p.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	sum, err = s.GetPatientSummary(context.Background(), p.ID)
+	if err != nil || sum.HTML == nil || *sum.HTML != "<p>s</p>" || sum.Status == nil || *sum.Status != "completed" {
+		t.Errorf("summary = %+v, %v", sum, err)
 	}
 }
 
@@ -191,11 +331,13 @@ func TestGetPatientSummaryOfANewUserIsEmpty(t *testing.T) {
 
 func TestCreateDocument(t *testing.T) {
 	s := store(t)
-	u := mustUser(t, s, "me@hospital.test")
+	me := mustUser(t, s, "me@hospital.test")
+	p := mustPatient(t, s, me.OrgID, me.ID, "SH-1")
 
-	d := mustDocument(t, s, u.ID, `D:\uploads\abc.pdf`)
+	d := mustDocument(t, s, p, me, `D:\uploads\abc.pdf`)
 
-	if d.ID == "" || d.UserID != u.ID || d.StoragePath != `D:\uploads\abc.pdf` {
+	if d.ID == "" || d.PatientID != p.ID || d.UploadedBy == nil || *d.UploadedBy != me.ID ||
+		d.UploadedByName == nil || *d.UploadedByName != me.FullName || d.StoragePath != `D:\uploads\abc.pdf` {
 		t.Errorf("document = %+v", d)
 	}
 	if time.Since(d.UploadedAt) > time.Minute {
@@ -203,13 +345,35 @@ func TestCreateDocument(t *testing.T) {
 	}
 }
 
-func TestListDocumentsByUser(t *testing.T) {
+func TestCreateDocumentRefusesAnotherOrganisationsPatient(t *testing.T) {
 	s := store(t)
 	ctx := context.Background()
 	me := mustUser(t, s, "me@hospital.test")
-	other := mustUser(t, s, "other@hospital.test")
+	otherOrg, them := mustOtherOrg(t, s)
+	theirs := mustPatient(t, s, otherOrg, them.ID, "OT-1")
 
-	empty, err := s.ListDocumentsByUser(ctx, me.ID)
+	d, err := s.CreateDocument(ctx, me.OrgID, NewDocument{
+		PatientID: theirs.ID, UploadedBy: me.ID, OriginalName: "a.pdf", ContentType: "application/pdf",
+		StoragePath: "a.pdf", SHA256: fileHash("a.pdf"),
+	})
+	if err != nil || d != nil {
+		t.Errorf("upload to another organisation's patient = %+v, %v; want nil, nil", d, err)
+	}
+	var n int
+	_ = s.pool.QueryRow(ctx, "SELECT count(*) FROM documents").Scan(&n)
+	if n != 0 {
+		t.Errorf("%d documents stored", n)
+	}
+}
+
+func TestListPatientDocuments(t *testing.T) {
+	s := store(t)
+	ctx := context.Background()
+	me := mustUser(t, s, "me@hospital.test")
+	p := mustPatient(t, s, me.OrgID, me.ID, "SH-1")
+	other := mustPatient(t, s, me.OrgID, me.ID, "SH-2")
+
+	empty, err := s.ListPatientDocuments(ctx, me.OrgID, p.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -217,21 +381,25 @@ func TestListDocumentsByUser(t *testing.T) {
 		t.Errorf("empty list = %#v, want a non-nil empty slice", empty)
 	}
 
-	older := mustDocument(t, s, me.ID, "a.pdf")
-	newer := mustDocument(t, s, me.ID, "b.pdf")
-	mustDocument(t, s, other.ID, "c.pdf")
+	older := mustDocument(t, s, p, me, "a.pdf")
+	newer := mustDocument(t, s, p, me, "b.pdf")
+	mustDocument(t, s, other, me, "c.pdf")
 	_, _ = s.pool.Exec(ctx, "UPDATE documents SET uploaded_at = NOW() - interval '1 day' WHERE id = $1", older.ID)
 	setInsight(t, s, older.ID, "verified", nil)
 
-	docs, err := s.ListDocumentsByUser(ctx, me.ID)
+	docs, err := s.ListPatientDocuments(ctx, me.OrgID, p.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(docs) != 2 || docs[0].ID != newer.ID || docs[1].ID != older.ID {
-		t.Fatalf("listed %v, want newest first and only mine", ids(docs))
+		t.Fatalf("listed %v, want newest first and only this patient's", ids(docs))
 	}
 	if docs[0].InsightStatus != "not_started" || docs[1].InsightStatus != "verified" {
 		t.Errorf("insight statuses = %q, %q", docs[0].InsightStatus, docs[1].InsightStatus)
+	}
+	otherOrg, _ := mustOtherOrg(t, s)
+	if docs, err := s.ListPatientDocuments(ctx, otherOrg, p.ID); err != nil || len(docs) != 0 {
+		t.Errorf("listed from another organisation: %v, %v", ids(docs), err)
 	}
 }
 
@@ -239,23 +407,27 @@ func TestAnExactCopyIsFlaggedForTheSamePatientOnly(t *testing.T) {
 	s := store(t)
 	ctx := context.Background()
 	me := mustUser(t, s, "me@hospital.test")
-	other := mustUser(t, s, "other@hospital.test")
+	mine := mustPatient(t, s, me.OrgID, me.ID, "SH-1")
+	other := mustPatient(t, s, me.OrgID, me.ID, "SH-2")
 	file := fileHash("the same file")
-	create := func(userID, path string) *Document {
-		d, err := s.CreateDocument(ctx, userID, "report.pdf", "application/pdf", path, file)
+	create := func(p *Patient, path string) *Document {
+		d, err := s.CreateDocument(ctx, me.OrgID, NewDocument{
+			PatientID: p.ID, UploadedBy: me.ID, OriginalName: "report.pdf",
+			ContentType: "application/pdf", StoragePath: path, SHA256: file,
+		})
 		if err != nil {
 			t.Fatal(err)
 		}
 		return d
 	}
 
-	first := create(me.ID, "a.pdf")
+	first := create(mine, "a.pdf")
 	if first.DuplicateOf != nil || first.SHA256 != file {
 		t.Fatalf("first upload = %+v, want no duplicate and its hash", first)
 	}
-	copy1 := create(me.ID, "b.pdf")
-	copy2 := create(me.ID, "c.pdf")
-	theirs := create(other.ID, "d.pdf")
+	copy1 := create(mine, "b.pdf")
+	copy2 := create(mine, "c.pdf")
+	theirs := create(other, "d.pdf")
 	for _, d := range []*Document{copy1, copy2} {
 		if d.DuplicateOf == nil || *d.DuplicateOf != first.ID {
 			t.Errorf("copy %s duplicate_of = %v, want %s", d.ID, d.DuplicateOf, first.ID)
@@ -265,7 +437,7 @@ func TestAnExactCopyIsFlaggedForTheSamePatientOnly(t *testing.T) {
 		t.Errorf("another patient's copy is flagged: %v", *theirs.DuplicateOf)
 	}
 
-	docs, err := s.ListDocumentsByUser(ctx, me.ID)
+	docs, err := s.ListPatientDocuments(ctx, me.OrgID, mine.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -281,10 +453,10 @@ func TestAnExactCopyIsFlaggedForTheSamePatientOnly(t *testing.T) {
 	}
 
 	// Once the first is deleted, the next copy is the original.
-	if _, _, err := s.DeleteDocumentByIDAndUser(ctx, first.ID, me.ID); err != nil {
-		t.Fatal(err)
+	if ok, err := s.SoftDeleteDocument(ctx, me.OrgID, first.ID, me.ID, time.Now()); err != nil || !ok {
+		t.Fatal(ok, err)
 	}
-	docs, err = s.ListDocumentsByUser(ctx, me.ID)
+	docs, err = s.ListPatientDocuments(ctx, me.OrgID, mine.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -304,54 +476,61 @@ func ids(docs []Document) []string {
 	return out
 }
 
-func TestGetDocumentByIDAndUserChecksOwnership(t *testing.T) {
+func TestGetDocumentChecksTheOrganisation(t *testing.T) {
 	s := store(t)
 	ctx := context.Background()
 	me := mustUser(t, s, "me@hospital.test")
-	other := mustUser(t, s, "other@hospital.test")
-	d := mustDocument(t, s, me.ID, "a.pdf")
+	colleague := mustUser(t, s, "colleague@hospital.test")
+	p := mustPatient(t, s, me.OrgID, me.ID, "SH-1")
+	d := mustDocument(t, s, p, me, "a.pdf")
+	otherOrg, _ := mustOtherOrg(t, s)
 
-	got, err := s.GetDocumentByIDAndUser(ctx, d.ID, me.ID)
+	got, err := s.GetDocument(ctx, colleague.OrgID, d.ID)
 	if err != nil || got == nil || got.ID != d.ID {
-		t.Fatalf("owner lookup = %+v, %v", got, err)
+		t.Fatalf("a colleague's lookup = %+v, %v; every clinician sees every patient", got, err)
 	}
-	got, err = s.GetDocumentByIDAndUser(ctx, d.ID, other.ID)
+	got, err = s.GetDocument(ctx, otherOrg, d.ID)
 	if err != nil || got != nil {
-		t.Errorf("another user's lookup = %+v, %v; want nil, nil", got, err)
+		t.Errorf("another organisation's lookup = %+v, %v; want nil, nil", got, err)
 	}
 }
 
-func TestDeleteDocumentByIDAndUser(t *testing.T) {
+func TestSoftDeleteDocument(t *testing.T) {
 	s := store(t)
 	ctx := context.Background()
 	me := mustUser(t, s, "me@hospital.test")
-	other := mustUser(t, s, "other@hospital.test")
-	alone := mustDocument(t, s, me.ID, "alone.pdf")
-	sharedA := mustDocument(t, s, me.ID, "shared.pdf")
-	mustDocument(t, s, me.ID, "shared.pdf")
-	setInsight(t, s, alone.ID, "verified", nil)
+	p := mustPatient(t, s, me.OrgID, me.ID, "SH-1")
+	d := mustDocument(t, s, p, me, "alone.pdf")
+	setInsight(t, s, d.ID, "verified", nil)
+	otherOrg, them := mustOtherOrg(t, s)
+	now := time.Now().Truncate(time.Microsecond)
 
-	path, shared, err := s.DeleteDocumentByIDAndUser(ctx, alone.ID, other.ID)
-	if err != nil || path != "" {
-		t.Fatalf("another user's delete = %q, %v; want nothing deleted", path, err)
+	if ok, err := s.SoftDeleteDocument(ctx, otherOrg, d.ID, them.ID, now); err != nil || ok {
+		t.Fatalf("delete from another organisation = %v, %v; want nothing deleted", ok, err)
 	}
-
-	path, shared, err = s.DeleteDocumentByIDAndUser(ctx, alone.ID, me.ID)
-	if err != nil || path != "alone.pdf" || shared {
-		t.Errorf("delete = %q, shared %v, %v", path, shared, err)
+	if ok, err := s.SoftDeleteDocument(ctx, me.OrgID, d.ID, me.ID, now); err != nil || !ok {
+		t.Fatalf("delete = %v, %v", ok, err)
 	}
-	if ins, _ := s.GetInsightByDocumentID(ctx, alone.ID); ins != nil {
-		t.Error("the deleted document's insight is still there")
+	if got, _ := s.GetDocument(ctx, me.OrgID, d.ID); got != nil {
+		t.Error("a deleted document is still found")
 	}
-
-	path, shared, err = s.DeleteDocumentByIDAndUser(ctx, sharedA.ID, me.ID)
-	if err != nil || path != "shared.pdf" || !shared {
-		t.Errorf("delete of a shared file = %q, shared %v, %v; want shared", path, shared, err)
+	if docs, _ := s.ListPatientDocuments(ctx, me.OrgID, p.ID); len(docs) != 0 {
+		t.Errorf("a deleted document is still listed: %v", ids(docs))
 	}
-
-	path, _, err = s.DeleteDocumentByIDAndUser(ctx, alone.ID, me.ID)
-	if err != nil || path != "" {
-		t.Errorf("second delete = %q, %v; want nothing", path, err)
+	// Soft: the row, its insight and who deleted it stay.
+	var at time.Time
+	var by string
+	if err := s.pool.QueryRow(ctx, "SELECT deleted_at, deleted_by FROM documents WHERE id = $1", d.ID).Scan(&at, &by); err != nil {
+		t.Fatal(err)
+	}
+	if !at.Equal(now) || by != me.ID {
+		t.Errorf("deleted_at %v, deleted_by %s", at, by)
+	}
+	if ins, _ := s.GetInsightByDocumentID(ctx, d.ID); ins == nil {
+		t.Error("the deleted document's insight is gone")
+	}
+	if ok, err := s.SoftDeleteDocument(ctx, me.OrgID, d.ID, me.ID, now); err != nil || ok {
+		t.Errorf("second delete = %v, %v; want nothing", ok, err)
 	}
 }
 
@@ -361,7 +540,7 @@ func TestGetInsightByDocumentID(t *testing.T) {
 	s := store(t)
 	ctx := context.Background()
 	me := mustUser(t, s, "me@hospital.test")
-	d := mustDocument(t, s, me.ID, "a.pdf")
+	d := mustDocument(t, s, mustPatient(t, s, me.OrgID, me.ID, "SH-1"), me, "a.pdf")
 
 	ins, err := s.GetInsightByDocumentID(ctx, d.ID)
 	if err != nil || ins != nil {
@@ -384,7 +563,7 @@ func TestGetDocumentRecord(t *testing.T) {
 	s := store(t)
 	ctx := context.Background()
 	me := mustUser(t, s, "me@hospital.test")
-	d := mustDocument(t, s, me.ID, "a.pdf")
+	d := mustDocument(t, s, mustPatient(t, s, me.OrgID, me.ID, "SH-1"), me, "a.pdf")
 
 	rec, err := s.GetDocumentRecord(ctx, d.ID)
 	if err != nil || rec != nil {

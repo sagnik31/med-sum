@@ -124,8 +124,13 @@ def test_the_checkpoint_setup_runs_as_the_role(as_role, role):
         "SELECT * FROM one_time_tokens",
         "SELECT * FROM organizations",
         "UPDATE staff_users SET full_name = 'x'",
+        "SELECT created_by FROM patients",
+        "UPDATE patients SET full_name = 'x'",
+        "INSERT INTO patients (org_id, mrn, full_name)"
+        " SELECT org_id, 'X', 'x' FROM patients LIMIT 1",
+        "UPDATE documents SET deleted_at = now()",
         "UPDATE documents SET storage_path = '/elsewhere'",
-        "INSERT INTO documents (user_id, original_name, content_type, storage_path)"
+        "INSERT INTO documents (patient_id, original_name, content_type, storage_path)"
         " VALUES (gen_random_uuid(), 'a', 'b', 'c')",
         "DELETE FROM documents",
         "DELETE FROM pipeline_runs",

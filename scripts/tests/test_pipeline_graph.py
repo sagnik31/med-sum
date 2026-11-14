@@ -19,7 +19,7 @@ from dataset_records import (
     part_replies,
     split_parse,
 )
-from db_rows import add_account
+from db_rows import add_patient
 from observability import is_traced
 from pipeline import graph as pipeline_graph
 from pipeline import nodes, parts
@@ -44,9 +44,9 @@ def document(db):
     def make(doc_id: str) -> dict:
         with db.cursor() as cur:
             cur.execute(
-                "INSERT INTO documents (user_id, original_name, content_type,"
+                "INSERT INTO documents (patient_id, original_name, content_type,"
                 " storage_path) VALUES (%s, 'a', 'image/png', '/x') RETURNING id",
-                (add_account(db),),
+                (add_patient(db),),
             )
             document_id = str(cur.fetchone()[0])
         return initial_state(

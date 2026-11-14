@@ -10,7 +10,7 @@ from decimal import Decimal
 import psycopg.rows
 import pytest
 
-from db_rows import add_account
+from db_rows import add_patient
 
 Q, G = "qwen3.5:4b", "gemma4:e2b"
 
@@ -31,10 +31,10 @@ def calls(db) -> dict:
     """The rows of CALLS for one document over two runs; returns the ids."""
     with db.cursor() as cur:
         cur.execute(
-            "INSERT INTO documents (user_id, original_name, content_type,"
+            "INSERT INTO documents (patient_id, original_name, content_type,"
             " storage_path) VALUES (%s, 'a.pdf', 'application/pdf', '/x')"
             " RETURNING id",
-            (add_account(db),),
+            (add_patient(db),),
         )
         (document,) = cur.fetchone()
         runs, steps = {}, {}

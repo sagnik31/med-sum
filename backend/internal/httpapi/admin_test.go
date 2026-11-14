@@ -56,30 +56,37 @@ func TestAdminRoutesAreForbiddenToClinicians(t *testing.T) {
 func TestClinicalRoutesAreForbiddenToAdmins(t *testing.T) {
 	e := newTestEnv(t)
 	adminID, admin := e.loginWith(testAdmin, db.RoleAdmin)
-	doc := e.store.addDocument(adminID, "x.pdf")
+	p := e.store.addPatient("org-1", "SH-1")
+	doc := e.store.addDocument(p, adminID, "x.pdf")
 	body, ct := multipartFile(t, "file", "report.pdf", pdfBytes)
 
 	for _, tc := range []struct{ method, path string }{
-		{http.MethodGet, "/documents"},
+		{http.MethodGet, "/patients"},
+		{http.MethodPost, "/patients"},
+		{http.MethodGet, "/patients/" + p.ID},
+		{http.MethodPatch, "/patients/" + p.ID},
+		{http.MethodGet, "/patients/" + p.ID + "/documents"},
+		{http.MethodGet, "/patients/" + p.ID + "/summary"},
+		{http.MethodPost, "/patients/" + p.ID + "/summary"},
+		{http.MethodGet, "/documents/" + doc},
 		{http.MethodGet, "/documents/" + doc + "/insight"},
 		{http.MethodPost, "/documents/" + doc + "/insight"},
+		{http.MethodGet, "/documents/" + doc + "/record"},
 		{http.MethodPost, "/documents/" + doc + "/reprocess"},
 		{http.MethodDelete, "/documents/" + doc},
-		{http.MethodGet, "/user/insights"},
-		{http.MethodPost, "/user/insights"},
 	} {
 		rec := e.do(tc.method, tc.path, admin, nil, "")
 		if rec.Code != http.StatusForbidden {
 			t.Errorf("%s %s: status = %d, want 403", tc.method, tc.path, rec.Code)
 		}
 	}
-	if rec := e.do(http.MethodPost, "/documents", admin, body, ct); rec.Code != http.StatusForbidden {
+	if rec := e.do(http.MethodPost, "/patients/"+p.ID+"/documents", admin, body, ct); rec.Code != http.StatusForbidden {
 		t.Errorf("upload: status = %d, want 403", rec.Code)
 	}
 	if len(e.ai.received()) != 0 {
 		t.Error("an admin request reached the AI service")
 	}
-	if _, ok := e.store.documents[doc]; !ok {
+	if _, gone := e.store.deleted[doc]; gone {
 		t.Error("an admin deleted a document")
 	}
 }
@@ -87,8 +94,8 @@ func TestClinicalRoutesAreForbiddenToAdmins(t *testing.T) {
 func TestAnAdminWhoIsAlsoAClinicianCanDoBoth(t *testing.T) {
 	e := newTestEnv(t)
 	_, both := e.loginWith(testAdmin, db.RoleAdmin, db.RoleClinician)
-	if rec := e.do(http.MethodGet, "/documents", both, nil, ""); rec.Code != http.StatusOK {
-		t.Errorf("documents: status = %d", rec.Code)
+	if rec := e.do(http.MethodGet, "/patients", both, nil, ""); rec.Code != http.StatusOK {
+		t.Errorf("patients: status = %d", rec.Code)
 	}
 	if rec := e.do(http.MethodGet, "/admin/users", both, nil, ""); rec.Code != http.StatusOK {
 		t.Errorf("staff: status = %d", rec.Code)
@@ -293,14 +300,14 @@ func TestDisablingAUserEndsTheirLiveSession(t *testing.T) {
 	docID, doc := e.login("doc@hospital.test")
 	e.store.addToken(docID, db.PurposeReset, e.now().Add(time.Hour))
 
-	if rec := e.do(http.MethodGet, "/documents", doc, nil, ""); rec.Code != http.StatusOK {
+	if rec := e.do(http.MethodGet, "/patients", doc, nil, ""); rec.Code != http.StatusOK {
 		t.Fatalf("before: status = %d", rec.Code)
 	}
 	rec := e.sendJSON(http.MethodPatch, "/admin/users/"+docID, admin, map[string]any{"status": "disabled"})
 	if rec.Code != http.StatusOK {
 		t.Fatalf("status = %d: %s", rec.Code, rec.Body)
 	}
-	if rec := e.do(http.MethodGet, "/documents", doc, nil, ""); rec.Code != http.StatusUnauthorized {
+	if rec := e.do(http.MethodGet, "/patients", doc, nil, ""); rec.Code != http.StatusUnauthorized {
 		t.Errorf("after: status = %d, want 401", rec.Code)
 	}
 	if n := e.store.sessionsOf(docID); n != 0 {
@@ -356,7 +363,7 @@ func TestAdminsCantLockThemselvesOut(t *testing.T) {
 	if rec.Code != http.StatusOK {
 		t.Fatalf("add clinician: status = %d: %s", rec.Code, rec.Body)
 	}
-	if rec := e.do(http.MethodGet, "/documents", admin, nil, ""); rec.Code != http.StatusOK {
+	if rec := e.do(http.MethodGet, "/patients", admin, nil, ""); rec.Code != http.StatusOK {
 		t.Errorf("the admin's own session ended, or the new role didn't apply: %d", rec.Code)
 	}
 }

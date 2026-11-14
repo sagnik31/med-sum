@@ -38,15 +38,6 @@ func principalFromContext(ctx context.Context) (*Principal, bool) {
 	return p, ok && p != nil
 }
 
-// userIDFromContext returns the logged-in account's ID.
-func userIDFromContext(ctx context.Context) (string, bool) {
-	p, ok := principalFromContext(ctx)
-	if !ok {
-		return "", false
-	}
-	return p.UserID, true
-}
-
 func (s *Server) setSessionCookie(w http.ResponseWriter, token string) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     sessionCookie,

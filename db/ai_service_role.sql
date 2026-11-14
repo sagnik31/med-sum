@@ -15,8 +15,12 @@
 --
 -- What the service does with each table, and so what it is granted:
 --   documents          reads them; writes the transcription (extracted_markdown)
---   staff_users        reads id and full_name (the expected patient) and the
---                      patient_insights* columns; writes only the latter
+--   patients           reads the details the patient-match check compares a
+--                      document with (name, sex, date of birth or age, MRN);
+--                      never writes them
+--   patient_summaries  reads and writes (claims, results and failures)
+--   staff_users        reads id and full_name (who uploaded a document, kept
+--                      on its record); nothing else of an account
 --   insights, jobs, document_records, pipeline_runs, pipeline_steps,
 --   pipeline_model_calls  reads and writes (no deletes: rows go with their
 --                      document, through ON DELETE CASCADE)
@@ -51,12 +55,9 @@ GRANT USAGE ON SCHEMA public TO medsum_ai;
 GRANT SELECT ON documents TO medsum_ai;
 GRANT UPDATE (extracted_markdown, updated_at) ON documents TO medsum_ai;
 
-GRANT SELECT (id, full_name, patient_insights, patient_insights_status,
-              patient_insights_error, patient_insights_updated_at)
-    ON staff_users TO medsum_ai;
-GRANT UPDATE (patient_insights, patient_insights_status, patient_insights_error,
-              patient_insights_updated_at)
-    ON staff_users TO medsum_ai;
+GRANT SELECT (id, full_name, sex, date_of_birth, age_years, mrn) ON patients TO medsum_ai;
+GRANT SELECT, INSERT, UPDATE ON patient_summaries TO medsum_ai;
+GRANT SELECT (id, full_name) ON staff_users TO medsum_ai;
 
 GRANT SELECT, INSERT, UPDATE
     ON insights, jobs, document_records,

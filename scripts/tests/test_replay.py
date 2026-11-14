@@ -13,7 +13,7 @@ import pytest
 import llm
 from dataset.build import DATASET_DIR
 from dataset_records import DOCS, expected_patient, key, parse_of
-from db_rows import add_account
+from db_rows import add_patient
 from observability import prompt_hash, start_run, traced, versions
 from pipeline import graph as pipeline_graph
 from pipeline import replay as replay_mod
@@ -33,11 +33,11 @@ def document(db):
         path = str(DATASET_DIR / DOCS[doc_id]["file"])
         with db.cursor() as cur:
             cur.execute(
-                "INSERT INTO documents (user_id, original_name, content_type,"
+                "INSERT INTO documents (patient_id, original_name, content_type,"
                 " storage_path) VALUES (%s, 'a', 'application/pdf', %s)"
                 " RETURNING id",
                 (
-                    add_account(db, f"{uuid.uuid4().hex}@hospital.test"),
+                    add_patient(db, f"{uuid.uuid4().hex}@hospital.test"),
                     stored_file or path,
                 ),
             )

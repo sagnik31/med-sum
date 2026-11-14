@@ -36,15 +36,22 @@ COLUMNS: dict[str, dict[str, str]] = {
         **_cols(
             SAFE,
             "id org_id roles status password_changed_at failed_logins"
-            " locked_until created_by created_at last_login_at"
-            " patient_insights_status patient_insights_updated_at",
+            " locked_until created_by created_at last_login_at",
         ),
-        **_cols(PERSONAL, "email registration_no"),
-        # Until patients are records of their own, the account is the patient.
-        **_cols(CLINICAL, "full_name patient_insights"),
+        # A staff member's name is personal, not clinical: staff are never
+        # patients.
+        **_cols(PERSONAL, "email registration_no full_name"),
         **_cols(SECRET, "password_hash"),
-        **_cols(TELEMETRY, "patient_insights_error"),
     },  # fmt: skip
+    "patients": {
+        **_cols(SAFE, "id org_id created_by created_at updated_at"),
+        **_cols(CLINICAL, "mrn full_name date_of_birth age_years sex"),
+    },
+    "patient_summaries": {
+        **_cols(SAFE, "patient_id status updated_at"),
+        **_cols(CLINICAL, "html"),
+        **_cols(TELEMETRY, "error"),
+    },
     "sessions": {
         **_cols(SECRET, "token_hash"),
         **_cols(SAFE, "id user_id created_at last_seen_at expires_at"),
@@ -55,12 +62,16 @@ COLUMNS: dict[str, dict[str, str]] = {
         **_cols(SAFE, "user_id purpose created_at expires_at used_at created_by"),
     },
     "documents": {
-        **_cols(SAFE, "id user_id content_type storage_path uploaded_at updated_at"),
+        **_cols(
+            SAFE,
+            "id patient_id uploaded_by content_type storage_path uploaded_at"
+            " updated_at deleted_at deleted_by",
+        ),
         # A file name can name the patient; the hash fingerprints the file.
         **_cols(CLINICAL, "original_name extracted_markdown sha256"),
     },
     "insights": {
-        **_cols(SAFE, "id document_id user_id status created_at updated_at"),
+        **_cols(SAFE, "id document_id status created_at updated_at"),
         **_cols(CLINICAL, "html_insights"),
         **_cols(TELEMETRY, "error_message"),
     },
@@ -117,7 +128,7 @@ SCHEMAS = {"langgraph": CLINICAL}
 
 LOG_FIELDS: dict[str, str] = {
     **_cols(SAFE, "event run_id trace_id document_id step_id span_id parent_span_id"
-                  " model_call_id job_id user_id reused_from_step"),
+                  " model_call_id job_id patient_id reused_from_step"),
     **_cols(TELEMETRY, "node seq attempt attempts page status end_state duration_ms"
                        " graph_version model model_role model_calls models_used"
                        " model_digest prompt_name prompt_hash prompt_tokens"

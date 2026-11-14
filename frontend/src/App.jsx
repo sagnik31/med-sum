@@ -4,9 +4,10 @@ import { Routes, Route, Navigate, Link, useNavigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage.jsx";
 import SetPasswordPage from "./pages/SetPasswordPage.jsx";
 import AccountPage from "./pages/AccountPage.jsx";
-import DocumentsPage from "./pages/DocumentsPage.jsx";
+import PatientsPage from "./pages/PatientsPage.jsx";
+import PatientPage from "./pages/PatientPage.jsx";
+import PatientSummaryPage from "./pages/PatientSummaryPage.jsx";
 import InsightPage from "./pages/InsightPage.jsx";
-import UserInsightsPage from "./pages/UserInsightsPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import StaffPage from "./pages/StaffPage.jsx";
 import RequireAuth from "./auth/RequireAuth.jsx";
@@ -35,9 +36,9 @@ function Nav() {
       </Link>
       {status === "in" ? (
         <div className="flex items-center gap-4 text-sm">
-          {can(user, PERM.documentRead) && (
-            <Link to="/documents" className="hover:underline">
-              Documents
+          {can(user, PERM.patientRead) && (
+            <Link to="/patients" className="hover:underline">
+              Patients
             </Link>
           )}
           {can(user, PERM.staffManage) && (
@@ -76,8 +77,9 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/set-password" element={<SetPasswordPage />} />
           <Route path="/account" element={<RequireAuth><AccountPage /></RequireAuth>} />
-          <Route path="/documents" element={<RequireAuth perm={PERM.documentRead}><DocumentsPage /></RequireAuth>} />
-          <Route path="/user-insights" element={<RequireAuth perm={PERM.documentRead}><UserInsightsPage /></RequireAuth>} />
+          <Route path="/patients" element={<RequireAuth perm={PERM.patientRead}><PatientsPage /></RequireAuth>} />
+          <Route path="/patients/:id" element={<RequireAuth perm={PERM.patientRead}><PatientPage /></RequireAuth>} />
+          <Route path="/patients/:id/summary" element={<RequireAuth perm={PERM.summaryRead}><PatientSummaryPage /></RequireAuth>} />
           <Route path="/insights/:id" element={<RequireAuth perm={PERM.documentRead}><InsightPage /></RequireAuth>} />
           <Route path="/admin/staff" element={<RequireAuth perm={PERM.staffManage}><StaffPage /></RequireAuth>} />
           <Route path="*" element={<NotFoundPage />} />

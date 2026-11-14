@@ -30,11 +30,12 @@ class Summary:
     overview: Overview
 
 
-def load_inputs(conn, user_id: str) -> list[SummaryInput]:
+def load_inputs(conn, patient_id: str) -> list[SummaryInput]:
     """
-    Every document of the user, with its processing status and record (if
-    any). A file uploaded again (the same SHA-256) is left out, so its
-    values don't count twice in trends; the first upload stands for it.
+    Every live document of the patient, with its processing status and
+    record (if any). A deleted document is left out. A file uploaded again
+    (the same SHA-256) is left out too, so its values don't count twice in
+    trends; the first live upload stands for it.
     See docs/adr/0008-patient-data-protection.md.
     """
     with conn.cursor() as cur:
@@ -44,14 +45,16 @@ def load_inputs(conn, user_id: str) -> list[SummaryInput]:
             FROM documents d
             LEFT JOIN insights i ON i.document_id = d.id
             LEFT JOIN document_records r ON r.document_id = d.id
-            WHERE d.user_id = %s
+            WHERE d.patient_id = %s
+              AND d.deleted_at IS NULL
               AND NOT EXISTS (
                   SELECT 1 FROM documents o
-                  WHERE o.user_id = d.user_id AND o.sha256 = d.sha256
+                  WHERE o.patient_id = d.patient_id AND o.sha256 = d.sha256
+                    AND o.deleted_at IS NULL
                     AND (o.uploaded_at, o.id) < (d.uploaded_at, d.id))
             ORDER BY d.uploaded_at
             """,
-            (user_id,),
+            (patient_id,),
         )
         rows = cur.fetchall()
     return [

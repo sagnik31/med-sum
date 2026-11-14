@@ -5,8 +5,8 @@ import { useAuth } from "./context.js";
 import { can, homePath } from "./permissions.js";
 
 // Shows its children only to a logged-in user (with the permission perm,
-// when given); sends anyone else to the login page, which comes back here
-// afterwards. This is for navigation only: the API checks the session and
+// when given); sends anyone else to the login page (/login?next=<here>),
+// which comes back here afterwards. This is for navigation only: the API checks the session and
 // the permission on every request.
 function RequireAuth({ children, perm }) {
   const { status, user } = useAuth();
@@ -16,7 +16,8 @@ function RequireAuth({ children, perm }) {
     return <p className="text-sm text-slate-500">Loading...</p>;
   }
   if (status === "out") {
-    return <Navigate to="/login" replace state={{ from: location }} />;
+    const next = `${location.pathname}${location.search}`;
+    return <Navigate to={`/login?next=${encodeURIComponent(next)}`} replace />;
   }
   if (perm && !can(user, perm)) {
     return (

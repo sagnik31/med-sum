@@ -161,44 +161,77 @@ export function issueStaffLink(id) {
   return apiRequest(`/admin/users/${encodeURIComponent(id)}/reset-link`, { method: "POST" });
 }
 
-// ---------- Documents API ----------
+// ---------- Patients API ----------
+//
+// Patients are records, not accounts. Every clinician of the organisation
+// sees every patient of it; another organisation's patient answers 404.
 
-export function fetchDocuments() {
-  return apiRequest("/documents");
+const enc = encodeURIComponent;
+
+// q matches part of the name or the start of the MRN; "" lists everyone.
+export function fetchPatients(q = "") {
+  return apiRequest(q ? `/patients?q=${enc(q)}` : "/patients");
 }
 
-export function uploadDocument(file) {
+// details: { mrn, full_name, date_of_birth?, age_years?, sex? }
+export function createPatient(details) {
+  return apiRequest("/patients", { method: "POST", json: details });
+}
+
+export function fetchPatient(id) {
+  return apiRequest(`/patients/${enc(id)}`);
+}
+
+// changes: any of the details; null clears date_of_birth, age_years or sex.
+export function updatePatient(id, changes) {
+  return apiRequest(`/patients/${enc(id)}`, { method: "PATCH", json: changes });
+}
+
+export function fetchPatientDocuments(patientId) {
+  return apiRequest(`/patients/${enc(patientId)}/documents`);
+}
+
+export function uploadDocument(patientId, file) {
   const formData = new FormData();
   formData.append("file", file);
-  return apiRequest("/documents", { method: "POST", body: formData });
+  return apiRequest(`/patients/${enc(patientId)}/documents`, { method: "POST", body: formData });
 }
 
+export function fetchPatientSummary(patientId) {
+  return apiRequest(`/patients/${enc(patientId)}/summary`);
+}
+
+// Start (re)building the patient summary in the background; poll
+// fetchPatientSummary for the result.
+export function triggerPatientSummary(patientId) {
+  return apiRequest(`/patients/${enc(patientId)}/summary`, { method: "POST" });
+}
+
+// ---------- Documents API ----------
+
+// One document: { id, patient_id, uploaded_by, uploaded_by_name, original_name, ... }
+export function fetchDocument(id) {
+  return apiRequest(`/documents/${enc(id)}`);
+}
+
+// Only the clinician who uploaded a document may delete it (403 otherwise).
+// Deleting is soft: the document disappears from every page and summary.
 export function deleteDocument(id) {
-  return apiRequest(`/documents/${id}`, { method: "DELETE" });
+  return apiRequest(`/documents/${enc(id)}`, { method: "DELETE" });
 }
 
 export function getInsight(documentId) {
-  return apiRequest(`/documents/${documentId}/insight`);
+  return apiRequest(`/documents/${enc(documentId)}/insight`);
 }
 
-// Ask the backend to start insight generation (it checks ownership and
-// forwards to the AI service). Fire-and-forget: poll getInsight for the result.
+// Ask the backend to start insight generation (it checks the organisation
+// and forwards to the AI service). Fire-and-forget: poll getInsight for the result.
 export function triggerInsightGeneration(documentId) {
-  return apiRequest(`/documents/${documentId}/insight`, { method: "POST" });
+  return apiRequest(`/documents/${enc(documentId)}/insight`, { method: "POST" });
 }
 
 // Process the document again from the start, as a new run (for when the
 // pipeline has changed). Poll its insight afterwards.
 export function reprocessDocument(documentId) {
-  return apiRequest(`/documents/${documentId}/reprocess`, { method: "POST" });
-}
-
-export function fetchUserInsights() {
-  return apiRequest("/user/insights");
-}
-
-// Start (re)generating the patient summary in the background; poll
-// fetchUserInsights for the result.
-export function triggerUserInsights() {
-  return apiRequest("/user/insights", { method: "POST" });
+  return apiRequest(`/documents/${enc(documentId)}/reprocess`, { method: "POST" });
 }

@@ -51,12 +51,17 @@ type Store interface {
 	CreateUser(ctx context.Context, nu db.NewUser) (*db.User, error)
 	UpdateUser(ctx context.Context, upd db.UserUpdate) (*db.User, error)
 
-	// Documents and summaries
-	GetPatientSummary(ctx context.Context, userID string) (*db.PatientSummary, error)
-	CreateDocument(ctx context.Context, userID, originalName, contentType, storagePath, sha256 string) (*db.Document, error)
-	ListDocumentsByUser(ctx context.Context, userID string) ([]db.Document, error)
-	GetDocumentByIDAndUser(ctx context.Context, docID, userID string) (*db.Document, error)
-	DeleteDocumentByIDAndUser(ctx context.Context, docID, userID string) (storagePath string, shared bool, err error)
+	// Patients, documents and summaries. Every method that finds a patient
+	// or a document takes the caller's organisation and filters on it.
+	CreatePatient(ctx context.Context, orgID, createdBy string, f db.PatientFields) (*db.Patient, error)
+	UpdatePatient(ctx context.Context, orgID, patientID string, f db.PatientFields) (*db.Patient, error)
+	GetPatient(ctx context.Context, orgID, patientID string) (*db.Patient, error)
+	ListPatients(ctx context.Context, orgID, query string) ([]db.Patient, error)
+	GetPatientSummary(ctx context.Context, patientID string) (*db.PatientSummary, error)
+	CreateDocument(ctx context.Context, orgID string, nd db.NewDocument) (*db.Document, error)
+	GetDocument(ctx context.Context, orgID, docID string) (*db.Document, error)
+	ListPatientDocuments(ctx context.Context, orgID, patientID string) ([]db.Document, error)
+	SoftDeleteDocument(ctx context.Context, orgID, docID, deletedBy string, now time.Time) (bool, error)
 	GetInsightByDocumentID(ctx context.Context, docID string) (*db.Insight, error)
 	GetDocumentRecord(ctx context.Context, docID string) (*db.DocumentRecord, error)
 }
@@ -131,15 +136,15 @@ func NewServer(store Store, cfg Config) *Server {
 	})))
 	s.mux.HandleFunc("/admin/users/", s.withSession(s.handleStaffByID))
 
-	// /documents (POST = upload, GET = list)
-	s.mux.HandleFunc("/documents", s.withSession(byMethod(map[string]methodRoute{
-		http.MethodGet:  {authz.DocumentRead, s.handleListDocuments},
-		http.MethodPost: {authz.DocumentUpload, s.handleUploadDocument},
+	// Patients (patients.go): /patients, /patients/{id}, and the patient's
+	// /documents (list, upload) and /summary (fetch, build)
+	s.mux.HandleFunc("/patients", s.withSession(byMethod(map[string]methodRoute{
+		http.MethodGet:  {authz.PatientRead, s.handleListPatients},
+		http.MethodPost: {authz.PatientWrite, s.handleCreatePatient},
 	})))
-	// /documents/{id} and /documents/{id}/insight (GET = fetch, POST = generate)
+	s.mux.HandleFunc("/patients/", s.withSession(s.handlePatientByID))
+	// /documents/{id} (GET, DELETE) and its /insight, /record, /reprocess
 	s.mux.HandleFunc("/documents/", s.withSession(s.handleDocumentByID))
-	// /user/insights (GET = fetch the patient summary, POST = generate it)
-	s.mux.HandleFunc("/user/insights", s.withSession(s.handlePatientInsights))
 
 	s.handler = s.withOrigins(s.mux)
 	return s
@@ -171,16 +176,16 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte("ok"))
 }
 
-// ----- Documents collection: POST /documents, GET /documents -----
+// ----- Upload: POST /patients/{id}/documents -----
 
 // maxUploadSize caps a whole upload request (the file plus form overhead).
 const maxUploadSize = 20 << 20 // 20 MB
 
-// Upload document for the authenticated user.
-func (s *Server) handleUploadDocument(w http.ResponseWriter, r *http.Request) {
-	userID, ok := userIDFromContext(r.Context())
-	if !ok {
-		http.Error(w, "unauthorized", http.StatusUnauthorized)
+// handleUploadDocument stores a file as a document of the patient, uploaded
+// by the caller, and starts its processing.
+func (s *Server) handleUploadDocument(w http.ResponseWriter, r *http.Request, patientID string) {
+	p, _ := principalFromContext(r.Context())
+	if s.loadPatient(w, r, patientID) == nil {
 		return
 	}
 
@@ -236,18 +241,22 @@ func (s *Server) handleUploadDocument(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	doc, err := s.db.CreateDocument(
-		r.Context(),
-		userID,
-		header.Filename,
-		header.Header.Get("Content-Type"),
-		storagePath,
-		hex.EncodeToString(hash.Sum(nil)),
-	)
-	if err != nil {
+	doc, err := s.db.CreateDocument(r.Context(), p.OrgID, db.NewDocument{
+		PatientID:    patientID,
+		UploadedBy:   p.UserID,
+		OriginalName: header.Filename,
+		ContentType:  header.Header.Get("Content-Type"),
+		StoragePath:  storagePath,
+		SHA256:       hex.EncodeToString(hash.Sum(nil)),
+	})
+	if err != nil || doc == nil {
 		_ = os.Remove(storagePath)
-		log.Printf("CreateDocument error: %v", err)
-		http.Error(w, "internal error", http.StatusInternalServerError)
+		if err != nil {
+			log.Printf("CreateDocument error: %v", err)
+			http.Error(w, "internal error", http.StatusInternalServerError)
+		} else {
+			http.Error(w, "not found", http.StatusNotFound) // the patient went away meanwhile
+		}
 		return
 	}
 
@@ -300,24 +309,6 @@ func newStoragePath(dir, originalName string) (string, error) {
 	}
 	name := hex.EncodeToString(b) + strings.ToLower(filepath.Ext(originalName))
 	return filepath.Join(dir, name), nil
-}
-
-// List all documents for the authenticated user.
-func (s *Server) handleListDocuments(w http.ResponseWriter, r *http.Request) {
-	userID, ok := userIDFromContext(r.Context())
-	if !ok {
-		http.Error(w, "unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	docs, err := s.db.ListDocumentsByUser(r.Context(), userID)
-	if err != nil {
-		log.Printf("ListDocumentsByUser error: %v", err)
-		http.Error(w, "internal error", http.StatusInternalServerError)
-		return
-	}
-
-	writeJSON(w, http.StatusOK, docs)
 }
 
 // ----- Single document routes: /documents/{id} and /documents/{id}/insight -----
@@ -389,6 +380,12 @@ func (s *Server) handleDocumentByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch r.Method {
+	case http.MethodGet:
+		if permit(w, r, authz.DocumentRead) {
+			if doc := s.loadDocument(w, r, docID); doc != nil {
+				writeJSON(w, http.StatusOK, doc)
+			}
+		}
 	case http.MethodDelete:
 		if permit(w, r, authz.DocumentDelete) {
 			s.handleDeleteDocument(w, r, docID)
@@ -398,35 +395,56 @@ func (s *Server) handleDocumentByID(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Delete a document for the authenticated user.
+// loadDocument returns a live document of the caller's organisation, or
+// answers 404 (or 500) and returns nil. Every document route starts here,
+// so a document of another organisation is never found.
+func (s *Server) loadDocument(w http.ResponseWriter, r *http.Request, docID string) *db.Document {
+	p, _ := principalFromContext(r.Context())
+	doc, err := s.db.GetDocument(r.Context(), p.OrgID, docID)
+	if err != nil {
+		log.Printf("GetDocument error: %v", err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return nil
+	}
+	if doc == nil {
+		http.Error(w, "not found", http.StatusNotFound)
+		return nil
+	}
+	return doc
+}
+
+// handleDeleteDocument deletes a document, softly: it is hidden from every
+// list, page and summary, while its row and file stay so the deletion
+// stays accountable. Only the clinician who uploaded it may delete it.
+// See docs/adr/0010-staff-access-and-security.md.
 func (s *Server) handleDeleteDocument(w http.ResponseWriter, r *http.Request, docID string) {
-	userID, ok := userIDFromContext(r.Context())
-	if !ok {
-		http.Error(w, "unauthorized", http.StatusUnauthorized)
+	p, _ := principalFromContext(r.Context())
+	doc := s.loadDocument(w, r, docID)
+	if doc == nil {
 		return
 	}
-
-	storagePath, shared, err := s.db.DeleteDocumentByIDAndUser(r.Context(), docID, userID)
+	if doc.UploadedBy == nil || *doc.UploadedBy != p.UserID {
+		http.Error(w, "only the clinician who uploaded a document can delete it", http.StatusForbidden)
+		return
+	}
+	ok, err := s.db.SoftDeleteDocument(r.Context(), p.OrgID, docID, p.UserID, s.now())
 	if err != nil {
-		log.Printf("DeleteDocumentByIDAndUser error: %v", err)
+		log.Printf("SoftDeleteDocument error: %v", err)
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
-
-	if storagePath == "" {
-		// Either doc not found, or not owned by this user
-		http.Error(w, "not found", http.StatusNotFound)
+	if !ok {
+		http.Error(w, "not found", http.StatusNotFound) // deleted meanwhile
 		return
 	}
-
-	// Remove the patient's file too, unless an older document shares it.
-	if !shared {
-		if err := os.Remove(storagePath); err != nil && !os.IsNotExist(err) {
-			log.Printf("failed to remove %s: %v", storagePath, err)
+	// The patient summary still shows the document's values: rebuild it
+	// if the patient has one. The deletion stands if that fails.
+	summary, err := s.db.GetPatientSummary(r.Context(), doc.PatientID)
+	if err == nil && summary.Status != nil {
+		if err := s.requestPatientSummary(r, doc.PatientID); err != nil {
+			log.Printf("could not rebuild the summary after deleting document %s: %v", docID, err)
 		}
 	}
-
-	// No body for delete success.
 	w.WriteHeader(http.StatusNoContent)
 }
 
@@ -440,23 +458,8 @@ type insightResponse struct {
 }
 
 func (s *Server) handleGetDocumentInsight(w http.ResponseWriter, r *http.Request, docID string) {
-	userID, ok := userIDFromContext(r.Context())
-	if !ok {
-		http.Error(w, "unauthorized", http.StatusUnauthorized)
-		return
-	}
-
 	ctx := r.Context()
-
-	// 1) Ensure document belongs to this user
-	doc, err := s.db.GetDocumentByIDAndUser(ctx, docID, userID)
-	if err != nil {
-		log.Printf("GetDocumentByIDAndUser error: %v", err)
-		http.Error(w, "internal error", http.StatusInternalServerError)
-		return
-	}
-	if doc == nil {
-		http.Error(w, "not found", http.StatusNotFound)
+	if s.loadDocument(w, r, docID) == nil {
 		return
 	}
 
@@ -507,23 +510,10 @@ func insightEnded(status string) bool {
 // ----- Start insight generation: POST /documents/{id}/insight -----
 
 // The AI service trusts whatever document ID it is given, so the browser
-// never calls it directly: requests come through here, where ownership is
+// never calls it directly: requests come through here, where the organisation is
 // checked, and carry the shared internal token.
 func (s *Server) handleGenerateDocumentInsight(w http.ResponseWriter, r *http.Request, docID string) {
-	userID, ok := userIDFromContext(r.Context())
-	if !ok {
-		http.Error(w, "unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	doc, err := s.db.GetDocumentByIDAndUser(r.Context(), docID, userID)
-	if err != nil {
-		log.Printf("GetDocumentByIDAndUser error: %v", err)
-		http.Error(w, "internal error", http.StatusInternalServerError)
-		return
-	}
-	if doc == nil {
-		http.Error(w, "not found", http.StatusNotFound)
+	if s.loadDocument(w, r, docID) == nil {
 		return
 	}
 
@@ -542,22 +532,10 @@ func (s *Server) handleGenerateDocumentInsight(w http.ResponseWriter, r *http.Re
 // when the pipeline has changed. A document with a job already queued or
 // running is left to it.
 func (s *Server) handleReprocessDocument(w http.ResponseWriter, r *http.Request, docID string) {
-	userID, ok := userIDFromContext(r.Context())
-	if !ok {
-		http.Error(w, "unauthorized", http.StatusUnauthorized)
+	if s.loadDocument(w, r, docID) == nil {
 		return
 	}
-	doc, err := s.db.GetDocumentByIDAndUser(r.Context(), docID, userID)
-	if err != nil {
-		log.Printf("GetDocumentByIDAndUser error: %v", err)
-		http.Error(w, "internal error", http.StatusInternalServerError)
-		return
-	}
-	if doc == nil {
-		http.Error(w, "not found", http.StatusNotFound)
-		return
-	}
-	err = s.callInsightsService(r.Context(), "/internal/reprocess-document", map[string]string{"document_id": docID})
+	err := s.callInsightsService(r.Context(), "/internal/reprocess-document", map[string]string{"document_id": docID})
 	if err != nil {
 		log.Printf("insights service error: %v", err)
 		http.Error(w, "insights service unavailable", http.StatusBadGateway)
@@ -567,7 +545,7 @@ func (s *Server) handleReprocessDocument(w http.ResponseWriter, r *http.Request,
 }
 
 // requestInsight asks the AI service to process a document. The AI service
-// acts on any document ID it is given, so callers must check ownership first.
+// acts on any document ID it is given, so callers load the document first (loadDocument).
 func (s *Server) requestInsight(ctx context.Context, docID string) error {
 	return s.callInsightsService(ctx, "/internal/generate-insights", map[string]string{"document_id": docID})
 }
@@ -595,66 +573,4 @@ func (s *Server) callInsightsService(ctx context.Context, path string, payload a
 		return fmt.Errorf("insights service returned %s", resp.Status)
 	}
 	return nil
-}
-
-// ----- Patient summary: GET and POST /user/insights -----
-
-type patientInsightResponse struct {
-	Status       string     `json:"status"`                  // "none" | "processing" | "completed" | "failed"
-	InsightsHTML *string    `json:"insights_html,omitempty"` // the latest summary, kept while a new one is generated
-	ErrorMessage *string    `json:"error_message,omitempty"` // present when failed
-	UpdatedAt    *time.Time `json:"updated_at,omitempty"`
-}
-
-func (s *Server) handlePatientInsights(w http.ResponseWriter, r *http.Request) {
-	userID, ok := userIDFromContext(r.Context())
-	if !ok {
-		http.Error(w, "unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	switch r.Method {
-	case http.MethodGet:
-		if permit(w, r, authz.SummaryRead) {
-			s.handleGetPatientInsights(w, r, userID)
-		}
-	case http.MethodPost:
-		if !permit(w, r, authz.SummaryGenerate) {
-			return
-		}
-		// The summary only ever covers the caller's own documents.
-		err := s.callInsightsService(r.Context(), "/internal/generate-user-insights",
-			map[string]string{"user_id": userID})
-		if err != nil {
-			log.Printf("insights service error: %v", err)
-			http.Error(w, "insights service unavailable", http.StatusBadGateway)
-			return
-		}
-		writeJSON(w, http.StatusAccepted, map[string]string{"status": "accepted"})
-	default:
-		w.WriteHeader(http.StatusMethodNotAllowed)
-	}
-}
-
-func (s *Server) handleGetPatientInsights(w http.ResponseWriter, r *http.Request, userID string) {
-	summary, err := s.db.GetPatientSummary(r.Context(), userID)
-	if err != nil {
-		log.Printf("GetPatientSummary error: %v", err)
-		http.Error(w, "internal error", http.StatusInternalServerError)
-		return
-	}
-
-	resp := patientInsightResponse{Status: "none", UpdatedAt: summary.UpdatedAt}
-	if summary.HTML != nil && *summary.HTML != "" {
-		resp.Status = "completed"
-		resp.InsightsHTML = summary.HTML
-	}
-	if summary.Status != nil {
-		resp.Status = *summary.Status
-	}
-	if resp.Status == "failed" {
-		resp.ErrorMessage = summary.Error
-	}
-
-	writeJSON(w, http.StatusOK, resp)
 }

@@ -87,7 +87,7 @@ LOG_FIELDS = frozenset(
         "steps_left_running",
         "steps_interrupted",
         # The service's job lines (insights_service): ids and sizes only.
-        "user_id",
+        "patient_id",
         "documents",
         "markdown_chars",
         "html_chars",

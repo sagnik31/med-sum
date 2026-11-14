@@ -20,9 +20,8 @@ CREATE TABLE organizations (
 
 -- Staff accounts: clinicians and admins, created by an admin (or by
 -- medsumctl), never by sign-up. An account sets its own password through
--- a one-time setup link. Until patients become records of their own,
--- each account is also the patient whose documents it uploads,
--- and the cumulative patient summary lives on this row.
+-- a one-time setup link. Staff are never patients: patients are records
+-- of their own (below), with no account.
 CREATE TABLE staff_users (
     id                          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     org_id                      uuid NOT NULL REFERENCES organizations (id),
@@ -42,10 +41,6 @@ CREATE TABLE staff_users (
     created_by                  uuid REFERENCES staff_users (id) ON DELETE SET NULL,
     created_at                  timestamptz NOT NULL DEFAULT now(),
     last_login_at               timestamptz,
-    patient_insights            text,          -- the summary's HTML
-    patient_insights_status     text,          -- processing / completed / failed
-    patient_insights_error      text,
-    patient_insights_updated_at timestamptz,
     CHECK (status <> 'active' OR password_hash IS NOT NULL)
 );
 CREATE INDEX staff_users_org_id_idx ON staff_users (org_id);
@@ -84,11 +79,51 @@ CREATE TABLE one_time_tokens (
 CREATE INDEX one_time_tokens_user_id_idx ON one_time_tokens (user_id);
 
 -- -------------------------------------------------------------------
+-- Patients: records, not accounts. A clinician creates one and uploads its
+-- documents; every clinician of the organisation sees every patient of
+-- it. The MRN (the hospital's patient ID) is required and unique within
+-- the organisation, and is what the patient-match check compares a
+-- document's printed ID with. A date of birth, or an age when that is all
+-- that is known, never both. See docs/adr/0010-staff-access-and-security.md.
+-- -------------------------------------------------------------------
+CREATE TABLE patients (
+    id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    org_id        uuid NOT NULL REFERENCES organizations (id),
+    mrn           text NOT NULL CHECK (mrn <> '' AND mrn = btrim(mrn)),
+    full_name     text NOT NULL CHECK (full_name <> ''),
+    date_of_birth date,
+    age_years     integer CHECK (age_years BETWEEN 0 AND 130),
+    sex           text CHECK (sex IN ('F', 'M', 'O')),
+    created_by    uuid REFERENCES staff_users (id) ON DELETE SET NULL,
+    created_at    timestamptz NOT NULL DEFAULT now(),
+    updated_at    timestamptz NOT NULL DEFAULT now(),
+    UNIQUE (org_id, mrn),
+    CHECK (date_of_birth IS NULL OR age_years IS NULL)
+);
+CREATE INDEX patients_org_id_name_idx ON patients (org_id, lower(full_name));
+
+-- A patient's cumulative summary, built by the AI service from the
+-- patient's document records. No row until one is first asked for.
+-- status 'processing' while a run holds the claim; the run's result and
+-- failure are written only while updated_at still equals the claim it set.
+CREATE TABLE patient_summaries (
+    patient_id uuid PRIMARY KEY REFERENCES patients (id) ON DELETE CASCADE,
+    html       text,                 -- the summary page, kept while a new one is built
+    status     text NOT NULL CHECK (status IN ('processing', 'completed', 'failed')),
+    error      text,                 -- masked; set when status is failed
+    updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+-- -------------------------------------------------------------------
 -- Documents and their processing
 -- -------------------------------------------------------------------
+-- A document belongs to a patient and records who uploaded it. Deleting
+-- one is soft (deleted_at, deleted_by): the row and its file stay, and
+-- every query that shows or uses documents leaves deleted ones out.
 CREATE TABLE documents (
     id                 uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id            uuid NOT NULL REFERENCES staff_users (id) ON DELETE CASCADE,
+    patient_id         uuid NOT NULL REFERENCES patients (id) ON DELETE CASCADE,
+    uploaded_by        uuid REFERENCES staff_users (id) ON DELETE SET NULL,  -- null for rows made without an upload
     original_name      text NOT NULL,
     content_type       text NOT NULL,
     storage_path       text NOT NULL,          -- absolute; never sent to clients
@@ -99,10 +134,13 @@ CREATE TABLE documents (
     -- same patient is flagged as a duplicate of the first (not refused),
     -- and the patient summary counts it once. Null for rows made without
     -- an upload. See docs/adr/0008-patient-data-protection.md.
-    sha256             text CHECK (sha256 ~ '^[0-9a-f]{64}$')
+    sha256             text CHECK (sha256 ~ '^[0-9a-f]{64}$'),
+    deleted_at         timestamptz,
+    deleted_by         uuid REFERENCES staff_users (id) ON DELETE SET NULL,
+    CHECK (deleted_by IS NULL OR deleted_at IS NOT NULL)
 );
-CREATE INDEX documents_user_id_idx ON documents (user_id);
-CREATE INDEX documents_user_id_sha256_idx ON documents (user_id, sha256, uploaded_at);
+CREATE INDEX documents_patient_id_idx ON documents (patient_id, uploaded_at);
+CREATE INDEX documents_patient_id_sha256_idx ON documents (patient_id, sha256, uploaded_at);
 
 -- Where a document's processing stands: at most one row per document, and
 -- its status is what the API reports; no row means not started. processing
@@ -110,7 +148,6 @@ CREATE INDEX documents_user_id_sha256_idx ON documents (user_id, sha256, uploade
 CREATE TABLE insights (
     id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     document_id   uuid NOT NULL UNIQUE REFERENCES documents (id) ON DELETE CASCADE,
-    user_id       uuid,
     status        text NOT NULL DEFAULT 'processing'
                   CHECK (status IN ('processing', 'verified', 'needs_review', 'failed')),
     html_insights text,
