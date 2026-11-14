@@ -18,6 +18,8 @@ The pipeline sends a document to `needs_review` when a deterministic signal fire
 
 **Who does what.** The Go API owns the write: it checks the permission (`review.write`) and the organisation, loads the record, asks the AI service to apply the review (`POST /internal/review-apply`, a pure function: record in, reviewed record, checks and page out; it reads and writes nothing), then stores the new record, a row of `record_reviews` (who, when, which item and field, the signal ids the item carried, whether it was an audit-sample review) and the audit event in one transaction. The record's `updated_at` guards against two clinicians saving over each other (409). A document being processed can't be reviewed.
 
+**The review shows the original upload**, not page images rendered again: `GET /documents/{id}/file` (permission `document.read`, organisation-scoped like every document route, audited as `document_file_viewed` before a byte is sent) serves the stored file with the type its extension had when the upload checked it against the file's first bytes, under a generic file name. Images show directly; a PDF opens in the browser's own viewer at the page being checked (`#page=N`). It is the one API response that may be framed: its content security policy names the app's origins in `frame-ancestors` and drops `X-Frame-Options`, and still allows no script and no load from elsewhere. Every other response, its refusals included, keeps `frame-ancestors 'none'` (ADR 0010).
+
 **Reprocessing** replaces the record, so its reviews start again; the `record_reviews` rows of the earlier run stay.
 
 **The record's schema version stays 1.** `SourceDocument` gained an optional `corrections` list with a default, which every stored record reads the same without; the version is bumped when a field is removed, renamed, made required or changes meaning.
@@ -28,6 +30,7 @@ The pipeline sends a document to `needs_review` when a deterministic signal fire
 - **A separate table of corrections applied when pages are built.** Two places to read a value from; every consumer (summary, document page, tools, exports) would have to join them. Inside the record, one reader (`reviewed_view`) serves all of them.
 - **Running every validator on a corrected value.** The transcription checks would flag every correction of a misread value, which is the point of correcting it.
 - **Refusing a corrected value that fails a check.** A printed flag that disagrees with the right value is the document's problem; the clinician decides.
+- **Page images rendered again from the PDF for the review.** A second copy of what the browser can show from the file itself, and a rendering bug would put a wrong image beside the values.
 - **A second approver.** Not how a ward works for this kind of check; the trail says who did it.
 - **The AI service writing the review.** It would need write access to the audit log, and the audit row would no longer share the write's transaction.
 

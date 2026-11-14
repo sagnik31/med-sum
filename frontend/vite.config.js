@@ -15,6 +15,9 @@ const SECURITY_HEADERS = {
   "Referrer-Policy": "no-referrer",
 };
 
+// The API's one frameable route: GET /documents/{id}/file.
+const FRAMEABLE = /^\/(api\/)?documents\/[0-9a-f-]+\/file(\?|#|$)/i;
+
 export default {
   server: {
     port: 5173,
@@ -24,6 +27,15 @@ export default {
       "/api": {
         target: API_TARGET,
         rewrite: (path) => path.replace(/^\/api/, ""),
+        // The dev server adds its own headers to every response, proxied
+        // ones too. The API lets the app frame one route, a document's
+        // original file (its CSP names who may frame it), so the dev
+        // server's X-Frame-Options: DENY is dropped there and only there.
+        configure: (proxy) => {
+          proxy.on("proxyRes", (_proxyRes, req, res) => {
+            if (FRAMEABLE.test(req.url || "")) res.removeHeader("X-Frame-Options");
+          });
+        },
       },
     },
   },

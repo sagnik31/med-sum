@@ -11,7 +11,8 @@ import {
 } from "../api/client.js";
 import { useAuth } from "../auth/context.js";
 import { PERM, can } from "../auth/permissions.js";
-import { flaggedCount } from "../record/review.js";
+import { flaggedCount, isPdfName } from "../record/review.js";
+import OriginalFile from "../components/OriginalFile.jsx";
 import ApiErrorNotice from "../components/ApiErrorNotice.jsx";
 import HtmlFrame from "../components/HtmlFrame.jsx";
 import RecordView from "../components/RecordView.jsx";
@@ -42,6 +43,8 @@ function InsightPage() {
   const canReview = can(user, PERM.reviewWrite);
   const [reviewing, setReviewing] = useState(searchParamsHasReview());
   const [reviewed, setReviewed] = useState(0);
+  // The original upload beside the transcription; always on in review mode.
+  const [showOriginal, setShowOriginal] = useState(false);
   // A link from the patient summary names the lines to show (?page=&lines=).
   const [searchParams] = useSearchParams();
   const linkedCitation = citationFromQuery(searchParams);
@@ -224,7 +227,19 @@ function InsightPage() {
 
       {!loading && !error && processed && (
         <div className="mb-4">
-          <h2 className="text-sm font-semibold text-slate-700 mb-2">Values and where they are printed</h2>
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-sm font-semibold text-slate-700">Values and where they are printed</h2>
+            {!reviewing && (
+              <button
+                type="button"
+                onClick={() => setShowOriginal((v) => !v)}
+                aria-pressed={showOriginal}
+                className="text-sm text-blue-600 hover:underline"
+              >
+                {showOriginal ? "Hide the original" : "Show the original upload"}
+              </button>
+            )}
+          </div>
           <ApiErrorNotice error={recordError} />
           {!record && !recordError && <p className="text-sm text-slate-600">Loading the record…</p>}
           {record && (
@@ -235,6 +250,11 @@ function InsightPage() {
               record={record}
               initialCitation={linkedCitation}
               onReview={reviewing && canReview ? handleReview : undefined}
+              sourceSlot={
+                reviewing || showOriginal
+                  ? (page) => <OriginalFile documentId={id} isPdf={isPdfName(doc?.original_name)} page={page} />
+                  : undefined
+              }
             />
           )}
         </div>

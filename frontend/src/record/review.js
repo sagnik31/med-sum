@@ -137,3 +137,15 @@ export function queueLabel(entry) {
   const n = entry.flagged;
   return n === 1 ? "1 value to review" : `${n} values to review`;
 }
+
+// The original upload's URL; a PDF opens at `page` when one is given.
+export function originalFileUrl(base, documentId, page) {
+  const url = `${base}/documents/${encodeURIComponent(documentId)}/file`;
+  return Number.isInteger(page) && page >= 1 ? `${url}#page=${page}` : url;
+}
+
+// Whether a document's original is a PDF (else it is an image), from the
+// stored name's extension, as the API decides its type.
+export function isPdfName(name) {
+  return /\.pdf$/i.test(name || "");
+}

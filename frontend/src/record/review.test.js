@@ -9,6 +9,8 @@ import {
   currentValue,
   flaggedCount,
   headerTarget,
+  isPdfName,
+  originalFileUrl,
   queueLabel,
   reviewNote,
 } from "./review.js";
@@ -90,4 +92,11 @@ test("queue entries say what waits", () => {
   assert.equal(queueLabel({ reason: "needs_review", flagged: 1 }), "1 value to review");
   assert.equal(queueLabel({ reason: "needs_review", flagged: 3 }), "3 values to review");
   assert.match(queueLabel({ reason: "audit", flagged: 0 }), /audit/);
+});
+
+test("the original opens at the cited page", () => {
+  assert.equal(originalFileUrl("/api", "abc", 3), "/api/documents/abc/file#page=3");
+  assert.equal(originalFileUrl("/api", "abc", null), "/api/documents/abc/file");
+  assert.equal(originalFileUrl("/api", "a/b", 0), "/api/documents/a%2Fb/file");
+  assert.ok(isPdfName("Report.PDF") && !isPdfName("scan.png") && !isPdfName(null));
 });

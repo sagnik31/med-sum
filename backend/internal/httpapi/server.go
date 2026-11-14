@@ -380,6 +380,18 @@ func (s *Server) handleDocumentByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// /documents/{id}/file: the original upload, for checking values against
+	if len(parts) == 2 && parts[1] == "file" {
+		if r.Method != http.MethodGet && r.Method != http.MethodHead {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		if s.permit(w, r, authz.DocumentRead) {
+			s.handleGetDocumentFile(w, r, docID)
+		}
+		return
+	}
+
 	// /documents/{id}/review: a clinician confirms or corrects a value
 	if len(parts) == 2 && parts[1] == "review" {
 		if r.Method != http.MethodPost {

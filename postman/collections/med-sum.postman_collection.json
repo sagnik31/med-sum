@@ -861,6 +861,32 @@
                   "raw": "{\n  \"action\": \"correct\",\n  \"item_id\": \"obs-1\",\n  \"field\": \"value_text\",\n  \"value\": \"11.4\",\n  \"note\": null,\n  \"record_updated_at\": \"<updated_at from GET /documents/{id}/record>\",\n  \"accept_findings\": false\n}"
                 }
               }
+            },
+            {
+              "name": "Original File",
+              "id": "13a80301-deda-49e5-bdeb-94d33b5cc1aa",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{backend_url}}/documents/:id/file",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "documents",
+                    ":id",
+                    "file"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "Document ID"
+                    }
+                  ]
+                },
+                "header": []
+              }
             }
           ]
         }
