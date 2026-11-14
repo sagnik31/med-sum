@@ -162,7 +162,7 @@ LOG_FIELDS: dict[str, str] = {
                        " steps_interrupted documents markdown_chars html_chars"
                        " not_included awaiting overview unknown_numbers"
                        " unknown_words reprocess result action flagged"
-                       " audit_sampled"),
+                       " audit_sampled tool ok error_kind"),
 }  # fmt: skip
 
 

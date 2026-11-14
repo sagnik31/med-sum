@@ -15,6 +15,7 @@ Why Med-Sum is built the way it is: the decisions the rest of the design follows
 | [0009](0009-measured-evals.md) | Evals measure the safety net, on a committed synthetic dataset, with honest uncertainty | Built; live runs not made yet |
 | [0010](0010-staff-access-and-security.md) | Staff access: admin-issued accounts, server-side sessions, permissions in code, scope in SQL | Partly built (see its status) |
 | [0011](0011-clinician-review.md) | Clinician review: confirm or correct beside the reading, never over it | Built |
+| [0012](0012-shared-tool-layer.md) | One read-only tool layer, used in-process and served over MCP through the API | Built; client eval not run yet |
 
 Where patient data lives and the threats considered are on the [data-flow page](../data-and-threats.md).
 

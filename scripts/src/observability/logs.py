@@ -107,6 +107,10 @@ LOG_FIELDS = frozenset(
         "job_id",
         "reprocess",
         "result",
+        # The MCP server's tool calls (medsum_mcp): the tool and its outcome.
+        "tool",
+        "ok",
+        "error_kind",
     }
 )
 

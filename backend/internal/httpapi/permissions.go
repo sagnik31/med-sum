@@ -18,9 +18,9 @@ func (s *Server) permit(w http.ResponseWriter, r *http.Request, p authz.Permissi
 	if ok && authz.Can(principal.Roles, p) {
 		return true
 	}
-	ev := s.auditEvent(r, actAccessDenied)
+	ev := with(s.auditEvent(r, actAccessDenied),
+		map[string]any{"permission": string(p), "method": r.Method, "path": r.URL.Path})
 	ev.Outcome = db.OutcomeDenied
-	ev.Details = map[string]any{"permission": string(p), "method": r.Method, "path": r.URL.Path}
 	if err := s.db.RecordAudit(r.Context(), *ev); err != nil {
 		log.Printf("RecordAudit error (action %s): %v", ev.Action, err) // refused either way
 	}

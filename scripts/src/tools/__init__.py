@@ -3,9 +3,10 @@ Read-only tools over one document, with typed inputs and outputs.
 
 The tools know nothing of the pipeline graph: each reads a ToolSource (the
 document's transcribed pages, their text layers and the record built from
-its parse) and returns a typed answer that cites where it came from. A
-repair step can offer them to a model in-process, and a tool server can
-serve the same definitions later.
+its parse) and returns a typed answer that cites where it came from. The
+repair step offers them to a model in-process, and the MCP server
+(medsum_mcp) serves the same definitions through the Go API.
+See docs/adr/0012-shared-tool-layer.md.
 
     get_lines             numbered lines of one page of the transcription
     search_transcription  the lines that contain some text

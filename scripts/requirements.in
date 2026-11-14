@@ -6,6 +6,8 @@ httpx
 # LangGraph runs the document pipeline; its Postgres checkpointer needs psycopg 3
 langgraph
 langgraph-checkpoint-postgres
+# The official MCP SDK: the stdio server over the shared read-only tools
+mcp
 ollama
 psycopg[binary]
 pydantic

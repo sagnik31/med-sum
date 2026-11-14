@@ -495,9 +495,8 @@ func (s *Server) handleDeleteDocument(w http.ResponseWriter, r *http.Request, do
 		return
 	}
 	if doc.UploadedBy == nil || *doc.UploadedBy != p.UserID {
-		ev := s.documentEvent(r, actDocumentDeleted, doc)
+		ev := with(s.documentEvent(r, actDocumentDeleted, doc), map[string]any{"reason": "not_uploader"})
 		ev.Outcome = db.OutcomeDenied
-		ev.Details = map[string]any{"reason": "not_uploader"}
 		if s.recordAudit(w, r, ev) {
 			http.Error(w, "only the clinician who uploaded a document can delete it", http.StatusForbidden)
 		}

@@ -57,9 +57,31 @@ func optStr(s string) *string {
 	return &s
 }
 
+// toolHeader names the tool of the MCP server a request is made for. The
+// server sends it with every request, so each tool call's audit row says
+// which tool read the data. It is a label, not a credential: the actor is
+// still the session's account. See docs/adr/0012-shared-tool-layer.md.
+const toolHeader = "X-Medsum-Tool"
+
+// toolName is the request's tool label, or "" when it has none or the
+// header isn't a plain tool name (lower case and underscores).
+func toolName(r *http.Request) string {
+	v := r.Header.Get(toolHeader)
+	if v == "" || len(v) > 40 {
+		return ""
+	}
+	for _, c := range v {
+		if (c < 'a' || c > 'z') && c != '_' {
+			return ""
+		}
+	}
+	return v
+}
+
 // auditEvent starts an event for the request: the caller (when logged in),
-// their organisation, the address and browser, and the time. Callers add
-// the target, the patient and any details.
+// their organisation, the address and browser, the MCP tool it is made for
+// (if any), and the time. Callers add the target, the patient and any
+// details.
 func (s *Server) auditEvent(r *http.Request, action string) *db.AuditEvent {
 	ev := &db.AuditEvent{
 		At:        s.now(),
@@ -71,6 +93,9 @@ func (s *Server) auditEvent(r *http.Request, action string) *db.AuditEvent {
 	if p, ok := principalFromContext(r.Context()); ok {
 		ev.ActorID = optStr(p.UserID)
 		ev.OrgID = optStr(p.OrgID)
+	}
+	if tool := toolName(r); tool != "" {
+		ev.Details = map[string]any{"tool": tool}
 	}
 	return ev
 }
@@ -88,9 +113,15 @@ func forPatient(ev *db.AuditEvent, patientID string) *db.AuditEvent {
 	return ev
 }
 
-// with adds details (counts, field names, reasons; never content).
+// with adds details (counts, field names, reasons; never content) to
+// those the event has.
 func with(ev *db.AuditEvent, details map[string]any) *db.AuditEvent {
-	ev.Details = details
+	if ev.Details == nil {
+		ev.Details = make(map[string]any, len(details))
+	}
+	for k, v := range details {
+		ev.Details[k] = v
+	}
 	return ev
 }
 
