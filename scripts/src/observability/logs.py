@@ -58,6 +58,10 @@ LOG_FIELDS = frozenset(
         "failures",
         "breaker",
         "cooldown_s",
+        # A clinician review applied (record.review): ids and counts only.
+        "item_id",
+        "action",
+        "flagged",
         "quality_kind",
         "quality_failures",
         # One model round trip (model_call_ended): counts and timings only.

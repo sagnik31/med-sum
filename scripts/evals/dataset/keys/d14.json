@@ -46,7 +46,8 @@
       "document_date": "2025-03-11",
       "date_source": "prescription_date"
     },
-    "provenance": null
+    "provenance": null,
+    "corrections": []
   },
   "pages": [
     {

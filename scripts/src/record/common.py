@@ -9,8 +9,11 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
-# Version of the stored record (DocumentRecord). Bump it on any change to
-# the record's shape; the exported schema files carry it in their names.
+# Version of the stored record (DocumentRecord). Bump it when a field is
+# removed, renamed, made required or changes meaning; the exported schema
+# files carry it in their names. A new optional field with a default
+# (every record without it still reads the same) keeps the version, and
+# the exported schema is regenerated. See docs/adr/0011-clinician-review.md.
 SCHEMA_VERSION = 1
 
 Verbatim = Annotated[str, StringConstraints(min_length=1)]

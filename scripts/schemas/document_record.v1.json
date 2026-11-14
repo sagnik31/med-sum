@@ -1636,6 +1636,14 @@
             }
           ],
           "default": null
+        },
+        "corrections": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Correction"
+          },
+          "title": "Corrections",
+          "type": "array"
         }
       },
       "required": [

@@ -20,7 +20,7 @@ The view's own wording is all in TEXT, so a test can check that every
 other word on the page comes from the record.
 """
 
-from record.common import ItemStatus, Provenance
+from record.common import REVIEWED, ItemStatus, Provenance
 from record.document import (
     DocumentRecord,
     MedicationRequest,
@@ -129,10 +129,14 @@ def _awaits(provenance: Provenance | None) -> bool:
     return provenance is not None and provenance.status is ItemStatus.LOW_CONFIDENCE
 
 
-def _reasons(provenance: Provenance | None) -> str:
-    """The reasons an item awaits review, as a list; '' when it doesn't."""
+def _reasons(holder) -> str:
+    """
+    The reasons an item awaits review, as a list, or who reviewed it; ''
+    when neither. `holder` is an item, the patient or the document.
+    """
+    provenance: Provenance | None = holder.provenance
     if not _awaits(provenance):
-        return ""
+        return _reviewed(holder)
     items = []
     for reason in provenance.low_confidence_reasons:
         r = plain(reason)
@@ -142,6 +146,37 @@ def _reasons(provenance: Provenance | None) -> str:
         f'<div class="reasons-block"><strong>{_t("awaiting")}</strong>'
         f'<ul class="reasons">{"".join(items)}</ul></div>'
     )
+
+
+def review_note(holder) -> str | None:
+    """
+    "corrected by Dr X on 2025-03-04 (value_text, read as '10.4')" or
+    "confirmed by Dr X on 2025-03-04", from the holder's review; None when
+    no clinician has reviewed it. The corrected values are already in place
+    (record.review.reviewed_view); this says so, and what was read.
+    See docs/adr/0011-clinician-review.md.
+    """
+    p = holder.provenance
+    if p is None or p.status not in REVIEWED:
+        return None
+    corrections = getattr(holder, "corrections", [])
+    if p.status is ItemStatus.CLINICIAN_CORRECTED and corrections:
+        last = corrections[-1]
+        read = ", ".join(
+            f"{c.field}, read as {c.original!r}" if c.original is not None
+            else f"{c.field}, read as nothing"
+            for c in corrections
+        )  # fmt: skip
+        return f"corrected by {last.clinician} on {last.at.date().isoformat()} ({read})"
+    return f"confirmed by {p.reviewed_by} on {p.reviewed_at.date().isoformat()}"
+
+
+def _reviewed(holder) -> str:
+    note = review_note(holder)
+    if note is None:
+        return ""
+    status = esc(holder.provenance.status.value)
+    return f'<p class="reviewed" data-reviewed="{status}">{esc(note)}</p>'
 
 
 def _row_attrs(item: RecordItem) -> str:
@@ -175,7 +210,7 @@ def _patient(record: DocumentRecord) -> str:
     cls = ' class="review"' if _awaits(record.patient.provenance) else ""
     return (
         f'<section data-item="patient"{cls}><h2>{_t("patient")}</h2>'
-        f"<dl>{rows}</dl>{_reasons(record.patient.provenance)}</section>"
+        f"<dl>{rows}</dl>{_reasons(record.patient)}</section>"
     )
 
 
@@ -218,7 +253,7 @@ def _observation_rows(o: Observation) -> str:
         f"<td>{ranges}</td>{_cell(p.flag_printed)}<td>{computed}</td><td>{converted}</td>"
         "</tr>"
     )
-    reasons = _reasons(o.provenance)
+    reasons = _reasons(o)
     if reasons:
         row += f'<tr class="review"><td colspan="7">{reasons}</td></tr>'
     return row
@@ -281,7 +316,7 @@ def _medications(record: DocumentRecord) -> str:
             )  # fmt: skip
         )
         rows.append(f"<tr{_row_attrs(m)}>{cells}<td>{_schedule(m)}</td></tr>")
-        reasons = _reasons(m.provenance)
+        reasons = _reasons(m)
         if reasons:
             rows.append(f'<tr class="review"><td colspan="9">{reasons}</td></tr>')
     return (
@@ -297,7 +332,7 @@ def _list_section(title_key: str, entries: list[str]) -> str:
 
 
 def _li(item: RecordItem, inner: str) -> str:
-    return f"<li{_row_attrs(item)}>{inner}{_reasons(item.provenance)}</li>"
+    return f"<li{_row_attrs(item)}>{inner}{_reasons(item)}</li>"
 
 
 def _conditions(record: DocumentRecord) -> str:
@@ -337,7 +372,7 @@ def _vitals(record: DocumentRecord) -> str:
             f"<tr{_row_attrs(v)}><td>{esc(p.name)}</td><td>{esc(p.value_text)}</td>"
             f"{_cell(p.unit)}</tr>"
         )
-        reasons = _reasons(v.provenance)
+        reasons = _reasons(v)
         if reasons:
             rows.append(f'<tr class="review"><td colspan="3">{reasons}</td></tr>')
     return (
@@ -402,7 +437,7 @@ def _banner(record: DocumentRecord) -> str:
     holders += [i.provenance for i in record.items()]
     if not any(_awaits(p) for p in holders):
         return ""
-    document = _reasons(record.document.provenance)
+    document = _reasons(record.document)
     if document:
         document = f"<p>{_t('banner_document')}</p>{document}"
     return (

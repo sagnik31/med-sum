@@ -10,6 +10,7 @@ from pathlib import Path
 
 import config
 from record.document import DocumentRecord
+from record.review import reviewed_view
 from summary.facts import Facts, SummaryInput, build_facts
 from summary.overview import Overview, write_overview
 from views.summary import summary_html
@@ -63,7 +64,9 @@ def load_inputs(conn, patient_id: str) -> list[SummaryInput]:
             name=name,
             uploaded_at=uploaded_at,
             status=status,
-            record=DocumentRecord.model_validate(record)
+            # As a clinician left it: corrected values in place.
+            # See docs/adr/0011-clinician-review.md.
+            record=reviewed_view(DocumentRecord.model_validate(record))
             if record is not None
             else None,
         )

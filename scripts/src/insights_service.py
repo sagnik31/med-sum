@@ -8,6 +8,7 @@ Insights Generation Service (FastAPI)
     POST /internal/generate-insights        (queue a document's job)
     POST /internal/reprocess-document       (queue it again, as a new run)
     POST /internal/generate-patient-summary (background, per patient)
+    POST /internal/review-apply             (a clinician's review of a record)
 
 - Patient summaries: built on request, and rebuilt by the worker after a
   document job ends when its patient already has one and has no other
@@ -49,6 +50,10 @@ from document_jobs import LostClaim
 from observability import configure_logging
 from observability.redact import redact
 from pipeline import checkpoints
+from pydantic import ValidationError
+from record.document import DocumentRecord
+from record.review import ReviewError, ReviewRequest, apply_review, reviewed_view
+from views.document import document_html
 
 
 # -------------------------------------------------------------------
@@ -124,6 +129,69 @@ class GenerateInsightsRequest(BaseModel):
 
 class GeneratePatientSummaryRequest(BaseModel):
     patient_id: str
+
+
+class ReviewApplyRequest(BaseModel):
+    record: dict
+    review: ReviewRequest
+
+
+# -------------------------------------------------------------------
+# Clinician review
+# -------------------------------------------------------------------
+@app.post("/internal/review-apply", dependencies=[Depends(require_internal_token)])
+def review_apply_endpoint(req: ReviewApplyRequest):
+    """
+    Apply one clinician review (a confirmation, or a correction of one
+    field) to a document's record and return the new record, the checks
+    on a corrected value, the item's signal ids, the model's reading of
+    the corrected field, how many values still await review, and the
+    document page built again from the reviewed record.
+
+    It reads and writes nothing: the Go backend loaded the record (having
+    checked the organisation and the permission) and stores the result with
+    its audit row in one transaction. See docs/adr/0011-clinician-review.md.
+    Nothing here is logged but ids: the record and the values are patient
+    data.
+    """
+    try:
+        record = DocumentRecord.model_validate(req.record)
+        result = apply_review(record, req.review)
+    except ReviewError as exc:
+        # The message names ids and fields only (ReviewError's promise).
+        raise HTTPException(status_code=422, detail=str(exc)) from None
+    except ValidationError:
+        raise HTTPException(
+            status_code=422, detail="the record or the review is not valid"
+        ) from None
+    logger.info(
+        "review applied",
+        extra=_obs(
+            "review_applied",
+            document_id=record.document.document_id,
+            item_id=req.review.item_id,
+            action=req.review.action.value,
+            findings=len(result.findings),
+            flagged=result.flagged,
+        ),
+    )
+    view = reviewed_view(result.record)
+    return {
+        "record": result.record.model_dump(mode="json"),
+        "html": document_html(view, parsed=view.patient is not None),
+        "findings": [
+            {
+                "validator": f.validator.value,
+                "severity": f.severity.value,
+                "field": f.field,
+                "message": f.message,
+            }
+            for f in result.findings
+        ],
+        "signals": result.signals,
+        "original": result.original,
+        "flagged": result.flagged,
+    }
 
 
 # -------------------------------------------------------------------

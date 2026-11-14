@@ -46,7 +46,8 @@
       "document_date": "2024-06-20",
       "date_source": "prescription_date"
     },
-    "provenance": null
+    "provenance": null,
+    "corrections": []
   },
   "pages": [
     {

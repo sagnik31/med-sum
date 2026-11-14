@@ -21,6 +21,8 @@ date order, as the timeline lists them), page and lines.
 
 from datetime import datetime
 
+from record.common import ItemStatus
+
 from summary.facts import (
     DocEntry,
     Fact,
@@ -136,13 +138,30 @@ def _date(doc: DocEntry) -> str:
 
 
 def _awaiting(f: Fact) -> str:
+    """Why a value awaits review, or that a clinician corrected it."""
     if not f.awaiting:
-        return ""
+        return _corrected(f)
     items = "".join(
         f"<li>{f'<em>{esc(r.field)}</em>: ' if r.field else ''}<span>{esc(r.text)}</span></li>"
         for r in f.awaiting
     )
     return f' <span class="tag review">{_t("awaiting")}</span><ul class="reasons">{items}</ul>'
+
+
+def _corrected(f: Fact) -> str:
+    """
+    "corrected by Dr X on date" next to a value a clinician corrected (the
+    value shown is the corrected one). See docs/adr/0011-clinician-review.md.
+    """
+    p = f.item.provenance
+    corrections = f.item.corrections
+    if p is None or p.status is not ItemStatus.CLINICIAN_CORRECTED or not corrections:
+        return ""
+    last = corrections[-1]
+    return (
+        f' <span class="tag corrected" data-corrected="{esc(f.item.id)}">corrected by '
+        f"{esc(last.clinician)} on {esc(last.at.date().isoformat())}</span>"
+    )
 
 
 def _section(title_key: str, body: str) -> str:

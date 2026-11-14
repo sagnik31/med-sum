@@ -223,6 +223,9 @@ class SourceDocument(Strict):
     printed: PrintedDocumentDetails
     derived: DocumentDates = Field(default_factory=DocumentDates)
     provenance: Provenance | None = None
+    # Clinician corrections of the header values (facility, clinicians,
+    # dates), next to what was read, as on every item.
+    corrections: list[Correction] = []
 
 
 class PageTranscription(Strict):

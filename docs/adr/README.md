@@ -1,6 +1,6 @@
 # Architecture decision records
 
-Why Med-Sum is built the way it is: the ten decisions the rest of the design follows from. Each record gives its context, what was decided, the alternatives rejected, the consequences, and the evidence that would change it. Its status says when it was decided and whether all of it is built yet.
+Why Med-Sum is built the way it is: the decisions the rest of the design follows from. Each record gives its context, what was decided, the alternatives rejected, the consequences, and the evidence that would change it. Its status says when it was decided and whether all of it is built yet.
 
 | # | Decision | Status |
 |---|---|---|
@@ -14,6 +14,7 @@ Why Med-Sum is built the way it is: the ten decisions the rest of the design fol
 | [0008](0008-patient-data-protection.md) | Patient data: protected where it must live, masked where it leaves, deleted with its document | Built, except the Go backend's role |
 | [0009](0009-measured-evals.md) | Evals measure the safety net, on a committed synthetic dataset, with honest uncertainty | Built; live runs not made yet |
 | [0010](0010-staff-access-and-security.md) | Staff access: admin-issued accounts, server-side sessions, permissions in code, scope in SQL | Partly built (see its status) |
+| [0011](0011-clinician-review.md) | Clinician review: confirm or correct beside the reading, never over it | Built |
 
 Where patient data lives and the threats considered are on the [data-flow page](../data-and-threats.md).
 

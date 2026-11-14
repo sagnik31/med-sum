@@ -137,7 +137,7 @@ SCHEMAS = {"langgraph": CLINICAL}
 
 LOG_FIELDS: dict[str, str] = {
     **_cols(SAFE, "event run_id trace_id document_id step_id span_id parent_span_id"
-                  " model_call_id job_id patient_id reused_from_step"),
+                  " model_call_id job_id patient_id reused_from_step item_id"),
     **_cols(TELEMETRY, "node seq attempt attempts page status end_state duration_ms"
                        " graph_version model model_role model_calls models_used"
                        " model_digest prompt_name prompt_hash prompt_tokens"
@@ -150,7 +150,7 @@ LOG_FIELDS: dict[str, str] = {
                        " model_wall_ms model_total_ms steps_left_running"
                        " steps_interrupted documents markdown_chars html_chars"
                        " not_included awaiting overview unknown_numbers"
-                       " unknown_words reprocess result"),
+                       " unknown_words reprocess result action flagged"),
 }  # fmt: skip
 
 
