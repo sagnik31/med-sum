@@ -2,6 +2,7 @@ package httpapi
 
 import (
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
@@ -75,5 +76,27 @@ func TestAnAuditThatCantBeAuditedIsNotFinished(t *testing.T) {
 	}
 	if !re.store.auditOpen[re.doc] {
 		t.Error("the audit was finished without its audit row")
+	}
+}
+
+// An audit is finished only once every value is confirmed or corrected.
+func TestAnAuditWithValuesLeftIsNotFinished(t *testing.T) {
+	re := newReviewEnv(t)
+	re.store.auditOpen[re.doc] = true
+	re.store.auditToGo[re.doc] = 3
+	rec := re.postJSON("/documents/"+re.doc+"/audit-complete", re.auth, map[string]any{})
+	if rec.Code != http.StatusConflict {
+		t.Fatalf("status = %d", rec.Code)
+	}
+	if !strings.Contains(rec.Body.String(), "every value") || !strings.Contains(rec.Body.String(), "3 to go") {
+		t.Errorf("body = %q", rec.Body)
+	}
+	if !re.store.auditOpen[re.doc] {
+		t.Error("an incomplete audit was finished")
+	}
+	for _, ev := range re.store.audit {
+		if ev.Action == actAuditCompleted {
+			t.Error("an incomplete audit was audited as finished")
+		}
 	}
 }

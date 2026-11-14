@@ -244,6 +244,12 @@ func (s *Server) handleCompleteAudit(w http.ResponseWriter, r *http.Request, doc
 		http.Error(w, "this document is not waiting for an audit", http.StatusConflict)
 		return
 	}
+	var incomplete *db.AuditIncompleteError
+	if errors.As(err, &incomplete) {
+		http.Error(w, fmt.Sprintf("confirm or correct every value before finishing the audit: %d to go",
+			incomplete.Unreviewed), http.StatusConflict)
+		return
+	}
 	if err != nil {
 		log.Printf("CompleteAudit error: %v", err)
 		http.Error(w, "internal error", http.StatusInternalServerError)

@@ -237,8 +237,9 @@ function InsightPage() {
 
       {auditing && (
         <p className="mb-4 text-sm bg-sky-50 border border-sky-100 rounded-md px-3 py-2 text-sky-800">
-          This verified document was picked at random for an audit. Check every value against the original,
-          correct any that are wrong, then finish the audit.
+          This verified document was picked at random for an audit. Check every value against the original:
+          confirm each one that matches and correct any that are wrong. The audit can be finished once every
+          value is confirmed or corrected.
         </p>
       )}
       {auditDone && (

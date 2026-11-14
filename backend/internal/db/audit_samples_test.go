@@ -43,7 +43,7 @@ func TestAnAuditSampleIsQueuedReviewedAsAnAuditAndFinished(t *testing.T) {
 
 	// A correction during the audit: an error the pipeline let through.
 	field, orig, corr := "value_text", "10.4", "11.4"
-	if _, err := s.ApplyReview(ctx, me.OrgID, d.ID, at, RecordReview{Record: []byte(`{"schema_version": 1}`),
+	if _, err := s.ApplyReview(ctx, me.OrgID, d.ID, at, RecordReview{Record: []byte(flaggedRecord),
 		HTML: "<p></p>", Verified: true, RunID: &run, ItemID: "obs-2", Field: &field, Action: "correct",
 		Original: &orig, Corrected: &corr, ReviewerID: me.ID, At: sampled.Add(time.Minute)},
 		ev(me.OrgID, me.ID, "field_corrected")); err != nil {
@@ -60,6 +60,27 @@ func TestAnAuditSampleIsQueuedReviewedAsAnAuditAndFinished(t *testing.T) {
 		t.Errorf("another organisation: err = %v", err)
 	}
 	done := sampled.Add(time.Hour)
+
+	// Not before every value is confirmed or corrected: the document, the
+	// patient and three items, one of them corrected so far. A review from
+	// before the sample doesn't count.
+	if _, err := s.pool.Exec(ctx, `
+INSERT INTO record_reviews (document_id, run_id, item_id, action, audit, reviewer_id, reviewed_at)
+VALUES ($1, $2, 'obs-1', 'confirm', true, $3, $4)`, d.ID, run, me.ID, at); err != nil {
+		t.Fatal(err)
+	}
+	var incomplete *AuditIncompleteError
+	err = s.CompleteAudit(ctx, me.OrgID, d.ID, me.ID, done, ev(me.OrgID, me.ID, "audit_completed"))
+	if !errors.As(err, &incomplete) || incomplete.Unreviewed != 4 {
+		t.Fatalf("an incomplete audit: err = %v", err)
+	}
+	for _, item := range []string{"document", "patient", "obs-1", "med-1"} {
+		if _, err := s.pool.Exec(ctx, `
+INSERT INTO record_reviews (document_id, run_id, item_id, action, audit, reviewer_id, reviewed_at)
+VALUES ($1, $2, $3, 'confirm', true, $4, $5)`, d.ID, run, item, me.ID, sampled.Add(2*time.Minute)); err != nil {
+			t.Fatal(err)
+		}
+	}
 	if err := s.CompleteAudit(ctx, me.OrgID, d.ID, me.ID, done, ev(me.OrgID, me.ID, "audit_completed")); err != nil {
 		t.Fatal(err)
 	}

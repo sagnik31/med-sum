@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -170,22 +171,64 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
 // audit sample left open.
 var ErrNoOpenAudit = errors.New("the document is not an open audit sample")
 
+// AuditIncompleteError is CompleteAudit's answer while values of the
+// record have had no review during the audit.
+type AuditIncompleteError struct {
+	Unreviewed int // values neither confirmed nor corrected yet
+}
+
+func (e *AuditIncompleteError) Error() string {
+	return fmt.Sprintf("%d values are not yet confirmed or corrected", e.Unreviewed)
+}
+
+// unreviewedInAudit is the SQL for how many holders of the record r (the
+// document, the patient and every item with a provenance) have no review
+// made during the open audit sample a.
+const unreviewedInAudit = `(SELECT count(*) FROM (
+    SELECT 'document' AS id WHERE jsonb_typeof(r.record #> '{document,provenance}') = 'object'
+    UNION ALL
+    SELECT 'patient' WHERE jsonb_typeof(r.record #> '{patient,provenance}') = 'object'
+    UNION ALL
+    SELECT i #>> '{}' FROM jsonb_path_query(r.record,
+        'lax $.*[*] ? (@.id.type() == "string" && @.provenance.type() == "object").id') i
+  ) h
+  WHERE NOT EXISTS (SELECT 1 FROM record_reviews rr
+    WHERE rr.document_id = a.document_id AND rr.item_id = h.id AND rr.audit
+      AND rr.reviewed_at >= a.sampled_at))`
+
 // CompleteAudit finishes the open audit of a live document of the
-// organisation, with ev, in one transaction. Reviews after it are no
+// organisation, with ev, in one transaction. Every value must have been
+// confirmed or corrected during the audit first, or it returns an
+// *AuditIncompleteError and writes nothing. Reviews after it are no
 // longer audit reviews, and the document leaves the queue. It returns
 // ErrNoOpenAudit, writing nothing, when there is no open sample.
 func (s *Store) CompleteAudit(ctx context.Context, orgID, docID, userID string, at time.Time, ev *AuditEvent) error {
 	return pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
-		tag, err := tx.Exec(ctx, `
-UPDATE audit_samples a SET completed_at = $4, completed_by = $3
-FROM documents d JOIN patients p ON p.id = d.patient_id
-WHERE a.document_id = $1 AND a.completed_at IS NULL AND d.id = a.document_id
-  AND p.org_id = $2 AND d.deleted_at IS NULL`, docID, orgID, userID, at)
+		// The sample is locked, so a review can't land between the count
+		// and the update unseen.
+		var unreviewed int
+		err := tx.QueryRow(ctx, `
+SELECT COALESCE(`+unreviewedInAudit+`, 0)
+FROM audit_samples a
+JOIN documents d ON d.id = a.document_id
+JOIN patients p ON p.id = d.patient_id
+LEFT JOIN document_records r ON r.document_id = a.document_id
+WHERE a.document_id = $1 AND a.completed_at IS NULL
+  AND p.org_id = $2 AND d.deleted_at IS NULL
+FOR UPDATE OF a`, docID, orgID).Scan(&unreviewed)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrNoOpenAudit
+		}
 		if err != nil {
 			return err
 		}
-		if tag.RowsAffected() == 0 {
-			return ErrNoOpenAudit
+		if unreviewed > 0 {
+			return &AuditIncompleteError{Unreviewed: unreviewed}
+		}
+		if _, err := tx.Exec(ctx, `
+UPDATE audit_samples SET completed_at = $3, completed_by = $2
+WHERE document_id = $1 AND completed_at IS NULL`, docID, userID, at); err != nil {
+			return err
 		}
 		return writeAudit(ctx, tx, ev)
 	})

@@ -66,6 +66,7 @@ type fakeStore struct {
 	reviews    []db.RecordReview
 	processing map[string]*db.ProcessingRun
 	auditOpen  map[string]bool // document ID -> an open audit sample
+	auditToGo  map[string]int  // document ID -> values not yet reviewed in its audit
 	failWith   error           // returned by every method when set
 	// audit holds the events written, in order. failAudit fails every
 	// audit write; a change that comes with an event then changes nothing,
@@ -96,6 +97,7 @@ func newFakeStore() *fakeStore {
 		flagged:    map[string]int{},
 		processing: map[string]*db.ProcessingRun{},
 		auditOpen:  map[string]bool{},
+		auditToGo:  map[string]int{},
 	}
 }
 
@@ -768,6 +770,9 @@ func (f *fakeStore) CompleteAudit(_ context.Context, orgID, docID, _ string, _ t
 	}
 	if f.documentIn(orgID, docID) == nil || !f.auditOpen[docID] {
 		return db.ErrNoOpenAudit
+	}
+	if n := f.auditToGo[docID]; n > 0 {
+		return &db.AuditIncompleteError{Unreviewed: n}
 	}
 	if f.failAudit != nil {
 		return f.failAudit
