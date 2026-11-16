@@ -72,6 +72,9 @@ type Store interface {
 	GetDocumentRecord(ctx context.Context, docID string) (*db.DocumentRecord, error)
 
 	GetProcessing(ctx context.Context, docID string) (*db.ProcessingRun, error)
+	GetDocumentTrace(ctx context.Context, docID, runID string) (*db.DocumentTrace, bool, error)
+	ListOrgRuns(ctx context.Context, orgID string, before *time.Time) ([]db.OrgRun, error)
+	GetOrgRun(ctx context.Context, orgID, runID string) (*db.OrgRun, []db.OrgStep, error)
 
 	// Clinician review (review.go)
 	ListReviewQueue(ctx context.Context, orgID string) ([]db.ReviewQueueEntry, error)
@@ -153,6 +156,11 @@ func NewServer(store Store, cfg Config) *Server {
 	s.mux.HandleFunc("/admin/audit", s.withSession(s.byMethod(map[string]methodRoute{
 		http.MethodGet: {authz.AuditRead, s.handleListAudit},
 	})))
+	// The organisation's pipeline runs without content (trace.go)
+	s.mux.HandleFunc("/admin/runs", s.withSession(s.byMethod(map[string]methodRoute{
+		http.MethodGet: {authz.RunsRead, s.handleListRuns},
+	})))
+	s.mux.HandleFunc("/admin/runs/", s.withSession(s.handleRunByID))
 
 	// Patients (patients.go): /patients, /patients/{id}, and the patient's
 	// /documents (list, upload) and /summary (fetch, build)
@@ -391,6 +399,18 @@ func (s *Server) handleDocumentByID(w http.ResponseWriter, r *http.Request) {
 		}
 		if s.permit(w, r, authz.DocumentRead) {
 			s.handleGetProcessing(w, r, docID)
+		}
+		return
+	}
+
+	// /documents/{id}/trace: every run, and one in full (trace.go)
+	if len(parts) == 2 && parts[1] == "trace" {
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		if s.permit(w, r, authz.DocumentRead) {
+			s.handleGetTrace(w, r, docID)
 		}
 		return
 	}

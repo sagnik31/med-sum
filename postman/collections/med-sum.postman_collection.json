@@ -358,6 +358,59 @@
                   ]
                 }
               }
+            },
+            {
+              "name": "Pipeline Runs",
+              "id": "e6e2f49e-e569-49ea-b07e-09f04a80411f",
+              "request": {
+                "method": "GET",
+                "description": "The organisation's runs, newest first, with no content (admins).",
+                "url": {
+                  "raw": "{{backend_url}}/admin/runs?before=",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "runs"
+                  ],
+                  "query": [
+                    {
+                      "key": "before",
+                      "value": "",
+                      "description": "next_before of the previous page"
+                    }
+                  ]
+                },
+                "header": []
+              }
+            },
+            {
+              "name": "Pipeline Run",
+              "id": "64a360ee-4202-41a2-8cd2-754cc9c72012",
+              "request": {
+                "method": "GET",
+                "description": "One run and how each step went, with no content (admins).",
+                "url": {
+                  "raw": "{{backend_url}}/admin/runs/:id",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "runs",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "Run ID"
+                    }
+                  ]
+                },
+                "header": []
+              }
             }
           ]
         },
@@ -713,6 +766,40 @@
                     "documents",
                     ":id",
                     "processing"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "Document ID"
+                    }
+                  ]
+                },
+                "header": []
+              }
+            },
+            {
+              "name": "Full Trace",
+              "id": "db269a67-70b6-42a4-80f3-f446f993e163",
+              "request": {
+                "method": "GET",
+                "description": "Every run of the document and one in full (inputs, outputs, prompts, findings). Audited as a read of patient data.",
+                "url": {
+                  "raw": "{{backend_url}}/documents/:id/trace?run=",
+                  "host": [
+                    "{{backend_url}}"
+                  ],
+                  "path": [
+                    "documents",
+                    ":id",
+                    "trace"
+                  ],
+                  "query": [
+                    {
+                      "key": "run",
+                      "value": "",
+                      "description": "A run id; the latest when empty"
+                    }
                   ],
                   "variable": [
                     {

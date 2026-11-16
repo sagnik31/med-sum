@@ -170,6 +170,12 @@ VALUES ($1, 1, '{"schema_version": 1}', $2)`, doc.ID, now); err != nil {
 	}
 	_, err = s.GetProcessing(ctx, doc.ID)
 	check("GetProcessing", err)
+	_, _, err = s.GetDocumentTrace(ctx, doc.ID, "")
+	check("GetDocumentTrace", err)
+	_, err = s.ListOrgRuns(ctx, org, nil)
+	check("ListOrgRuns", err)
+	_, _, err = s.GetOrgRun(ctx, org, "00000000-0000-0000-0000-000000000000")
+	check("GetOrgRun", err)
 	_, err = s.ListReviewQueue(ctx, org)
 	check("ListReviewQueue", err)
 	_, err = s.ApplyReview(ctx, org, doc.ID, now, RecordReview{Record: []byte(`{"schema_version": 1}`),

@@ -15,6 +15,7 @@ import { PERM, can } from "../auth/permissions.js";
 import { flaggedCount, isPdfName } from "../record/review.js";
 import OriginalFile from "../components/OriginalFile.jsx";
 import ProcessingPanel from "../components/ProcessingPanel.jsx";
+import TracePanel from "../components/TracePanel.jsx";
 import ApiErrorNotice from "../components/ApiErrorNotice.jsx";
 import HtmlFrame from "../components/HtmlFrame.jsx";
 import RecordView from "../components/RecordView.jsx";
@@ -321,7 +322,10 @@ function InsightPage() {
       )}
 
       {!loading && !error && status !== "checking" && (
-        <ProcessingPanel key={`${attempt}-${reviewed}`} documentId={id} />
+        <>
+          <ProcessingPanel key={`${attempt}-${reviewed}`} documentId={id} />
+          <TracePanel key={`trace-${attempt}-${reviewed}`} documentId={id} />
+        </>
       )}
 
       <div className="mt-4">

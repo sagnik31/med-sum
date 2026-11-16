@@ -7,7 +7,7 @@ import (
 
 var all = []Permission{
 	PatientRead, PatientWrite, DocumentUpload, DocumentRead, DocumentDelete, DocumentReprocess,
-	ReviewWrite, SummaryRead, SummaryGenerate, StaffManage, AuditRead,
+	ReviewWrite, SummaryRead, SummaryGenerate, StaffManage, AuditRead, RunsRead,
 }
 
 // The permission matrix, written out in full so a
@@ -25,6 +25,7 @@ func TestPermissionMatrix(t *testing.T) {
 		SummaryGenerate:   {true, false},
 		StaffManage:       {false, true},
 		AuditRead:         {false, true},
+		RunsRead:          {false, true},
 	}
 	if len(want) != len(all) {
 		t.Fatalf("the matrix covers %d permissions, want %d", len(want), len(all))

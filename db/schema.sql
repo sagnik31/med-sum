@@ -533,6 +533,122 @@ WHERE r.id = (SELECT o.id FROM pipeline_runs o
               LIMIT 1);
 
 -- -------------------------------------------------------------------
+-- The trace screen. Two audiences, one source:
+--
+-- document_trace_runs, document_trace_steps and document_trace_prompts are
+-- a document's runs in full, for clinicians of its organisation (the API
+-- checks the document and audits every view): each step's input, output,
+-- findings with their messages, masked error, prompt and model, and
+-- whether `python -m pipeline.replay <step_id>` can rebuild it. They hold
+-- document content.
+--
+-- org_pipeline_runs and org_pipeline_steps are the same runs with no
+-- content, for an organisation's admins: timings, models, tokens, statuses,
+-- end states, and each failing finding's validator, severity, item and
+-- field. No document, patient, input, output, message or error text. Runs
+-- of deleted documents are left out of both.
+--
+-- The API reads these views and none of the tables under them.
+-- See docs/adr/0006-durable-traceable-runs.md.
+CREATE VIEW document_trace_runs AS
+SELECT r.document_id,
+       p.org_id,
+       r.id                                                   AS run_id,
+       r.graph_version,
+       r.started_at,
+       r.ended_at,
+       r.end_state,
+       r.models_used,
+       r.error,
+       r.code_version,
+       r.code_dirty,
+       r.schema_hash,
+       r.db_schema_hash,
+       (SELECT count(*) FROM pipeline_steps s WHERE s.run_id = r.id)
+                                                              AS steps,
+       (SELECT count(*) FROM pipeline_steps s
+        WHERE s.run_id = r.id AND s.status = 'failed')        AS failed_steps
+FROM pipeline_runs r
+JOIN documents d ON d.id = r.document_id
+JOIN patients p ON p.id = d.patient_id
+WHERE d.deleted_at IS NULL;
+
+-- replayable mirrors what pipeline.replay accepts: a model step (transcribe,
+-- classify, parse, repair) that has ended with an output and whose prompt
+-- text is stored; a repair only when it ran without tools and stored its
+-- problems (scripts/tests/test_trace_views.py keeps the two in step).
+CREATE VIEW document_trace_steps AS
+SELECT r.document_id,
+       p.org_id,
+       s.run_id,
+       s.id                                                   AS step_id,
+       s.parent_step_id,
+       s.seq,
+       s.node,
+       s.attempt,
+       s.page,
+       s.status,
+       s.model,
+       s.model_role,
+       s.started_at,
+       s.ended_at,
+       (extract(epoch FROM (s.ended_at - s.started_at)) * 1000)::bigint
+                                                              AS duration_ms,
+       s.prompt_tokens,
+       s.completion_tokens,
+       (SELECT count(*) FROM pipeline_model_calls c
+        WHERE c.step_id = s.id)                               AS model_calls,
+       s.prompt_name,
+       s.prompt_hash,
+       s.input,
+       s.output,
+       s.findings,
+       s.error,
+       (s.node IN ('transcribe', 'classify', 'parse', 'repair')
+        AND s.status <> 'running'
+        AND s.output IS NOT NULL
+        AND EXISTS (SELECT 1 FROM prompts pr WHERE pr.hash = s.prompt_hash)
+        AND (s.node <> 'repair'
+             OR (s.prompt_name NOT LIKE '%+tools'
+                 AND s.input ? 'repairs' AND s.input ? 'system_prompt_hash')))
+                                                              AS replayable
+FROM pipeline_steps s
+JOIN pipeline_runs r ON r.id = s.run_id
+JOIN documents d ON d.id = r.document_id
+JOIN patients p ON p.id = d.patient_id
+WHERE d.deleted_at IS NULL;
+
+-- The text of every prompt a document's steps used, once per hash.
+CREATE VIEW document_trace_prompts AS
+SELECT DISTINCT r.document_id, pr.hash, pr.name, pr.text
+FROM prompts pr
+JOIN pipeline_steps s ON s.prompt_hash = pr.hash
+JOIN pipeline_runs r ON r.id = s.run_id
+JOIN documents d ON d.id = r.document_id
+WHERE d.deleted_at IS NULL;
+
+CREATE VIEW org_pipeline_runs AS
+SELECT org_id, run_id, graph_version, started_at, ended_at, end_state,
+       models_used, error IS NOT NULL AS has_error, code_version, code_dirty,
+       steps, failed_steps
+FROM document_trace_runs;
+
+CREATE VIEW org_pipeline_steps AS
+SELECT t.org_id, t.run_id, t.step_id, t.parent_step_id, t.seq, t.node,
+       t.attempt, t.page, t.status, t.model, t.model_role, t.started_at,
+       t.ended_at, t.duration_ms, t.prompt_tokens, t.completion_tokens,
+       t.model_calls, t.prompt_name,
+       COALESCE((SELECT jsonb_agg(jsonb_build_object(
+                     'validator', f ->> 'validator', 'severity', f ->> 'severity',
+                     'item_id', f ->> 'item_id', 'field', f ->> 'field'))
+                 FROM jsonb_array_elements(t.findings) f
+                 WHERE f ->> 'severity' IN ('error', 'flag')), '[]'::jsonb)
+                                                              AS failures,
+       t.error IS NOT NULL                                    AS has_error,
+       t.replayable
+FROM document_trace_steps t;
+
+-- -------------------------------------------------------------------
 -- The structured record of a document: one JSONB value per document,
 -- with its schema version (see docs/adr/0003-printed-and-derived-values.md). Reprocessing replaces
 -- it; earlier runs' outputs stay in pipeline_steps. Clinician corrections

@@ -65,9 +65,12 @@ type fakeStore struct {
 	flagged    map[string]int // document ID -> values awaiting review, for the queue
 	reviews    []db.RecordReview
 	processing map[string]*db.ProcessingRun
-	auditOpen  map[string]bool // document ID -> an open audit sample
-	auditToGo  map[string]int  // document ID -> values not yet reviewed in its audit
-	failWith   error           // returned by every method when set
+	traces     map[string]*db.DocumentTrace // document ID -> its runs and steps
+	orgRuns    map[string][]db.OrgRun       // org ID -> its runs, newest first
+	orgSteps   map[string][]db.OrgStep      // run ID -> its steps
+	auditOpen  map[string]bool              // document ID -> an open audit sample
+	auditToGo  map[string]int               // document ID -> values not yet reviewed in its audit
+	failWith   error                        // returned by every method when set
 	// audit holds the events written, in order. failAudit fails every
 	// audit write; a change that comes with an event then changes nothing,
 	// as its transaction would roll back.
@@ -96,6 +99,9 @@ func newFakeStore() *fakeStore {
 		summaries:  map[string]*db.PatientSummary{},
 		flagged:    map[string]int{},
 		processing: map[string]*db.ProcessingRun{},
+		traces:     map[string]*db.DocumentTrace{},
+		orgRuns:    map[string][]db.OrgRun{},
+		orgSteps:   map[string][]db.OrgStep{},
 		auditOpen:  map[string]bool{},
 		auditToGo:  map[string]int{},
 	}
@@ -780,6 +786,65 @@ func (f *fakeStore) CompleteAudit(_ context.Context, orgID, docID, _ string, _ t
 	f.auditOpen[docID] = false
 	f.logAudit(ev)
 	return nil
+}
+
+// GetDocumentTrace answers from traces: every run, and the one runID names
+// (the first, i.e. latest, when runID is "") with the steps stored for it.
+func (f *fakeStore) GetDocumentTrace(_ context.Context, docID, runID string) (*db.DocumentTrace, bool, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return nil, false, f.failWith
+	}
+	t := f.traces[docID]
+	if t == nil {
+		t = &db.DocumentTrace{Runs: []db.TraceRun{}, Steps: []db.TraceStep{}, Prompts: map[string]db.TracePrompt{}}
+	}
+	out := *t
+	out.Run = nil
+	for i := range t.Runs {
+		if runID == "" || t.Runs[i].RunID == runID {
+			out.Run = &t.Runs[i]
+			break
+		}
+	}
+	if out.Run == nil {
+		out.Steps = []db.TraceStep{}
+		return &out, runID == "", nil
+	}
+	return &out, true, nil
+}
+
+// ListOrgRuns answers from orgRuns, before `before` when set.
+func (f *fakeStore) ListOrgRuns(_ context.Context, orgID string, before *time.Time) ([]db.OrgRun, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return nil, f.failWith
+	}
+	out := []db.OrgRun{}
+	for _, r := range f.orgRuns[orgID] {
+		if before == nil || r.StartedAt.Before(*before) {
+			out = append(out, r)
+		}
+	}
+	return out, nil
+}
+
+// GetOrgRun answers from orgRuns and orgSteps; another organisation's run is not found.
+func (f *fakeStore) GetOrgRun(_ context.Context, orgID, runID string) (*db.OrgRun, []db.OrgStep, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return nil, nil, f.failWith
+	}
+	for _, r := range f.orgRuns[orgID] {
+		if r.RunID == runID {
+			run := r
+			return &run, f.orgSteps[runID], nil
+		}
+	}
+	return nil, nil, nil
 }
 
 // GetProcessing returns what the test stored in processing.

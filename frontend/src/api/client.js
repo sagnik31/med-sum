@@ -192,6 +192,17 @@ export function fetchAuditEvents(filters = {}) {
   return apiRequest(`/admin/audit${query ? `?${query}` : ""}`);
 }
 
+// The organisation's pipeline runs, newest first, with no content:
+// { runs, next_before }. Pass next_before as before for older runs.
+export function fetchRuns(before) {
+  return apiRequest(`/admin/runs${before ? `?before=${encodeURIComponent(before)}` : ""}`);
+}
+
+// One of the organisation's runs and how each step went: { run, steps }.
+export function fetchRun(id) {
+  return apiRequest(`/admin/runs/${encodeURIComponent(id)}`);
+}
+
 // ---------- Patients API ----------
 //
 // Patients are records, not accounts. Every clinician of the organisation
@@ -279,6 +290,14 @@ export function reprocessDocument(documentId) {
 // (run is null before any run).
 export function fetchProcessing(documentId) {
   return apiRequest(`/documents/${encodeURIComponent(documentId)}/processing`);
+}
+
+// The document's full trace: { document_id, runs, run, steps, prompts }, for
+// the latest run or the one runId names. Each call is audited as a read of
+// patient data. See docs/adr/0006-durable-traceable-runs.md.
+export function fetchTrace(documentId, runId) {
+  const q = runId ? `?run=${enc(runId)}` : "";
+  return apiRequest(`/documents/${enc(documentId)}/trace${q}`);
 }
 
 // ---------- Clinician review API ----------

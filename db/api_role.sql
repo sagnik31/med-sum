@@ -33,6 +33,10 @@
 --                      audit (completed_at, completed_by)
 --   document_processing_steps  reads it (the latest run's steps, with no
 --                      document content); none of the pipeline tables under it
+--   document_trace_runs, document_trace_steps, document_trace_prompts
+--                      reads them: a document's runs in full, for clinicians
+--   org_pipeline_runs, org_pipeline_steps  reads them: the same runs with no
+--                      document content, for admins
 --   patient_summaries  reads them (the AI service writes them)
 -- Nothing on jobs, prompts, the pipeline tables and their other views, or the
 -- langgraph schema. Keep this list in step with the API's queries;
@@ -88,3 +92,5 @@ GRANT SELECT ON audit_samples TO medsum_api;
 GRANT UPDATE (completed_at, completed_by) ON audit_samples TO medsum_api;
 
 GRANT SELECT ON document_processing_steps TO medsum_api;
+GRANT SELECT ON document_trace_runs, document_trace_steps, document_trace_prompts,
+    org_pipeline_runs, org_pipeline_steps TO medsum_api;

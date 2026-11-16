@@ -25,7 +25,7 @@ func TestMeListsPermissions(t *testing.T) {
 		t.Errorf("clinician permissions = %v", me.Permissions)
 	}
 	me = decodeJSON[meResponse](t, e.do(http.MethodGet, "/auth/me", admin, nil, ""))
-	if !slices.Equal(me.Permissions, []authz.Permission{authz.AuditRead, authz.StaffManage}) {
+	if !slices.Equal(me.Permissions, []authz.Permission{authz.AuditRead, authz.RunsRead, authz.StaffManage}) {
 		t.Errorf("admin permissions = %v", me.Permissions)
 	}
 }

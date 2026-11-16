@@ -1,6 +1,6 @@
 # 0006. Durable, traceable runs: LangGraph and a job queue in the application's Postgres
 
-- **Status:** Accepted, 2026-11-07 to 2026-11-13. Built; there is no trace screen yet.
+- **Status:** Accepted, 2026-11-07 to 2026-11-16. Built, with a trace screen.
 
 ## Context
 
@@ -15,6 +15,8 @@ A document run takes minutes per page, has loops (repair, fallback) and branches
 **Tracing in Postgres.** One wrapper (`traced`) writes every node attempt to `pipeline_steps` (node, attempt, page, status, model and role, prompt hash, input, output, tokens, findings, error) under a `pipeline_runs` row; it refuses to run outside a run, and a test checks every node is wrapped. Field names follow OpenTelemetry. Each model round trip is a `pipeline_model_calls` row (model and digest, options, status, tokens, timings, sizes; never prompt, reply or image). Totals are views. Every record item's provenance points at its step.
 
 **Reproducible.** Each run records its git commit and whether the tree was dirty (`MEDSUM_CODE_VERSION` where there is no checkout), a hash of the JSON schemas sent to the models, and a hash of the database's actual structure read from `pg_catalog`. Prompt texts are stored once per hash in `prompts`. `python -m pipeline.replay <step_id>` rebuilds a transcribe, classify, parse or repair call from the database, runs it on today's models and prints a diff; it writes nothing. A repair step stores, per part, the problem lines it sent and a hash of the previous reply (the reply itself stays on the step that produced it), so its conversation can be rebuilt and checked.
+
+**The trace screen.** Clinicians open a document's full trace: every run, and for the one chosen each step's input, output, prompt text and findings with their messages. It is patient data, so it loads only when opened and each load is audited. Admins see the organisation's runs on pages of their own (`runs.read`) with no content: no document, patient, input, output or finding message, only how each step went and which checks failed it by validator, item and field. Both read views (`document_trace_*`, `org_pipeline_*`); the admin views are built on the clinician ones. Whether a step can be replayed is one SQL expression, and a test checks it agrees with `pipeline.replay` step by step. The screen never runs a replay: it shows the command, to copy and run from `scripts/src`, because a replay calls the models and is an operator's check, not part of reading a record.
 
 **Logs** are JSON lines with ids, statuses, counts and timings from an allowlist; exceptions are logged as type and stack without their message. LangSmith, a dependency of LangGraph, is forced off.
 

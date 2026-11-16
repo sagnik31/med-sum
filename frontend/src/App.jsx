@@ -11,6 +11,8 @@ import InsightPage from "./pages/InsightPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import StaffPage from "./pages/StaffPage.jsx";
 import AuditPage from "./pages/AuditPage.jsx";
+import RunsPage from "./pages/RunsPage.jsx";
+import RunPage from "./pages/RunPage.jsx";
 import ReviewQueuePage from "./pages/ReviewQueuePage.jsx";
 import RequireAuth from "./auth/RequireAuth.jsx";
 import IdleWarning from "./components/IdleWarning.jsx";
@@ -59,6 +61,11 @@ function Nav() {
               Audit log
             </Link>
           )}
+          {can(user, PERM.runsRead) && (
+            <Link to="/admin/runs" className="hover:underline">
+              Pipeline runs
+            </Link>
+          )}
           <Link to="/account" className="hover:underline" title={user.email}>
             {user.full_name}
           </Link>
@@ -98,6 +105,8 @@ function App() {
           <Route path="/review" element={<RequireAuth perm={PERM.reviewWrite}><ReviewQueuePage /></RequireAuth>} />
           <Route path="/admin/staff" element={<RequireAuth perm={PERM.staffManage}><StaffPage /></RequireAuth>} />
           <Route path="/admin/audit" element={<RequireAuth perm={PERM.auditRead}><AuditPage /></RequireAuth>} />
+          <Route path="/admin/runs" element={<RequireAuth perm={PERM.runsRead}><RunsPage /></RequireAuth>} />
+          <Route path="/admin/runs/:id" element={<RequireAuth perm={PERM.runsRead}><RunPage /></RequireAuth>} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>

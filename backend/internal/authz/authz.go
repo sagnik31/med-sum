@@ -19,6 +19,9 @@ const (
 	SummaryGenerate   Permission = "summary.generate"
 	StaffManage       Permission = "staff.manage"
 	AuditRead         Permission = "audit.read"
+	// RunsRead is the pipeline runs of the organisation without any content:
+	// timings, models, statuses, end states.
+	RunsRead Permission = "runs.read"
 )
 
 // Roles.
@@ -36,7 +39,7 @@ var rolePermissions = map[string][]Permission{
 		DocumentUpload, DocumentRead, DocumentDelete, DocumentReprocess,
 		ReviewWrite, SummaryRead, SummaryGenerate,
 	},
-	RoleAdmin: {StaffManage, AuditRead},
+	RoleAdmin: {StaffManage, AuditRead, RunsRead},
 }
 
 // KnownRole reports whether role is one the app has.
