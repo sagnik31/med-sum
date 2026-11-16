@@ -14,7 +14,7 @@ A document run takes minutes per page, has loops (repair, fallback) and branches
 
 **Tracing in Postgres.** One wrapper (`traced`) writes every node attempt to `pipeline_steps` (node, attempt, page, status, model and role, prompt hash, input, output, tokens, findings, error) under a `pipeline_runs` row; it refuses to run outside a run, and a test checks every node is wrapped. Field names follow OpenTelemetry. Each model round trip is a `pipeline_model_calls` row (model and digest, options, status, tokens, timings, sizes; never prompt, reply or image). Totals are views. Every record item's provenance points at its step.
 
-**Reproducible.** Each run records its git commit and whether the tree was dirty (`MEDSUM_CODE_VERSION` where there is no checkout), a hash of the JSON schemas sent to the models, and a hash of the database's actual structure read from `pg_catalog`. Prompt texts are stored once per hash in `prompts`. `python -m pipeline.replay <step_id>` rebuilds a transcribe, classify or parse call from the database, runs it on today's models and prints a diff; it writes nothing.
+**Reproducible.** Each run records its git commit and whether the tree was dirty (`MEDSUM_CODE_VERSION` where there is no checkout), a hash of the JSON schemas sent to the models, and a hash of the database's actual structure read from `pg_catalog`. Prompt texts are stored once per hash in `prompts`. `python -m pipeline.replay <step_id>` rebuilds a transcribe, classify, parse or repair call from the database, runs it on today's models and prints a diff; it writes nothing. A repair step stores, per part, the problem lines it sent and a hash of the previous reply (the reply itself stays on the step that produced it), so its conversation can be rebuilt and checked.
 
 **Logs** are JSON lines with ids, statuses, counts and timings from an allowlist; exceptions are logged as type and stack without their message. LangSmith, a dependency of LangGraph, is forced off.
 
@@ -29,7 +29,7 @@ A document run takes minutes per page, has loops (repair, fallback) and branches
 ## Consequences
 
 - A killed worker's job is taken over after its lease and finishes from its checkpoint; a test kills one mid-run and checks its late write is refused.
-- Any value on screen traces to its step, model call, prompt text and code version. Repair steps can't be replayed (their problem text isn't stored).
+- Any value on screen traces to its step, model call, prompt text and code version. A repair with tools can't be replayed (each turn depends on what the tools returned), and neither can a repair that ran before repairs stored their problems.
 - Step rows hold content, so the database is a clinical store throughout; checkpoints are deleted when their run ends ([0008](0008-patient-data-protection.md)).
 
 ## What would change it

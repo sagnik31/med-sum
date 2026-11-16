@@ -47,6 +47,7 @@ import llm
 import model_health
 from derive import build_record
 from observability import add_identifiers, current_step, stamp, traced
+from observability.tracing import prompt_hash
 from observability.jsonable import jsonable
 from pipeline import pages as page_files
 from pipeline import parts, reread, signals, store, tool_repair
@@ -566,9 +567,18 @@ def problems(state: GraphState) -> list[str]:
     return [line for index in sorted(found) for line in found[index]]
 
 
+def _previous_reply(previous: PartResult | None) -> str | None:
+    """The reply a repair puts back in the conversation for a part."""
+    if previous is None:
+        return None
+    if previous.reply is None and previous.parse is not None:
+        return previous.parse.model_dump_json()
+    return previous.reply or None
+
+
 def _repair_input(state: GraphState) -> dict:
     found = part_problems(state)
-    return {
+    given = {
         "doc_type": state.get("doc_type"),
         "model_role": state.get("model_role", "primary"),
         "attempt": state.get("parse_attempts", 0) + 1,
@@ -576,6 +586,27 @@ def _repair_input(state: GraphState) -> dict:
         "parts": sorted(found),
         "problems": sum(len(v) for v in found.values()),
     }
+    if not found or state.get("doc_type") not in PARSE_MODELS:
+        return given
+    # What pipeline.replay needs to rebuild each part's conversation: the
+    # part, the problem lines sent to the model, and a reference to the
+    # previous reply (stored in full by the step that produced it). The
+    # system prompt's hash finds its text in the prompts table, where the
+    # parse steps put it.
+    plan = {p.index: p for p in parse_parts(state)}
+    by_index = {r.index: r for r in state.get("part_results", [])}
+    given["system_prompt_hash"] = prompt_hash(prompt(_parse_prompt(state)))
+    given["repairs"] = [
+        {
+            "index": i,
+            "part": plan[i].model_dump(mode="json"),
+            "problems": found[i],
+            "previous": content_ref(_previous_reply(by_index.get(i))),
+        }
+        for i in sorted(found)
+        if i in plan
+    ]
+    return given
 
 
 @traced("repair", input_of=_repair_input)
@@ -617,9 +648,7 @@ def repair(state: GraphState) -> dict:
         part = plan[index]
         previous = by_index.get(index)
         messages = _part_messages(state, name, part)
-        reply = previous.reply if previous else None
-        if reply is None and previous is not None and previous.parse is not None:
-            reply = previous.parse.model_dump_json()
+        reply = _previous_reply(previous)
         if reply:
             messages.append({"role": "assistant", "content": reply})
         messages.append(

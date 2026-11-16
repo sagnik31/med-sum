@@ -303,3 +303,95 @@ def test_the_command_exits_by_whether_the_reply_changed(ran, model_client, capsy
     assert replay_mod.main([ran["transcribe"]]) == 1
     assert replay_mod.main([ran["finish"]]) == 2
     assert "can't replay" in capsys.readouterr().err
+
+
+# -------------------------------------------------------------------
+# Repair replay
+# -------------------------------------------------------------------
+def bad_parse(doc_id: str) -> str:
+    """A parse whose first medicine's strength is not on its cited line."""
+    reply = json.loads(good_parse(doc_id))
+    reply["medicines"][0]["strength"] = "999 mg"
+    return json.dumps(reply)
+
+
+@pytest.fixture
+def repaired(db, document, model_client):
+    """A run of DOC whose first parse is wrong and whose repair fixes it."""
+    state = document(DOC)
+    model_client.replies[PRIMARY] = [
+        page_text(DOC), classified(DOC), bad_parse(DOC), good_parse(DOC),
+    ]  # fmt: skip
+    assert pipeline_graph.run_document(state)["end_state"] == "verified"
+    (repair_call,) = [c for c in model_client.calls if len(c["messages"]) == 4]
+    (step,) = _all(
+        db,
+        "SELECT s.id::text FROM pipeline_steps s JOIN pipeline_runs r"
+        " ON r.id = s.run_id WHERE r.document_id = %s AND s.node = 'repair'",
+        state["document_id"],
+    )
+    return step[0], repair_call
+
+
+def test_a_repair_step_stores_what_its_conversation_needs(db, repaired):
+    step_id, call = repaired
+    ((given,),) = _all(db, "SELECT input FROM pipeline_steps WHERE id = %s", step_id)
+    (part,) = given["repairs"]
+    assert part["index"] == 0 and part["part"]["page"] == 1
+    # The problem lines are what the model was sent, after the instructions.
+    assert call["messages"][3]["content"].endswith("\n".join(part["problems"]))
+    assert any("strength" in line for line in part["problems"])
+    # The previous reply is a reference, not a second copy.
+    assert set(part["previous"]) == {"sha256", "chars"}
+    assert given["system_prompt_hash"] == prompt_hash(prompt("parse_prescription"))
+
+
+def test_a_repair_is_replayed_with_the_conversation_it_had(repaired, model_client):
+    step_id, original = repaired
+    model_client.replies[PRIMARY] = [good_parse(DOC)]
+    r = replay(step_id)
+    assert r.same and r.node == "repair"
+    assert r.prompt_name == "parse_prescription+repair_parse"
+    replayed = model_client.calls[-1]
+    assert replayed["messages"] == original["messages"]
+    assert replayed["format"] == original["format"]
+
+    model_client.replies[PRIMARY] = [bad_parse(DOC)]
+    r = replay(step_id)
+    assert not r.same
+    assert '+      "strength": "999 mg",' in r.diff()
+
+
+def test_a_repair_that_stored_no_problems_is_refused(db, repaired):
+    step_id, _ = repaired
+    with db.cursor() as cur:
+        cur.execute(
+            "UPDATE pipeline_steps SET input = input - 'repairs' WHERE id = %s",
+            (step_id,),
+        )
+    with pytest.raises(ReplayError, match="before repairs stored their problems"):
+        replay(step_id)
+
+
+def test_a_repair_with_tools_is_refused(db, repaired):
+    step_id, _ = repaired
+    with db.cursor() as cur:
+        cur.execute(
+            "UPDATE pipeline_steps SET prompt_name = prompt_name || '+tools'"
+            " WHERE id = %s",
+            (step_id,),
+        )
+    with pytest.raises(ReplayError, match="a repair with tools can't be replayed"):
+        replay(step_id)
+
+
+def test_a_previous_reply_that_changed_is_refused(db, repaired):
+    step_id, _ = repaired
+    with db.cursor() as cur:
+        cur.execute(
+            "UPDATE pipeline_steps SET input = jsonb_set(input,"
+            " '{repairs,0,previous,sha256}', '\"0\"') WHERE id = %s",
+            (step_id,),
+        )
+    with pytest.raises(ReplayError, match="previous reply in the run doesn't match"):
+        replay(step_id)

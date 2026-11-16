@@ -11,9 +11,13 @@ the image hash the step stored. The call goes to the models configured now
 (the stored model and the one that answered are both shown), and nothing
 is written to the database.
 
-Transcribe, classify and parse steps can be replayed. A repair isn't: its
-conversation includes the problems the validators found, which no step
-stores as text. A transcribe step that read its page again in halves is
+Transcribe, classify, parse and repair steps can be replayed. A repair is
+rebuilt part by part from what its step stored: the part, the problem
+lines it sent and a reference to the previous reply, which is found in the
+run's earlier parse or repair step and checked against that reference.
+A repair with tools is not replayed (its turns depend on what each tool
+returned), and neither is a repair that ran before repairs stored their
+problems. A transcribe step that read its page again in halves is
 replayed as the single whole-page call.
 
 It prints document content to the terminal, as a developer's tool; none
@@ -35,6 +39,7 @@ from pipeline import pages as page_files
 from pipeline import parts
 from pipeline.nodes import (
     CAPPED,
+    content_ref,
     CLASSIFY_CHARS,
     CLASSIFY_MAX_TOKENS,
     PARSE_MAX_TOKENS,
@@ -50,10 +55,10 @@ from pipeline.prompts import (
 )
 from pipeline.state import PageTranscription
 from pipeline.store import connect as default_connect
-from record.printed import ClassifierOutput, DocumentType
+from record.printed import PARSE_MODELS, ClassifierOutput, DocumentType
 from record.schemas import classifier_schema, parse_output_schema
 
-REPLAYABLE = ("transcribe", "classify", "parse")
+REPLAYABLE = ("transcribe", "classify", "parse", "repair")
 CAPPED_TEXT = f"[{CAPPED}]"
 
 
@@ -101,12 +106,20 @@ class _Calls:
 
 
 _STEP = """
-SELECT s.node, s.page, s.status, s.model, s.prompt_name, s.prompt_hash,
+SELECT s.seq, s.node, s.page, s.status, s.model, s.prompt_name, s.prompt_hash,
        s.input, s.output, s.error, s.run_id::text, d.storage_path
 FROM pipeline_steps s
 JOIN pipeline_runs r ON r.id = s.run_id
 JOIN documents d ON d.id = r.document_id
 WHERE s.id = %s
+"""
+
+_EARLIER_REPLIES = """
+SELECT output -> 'part_results'
+FROM pipeline_steps
+WHERE run_id = %s AND seq < %s AND node IN ('parse', 'repair')
+  AND output ? 'part_results'
+ORDER BY seq DESC
 """
 
 _TRANSCRIPTIONS = """
@@ -132,7 +145,11 @@ def _step(cur, step_id: str) -> dict:
 def _prompt_text(cur, step: dict) -> str:
     if step["prompt_hash"] is None:
         raise ReplayError(f"the {step['node']} step used no prompt")
-    cur.execute("SELECT text FROM prompts WHERE hash = %s", (step["prompt_hash"],))
+    return _stored_prompt(cur, step["prompt_hash"])
+
+
+def _stored_prompt(cur, hash: str) -> str:
+    cur.execute("SELECT text FROM prompts WHERE hash = %s", (hash,))
     row = cur.fetchone()
     if row is None:
         raise ReplayError(
@@ -245,7 +262,104 @@ def _parse(cur, step: dict, text: str):
     return stored, call
 
 
-_REBUILD = {"transcribe": _transcribe, "classify": _classify, "parse": _parse}
+def _previous_reply(
+    cur, step: dict, index: int, ref: dict | None, doc_type
+) -> str | None:
+    """
+    The reply a repaired part had before: the latest earlier parse or
+    repair step's reply for that part, chosen as the repair node chose it
+    (the reply, else its parse as JSON), checked against the reference the
+    repair stored.
+    """
+    if ref is None:
+        return None
+    cur.execute(_EARLIER_REPLIES, (step["run_id"], step["seq"]))
+    for (results,) in cur.fetchall():
+        for r in results or []:
+            if r.get("index") != index:
+                continue
+            reply = r.get("reply")
+            if not reply and r.get("parse") is not None:
+                model = PARSE_MODELS[doc_type].model_validate(r["parse"])
+                reply = model.model_dump_json()
+            if reply and content_ref(reply) == ref:
+                return reply
+            raise ReplayError(
+                f"part {index}'s previous reply in the run doesn't match the one"
+                " the repair sent"
+            )
+    raise ReplayError(f"the run stored no earlier reply for part {index}")
+
+
+def _repair(cur, step: dict, text: str):
+    given = step["input"] or {}
+    if step["prompt_name"].endswith("+tools"):
+        raise ReplayError(
+            "a repair with tools can't be replayed: each turn depends on what the"
+            " tools returned"
+        )
+    if "repairs" not in given or "system_prompt_hash" not in given:
+        raise ReplayError(
+            "the repair ran before repairs stored their problems; run the document"
+            " again to replay its repair"
+        )
+    system = _stored_prompt(cur, given["system_prompt_hash"])
+    if not text.startswith(system):
+        raise ReplayError(
+            "the repair's stored prompt doesn't start with its parse prompt"
+        )
+    instructions = text[len(system) :]
+    pages = _transcriptions(cur, step["run_id"], given["pages"])
+    doc_type = DocumentType(given["doc_type"])
+    conversations = []
+    for r in given["repairs"]:
+        part = parts.ParsePart.model_validate(r["part"])
+        messages = [
+            {"role": "system", "content": system},
+            {"role": "user", "content": parts.part_text(pages, part)},
+        ]
+        previous = _previous_reply(cur, step, r["index"], r["previous"], doc_type)
+        if previous:
+            messages.append({"role": "assistant", "content": previous})
+        messages.append(
+            {"role": "user", "content": instructions + "\n".join(r["problems"])}
+        )
+        conversations.append((r["index"], messages))
+    answered = {
+        r.get("index"): r.get("reply")
+        for r in (step["output"] or {}).get("part_results") or []
+    }
+    several = len(conversations) > 1
+
+    def label(index: int, body: str) -> str:
+        return f"--- part {index}\n{body}" if several else body
+
+    stored = "\n".join(label(i, _json_text(answered.get(i))) for i, _ in conversations)
+
+    def call() -> str:
+        out = []
+        for index, messages in conversations:
+            try:
+                reply = llm.chat(
+                    messages,
+                    max_tokens=PARSE_MAX_TOKENS,
+                    format=parse_output_schema(doc_type),
+                    model_role=given.get("model_role", "primary"),
+                )
+                out.append(label(index, _json_text(reply)))
+            except llm.OutputCappedError:
+                out.append(label(index, CAPPED_TEXT))
+        return "\n".join(out)
+
+    return stored, call
+
+
+_REBUILD = {
+    "transcribe": _transcribe,
+    "classify": _classify,
+    "parse": _parse,
+    "repair": _repair,
+}
 
 
 def replay(step_id: str, *, connect=default_connect) -> Replay:
