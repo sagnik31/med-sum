@@ -38,7 +38,7 @@ All model inference runs on the hospital's own machine through [Ollama](https://
 2. **A clinician confirms or corrects, beside the reading.** The review queue lists documents awaiting review, oldest first. On the review screen the clinician sees the original upload next to each value, confirms it or enters the right value, and the correction is kept next to what the model read, never over it, with who and when. A corrected value runs the range, flag and date checks again. The summary then says "corrected by Dr X on date".
 3. **A share of verified documents is audited.** Ten per cent of the documents that passed every check (`MEDSUM_AUDIT_SAMPLE_RATE`) go back to the queue as an audit, and the audit can only be finished once every value is confirmed or corrected. A correction there is an error the checks let through, so the escape rate is measured in use, and each signal's precision is measured from the reviews it caused.
 
-**Where the data lives.** Documents, records and the audit log stay in the hospital's PostgreSQL and on its disk, and the models run locally. Each organisation's patients are visible to its own clinicians only, enforced in the SQL of every query. Every read or change of patient data writes an audit row (who, what, which patient, the outcome), and a database trigger refuses to change or delete one. Admins manage staff and read the audit log but see no clinical data. See [where patient data goes](docs/data-and-threats.md).
+**Where the data lives.** Documents, records and the audit log stay in the hospital's PostgreSQL and on its disk, and the models run locally. Each organisation's patients are visible to its own clinicians only, enforced in the SQL of every query. Every read or change of patient data writes an audit row (who, what, which patient, the outcome), and a database trigger refuses to change or delete one. Admins manage staff, read the audit log and see how the pipeline's runs went, but see no clinical data. See [where patient data goes](docs/data-and-threats.md).
 
 **What a deployment would still need.** Encryption at rest, TLS, single sign-on or a second factor, verification of clinicians' registration numbers, integration with the hospital's systems (HL7 or FHIR), and above all a clinical validation on the hospital's own documents. None of these is built; see [Limitations](#limitations).
 
@@ -136,12 +136,13 @@ The evals run on a committed synthetic dataset of 25 documents for 6 fictional p
 | Answers whose every number appears in what the tools returned | *pending* |
 | Questions with no answer in the records, declined | *pending* |
 
-**Prompt injection.** Text in a document aimed at the model (embedded instructions, hidden text, a remote image) is contained by design: pages are built by code with every value escaped, shown in a sandboxed frame with scripts off and no remote loads, and the overview is checked word by word. These defences are tested. A measured injection eval, scoring whether the record stays faithful when a document carries such text, is not built yet:
+**Prompt injection.** Text in a document aimed at the model (embedded instructions, hidden text, a remote image) is contained by design: pages are built by code with every value escaped, shown in a sandboxed frame with scripts off and no remote loads, and the overview is checked word by word. These defences are tested. The injection eval measures them on six attacked copies of dataset documents, two per kind of attack (an instruction in the text, hidden text, a remote image or script), each scored against its clean document's answer key, on a split of its own kept out of the main numbers. It is built and has not been run yet:
 
 | Measure | Result |
 |---|---|
-| Records unchanged by an embedded instruction | *pending* |
-| Pages with no remote load or script | *pending* |
+| Records as faithful as the clean document's key | *pending* |
+| Attacks followed (the payload became a clinical value) | *pending* |
+| Pages with no live markup or remote load | *pending* |
 
 ### Design trade-offs
 
@@ -152,7 +153,7 @@ The evals run on a committed synthetic dataset of 25 documents for 6 fictional p
 
 ### Demo
 
-A recorded walk-through (upload, processing, the review queue, a correction and the summary that follows) is *pending*, as is `python -m demo`, which will run two dataset documents through the real graph from recorded model replies, without Ollama, in under a minute.
+`python -m demo`, from `scripts/src`, runs two dataset documents through the real graph from recorded model replies, without Ollama: d09, a lab report that ends verified, and d15, an undated prescription that goes to review. It uses a throwaway database (`med_sum_demo`) and prints each step, its model and timing, the checks' findings and the end state. The recorded replies come from the first live eval run, so until that run it says which are missing and how to record them, and starts nothing. A recorded walk-through (upload, processing, the review queue, a correction and the summary that follows) is *pending*.
 
 ## How it works
 
@@ -180,7 +181,7 @@ When a document is uploaded, the Go API asks the AI service to queue it. A worke
 5. **Render.** Code builds the document's page from the record, with no model call: every value exactly as printed, values computed by code (the document date, a flag from the printed range, a unit conversion, doses a day) marked as derived, and nothing the record doesn't hold, so no "abnormal" or severity of its own. A value that awaits review shows why, in plain words.
 6. **Finish.** The record is saved with what each value traces back to. A document ends `verified`, or `needs_review` when a low-confidence signal fired (a value the checks couldn't confirm, a cut-off page, a model input that may have been cut short to fit the context window, a patient name that doesn't match the account, and others); the document page then says which values to check. Anything that can't be recovered from ends `failed` with a message, and the user can retry from the UI.
 
-Each document's run, its steps, and the prompt and model used at each are stored in the database, with the git commit, output schemas and database structure the run used and the text of every prompt. `python -m pipeline.replay <step_id>` runs one stored transcribe, classify, parse or repair step again and shows how the reply differs (a repair is rebuilt from the problems it stored and the previous reply; a repair with tools is not replayed). **Reprocess** on the summary page runs the document again from the start, for when the pipeline has changed; the new run's record replaces the last. A page whose image, model and transcription prompt are the same as in the document's earlier run is not transcribed again: the earlier run's lines are reused, and the step records which step they came from.
+Each document's run, its steps, and the prompt and model used at each are stored in the database, with the git commit, output schemas and database structure the run used and the text of every prompt. `python -m pipeline.replay <step_id>` runs one stored transcribe, classify, parse or repair step again and shows how the reply differs (a repair is rebuilt from the problems it stored and the previous reply; a repair with tools is not replayed). On the document page, **Processing details** shows how the latest run went, and **Full trace** shows every run with each step's input, output, prompt and findings; opening it is audited. A step that can be replayed shows its replay command to copy; the app never runs one. Admins see the organisation's runs under **Pipeline runs**, with no content. **Reprocess** on the summary page runs the document again from the start, for when the pipeline has changed; the new run's record replaces the last. A page whose image, model and transcription prompt are the same as in the document's earlier run is not transcribed again: the earlier run's lines are reused, and the step records which step they came from.
 
 The cumulative patient summary is a separate background job, started from the Patient summary page. Once a user has one, it is rebuilt after each of their documents finishes (once the last of a batch is done, so a batch rebuilds it once). It is built by code from the records of every document that has finished (`verified` or `needs_review`):
 
@@ -349,7 +350,7 @@ On PowerShell, set the same variables with `$env:NAME = "value"`.
 1. Open http://localhost:5173 and log in as `dev-clinician@med-sum.test` with your `MEDSUM_DEV_PASSWORD`.
 2. On **Patients**, choose **New patient** and give at least an MRN and a name (synthetic ones: see [Synthetic dataset](#synthetic-dataset)), or open an existing patient.
 3. Upload a lab report or prescription as a PDF, JPG or PNG to the patient. Processing starts straight away; the document list shows its status and updates itself. On a CPU each page takes a few minutes.
-4. Open the document once it shows **Verified** or **Needs review** to read the values extracted from it; a document that needs review says which values to check and why.
+4. Open the document once it shows **Verified** or **Needs review** to read the values extracted from it; a document that needs review says which values to check and why. **Processing details** and **Full trace** below show how it was produced.
 5. Open the patient's **Patient summary** and choose **Generate summary** to combine every processed document.
 
 ## Configuration
@@ -421,6 +422,8 @@ All backend routes except `/healthz`, `/auth/login`, `/auth/logout` and `/auth/s
 | `PATCH` | `/admin/users/{id}` | Change `{roles?, status?, full_name?, registration_no?}`; `status` is `active` or `disabled` (admins) |
 | `POST` | `/admin/users/{id}/reset-link` | A new setup link (invited account) or reset link (active account) (admins) |
 | `GET` | `/admin/audit?actor=&patient=&from=&to=&before=` | Your organisation's audit log, newest first, 200 entries a page (`next_before` gives the next page); `from` and `to` are dates, both inclusive (admins) |
+| `GET` | `/admin/runs?before=` | Your organisation's pipeline runs, newest first, 200 a page (`next_before` gives the next page): graph version, start and end, end state, models, code version, step counts. No document, patient or content (admins) |
+| `GET` | `/admin/runs/{id}` | One run and its steps: status, model and role, timings, tokens, prompt name, the checks that failed each (validator, severity, item and field, never the message) and a `replay_command` where it can be replayed (admins) |
 | `GET` | `/patients?q=` | Your organisation's patients (up to 200), by part of the name or the start of the MRN; no `q` lists them all |
 | `POST` | `/patients` | Add a patient `{mrn, full_name, date_of_birth?, age_years?, sex?}` (`date_of_birth` as `YYYY-MM-DD`, or `age_years` when it isn't known, not both; `sex` is `F`, `M` or `O`). 409 when the MRN is taken |
 | `GET` | `/patients/{id}` | One patient |
@@ -437,6 +440,7 @@ All backend routes except `/healthz`, `/auth/login`, `/auth/logout` and `/auth/s
 | `POST` | `/documents/{id}/reprocess` | Process the document again from the start, as a new run |
 | `GET` | `/documents/{id}/file` | The original upload, for checking values against it (PDF, JPEG or PNG, by the type the upload checked). The one response the app may frame (its CSP names the app's origins in `frame-ancestors`); viewing it is audited |
 | `GET` | `/documents/{id}/processing` | How the document's latest pipeline run went, step by step: status, model and its role, duration, attempt, model calls and the checks that failed each step (validator, severity, item and field, never the message or any value); viewing it is audited |
+| `GET` | `/documents/{id}/trace?run=` | The document's full trace: its runs, newest first, and one run in full (the latest, or the `run` given): each step's input, output, findings with their messages, error, tokens and prompt, the prompt texts by hash, and a `replay_command` for each step that can be replayed. 404 for a run of another document; viewing it is audited |
 | `POST` | `/documents/{id}/review` | A clinician's review of one value: `{action: "confirm", item_id}` or `{action: "correct", item_id, field, value, note?}`, with the `record_updated_at` the page loaded (409 when the record changed since, or while the document is processed). The model's reading is kept beside every correction. A corrected value that fails a value check (units, flag against range, dates) answers 422 with its `findings` and is saved when sent again with `accept_findings: true`. When nothing awaits review the document is verified and its patient summary rebuilt |
 | `GET` | `/review/queue` | Your organisation's documents awaiting review, longest waiting first, with how many values each has flagged; verified documents sampled for an audit are listed too, with `reason: "audit"` |
 | `POST` | `/documents/{id}/audit-complete` | Finish the audit of a verified document sampled for one, once every value (the document's details, the patient's and each item) has been confirmed or corrected during the audit (409 until then, and when it is not waiting for an audit); it leaves the queue. Corrections made during the audit count as errors the pipeline let through |
@@ -508,10 +512,10 @@ db/api_role.sql          the Go API's least-privilege role
 docs/adr/                architecture decision records: why the system is built this way
 frontend/
   src/api/               API client
-  src/components/        shared components (sandboxed HTML viewer, record view and source page, sessions list, idle warning)
-  src/record/            what the record view shows: values, derived values, citations (with tests)
+  src/components/        shared components (sandboxed HTML viewer, record view and source page, processing and trace panels, sessions list, idle warning)
+  src/record/            what the record view, processing and trace panels show: values, derived values, citations, steps (with tests)
   src/auth/              the logged-in account (AuthProvider), permissions and the route guard
-  src/pages/             login, set password, account, staff, audit log, patients, patient, document, patient summary
+  src/pages/             login, set password, account, staff, audit log, pipeline runs, patients, patient, document, patient summary, review queue
 scripts/
   src/insights_service.py    FastAPI service; starts the document worker
   src/document_jobs.py       the document job queue: claims, leases, the worker
@@ -530,8 +534,10 @@ scripts/
   src/reset_db.py            resets the development database and uploads
   schemas/                   those schemas exported as JSON (regenerate: `python -m record.schemas` in src/)
   src/dataset/               synthetic dataset generator and loader
-  src/evals/                 eval runner, scoring against the answer keys, fault check, model choice, reports
+  src/evals/                 eval runner, scoring against the answer keys, fault check, injection eval, model choice, reports
+  src/demo/                  `python -m demo`: two documents through the real graph from recorded replies
   evals/dataset/             the generated dataset: fictional documents, answer keys, transcriptions
+  evals/injection/           attacked copies of six dataset documents, the injection eval's own split
   evals/faultcheck_baseline.json   the fault check's committed detection counts (its gate)
   evals/repair_cases.json    the repair eval's cases: one injected fault each (`python -m evals.repair_cases`)
   evals/history/             one small JSON per live eval run (counts only), compared between runs; written by the first live run
@@ -543,6 +549,7 @@ scripts/
   requirements.in        direct dependencies; requirements.txt pins every package
   requirements-dev.in    test tools; requirements-dev.txt pins them
 postman/                 API collection
+.github/workflows/ci.yml  CI: every check below, on each push to main and each pull request
 ```
 
 ## Development
@@ -565,6 +572,8 @@ Checks and tests for each part:
 
 The tests never call a model: model calls are replaced with fakes, so Ollama need not be running. The database tests create a throwaway database (`med_sum_test_go` for Go, `med_sum_test_py` for Python) from `db/schema.sql`, and drop it afterwards; your `med_sum` database is not touched. The Go tests need `psql` on the `PATH`. Both connect as `postgres:postgres@localhost:5432` unless `MEDSUM_TEST_ADMIN_URL` says otherwise. When Postgres can't be reached they are skipped; set `MEDSUM_REQUIRE_DB=1` to make that a failure. `pytest -m "not db"` runs only the tests that need no database.
 
+**CI** ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs the same checks on GitHub Actions on each push to `main` and each pull request, with a Postgres service so the database tests run rather than skip, plus the fault check. A fourth job replays the evals (the main set and the injection set) from the recorded replies and compares the result with the last live run; it is skipped until the first live run has recorded them. No job calls a model or holds a secret.
+
 ### Synthetic dataset
 
 [`scripts/evals/dataset/`](scripts/evals/dataset/README.md) holds 25 fictional documents (lab reports and prescriptions for 6 patients) with an answer key and expected transcription for each. Regenerate it with `python -m dataset.build` from `scripts/src`. `python -m dataset.load` shows what it would upload through the backend; `--yes` uploads it, which starts processing on the AI service (live model runs). It logs in as the development clinician, creates each dataset patient's record from the manifest (or finds it by MRN) and uploads that patient's documents to it, so run `medsumctl seed-dev` first and set `MEDSUM_DEV_PASSWORD`.
@@ -583,6 +592,7 @@ All of these run from `scripts/src`.
 - **`python -m evals.compare A B`** compares two history entries or reports. It fails when unsafe errors rise (overall or in verified documents), when routing or medicine recall falls, or when field F1 or value recall falls by more than a point. **`python -m evals.history`** prints every run as a table.
 - **`python -m evals.review_signals`** measures the signals in use, from clinicians' reviews in the database: for each low-confidence signal, the values it raised and the share a clinician corrected (its precision), and from the audit samples, the share of verified documents that still held a value a clinician corrected (the escape rate). Counts only, with intervals. **`python -m evals.export_review <document_id> <out_dir>`** writes a reviewed document as a candidate eval case (the file, a key from the reviewed record, and which fields were corrected), to be checked by hand before it joins the dataset; development only (`MEDSUM_ENV=dev`).
 - **`python -m evals.mcp_eval --live`** measures an MCP client: questions about the synthetic patients, built from the answer keys, go to a local model that can read the records only through the [MCP server](#mcp-server). Value questions (a lab result, a medicine's strength or frequency) are scored for quoting a citation, every citation covering lines a tool returned, every number appearing in what the tools returned (the overview's number check), pointing at the key's lines in the right document, and holding the key's value. Questions about a test none of the patient's documents holds are scored for abstaining. Each measure carries its interval. It needs the dataset loaded and processed and the API running; it has not been run yet.
+- **`python -m evals.injection --live`** runs the attacked documents in [`scripts/evals/injection/`](scripts/evals/injection/README.md) through the real graph and scores each against its clean document's key: whether the record is as faithful, whether the attack's payload became a clinical value (followed) or was kept as printed text, whether the document still ends where the clean one does, and whether its page holds any live markup or remote load. Rebuild the set with `python -m dataset.injection`. `--replay` answers from its own cassettes. It has not been run yet.
 - **`python -m evals.selfcheck`** scores the answer keys against themselves to show the report's shape. Every score is perfect, and 22 of 25 documents end verified. Even so, its 0 unsafe errors in 204 clinical items still allows up to 1.8% at 95%: that is how little a dataset this size can rule out, and why every count in the report carries its interval.
 - **`python -m evals.redaction`** measures how well patient identifiers are masked in what leaves the clinical stores (findings, errors, logs): recall per identifier type, with the run's known values and with patterns alone. See [where patient data goes](docs/data-and-threats.md).
 
@@ -594,20 +604,18 @@ All of these run from `scripts/src`.
 - **Some wrong values pass the checks.** Every row of a results table must become a result, so a row the parse leaves out goes back to the parse, then to review. A result printed as a line of text rather than a table row has no such check: leaving it out is only an information note, so the document can still end verified (the 6 dropped results the fault check missed are all of this kind). A value equal to one of its own range bounds is sent to review when its row prints that number only inside the range (98 of 98 range bounds taken for the value were caught); one printed in its own cell as well is taken as the real value.
 - **No medical codes or brand-to-generic mapping.** Medicines are kept as written (brands stay brands), and no LOINC, SNOMED or RxNorm codes are assigned: the local models aren't reliable enough to map them.
 - **Lab reports and prescriptions only.** Any other document is kept, transcribed and marked for review, but not parsed.
-- **Not yet evaluated on the models.** The eval runner, the repair eval, the MCP client eval, the fault check and the synthetic dataset exist, and the checks have been measured, but the pipeline has not yet been run live over the dataset on both models, so neither repair has been measured. A short probe showed both models calling a tool correctly. Signal precision and the escape rate need clinicians' reviews, so they have no numbers yet either.
+- **Not yet evaluated on the models.** The eval runner, the repair eval, the MCP client eval, the injection eval, the fault check and the synthetic dataset exist, and the checks have been measured, but the pipeline has not yet been run live over the dataset on both models, so neither repair has been measured. A short probe showed both models calling a tool correctly. Signal precision and the escape rate need clinicians' reviews, so they have no numbers yet either.
 - **Clinicians' licences are not verified.** A medical registration number can be recorded on an account, but nothing checks it against a medical council's register.
 - **Not validated clinically.** Nothing here has been tried by clinicians or on real documents. The synthetic dataset is varied in layout, but it was built by the same hands as the checks.
 - **The overview check is strict and literal.** It compares words, not meanings. A number counts as in context when one of the words around it (three either side) is a word of what it belongs to, so two tests that share a unit in one list can still trade values, and an ordinary word missing from its fixed list leaves the overview out. Its layout is a first draft.
-- **No container setup** yet, and no CI.
+- **No container setup** yet. CI is defined but has not run on GitHub: the repository has not been pushed with it, and its eval-replay job waits for recorded replies.
 
 ## Roadmap
 
 The next phase focuses on doctors and hospital groups:
 
-- Live eval runs on both models, reported for the dev, test and held-out documents apart, which fill in the [results](#results)
-- A prompt-injection eval: documents carrying embedded instructions, hidden text and remote images, scored for a faithful record and contained pages
-- A trace screen showing each run's steps, inputs, outputs, retries and models
-- CI on every push (builds, linters, tests, the fault check, eval replay from recorded replies) and the one-minute demo
+- Live eval runs on both models, reported for the dev, test and held-out documents apart, which fill in the [results](#results), with the injection and MCP client evals; their recorded replies turn on CI's eval replay and the demo
+- A recorded walk-through of the app
 - A clinical pilot on a hospital's own documents, after the deployment work under [For hospitals](#for-hospitals)
 
 ## License
