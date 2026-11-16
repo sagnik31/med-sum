@@ -128,8 +128,9 @@ jobs:
 
   eval-replay:
     # Cassettes are written by the first live eval run and committed with its
-    # report. Until then there is nothing to replay, so the job is skipped.
-    if: hashFiles('scripts/evals/cassettes/**/*.json') != ''
+    # report. Until then there is nothing to replay: the first step says so
+    # and the others are skipped. (hashFiles works only in a step's `if`,
+    # not a job's, so the check is a step.)
     runs-on: ubuntu-24.04
     services:
       postgres:
@@ -148,25 +149,40 @@ jobs:
         working-directory: scripts/src
     steps:
       - uses: actions/checkout@v4
+      - name: Look for cassettes
+        id: cassettes
+        working-directory: .
+        run: |
+          if ls scripts/evals/cassettes/*/*.json >/dev/null 2>&1; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No cassettes yet: the first live eval run records them. Nothing to replay."
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/setup-python@v5
+        if: steps.cassettes.outputs.found == 'true'
         with:
           python-version: "3.13"
           cache: pip
           cache-dependency-path: scripts/requirements.txt
       - name: Install
+        if: steps.cassettes.outputs.found == 'true'
         working-directory: scripts
         run: pip install -r requirements.txt
       - name: Replay the document evals from the cassettes
+        if: steps.cassettes.outputs.found == 'true'
         # Exit 2 when a cassette is missing or no longer matches its request
         # (a changed prompt, page, option or schema): re-record, then commit.
         run: python -m evals.run --replay --label ci-replay --out "$RUNNER_TEMP/replay"
       - name: Replay the prompt-injection eval from its cassettes
+        if: steps.cassettes.outputs.found == 'true'
         run: |
           if ! ls ../evals/cassettes/injection/*/*.json >/dev/null 2>&1; then
             echo "No injection cassettes yet."; exit 0
           fi
           python -m evals.injection --replay --label ci-injection --out "$RUNNER_TEMP/injection"
       - name: Compare with the latest committed live run
+        if: steps.cassettes.outputs.found == 'true'
         # Fails when unsafe errors rise or the routing or recall measures
         # fall beyond the tolerances in evals/compare.py.
         run: |

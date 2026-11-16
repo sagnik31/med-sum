@@ -89,11 +89,21 @@ def test_database_jobs_have_postgres_and_fail_without_it(workflow, name):
 
 def test_eval_replay_only_replays_and_waits_for_cassettes(workflow):
     job = workflow["jobs"]["eval-replay"]
-    assert "scripts/evals/cassettes/" in job["if"]
+    check, *rest = job["steps"][1:]
+    assert check["id"] == "cassettes" and "scripts/evals/cassettes/" in check["run"]
+    for step in rest:  # nothing runs until the check finds cassettes
+        assert step["if"] == "steps.cassettes.outputs.found == 'true'", step
     runs = _runs(job)
     assert "python -m evals.run --replay" in runs
     assert "python -m evals.compare" in runs
     assert "python -m evals.injection --replay" in runs
+
+
+def test_job_conditions_use_only_what_github_allows_there(workflow):
+    # A job's `if` can't call hashFiles (only a step's can); GitHub rejects
+    # the whole file before any job runs.
+    for name, job in workflow["jobs"].items():
+        assert "hashFiles" not in str(job.get("if", "")), name
 
 
 def test_no_job_calls_a_model_or_uses_a_secret():
