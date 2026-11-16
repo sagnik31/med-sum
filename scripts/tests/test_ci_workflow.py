@@ -93,6 +93,7 @@ def test_eval_replay_only_replays_and_waits_for_cassettes(workflow):
     runs = _runs(job)
     assert "python -m evals.run --replay" in runs
     assert "python -m evals.compare" in runs
+    assert "python -m evals.injection --replay" in runs
 
 
 def test_no_job_calls_a_model_or_uses_a_secret():

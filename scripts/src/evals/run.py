@@ -127,11 +127,14 @@ def run_model(
     client_for: Callable[[str], object],
     dataset_dir: Path = DATASET_DIR,
     after_document: Callable[[str], None] = lambda doc_id: None,
+    on_final: Callable[[str, dict | None], None] = lambda doc_id, final: None,
 ) -> tuple[ModelRun, dict[str, Outcome]]:
     """
     Every document with `model` as the primary. `client_for(doc_id)` gives
     the model client for that document (recording or replay);
-    `after_document(doc_id)` runs after each, e.g. to save its cassette. A
+    `after_document(doc_id)` runs after each, e.g. to save its cassette;
+    `on_final(doc_id, final)` gets the graph's final state (None when the
+    run failed), for evals that look at the record itself. A
     CassetteMiss is raised at once: a replay that can't answer is not a
     result.
     """
@@ -166,6 +169,7 @@ def run_model(
                     )
                 )
                 outcomes[doc_id] = Outcome("failed", [], None, type(e).__name__)
+                on_final(doc_id, None)
                 after_document(doc_id)
                 continue
             seconds = time.monotonic() - start
@@ -181,6 +185,7 @@ def run_model(
             routing = sorted({h.signal for h in final.get("signals", []) if h.routes})
             role = final.get("parse_model_role") if final.get("record_parsed") else None
             outcomes[doc_id] = Outcome(final["end_state"], routing, role)
+            on_final(doc_id, final)
             after_document(doc_id)
     finally:
         llm._MODELS.clear()
