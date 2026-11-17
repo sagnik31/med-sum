@@ -240,16 +240,52 @@ def test_a_dataset_state_comes_back_from_a_postgres_checkpoint(
 # -------------------------------------------------------------------
 # Local only
 # -------------------------------------------------------------------
-def test_importing_the_pipeline_switches_langsmith_tracing_off():
-    env = {**os.environ, "LANGSMITH_TRACING": "true", "LANGCHAIN_TRACING_V2": "true",
-           "LANGSMITH_API_KEY": "not-a-key"}  # fmt: skip
+# Every name LangSmith reads its tracing switch from, under both prefixes.
+# Each one alone must be overridden, since any one of them set to "true"
+# turns tracing on.
+_TRACING_SWITCHES = [
+    f"{prefix}_{name}"
+    for prefix in ("LANGSMITH", "LANGCHAIN")
+    for name in ("TRACING_V2", "TRACING")
+]
+
+
+@pytest.mark.parametrize("switch", [*_TRACING_SWITCHES, "all"])
+def test_importing_the_pipeline_switches_langsmith_tracing_off(switch):
+    on = _TRACING_SWITCHES if switch == "all" else [switch]
+    env = {
+        k: v
+        for k, v in os.environ.items()
+        if not k.startswith(("LANGSMITH_", "LANGCHAIN_"))
+    }
+    env.update({name: "true" for name in on})
+    env.update({"LANGSMITH_API_KEY": "not-a-key", "LANGCHAIN_API_KEY": "not-a-key",
+                "LANGSMITH_ENDPOINT": "https://example.invalid"})  # fmt: skip
     code = (
-        "import langsmith.utils as u, pipeline;"
+        "import os, langsmith.utils as u, pipeline;"
         "from langchain_core.tracers.context import _tracing_v2_is_enabled as v2;"
-        "print(u.tracing_is_enabled(), v2())"
+        "print(u.tracing_is_enabled(), v2(),"
+        " any(k in os.environ for k in ('LANGSMITH_API_KEY', 'LANGCHAIN_API_KEY',"
+        " 'LANGSMITH_ENDPOINT')))"
     )
     out = subprocess.run(
         [sys.executable, "-c", code], cwd=SRC_DIR, env=env,
         capture_output=True, text=True, check=True,
     )  # fmt: skip
-    assert out.stdout.split() == ["False", "False"]
+    assert out.stdout.split() == ["False", "False", "False"]
+
+
+def test_the_tracing_switch_is_on_without_the_pipeline():
+    # Guards the test above: with these settings and without importing the
+    # pipeline, LangSmith really would trace.
+    env = {
+        **os.environ,
+        "LANGSMITH_TRACING_V2": "true",
+        "LANGSMITH_API_KEY": "not-a-key",
+    }
+    code = "import langsmith.utils as u; print(u.tracing_is_enabled())"
+    out = subprocess.run(
+        [sys.executable, "-c", code], cwd=SRC_DIR, env=env,
+        capture_output=True, text=True, check=True,
+    )  # fmt: skip
+    assert out.stdout.split() == ["True"]
