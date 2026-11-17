@@ -22,7 +22,14 @@ def connect() -> psycopg.Connection:
     return psycopg.connect(settings.database_url(), autocommit=True)
 
 
-def save_record(record: DocumentRecord, *, run_id: str, connect=connect) -> None:
+def save_record(
+    record: DocumentRecord, *, run_id: str, claim=None, connect=connect
+) -> None:
+    """
+    `claim` is the run's job claim (Run.claim), checked in the transaction
+    of the write: a worker that lost its job never replaces the record of
+    the worker that took it over. See docs/adr/0006-durable-traceable-runs.md.
+    """
     with connect() as conn:
         problems = check_provenance(conn, record, run_id=run_id)
         if problems:
@@ -30,6 +37,8 @@ def save_record(record: DocumentRecord, *, run_id: str, connect=connect) -> None
             # stored as the run's error.
             raise ProvenanceGapError("; ".join(problems))
         with conn.transaction(), conn.cursor() as cur:
+            if claim is not None:
+                claim.check(cur)
             cur.execute(
                 "INSERT INTO document_records"
                 " (document_id, schema_version, record, run_id)"

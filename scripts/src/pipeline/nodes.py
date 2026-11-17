@@ -924,7 +924,7 @@ def finish(state: GraphState) -> dict:
     """
     step = _step()
     record, hits, _ = marked_record(state, step.provenance)
-    store.save_record(record, run_id=step.run.id)
+    store.save_record(record, run_id=step.run.id, claim=step.run.claim)
     end_state = "needs_review" if signals.needs_review(hits) else "verified"
     return {"record": record, "signals": hits, "end_state": end_state}
 

@@ -8,6 +8,7 @@ from observability.logs import JsonFormatter, configure_logging
 from observability.provenance import check_provenance, stamp
 from observability.tracing import (
     END_STATES,
+    ClaimLost,
     Run,
     RunError,
     Step,
@@ -23,6 +24,7 @@ from observability.tracing import (
 
 __all__ = [
     "END_STATES",
+    "ClaimLost",
     "JsonFormatter",
     "Run",
     "RunError",

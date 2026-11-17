@@ -265,6 +265,102 @@ def test_the_heartbeat_renews_the_lease_and_notices_a_lost_claim(db):
     assert beat.lost.is_set()
 
 
+def test_a_lease_that_runs_out_unrenewed_counts_as_lost(db, monkeypatch):
+    # The database can't be reached, so the lease isn't renewed: once it
+    # has run out another worker may hold the job, so this one stops.
+    doc = add_document(db)
+    jobs.enqueue(db, doc)
+    job = jobs.claim_next(db, "A")
+    calls = []
+
+    def renew(conn, job, worker):
+        calls.append(worker)
+        if len(calls) == 1:
+            return 0.2  # the first renewal, on entering: 0.2 s left
+        raise OSError("database unreachable")
+
+    monkeypatch.setattr(jobs, "renew_lease", renew)
+    with jobs.Heartbeat(job, "A", every=0.05) as beat:
+        for _ in range(100):
+            if beat.lost.is_set():
+                break
+            time.sleep(0.02)
+
+    assert beat.lost.is_set() and len(calls) > 1
+
+
+def run_row(db, run_id) -> tuple:
+    with db.cursor() as cur:
+        cur.execute(
+            "SELECT end_state, ended_at IS NULL FROM pipeline_runs WHERE id = %s",
+            (run_id,),
+        )
+        return cur.fetchone()
+
+
+def test_a_worker_that_loses_its_job_mid_run_stops_and_leaves_the_run_to_the_new_owner(
+    db, model_client
+):
+    doc = add_document(db)
+    jobs.enqueue(db, doc)
+    job = jobs.claim_next(db, "A")
+    replies_for(model_client)
+    taken = []
+    chat = model_client.chat
+
+    def chat_and_lose_the_job(**kw):
+        # While A's classify call runs, its lease runs out and B takes over.
+        if len(model_client.calls) == 1:
+            expire_lease(db, job.id)
+            taken.append(jobs.claim_next(db, "B"))
+        return chat(**kw)
+
+    model_client.chat = chat_and_lose_the_job
+    jobs.process(job, "A")
+
+    [b] = taken
+    run_id = b.run_id
+    # A wrote nothing more: no record, the run still open for B, and the
+    # checkpoints B resumes from still there.
+    assert job_row(db, doc)["claimed_by"] == "B"
+    assert insight_row(db, doc) == ("processing", None, None)
+    assert run_row(db, run_id) == (None, True)
+    with db.cursor() as cur:
+        cur.execute(
+            "SELECT count(*) FROM document_records WHERE document_id = %s", (doc,)
+        )
+        assert cur.fetchone() == (0,)
+        cur.execute("SELECT node FROM pipeline_steps WHERE run_id = %s", (run_id,))
+        assert "parse" not in [r[0] for r in cur.fetchall()]
+    assert thread_rows(db, run_id) > 0
+
+    model_client.chat = chat
+    jobs.process(b, "B")
+
+    assert insight_row(db, doc)[0] == "verified"
+    assert run_row(db, run_id) == ("verified", False)
+
+
+def test_a_record_save_or_run_end_without_the_claim_is_refused(db):
+    doc = add_document(db)
+    jobs.enqueue(db, doc)
+    job = jobs.claim_next(db, "A")
+    run = start_run(doc, document_graph.GRAPH_VERSION)
+    jobs.set_run(db, job, "A", run.id)
+    with jobs.Heartbeat(job, "A") as beat:
+        run.claim = jobs.JobClaim(job, "A", beat)
+        expire_lease(db, job.id)
+        jobs.claim_next(db, "B")
+
+        with pytest.raises(LostClaim):
+            run.finish("verified")
+        with pytest.raises(LostClaim), run.step("open"):
+            pass
+    assert beat.lost.is_set()
+    assert run_row(db, run.id) == (None, True)
+    run.close()
+
+
 # -------------------------------------------------------------------
 # Running a job
 # -------------------------------------------------------------------

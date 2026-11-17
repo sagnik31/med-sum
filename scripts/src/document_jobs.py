@@ -16,7 +16,12 @@ thread per AI service process, one document at a time.
   checkpoint. While it runs, a heartbeat thread renews the lease.
 - Every write for a job (lease, run id, result, failure) is conditional on
   the worker still holding the claim; a worker that lost it gets
-  LostClaim and writes nothing more.
+  LostClaim and writes nothing more. So is every write of its run (a step
+  started, the record saved, the run ended): the run carries a JobClaim
+  checked in each of those transactions, and a worker whose lease ran out
+  without a renewal (the database unreachable) counts its claim as lost.
+  A worker that lost its claim leaves the run and its checkpoints alone:
+  they now belong to the worker that took the job over.
 - A run that ends verified is picked for a clinician's audit at
   MEDSUM_AUDIT_SAMPLE_RATE (default 0.10), in the same transaction as its
   result: see audit_sampled.
@@ -29,12 +34,13 @@ import hashlib
 import logging
 import os
 import threading
+import time
 import uuid
 from dataclasses import dataclass
 
 import psycopg
 
-from observability import resume_run, start_run
+from observability import ClaimLost, resume_run, start_run
 from observability.redact import redact
 from pipeline import checkpoints
 from pipeline import graph as document_graph
@@ -65,7 +71,7 @@ END_STATES = ("verified", "needs_review")
 PARKED = "stopped after {n} attempts: the worker died each time"
 
 
-class LostClaim(RuntimeError):
+class LostClaim(ClaimLost):
     """This worker no longer holds the job's claim."""
 
 
@@ -216,11 +222,20 @@ def _held(cur, job: Job, worker: str, sql: str, params: dict) -> None:
         raise LostClaim(f"job {job.id} is no longer claimed by {worker}")
 
 
-def renew_lease(conn, job: Job, worker: str) -> None:
+def renew_lease(conn, job: Job, worker: str) -> float:
+    """Renew the job's lease; the seconds it now has left."""
     with conn.transaction(), conn.cursor() as cur:
-        _held(cur, job, worker,
-              "UPDATE jobs SET lease_until = now() + %(lease)s::interval,"
-              " updated_at = now()", {"lease": LEASE})  # fmt: skip
+        cur.execute(
+            "UPDATE jobs SET lease_until = now() + %(lease)s::interval,"
+            " updated_at = now()"
+            " WHERE id = %(job)s AND claimed_by = %(worker)s AND status = 'running'"
+            " RETURNING extract(epoch FROM lease_until - now())",
+            {"lease": LEASE, "job": job.id, "worker": worker},
+        )
+        row = cur.fetchone()
+    if row is None:
+        raise LostClaim(f"job {job.id} is no longer claimed by {worker}")
+    return float(row[0])
 
 
 def set_run(conn, job: Job, worker: str, run_id: str) -> None:
@@ -292,17 +307,29 @@ def fail(conn, job: Job, worker: str, message: str) -> None:
 # Running a job
 # -------------------------------------------------------------------
 class Heartbeat:
-    """Renews a job's lease every HEARTBEAT_S seconds until stopped."""
+    """
+    Renews a job's lease every HEARTBEAT_S seconds until stopped. `lost` is
+    set when the claim is gone, or when the lease has run out without a
+    renewal (the database couldn't be reached): another worker may have
+    taken the job over by then, so this one must not go on writing.
+    """
 
     def __init__(self, job: Job, worker: str, *, every: float = HEARTBEAT_S):
         self.job, self.worker, self.every = job, worker, every
         self.lost = threading.Event()
         self._stop = threading.Event()
         self._thread = threading.Thread(target=self._beat, daemon=True)
+        self._deadline = 0.0  # time.monotonic() when the lease runs out
 
     def __enter__(self):
+        # Renewed once first, so the lease's end is known from the start.
+        with connect() as conn:
+            self._renewed(renew_lease(conn, self.job, self.worker))
         self._thread.start()
         return self
+
+    def _renewed(self, seconds_left: float) -> None:
+        self._deadline = time.monotonic() + seconds_left
 
     def __exit__(self, *exc):
         self._stop.set()
@@ -313,7 +340,7 @@ class Heartbeat:
         while not self._stop.wait(self.every):
             try:
                 with connect() as conn:
-                    renew_lease(conn, self.job, self.worker)
+                    self._renewed(renew_lease(conn, self.job, self.worker))
             except LostClaim:
                 self.lost.set()
                 return
@@ -322,6 +349,34 @@ class Heartbeat:
                     "could not renew the job's lease",
                     extra=_obs("job_lease_not_renewed", job_id=self.job.id),
                 )
+                if time.monotonic() >= self._deadline:
+                    self.lost.set()
+                    return
+
+
+class JobClaim:
+    """
+    A job's claim as its run checks it (observability.Run.claim): check(cur)
+    raises LostClaim unless this worker still holds the job, with a lease
+    that hasn't run out, locking the job's row for the rest of the
+    transaction so no other worker can take it over until the write is
+    done. See docs/adr/0006-durable-traceable-runs.md.
+    """
+
+    def __init__(self, job: Job, worker: str, beat: Heartbeat):
+        self.job, self.worker, self.beat = job, worker, beat
+
+    def check(self, cur) -> None:
+        if not self.beat.lost.is_set():
+            cur.execute(
+                "SELECT 1 FROM jobs WHERE id = %(job)s AND claimed_by = %(worker)s"
+                " AND status = 'running' AND lease_until > now() FOR UPDATE",
+                {"job": self.job.id, "worker": self.worker},
+            )
+            if cur.fetchone() is not None:
+                return
+            self.beat.lost.set()
+        raise LostClaim(f"job {self.job.id} is no longer claimed by {self.worker}")
 
 
 def _document_state(conn, document_id: str) -> dict:
@@ -418,17 +473,16 @@ def process(job: Job, worker: str, *, build=None, heartbeat_s: float = HEARTBEAT
                 compiled = (build or document_graph.build)(checkpointer=saver)
                 run_id = None
                 try:
-                    with _open_run(conn, job, worker) as run:
+                    run = _open_run(conn, job, worker)
+                    run.claim = JobClaim(job, worker, beat)
+                    with run:
                         run_id = run.id
                         final = _invoke(compiled, run, state)
-                        if beat.lost.is_set():
-                            raise LostClaim(
-                                f"job {job.id} lost its claim while running"
-                            )
-                        renew_lease(conn, job, worker)  # still ours, before ending
-                        run.finish(final["end_state"])
+                        run.finish(final["end_state"])  # checks the claim
                 finally:
-                    if run_id is not None:
+                    # The checkpoints of a run this worker lost are the new
+                    # owner's, who resumes from them.
+                    if run_id is not None and not beat.lost.is_set():
                         _delete_thread(saver, run_id)
             sampled = complete(conn, job, worker, final, run_id=run_id)
             logger.info(

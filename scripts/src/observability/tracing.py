@@ -75,6 +75,14 @@ class RunError(RuntimeError):
     """The run or step can't be used as asked (not open, already ended, ...)."""
 
 
+class ClaimLost(RuntimeError):
+    """
+    The worker running this run no longer holds its job's claim: another
+    worker has taken the run over, so this one must write nothing more to
+    it (no step, no record, no end). See docs/adr/0006-durable-traceable-runs.md.
+    """
+
+
 def prompt_hash(text: str) -> str:
     """The hash stored with a prompt's name: "sha256:" and the hex digest."""
     return "sha256:" + hashlib.sha256(text.encode("utf-8")).hexdigest()
@@ -213,6 +221,17 @@ class Run:
         # The patient identifiers this run has seen, masked in the findings
         # and error text it stores (observability.redact).
         self.identifiers: set[str] = set()
+        # The job claim this run is worked under, if any: an object whose
+        # check(cur) raises ClaimLost unless the claim is still held, run
+        # inside the transaction of each write (a step started, the run
+        # ended, the record saved), so a worker that lost its job can't
+        # write over the run the new owner resumed. None outside a job.
+        self.claim = None
+
+    def check_claim(self, cur) -> None:
+        """Raise ClaimLost unless this run's job claim, if any, is still held."""
+        if self.claim is not None:
+            self.claim.check(cur)
 
     def add_identifiers(self, *values) -> None:
         """Patient identifiers to mask in what this run stores from now on."""
@@ -235,11 +254,16 @@ class Run:
 
     def __exit__(self, exc_type, exc, tb) -> bool:
         try:
-            if not self.ended:
-                self.finish(
-                    "failed",
-                    error=_error_text(exc) if exc is not None else NO_END_STATE,
-                )
+            # A run whose claim was lost belongs to the worker that took it
+            # over: it is left open for that worker to end.
+            if not self.ended and not isinstance(exc, ClaimLost):
+                try:
+                    self.finish(
+                        "failed",
+                        error=_error_text(exc) if exc is not None else NO_END_STATE,
+                    )
+                except ClaimLost:
+                    pass
         finally:
             context.current_run.reset(self._tokens.pop())
             self.close()
@@ -268,6 +292,7 @@ class Run:
         if self.ended:
             raise RunError(f"pipeline run {self.id} has already ended")
         with self._tx() as cur:
+            self.check_claim(cur)
             cur.execute(
                 "UPDATE pipeline_steps SET status = 'failed', ended_at = now(),"
                 " error = coalesce(error, %(why)s)"
@@ -373,6 +398,7 @@ class Run:
             row = cur.fetchone()
             if row is None or not row[0]:
                 raise RunError(f"pipeline run {self.id} has already ended")
+            self.check_claim(cur)
             cur.execute(
                 "INSERT INTO pipeline_steps"
                 " (run_id, parent_step_id, seq, node, attempt, page, input)"
