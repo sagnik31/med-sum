@@ -153,7 +153,7 @@ RETURNING updated_at`, docID, []byte(rv.Record), recordUpdatedAt, rv.At).Scan(&u
 INSERT INTO record_reviews (document_id, run_id, item_id, field, action, original, corrected,
                             note, signals, findings, audit, reviewer_id, reviewed_at)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-        EXISTS (SELECT 1 FROM audit_samples WHERE document_id = $1 AND completed_at IS NULL),
+        `+openAuditOfTheRecord+`,
         $11, $12)`,
 			docID, rv.RunID, rv.ItemID, rv.Field, rv.Action, rv.Original, rv.Corrected,
 			rv.Note, signals, findings, rv.ReviewerID, rv.At); err != nil {
@@ -167,8 +167,18 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
 	return updated, nil
 }
 
+// openAuditOfTheRecord is the SQL for whether document $1 has an open
+// audit sample of the run its record is from. A sample is of one run (see
+// docs/adr/0011-review-and-correction.md): a reprocess leaves the old
+// run's sample open but dead, and it must not tag reviews of the new
+// record as audit reviews, which would take them out of signal precision
+// and count their corrections as escapes.
+const openAuditOfTheRecord = `EXISTS (SELECT 1 FROM audit_samples a
+    JOIN document_records dr ON dr.document_id = a.document_id AND dr.run_id = a.run_id
+    WHERE a.document_id = $1 AND a.completed_at IS NULL)`
+
 // ErrNoOpenAudit is returned by CompleteAudit when the document has no
-// audit sample left open.
+// audit sample left open for the run its record is from.
 var ErrNoOpenAudit = errors.New("the document is not an open audit sample")
 
 // AuditIncompleteError is CompleteAudit's answer while values of the
@@ -193,29 +203,31 @@ const unreviewedInAudit = `(SELECT count(*) FROM (
         'lax $.*[*] ? (@.id.type() == "string" && @.provenance.type() == "object").id') i
   ) h
   WHERE NOT EXISTS (SELECT 1 FROM record_reviews rr
-    WHERE rr.document_id = a.document_id AND rr.item_id = h.id AND rr.audit
-      AND rr.reviewed_at >= a.sampled_at))`
+    WHERE rr.document_id = a.document_id AND rr.run_id = a.run_id
+      AND rr.item_id = h.id AND rr.audit AND rr.reviewed_at >= a.sampled_at))`
 
 // CompleteAudit finishes the open audit of a live document of the
 // organisation, with ev, in one transaction. Every value must have been
 // confirmed or corrected during the audit first, or it returns an
 // *AuditIncompleteError and writes nothing. Reviews after it are no
 // longer audit reviews, and the document leaves the queue. It returns
-// ErrNoOpenAudit, writing nothing, when there is no open sample.
+// ErrNoOpenAudit, writing nothing, when there is no open sample of the
+// record's run (an older run's sample is dead, as in openAuditOfTheRecord).
 func (s *Store) CompleteAudit(ctx context.Context, orgID, docID, userID string, at time.Time, ev *AuditEvent) error {
 	return pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
 		// The sample is locked, so a review can't land between the count
 		// and the update unseen.
 		var unreviewed int
+		var runID string
 		err := tx.QueryRow(ctx, `
-SELECT COALESCE(`+unreviewedInAudit+`, 0)
+SELECT COALESCE(`+unreviewedInAudit+`, 0), a.run_id::text
 FROM audit_samples a
 JOIN documents d ON d.id = a.document_id
 JOIN patients p ON p.id = d.patient_id
-LEFT JOIN document_records r ON r.document_id = a.document_id
+JOIN document_records r ON r.document_id = a.document_id AND r.run_id = a.run_id
 WHERE a.document_id = $1 AND a.completed_at IS NULL
   AND p.org_id = $2 AND d.deleted_at IS NULL
-FOR UPDATE OF a`, docID, orgID).Scan(&unreviewed)
+FOR UPDATE OF a`, docID, orgID).Scan(&unreviewed, &runID)
 		if errors.Is(err, pgx.ErrNoRows) {
 			return ErrNoOpenAudit
 		}
@@ -227,7 +239,7 @@ FOR UPDATE OF a`, docID, orgID).Scan(&unreviewed)
 		}
 		if _, err := tx.Exec(ctx, `
 UPDATE audit_samples SET completed_at = $3, completed_by = $2
-WHERE document_id = $1 AND completed_at IS NULL`, docID, userID, at); err != nil {
+WHERE document_id = $1 AND run_id = $4 AND completed_at IS NULL`, docID, userID, at, runID); err != nil {
 			return err
 		}
 		return writeAudit(ctx, tx, ev)

@@ -741,12 +741,14 @@ GROUP BY org_id, signal;
 
 -- Each audit sample and whether an error got through: a correction made
 -- during the audit means the verified document held a wrong value that no
--- signal raised. finished is false while the audit is open.
+-- signal raised. finished is false while the audit is open. Only reviews
+-- of the sample's run count: a reprocessed document's later audit is of
+-- another run and has its own sample.
 CREATE VIEW audit_sample_outcomes AS
 SELECT p.org_id, s.document_id, s.run_id, s.sampled_at, s.completed_at,
        s.completed_at IS NOT NULL AS finished,
        EXISTS (SELECT 1 FROM record_reviews r
-               WHERE r.document_id = s.document_id AND r.audit
+               WHERE r.document_id = s.document_id AND r.run_id = s.run_id AND r.audit
                  AND r.action = 'correct' AND r.reviewed_at >= s.sampled_at
                  AND (s.completed_at IS NULL OR r.reviewed_at <= s.completed_at)) AS escaped
 FROM audit_samples s

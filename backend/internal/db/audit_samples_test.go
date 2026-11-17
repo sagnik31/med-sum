@@ -102,20 +102,58 @@ VALUES ($1, $2, $3, 'confirm', true, $4, $5)`, d.ID, run, item, me.ID, sampled.A
 	}
 }
 
-func TestAnAuditSampleOfAnOlderRunIsNotQueued(t *testing.T) {
+// A reprocessed document's old sample stays open but is dead: it isn't
+// queued, reviews of the new record aren't audit reviews, it can't be
+// finished, and a correction of the new record isn't counted as its escape.
+func TestAnAuditSampleOfAnOlderRunIsDead(t *testing.T) {
 	s := store(t)
 	ctx := context.Background()
-	at := time.Date(2026, 11, 10, 9, 0, 0, 0, time.UTC)
-	me, d := reviewFixture(t, s, "verified", at)
+	at := time.Date(2026, 11, 10, 9, 0, 0, 0, time.UTC).Truncate(time.Microsecond)
+	me, d := reviewFixture(t, s, "needs_review", at)
 	old, current := mustRun(t, s, d.ID), mustRun(t, s, d.ID)
 	if _, err := s.pool.Exec(ctx, `UPDATE document_records SET run_id = $2 WHERE document_id = $1`, d.ID, current); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := s.pool.Exec(ctx, `INSERT INTO audit_samples (run_id, document_id) VALUES ($1, $2)`, old, d.ID); err != nil {
+	sampled := at.Add(-time.Hour) // the old run was sampled before the reprocess
+	if _, err := s.pool.Exec(ctx, `INSERT INTO audit_samples (run_id, document_id, sampled_at) VALUES ($1, $2, $3)`,
+		old, d.ID, sampled); err != nil {
 		t.Fatal(err)
 	}
-	if queue, _ := s.ListReviewQueue(ctx, me.OrgID); len(queue) != 0 {
+	if queue, _ := s.ListReviewQueue(ctx, me.OrgID); len(queue) != 1 || queue[0].Reason != "needs_review" {
 		t.Errorf("a reprocessed document's old sample is queued: %+v", queue)
+	}
+
+	// The new run's flagged value is corrected: a caught error, not an escape.
+	field, orig, corr := "value_text", "10.4", "11.4"
+	if _, err := s.ApplyReview(ctx, me.OrgID, d.ID, at, RecordReview{Record: []byte(flaggedRecord),
+		HTML: "<p></p>", Verified: true, RunID: &current, ItemID: "obs-2", Field: &field, Action: "correct",
+		Original: &orig, Corrected: &corr, Signals: []string{"LC-03"}, ReviewerID: me.ID, At: at.Add(time.Minute)},
+		ev(me.OrgID, me.ID, "field_corrected")); err != nil {
+		t.Fatal(err)
+	}
+	var audit bool
+	if err := s.pool.QueryRow(ctx, `SELECT audit FROM record_reviews WHERE document_id = $1`, d.ID).Scan(&audit); err != nil || audit {
+		t.Errorf("a review of the new record has audit = %v (%v)", audit, err)
+	}
+	var reviewed int
+	_ = s.pool.QueryRow(ctx, `SELECT reviewed FROM review_signal_precision WHERE org_id = $1 AND signal = 'LC-03'`,
+		me.OrgID).Scan(&reviewed)
+	if reviewed != 1 {
+		t.Errorf("signal precision counts %d reviews of LC-03, want 1", reviewed)
+	}
+	var escaped bool
+	if err := s.pool.QueryRow(ctx, `SELECT escaped FROM audit_sample_outcomes WHERE run_id = $1`, old).
+		Scan(&escaped); err != nil || escaped {
+		t.Errorf("the old sample: escaped %v (%v)", escaped, err)
+	}
+
+	if err := s.CompleteAudit(ctx, me.OrgID, d.ID, me.ID, at.Add(time.Hour), ev(me.OrgID, me.ID, "audit_completed")); !errors.Is(err, ErrNoOpenAudit) {
+		t.Errorf("finishing the old sample: err = %v", err)
+	}
+	var open bool
+	if err := s.pool.QueryRow(ctx, `SELECT completed_at IS NULL FROM audit_samples WHERE run_id = $1`, old).
+		Scan(&open); err != nil || !open {
+		t.Errorf("the old sample was written to: open %v (%v)", open, err)
 	}
 }
 

@@ -182,8 +182,10 @@ VALUES ($1, 1, '{"schema_version": 1}', $2)`, doc.ID, now); err != nil {
 		HTML: "<p></p>", Verified: true, ItemID: "obs-1", Action: "confirm", ReviewerID: u.ID, At: now.Add(time.Second)},
 		ev(org, u.ID, "field_confirmed"))
 	check("ApplyReview", err)
-	// An audit sample (the AI service adds them; the owner here), finished.
-	if _, err := owner.pool.Exec(ctx, `WITH r AS (INSERT INTO pipeline_runs (document_id, graph_version) VALUES ($1, 'test') RETURNING id)
+	// An audit sample of the record's run (the AI service adds them; the
+	// owner here), finished.
+	if _, err := owner.pool.Exec(ctx, `WITH r AS (INSERT INTO pipeline_runs (document_id, graph_version) VALUES ($1, 'test') RETURNING id),
+rec AS (UPDATE document_records SET run_id = (SELECT id FROM r) WHERE document_id = $1)
 INSERT INTO audit_samples (run_id, document_id) SELECT id, $1 FROM r`, doc.ID); err != nil {
 		t.Fatal(err)
 	}
