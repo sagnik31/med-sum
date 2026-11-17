@@ -11,7 +11,7 @@ Why Med-Sum is built the way it is: the decisions the rest of the design follows
 | [0005](0005-local-models-with-fallback.md) | Local models with a fallback and a circuit breaker; cloud only for synthetic text | Built |
 | [0006](0006-durable-traceable-runs.md) | Durable, traceable runs: LangGraph and a job queue in the application's Postgres | Built |
 | [0007](0007-pages-built-by-code.md) | Document pages and the patient summary are built by code, with one checked model overview | Built |
-| [0008](0008-patient-data-protection.md) | Patient data: protected where it must live, masked where it leaves, deleted with its document | Built, except the Go backend's role |
+| [0008](0008-patient-data-protection.md) | Patient data: protected where it must live, masked where it leaves, deleted with its document | Built |
 | [0009](0009-measured-evals.md) | Evals measure the safety net, on a committed synthetic dataset, with honest uncertainty | Built; live runs not made yet |
 | [0010](0010-staff-access-and-security.md) | Staff access: admin-issued accounts, server-side sessions, permissions in code, scope in SQL | Partly built (see its status) |
 | [0011](0011-clinician-review.md) | Clinician review: confirm or correct beside the reading, never over it | Built |

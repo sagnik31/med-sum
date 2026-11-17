@@ -1,6 +1,6 @@
 # 0008. Patient data: protected where it must live, masked where it leaves, deleted with its document
 
-- **Status:** Accepted, 2026-11-07 to 2026-11-13. Built, except the Go backend's own database role. Where each kind of data lives is mapped on the [data-flow page](../data-and-threats.md).
+- **Status:** Accepted, 2026-11-07 to 2026-11-13. Built; the Go backend's own database role (`medsum_api`) followed on 2026-11-14. Where each kind of data lives is mapped on the [data-flow page](../data-and-threats.md).
 
 ## Context
 
