@@ -89,7 +89,7 @@ def test_clean_documents_end_as_the_manifest_expects(check):
 def test_every_fault_is_injected_somewhere(check):
     assert {r.fault for r in check.results} == {
         "date_swap", "decimal_shift", "digit_swap", "dropped_medicine",
-        "dropped_result", "frequency_change", "invented_medicine",
+        "dropped_result", "duplicated_item", "frequency_change", "invented_medicine",
         "invented_result", "range_bound", "remark_moved", "strength_shift",
         "qualifier_dropped", "transcription_misread", "unit_swap", "values_swapped",
         "wrong_patient",
@@ -100,7 +100,8 @@ def test_every_fault_is_injected_somewhere(check):
     "fault",
     ["digit_swap", "decimal_shift", "unit_swap", "strength_shift", "frequency_change",
      "invented_result", "invented_medicine", "dropped_medicine", "wrong_patient",
-     "date_swap", "remark_moved", "range_bound", "qualifier_dropped", "values_swapped"],
+     "date_swap", "remark_moved", "range_bound", "qualifier_dropped", "values_swapped",
+     "duplicated_item"],
 )  # fmt: skip
 def test_these_faults_are_always_flagged(check, fault):
     rows = [r for r in check.results if r.fault == fault]

@@ -10,12 +10,14 @@ info to the review screen.
 - layout.py: 5 remark placement, 6 medicine coverage, 6b results-table
   rows without a result, 8 unused lines
 - patient.py: 9 printed patient vs the patient uploaded to
+- duplicates.py: 10 an item read twice from the same lines
 """
 
 from datetime import date
 
 from record.document import DocumentRecord
 from record.printed import PARSE_MODELS
+from validators.duplicates import check_duplicates
 from validators.findings import Finding, Severity, Validator
 from validators.layout import (
     check_coverage,
@@ -65,4 +67,5 @@ def validate(
         *check_dates(record, today),
         *check_coverage(record),
         *check_patient_match(record, expected_patient),
+        *check_duplicates(record),
     ]

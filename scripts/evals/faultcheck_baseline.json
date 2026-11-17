@@ -19,6 +19,10 @@
     "injected": 167,
     "flagged": 161
   },
+  "duplicated_item": {
+    "injected": 24,
+    "flagged": 24
+  },
   "frequency_change": {
     "injected": 28,
     "flagged": 28

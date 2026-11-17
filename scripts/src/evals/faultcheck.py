@@ -7,7 +7,8 @@ and finish nodes do, and count how many faults reach review. No model.
 
 A fault is the kind of mistake a model makes when it reads or parses a
 page: a digit swapped, a decimal point moved, a unit or a range bound taken
-for the value, a "<" or "Non-" dropped from it, two rows' values swapped under one citation, a row dropped, a medicine invented, a remark put on the
+for the value, a "<" or "Non-" dropped from it, two rows' values swapped under one citation, a result or medicine parsed
+twice, a row dropped, a medicine invented, a remark put on the
 wrong test, a day and month swapped. Each one is applied to one item of
 one document's parse at a time, so every result names its document and
 item. Two faults are not the parse's: `transcription_misread` changes a
@@ -275,6 +276,9 @@ def _result_faults(case: Case) -> Iterator[Mutant]:
             )
         )
         yield Mutant("invented_result", case.doc_id, f"obs-{len(results) + 1}", mutant)
+        mutant = _copy(case)
+        mutant.parse.results.append(mutant.parse.results[-1].model_copy(deep=True))
+        yield Mutant("duplicated_item", case.doc_id, f"obs-{len(results) + 1}", mutant)
 
     for i, remark in enumerate(case.parse.remarks):
         if remark.scope.value != "test" or remark.test_name is None:
@@ -380,6 +384,11 @@ def _medicine_faults(case: Case) -> Iterator[Mutant]:
         )
         yield Mutant(
             "invented_medicine", case.doc_id, f"med-{len(medicines) + 1}", mutant
+        )
+        mutant = _copy(case)
+        mutant.parse.medicines.append(mutant.parse.medicines[-1].model_copy(deep=True))
+        yield Mutant(
+            "duplicated_item", case.doc_id, f"med-{len(medicines) + 1}", mutant
         )
 
 

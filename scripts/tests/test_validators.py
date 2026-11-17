@@ -25,6 +25,7 @@ from validators.layout import (
     medicine_lines,
     unused_lines,
 )
+from validators.duplicates import check_duplicates
 from validators.patient import check_patient_match, names_match, read_age, read_sex
 from validators.source import check_source_text, check_text_layer
 from validators.text import contains, squashed_in
@@ -1104,3 +1105,53 @@ def test_a_result_citing_its_row_and_a_comment_under_it_is_one_row():
     # Line 22 is now the comment; only line 21 is a data row of the citation.
     cite_rows(record, urea, 21, 22)
     assert not [f for f in check_result_coverage(record) if f.item_id == urea.id]
+
+
+# -------------------------------------------------------------------
+# 10: no item read twice
+# -------------------------------------------------------------------
+def copy_of(record: DocumentRecord, field: str, index: int = -1, new_id: str = "x-99"):
+    items = getattr(record, field)
+    twin = items[index].model_copy(deep=True)
+    twin.id = new_id
+    items.append(twin)
+    return items[index if index >= 0 else -2], twin
+
+
+@pytest.mark.parametrize(
+    "doc_id, field",
+    [("d06", "observations"), ("d02", "medications"), ("d02", "vitals"),
+     ("d02", "conditions")],
+)  # fmt: skip
+def test_an_item_parsed_twice_is_an_error_on_the_copy(doc_id, field):
+    record = keyed_record(doc_id)
+    first, twin = copy_of(record, field)
+
+    assert validate(record, expected_patient=expected_patient(doc_id), today=TODAY)
+    [finding] = check_duplicates(record)
+    assert (finding.validator, finding.severity) == (
+        Validator.DUPLICATES,
+        Severity.ERROR,
+    )
+    assert (finding.item_id, finding.details) == (twin.id, {"same_as": first.id})
+
+
+def test_different_items_on_one_line_are_not_duplicates():
+    # d02's vitals share a line, and so do two of its diagnoses.
+    assert check_duplicates(keyed_record("d02")) == []
+
+
+def test_the_same_item_on_other_lines_is_not_a_duplicate():
+    # A test repeated on another page is printed twice, not parsed twice.
+    record = keyed_record("d06")
+    first, twin = copy_of(record, "observations")
+    c = twin.printed.citation
+    twin.printed.citation = c.model_copy(
+        update={"first_line": c.first_line + 1, "last_line": c.last_line + 1}
+    )
+    assert check_duplicates(record) == []
+
+
+def test_every_clean_dataset_document_has_no_duplicate():
+    for doc_id in DOC_IDS:
+        assert check_duplicates(keyed_record(doc_id)) == [], doc_id

@@ -1252,6 +1252,18 @@
    "subset": null
   },
   {
+   "id": "d01-duplicated_item-1",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "duplicated_item",
+   "target": "obs-27",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:1da4f9f73e7d107b",
+   "subset": null
+  },
+  {
    "id": "d01-remark_moved-1",
    "doc_id": "d01",
    "split": "test",
@@ -1369,6 +1381,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:d7e88513334ee1a6",
+   "subset": null
+  },
+  {
+   "id": "d02-duplicated_item-1",
+   "doc_id": "d02",
+   "split": "dev",
+   "fault": "duplicated_item",
+   "target": "med-4",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:f1061c7b038dad48",
    "subset": null
   },
   {
@@ -1673,6 +1697,18 @@
    "subset": null
   },
   {
+   "id": "d03-duplicated_item-1",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "duplicated_item",
+   "target": "obs-7",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:c0cbf773ed2a0622",
+   "subset": null
+  },
+  {
    "id": "d03-remark_moved-1",
    "doc_id": "d03",
    "split": "test",
@@ -1850,6 +1886,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:fd424d4a76d0ef9d",
+   "subset": null
+  },
+  {
+   "id": "d04-duplicated_item-1",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "duplicated_item",
+   "target": "med-6",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:1565ed9e4fb6fcce",
    "subset": null
   },
   {
@@ -2294,6 +2342,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:f5a4e7aafe1c0d30",
+   "subset": null
+  },
+  {
+   "id": "d05-duplicated_item-1",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "duplicated_item",
+   "target": "obs-10",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:ea42f820396a9456",
    "subset": null
   },
   {
@@ -2810,6 +2870,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:ee3e1951d80b2865",
+   "subset": null
+  },
+  {
+   "id": "d06-duplicated_item-1",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "duplicated_item",
+   "target": "obs-10",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:576284203e42f693",
    "subset": "core"
   },
   {
@@ -2954,6 +3026,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:5345c57f8651f1ac",
+   "subset": null
+  },
+  {
+   "id": "d07-duplicated_item-1",
+   "doc_id": "d07",
+   "split": "test",
+   "fault": "duplicated_item",
+   "target": "med-4",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:4ec2c0d29583f4ce",
    "subset": null
   },
   {
@@ -3410,6 +3494,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:4a80d2d3d6df679f",
+   "subset": "core"
+  },
+  {
+   "id": "d08-duplicated_item-1",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "duplicated_item",
+   "target": "obs-10",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:9de7dbc96abfac5f",
    "subset": null
   },
   {
@@ -3701,6 +3797,18 @@
    "subset": null
   },
   {
+   "id": "d09-duplicated_item-1",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "duplicated_item",
+   "target": "obs-7",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:10cf18afadd8f4d4",
+   "subset": null
+  },
+  {
    "id": "d09-date_swap-1",
    "doc_id": "d09",
    "split": "dev",
@@ -3770,6 +3878,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:91a0280c0eb3923a",
+   "subset": null
+  },
+  {
+   "id": "d10-duplicated_item-1",
+   "doc_id": "d10",
+   "split": "test",
+   "fault": "duplicated_item",
+   "target": "med-2",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:a2964974ca2514ae",
    "subset": null
   },
   {
@@ -3869,6 +3989,18 @@
    "subset": null
   },
   {
+   "id": "d11-duplicated_item-1",
+   "doc_id": "d11",
+   "split": "test",
+   "fault": "duplicated_item",
+   "target": "obs-3",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:a86d0179ba76b29f",
+   "subset": null
+  },
+  {
    "id": "d11-date_swap-1",
    "doc_id": "d11",
    "split": "test",
@@ -3963,6 +4095,18 @@
    ],
    "fingerprint": "sha256:93e2a67e6850f902",
    "subset": "core"
+  },
+  {
+   "id": "d12-duplicated_item-1",
+   "doc_id": "d12",
+   "split": "test",
+   "fault": "duplicated_item",
+   "target": "med-3",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:b0e32f3f18614b83",
+   "subset": null
   },
   {
    "id": "d13-digit_swap-1",
@@ -4385,6 +4529,18 @@
    "subset": null
   },
   {
+   "id": "d13-duplicated_item-1",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "duplicated_item",
+   "target": "obs-10",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:69a5760e1006cd0b",
+   "subset": null
+  },
+  {
    "id": "d13-date_swap-1",
    "doc_id": "d13",
    "split": "test",
@@ -4529,6 +4685,18 @@
    "subset": null
   },
   {
+   "id": "d14-duplicated_item-1",
+   "doc_id": "d14",
+   "split": "test",
+   "fault": "duplicated_item",
+   "target": "med-4",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:cf095c6d9b9968a9",
+   "subset": null
+  },
+  {
    "id": "d14-date_swap-1",
    "doc_id": "d14",
    "split": "test",
@@ -4622,6 +4790,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:0ab7da40110b796b",
+   "subset": null
+  },
+  {
+   "id": "d15-duplicated_item-1",
+   "doc_id": "d15",
+   "split": "test",
+   "fault": "duplicated_item",
+   "target": "med-3",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:59436352b6ab3132",
    "subset": null
   },
   {
@@ -4790,6 +4970,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:7375cef298c3800b",
+   "subset": null
+  },
+  {
+   "id": "d16-duplicated_item-1",
+   "doc_id": "d16",
+   "split": "test",
+   "fault": "duplicated_item",
+   "target": "obs-4",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:b85dbf9a39f967e2",
    "subset": null
   },
   {
@@ -5030,6 +5222,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:7406862ff57ec274",
+   "subset": "extended"
+  },
+  {
+   "id": "d18-duplicated_item-1",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "duplicated_item",
+   "target": "obs-7",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:331731c657f98544",
    "subset": null
   },
   {
@@ -5187,6 +5391,18 @@
    ],
    "fingerprint": "sha256:5b17a75e8345b991",
    "subset": "extended"
+  },
+  {
+   "id": "d19-duplicated_item-1",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "duplicated_item",
+   "target": "med-5",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:3e5d3af35949643b",
+   "subset": null
   },
   {
    "id": "d19-date_swap-1",
@@ -5585,6 +5801,18 @@
    "subset": null
   },
   {
+   "id": "d20-duplicated_item-1",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "duplicated_item",
+   "target": "obs-8",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:23169302d6314b63",
+   "subset": null
+  },
+  {
    "id": "d20-date_swap-1",
    "doc_id": "d20",
    "split": "held_out",
@@ -5702,6 +5930,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:2c2aeef311aa3d52",
+   "subset": null
+  },
+  {
+   "id": "d21-duplicated_item-1",
+   "doc_id": "d21",
+   "split": "held_out",
+   "fault": "duplicated_item",
+   "target": "med-4",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:2e62da06b4639906",
    "subset": null
   },
   {
@@ -6015,6 +6255,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:a785aedcead93f87",
+   "subset": null
+  },
+  {
+   "id": "d22-duplicated_item-1",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "duplicated_item",
+   "target": "obs-7",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:ba4b4842ea8dab2a",
    "subset": null
   },
   {
@@ -6483,6 +6735,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:1f33b1fc13be492b",
+   "subset": null
+  },
+  {
+   "id": "d23-duplicated_item-1",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "duplicated_item",
+   "target": "obs-10",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:1bdcaafbccace828",
    "subset": "extended"
   },
   {
@@ -6639,6 +6903,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:f4b5f9ecc0744654",
+   "subset": null
+  },
+  {
+   "id": "d24-duplicated_item-1",
+   "doc_id": "d24",
+   "split": "held_out",
+   "fault": "duplicated_item",
+   "target": "med-5",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:851f61cb48acde91",
    "subset": null
   },
   {
@@ -9771,6 +10047,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:d6f234f9de1a237f",
+   "subset": null
+  },
+  {
+   "id": "d25-duplicated_item-1",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "duplicated_item",
+   "target": "obs-61",
+   "errors": [
+    "duplicates"
+   ],
+   "fingerprint": "sha256:6786fd510a774d47",
    "subset": null
   }
  ]

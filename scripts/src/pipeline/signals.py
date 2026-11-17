@@ -79,6 +79,7 @@ SIGNALS = _signals(
     ("LC-16", R, "The value may have been read from its own reference range."),
     ("LC-17", R, "A row of a results table has no result in the record."),
     ("LC-18", R, "A model's input may have been cut short; content may be missing."),
+    ("LC-19", R, "This item is in the record twice, read from the same lines."),
     ("LC-I1", INFO, "No PDF text layer, so the reading has no independent check."),
     ("LC-I2", INFO, "Transcription lines that no extracted item uses."),
     ("LC-I3", INFO, "A range, flag or unit that code could not read."),
@@ -105,6 +106,7 @@ _BY_FINDING = {
     (Validator.DATES, Severity.FLAG): "LC-11",
     (Validator.COVERAGE, Severity.INFO): "LC-I2",
     (Validator.PATIENT_MATCH, Severity.FLAG): "LC-13",
+    (Validator.DUPLICATES, Severity.ERROR): "LC-19",
 }
 
 # Hits on the document as a whole, whatever item the finding names.

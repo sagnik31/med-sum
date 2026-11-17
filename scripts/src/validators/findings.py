@@ -23,6 +23,7 @@ class Validator(str, Enum):
     DATES = "dates"  # 7: dates are real and in order
     COVERAGE = "coverage"  # 8: transcription lines no item uses
     PATIENT_MATCH = "patient_match"  # 9: printed patient vs uploaded-to patient
+    DUPLICATES = "duplicates"  # 10: no item read twice
 
 
 class Severity(str, Enum):

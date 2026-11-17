@@ -394,6 +394,43 @@ def test_a_lab_row_dropped_by_both_models_sends_the_document_to_review(
     assert any(r.startswith("LC-17") for r in reasons)
 
 
+def doubled_row(doc_id: str) -> str:
+    """A parse that gives its last result twice."""
+    reply = json.loads(good_parse(doc_id))
+    reply["results"].append(reply["results"][-1])
+    return json.dumps(reply)
+
+
+def test_a_result_parsed_twice_is_repaired(db, document, model_client):
+    state = document("d09")
+    model_client.replies[PRIMARY] = [
+        *pages_of("d09"), classified("d09"), doubled_row("d09"), good_parse("d09"),
+    ]  # fmt: skip
+
+    final = run(state)
+
+    assert final["end_state"] == "verified"
+    assert final["repairs"] == 1
+    assert len(final["record"].observations) == len(key("d09").observations)
+
+
+def test_a_result_both_models_parse_twice_sends_the_document_to_review(
+    db, document, model_client
+):
+    state = document("d09")
+    model_client.replies[PRIMARY] = [
+        *pages_of("d09"), classified("d09"),
+        *[doubled_row("d09")] * MAX_PARSE_ATTEMPTS,
+    ]  # fmt: skip
+    model_client.replies[FALLBACK] = [doubled_row("d09")] * MAX_PARSE_ATTEMPTS
+
+    final = run(state)
+
+    assert final["end_state"] == "needs_review"
+    copy = saved(db, state["document_id"]).observations[-1]
+    assert any(r.startswith("LC-19") for r in copy.provenance.low_confidence_reasons)
+
+
 def test_replies_that_never_fit_the_schema_leave_the_pages_for_review(
     db, document, model_client
 ):

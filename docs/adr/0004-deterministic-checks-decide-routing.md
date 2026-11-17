@@ -1,6 +1,6 @@
 # 0004. Deterministic checks decide what a clinician must review
 
-- **Status:** Accepted, 2026-11-07 (validators) and 2026-11-09 (signals); checks added 2026-11-13. Built.
+- **Status:** Accepted, 2026-11-07 (validators) and 2026-11-09 (signals); checks added 2026-11-13; validator 10 and LC-19 added 2026-11-17. Built.
 
 ## Context
 
@@ -17,12 +17,13 @@ The pipeline's safety rests on catching what the model gets wrong. A model judgi
 5. **Remark placement** by position.
 6. **Medicines:** every medicine line in the record and every record medicine on a line; **6b:** every data row of a lab results table cited by a result.
 7. **Dates** real and consistent. 8. **Coverage:** lines no item uses, shown only. 9. **Patient match:** the printed patient against the one the document was uploaded to.
+10. **Duplicates:** no item read twice: two items of a kind that say exactly the same thing on overlapping cited lines are one printed item parsed twice. Different items may share a line (several vitals on one line), so only an exact copy counts.
 
-**Severity decides the route.** An **error** means the parse may be wrong, so it goes to repair (1, 5, 6, 6b). A **flag** means the document itself is in doubt, which re-parsing can't change, so it goes to a clinician (2, 3, 3b, 4, 7, 9). An **info** finding is shown in review only.
+**Severity decides the route.** An **error** means the parse may be wrong, so it goes to repair (1, 5, 6, 6b, 10). A **flag** means the document itself is in doubt, which re-parsing can't change, so it goes to a clinician (2, 3, 3b, 4, 7, 9). An **info** finding is shown in review only.
 
 **Low confidence is a fixed list of signals** (`SIGNALS` in `scripts/src/pipeline/signals.py`), each with an id, a level (field or document) and the reason shown to the reviewer. Reasons are stored as `"LC-nn: <reason>"` or `"LC-nn [field]: <reason>"`, so they are machine-readable and the wording comes from one table.
 
-- **Routing signals are deterministic** (LC-01 to LC-18): an unreadable line, a page not fully read, a text-layer disagreement, a value or medicine not in the source after repair and the fallback, a dropped medicine or results row, a misplaced remark, a parse that never fit, inconsistent units, a flag mismatch, an impossible date, an undated document, a wrong patient, type `other`, a classifier disagreement, a value taken from its own range, a prompt possibly cut to fit the context. Any one ends the document in `needs_review`.
+- **Routing signals are deterministic** (LC-01 to LC-19): an unreadable line, a page not fully read, a text-layer disagreement, a value or medicine not in the source after repair and the fallback, a dropped medicine or results row, a misplaced remark, a parse that never fit, inconsistent units, a flag mismatch, an impossible date, an undated document, a wrong patient, type `other`, a classifier disagreement, a value taken from its own range, a prompt possibly cut to fit the context, an item in the record twice. Any one ends the document in `needs_review`.
 - An error becomes a signal only if it survives repair and the fallback; a flag is a signal at once; info never routes.
 - **Operational signals** (fallback used, repairs needed, a model switched off or on) describe the run, are stored and shown, and never route.
 - **Model-judged signals** (an LLM-as-a-judge score, the two models disagreeing) have a slot but are recorded only. Promoting one to routing is a new decision that cites eval results calibrating it.
