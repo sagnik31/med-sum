@@ -31,6 +31,10 @@
     "injected": 14,
     "flagged": 14
   },
+  "qualifier_dropped": {
+    "injected": 1,
+    "flagged": 1
+  },
   "range_bound": {
     "injected": 153,
     "flagged": 153

@@ -7,7 +7,7 @@ and finish nodes do, and count how many faults reach review. No model.
 
 A fault is the kind of mistake a model makes when it reads or parses a
 page: a digit swapped, a decimal point moved, a unit or a range bound taken
-for the value, a row dropped, a medicine invented, a remark put on the
+for the value, a "<" or "Non-" dropped from it, a row dropped, a medicine invented, a remark put on the
 wrong test, a day and month swapped. Each one is applied to one item of
 one document's parse at a time, so every result names its document and
 item. Two faults are not the parse's: `transcription_misread` changes a
@@ -196,6 +196,17 @@ def misread_digit(value: str) -> str | None:
     return None
 
 
+_QUALIFIER = re.compile(r"(?:[<>≤≥+\-−]|(?:non|not|no)\b-?)\s*", re.IGNORECASE)
+
+
+def drop_qualifier(value: str) -> str | None:
+    """The value without the comparator, sign or negation it starts with:
+    "< 0.5" -> "0.5", "Non-Reactive" -> "Reactive"."""
+    m = _QUALIFIER.match(value.strip())
+    rest = value.strip()[m.end() :] if m else ""
+    return rest or None
+
+
 def _copy(case: Case, **changes) -> Case:
     parse = changes.pop("parse", None) or case.parse.model_copy(deep=True)
     return Case(
@@ -236,6 +247,8 @@ def _result_faults(case: Case) -> Iterator[Mutant]:
             bound = next((b for b in bounds if b != r.value_text), None)
             if bound is not None:
                 yield changed("range_bound", value_text=bound)
+        if (v := drop_qualifier(r.value_text)) is not None:
+            yield changed("qualifier_dropped", value_text=v)
         if misread := _misread(case, i):
             yield misread
 

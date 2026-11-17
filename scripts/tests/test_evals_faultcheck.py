@@ -91,7 +91,7 @@ def test_every_fault_is_injected_somewhere(check):
         "date_swap", "decimal_shift", "digit_swap", "dropped_medicine",
         "dropped_result", "frequency_change", "invented_medicine",
         "invented_result", "range_bound", "remark_moved", "strength_shift",
-        "transcription_misread", "unit_swap", "wrong_patient",
+        "qualifier_dropped", "transcription_misread", "unit_swap", "wrong_patient",
     }  # fmt: skip
 
 
@@ -99,7 +99,7 @@ def test_every_fault_is_injected_somewhere(check):
     "fault",
     ["digit_swap", "decimal_shift", "unit_swap", "strength_shift", "frequency_change",
      "invented_result", "invented_medicine", "dropped_medicine", "wrong_patient",
-     "date_swap", "remark_moved", "range_bound"],
+     "date_swap", "remark_moved", "range_bound", "qualifier_dropped"],
 )  # fmt: skip
 def test_these_faults_are_always_flagged(check, fault):
     rows = [r for r in check.results if r.fault == fault]
@@ -198,3 +198,13 @@ def test_main_writes_the_report_and_passes_against_the_baseline(tmp_path):
     assert fc.main(["--out", str(tmp_path)]) == 0
     assert (tmp_path / "report.json").exists()
     assert (tmp_path / "report.md").exists()
+
+
+@pytest.mark.parametrize(
+    "value, dropped",
+    [("< 0.5", "0.5"), (">100", "100"), ("Non-Reactive", "Reactive"),
+     ("Not Detected", "Detected"), ("-5", "5"), ("5.0", None), ("Nothing", None),
+     ("<", None)],
+)  # fmt: skip
+def test_a_qualifier_is_dropped_from_the_start_of_a_value(value, dropped):
+    assert fc.drop_qualifier(value) == dropped

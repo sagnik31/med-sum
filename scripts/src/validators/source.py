@@ -17,7 +17,7 @@ See docs/adr/0004-deterministic-checks-decide-routing.md.
 from record.document import DocumentRecord
 from validators.fields import CitedField, Place, cited_fields, item_citations
 from validators.findings import Finding, Severity, Validator
-from validators.text import cited_lines, contains, lines_before, squash
+from validators.text import cited_lines, contains, lines_before, squash, squashed_in
 
 
 def check_source_text(record: DocumentRecord) -> list[Finding]:
@@ -109,7 +109,7 @@ def check_text_layer(record: DocumentRecord) -> list[Finding]:
             continue
         needle = squash(f.text)
         if f.place is not Place.ON_LINES:
-            found, where = needle in "".join(layers[: index + 1]), "page"
+            found, where = squashed_in("".join(layers[: index + 1]), needle), "page"
         elif (windows := _row_windows(record, f, anchors.get(f.item_id),
                                       layers[index])) is not None:  # fmt: skip
             if f.field == "value_text":
@@ -117,9 +117,9 @@ def check_text_layer(record: DocumentRecord) -> list[Finding]:
                 # "Nil") stays: taking it out would take the value too.
                 own = [r for r in ranges.get(f.item_id, []) if r != needle]
                 windows = [_without(w, own) for w in windows]
-            found, where = any(needle in w for w in windows), "row"
+            found, where = any(squashed_in(w, needle) for w in windows), "row"
         else:
-            found, where = needle in layers[index], "page"
+            found, where = squashed_in(layers[index], needle), "page"
         if not found:
             findings.append(Finding(
                 validator=Validator.TEXT_LAYER, severity=Severity.FLAG,

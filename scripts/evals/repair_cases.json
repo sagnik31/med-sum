@@ -556,6 +556,18 @@
    "subset": null
   },
   {
+   "id": "d01-range_bound-1",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "range_bound",
+   "target": "obs-13",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:3e01bc35285c0ce2",
+   "subset": null
+  },
+  {
    "id": "d01-dropped_result-13",
    "doc_id": "d01",
    "split": "test",
@@ -589,6 +601,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:4d548680042f2337",
+   "subset": null
+  },
+  {
+   "id": "d01-range_bound-2",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "range_bound",
+   "target": "obs-14",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:60da128066537f9c",
    "subset": null
   },
   {
@@ -673,6 +697,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:ff332aa29675029f",
+   "subset": null
+  },
+  {
+   "id": "d01-range_bound-3",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "range_bound",
+   "target": "obs-16",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:28e21a4c2592cc58",
    "subset": null
   },
   {
@@ -2117,6 +2153,18 @@
    "subset": null
   },
   {
+   "id": "d06-range_bound-1",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "range_bound",
+   "target": "obs-4",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:2ccdc72cfcdc28b6",
+   "subset": null
+  },
+  {
    "id": "d06-dropped_result-4",
    "doc_id": "d06",
    "split": "test",
@@ -2534,7 +2582,7 @@
     "source_text"
    ],
    "fingerprint": "sha256:f36fb9a3679430b4",
-   "subset": "core"
+   "subset": null
   },
   {
    "id": "d08-dropped_result-1",
@@ -2847,6 +2895,18 @@
    ],
    "fingerprint": "sha256:c6c8725ed9560f99",
    "subset": null
+  },
+  {
+   "id": "d08-qualifier_dropped-1",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "qualifier_dropped",
+   "target": "obs-9",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:2b070269282791b7",
+   "subset": "core"
   },
   {
    "id": "d08-dropped_result-9",
@@ -3206,7 +3266,7 @@
     "source_text"
    ],
    "fingerprint": "sha256:7936f8d4a3cf5ff8",
-   "subset": null
+   "subset": "core"
   },
   {
    "id": "d11-dropped_result-1",
@@ -3461,6 +3521,18 @@
    "subset": null
   },
   {
+   "id": "d13-range_bound-1",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "range_bound",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:33d7f0ca7d01f0be",
+   "subset": "core"
+  },
+  {
    "id": "d13-dropped_result-2",
    "doc_id": "d13",
    "split": "test",
@@ -3506,6 +3578,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:203a3baea3a377bb",
+   "subset": null
+  },
+  {
+   "id": "d13-range_bound-2",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "range_bound",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:233896e7e15a2dfa",
    "subset": null
   },
   {
@@ -3674,6 +3758,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:6c6be9b1ca3c7a5b",
+   "subset": null
+  },
+  {
+   "id": "d13-range_bound-3",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "range_bound",
+   "target": "obs-9",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:f41c6ae31eb3decf",
    "subset": null
   },
   {
@@ -4157,6 +4253,18 @@
    "subset": null
   },
   {
+   "id": "d18-range_bound-1",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "range_bound",
+   "target": "obs-2",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:d2fd22d51fd2b042",
+   "subset": "extended"
+  },
+  {
    "id": "d18-digit_swap-3",
    "doc_id": "d18",
    "split": "held_out",
@@ -4190,6 +4298,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:aba14330c046fb56",
+   "subset": null
+  },
+  {
+   "id": "d18-range_bound-2",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "range_bound",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:4022d3cd030dc0c0",
    "subset": null
   },
   {
@@ -4586,6 +4706,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:4bafb40b12adf39d",
+   "subset": null
+  },
+  {
+   "id": "d20-range_bound-1",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "range_bound",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:23dda1f2c970fe6a",
    "subset": null
   },
   {
@@ -5006,6 +5138,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:49e504ac32ad55a1",
+   "subset": null
+  },
+  {
+   "id": "d22-range_bound-1",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "range_bound",
+   "target": "obs-3",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:26908f2b99978425",
    "subset": null
   },
   {
@@ -6534,6 +6678,18 @@
    "subset": null
   },
   {
+   "id": "d25-range_bound-1",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "range_bound",
+   "target": "obs-19",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:5810cbe6ca575373",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-19",
    "doc_id": "d25",
    "split": "test",
@@ -6579,6 +6735,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:28f47247910e3d5b",
+   "subset": null
+  },
+  {
+   "id": "d25-range_bound-2",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "range_bound",
+   "target": "obs-20",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:07a2edc9b1871e7b",
    "subset": null
   },
   {
@@ -6675,6 +6843,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:58ab8996a8cd330c",
+   "subset": null
+  },
+  {
+   "id": "d25-range_bound-3",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "range_bound",
+   "target": "obs-22",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:6eea7cce902f5be1",
    "subset": null
   },
   {
@@ -6894,6 +7074,18 @@
    "subset": null
   },
   {
+   "id": "d25-range_bound-4",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "range_bound",
+   "target": "obs-27",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:c09310aeeb7aac96",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-27",
    "doc_id": "d25",
    "split": "test",
@@ -6963,6 +7155,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:d5cc1675b36a9d9f",
+   "subset": null
+  },
+  {
+   "id": "d25-range_bound-5",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "range_bound",
+   "target": "obs-29",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:3ef743b7f33b7fdf",
    "subset": null
   },
   {
@@ -7050,6 +7254,18 @@
    "subset": null
   },
   {
+   "id": "d25-range_bound-6",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "range_bound",
+   "target": "obs-31",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:abb22ce12c313a8d",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-31",
    "doc_id": "d25",
    "split": "test",
@@ -7095,6 +7311,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:a8fc2acb8c560e0e",
+   "subset": null
+  },
+  {
+   "id": "d25-range_bound-7",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "range_bound",
+   "target": "obs-32",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:1692264d6f0bd422",
    "subset": null
   },
   {
@@ -7179,6 +7407,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:29fcb6a522dc1b43",
+   "subset": null
+  },
+  {
+   "id": "d25-range_bound-8",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "range_bound",
+   "target": "obs-34",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:2186e39a93a5166b",
    "subset": null
   },
   {
@@ -7983,6 +8223,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:3879bd678990a502",
+   "subset": null
+  },
+  {
+   "id": "d25-range_bound-9",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "range_bound",
+   "target": "obs-54",
+   "errors": [
+    "source_text"
+   ],
+   "fingerprint": "sha256:5d02edd33cbb47bd",
    "subset": null
   },
   {

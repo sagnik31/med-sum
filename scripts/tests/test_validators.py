@@ -27,7 +27,7 @@ from validators.layout import (
 )
 from validators.patient import check_patient_match, names_match, read_age, read_sex
 from validators.source import check_source_text, check_text_layer
-from validators.text import contains
+from validators.text import contains, squashed_in
 from validators.values import (
     check_dates,
     check_flag_agreement,
@@ -138,6 +138,23 @@ def test_findings_can_be_stored_as_json():
         ("Vitals: BP 142/88 mmHg, Pulse 82 /min", "82", True),
         ("Vitals: BP 142/88 mmHg", "42/88", False),
         ("haemoglobin", "Haemoglobin", False),  # verbatim: case counts
+        # A value the printed text qualifies is another value.
+        ("| CRP | < 0.5 | mg/L |", "0.5", False),
+        ("| CRP | <0.5 | mg/L |", "0.5", False),
+        ("| Troponin | >100 |", "100", False),
+        ("| BE | -5 | mmol/L |", "5", False),
+        ("| HBsAg | Non-Reactive |", "Reactive", False),
+        ("| HBsAg | Non Reactive |", "Reactive", False),
+        ("| HIV | Not Detected |", "Detected", False),
+        ("| Culture | No growth |", "growth", False),
+        ("| HBsAg | Non-Reactive |", "Non-Reactive", True),
+        ("| HIV | Not Detected |", "Not Detected", True),
+        # Found unqualified elsewhere on the line, or not qualified at all.
+        ("| CRP | 5 | mg/L | < 5.0 |", "5", True),
+        ("| Eosinophils | 6 | % | 1-6 |", "6", True),  # a range's dash
+        ("| Eosinophils | 6 | % | 1 - 6 |", "6", True),
+        ("Reg No 12345", "12345", True),  # "No" before a number
+        ("| Monocytes | Detected |", "Detected", True),
     ],
 )  # fmt: skip
 def test_contains_matches_whole_tokens(haystack, needle, found):
@@ -298,6 +315,47 @@ def test_a_misread_shared_by_transcription_and_parse_is_caught_by_the_text_layer
     assert problems(findings) == {("text_layer", "obs-1", "value_text")}
     assert findings[0].severity is Severity.FLAG
     assert "10.5" in findings[0].details["transcription"]
+
+
+def test_a_qualifier_the_transcription_dropped_is_caught_by_the_text_layer():
+    # The PDF prints "< 10.4"; the vision step read only "10.4", and the
+    # parse copied it. The number is in the row, but not as printed.
+    record = keyed_record("d01")
+    hb = obs(record, "Haemoglobin")
+    layer = record.pages[0].text_layer
+    assert layer.count("10.4") == 1
+    record.pages[0].text_layer = layer.replace("10.4", "< 10.4")
+
+    assert check_source_text(record) == []
+    findings = check_text_layer(record)
+    assert problems(findings) == {("text_layer", hb.id, "value_text")}
+
+
+def test_a_value_that_lost_its_comparator_in_the_parse_is_an_error():
+    # The page says "< 0.5"; the parse gave "0.5", which is a value.
+    record = keyed_record("d08")
+    crp = obs(record, "CRP")
+    crp.printed.value_text = "0.5"
+
+    assert problems(check_source_text(record)) == {
+        ("source_text", crp.id, "value_text")
+    }
+
+
+@pytest.mark.parametrize(
+    "layer, needle, found",
+    [
+        ("HBsAgNon-Reactive", "Reactive", False),
+        ("HBsAgNonReactive", "Reactive", False),
+        ("HIVNotDetected", "Detected", False),
+        ("CRP<0.5mg/L", "0.5", False),
+        ("HBsAgReactive", "Reactive", True),
+        ("Eosinophils6%1-6", "6", True),
+        ("HBsAgNon-Reactive", "Non-Reactive", True),
+    ],
+)
+def test_the_text_layer_refuses_a_qualified_value_too(layer, needle, found):
+    assert squashed_in(layer, needle) is found
 
 
 def test_no_text_layer_check_without_a_text_layer():
