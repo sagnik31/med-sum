@@ -261,6 +261,29 @@ def test_a_page_capped_then_read_again_in_halves_ends_verified(
     assert not [h for h in final["signals"] if h.signal == "LC-02"]
 
 
+def test_a_page_read_as_empty_sends_the_document_to_review(db, document, model_client):
+    # d01's third page holds ten results, but the model's reply for it is
+    # empty. Nothing on the other pages is wrong, so without LC-02 the
+    # document would end verified with a third of its results missing.
+    record = key("d01")
+    record.pages[2].lines = []
+    for field in ("observations", "remarks", "conditions", "vitals", "allergies"):
+        kept = [i for i in getattr(record, field) if i.printed.citation.page != 3]
+        setattr(record, field, kept)
+    plan = parts.plan(record.pages, record.document.type)
+    replies = [p.model_dump_json() for p in split_parse(parse_of(record), plan)]
+    state = document("d01")
+    model_client.replies[PRIMARY] = [
+        *pages_of("d01")[:2], "", classified("d01"), *replies,
+    ]  # fmt: skip
+
+    final = run(state)
+
+    assert final["end_state"] == "needs_review"
+    lc02 = [h for h in final["signals"] if h.signal == "LC-02"]
+    assert [h.details for h in lc02] == [{"page": 3, "reason": "no lines read"}]
+
+
 def test_a_cut_prompt_sends_the_document_to_review(
     db, document, model_client, monkeypatch
 ):

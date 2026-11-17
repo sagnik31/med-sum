@@ -1093,3 +1093,19 @@ def test_page_images_in_the_state_are_descriptions_only():
         "height",
     }
     assert PageTranscription.model_fields.keys() >= {"text_layer"}
+
+
+# -------------------------------------------------------------------
+# Pages read as empty (LC-02)
+# -------------------------------------------------------------------
+def test_a_page_with_no_printed_line_counts_as_not_read():
+    state = {
+        "transcriptions": [
+            PageTranscription(page=1, lines=["Sodium 140 mmol/L"]),
+            PageTranscription(page=2, lines=[]),  # an empty reply
+            PageTranscription(page=3, lines=["", "   "]),  # blank lines only
+            PageTranscription(page=4, lines=[]),  # capped: LC-02 already
+        ],
+        "capped_pages": [4],
+    }
+    assert nodes.empty_pages(state) == [2, 3]

@@ -172,6 +172,7 @@ def collect(
     parsed: bool,
     findings: list[Finding],
     capped_pages: list[int] = (),
+    empty_pages: list[int] = (),
     truncated_pages: list[int] = (),
     parse_truncated: bool = False,
     classify_disagree: bool = False,
@@ -185,6 +186,8 @@ def collect(
     type other, and for a parsed type whose every parse attempt failed).
     `breaker_switches` are the run's circuit breaker switches, one OP-3 hit
     each ({event, model, model_role}, as observability's Run notes them).
+    `empty_pages` are pages whose transcription has no printed line
+    (LC-02 too: an empty reply is never taken as a page read in full).
     `truncated_pages` and `parse_truncated` say which calls' prompts may
     have been cut to fit the context window (LC-18: a page's transcription
     request, or a part of the parse the record was built from).
@@ -193,6 +196,10 @@ def collect(
     if record is not None:
         hits += unreadable(record)
     hits += [SignalHit(signal="LC-02", details={"page": page}) for page in capped_pages]
+    hits += [
+        SignalHit(signal="LC-02", details={"page": page, "reason": "no lines read"})
+        for page in empty_pages
+    ]
     hits += [
         SignalHit(signal="LC-18", details={"page": page}) for page in truncated_pages
     ]

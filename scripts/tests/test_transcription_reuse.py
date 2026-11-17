@@ -169,3 +169,18 @@ def test_a_stored_output_of_the_wrong_shape_is_not_used(db, model_client, first)
     _, page = transcribe_in_a_run(doc)
 
     assert page.lines == ["read again"]
+
+
+def test_a_reused_empty_page_still_counts_as_not_read(db, model_client):
+    # An earlier run read the page as empty. The next run reuses those
+    # lines without a model call, and the page still raises LC-02, since
+    # the check reads the transcriptions, not how they were obtained.
+    doc = new_document(db)
+    model_client.replies[llm.PRIMARY_MODEL] = [""]
+    transcribe_in_a_run(doc)
+
+    _, page = transcribe_in_a_run(doc)
+
+    assert len(model_client.calls) == 1
+    assert page.lines == []
+    assert nodes.empty_pages({"transcriptions": [page]}) == [1]

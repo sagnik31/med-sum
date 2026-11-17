@@ -159,6 +159,11 @@ def test_lc02_each_capped_page():
     assert [h.details for h in hits] == [{"page": 1}, {"page": 3}]
 
 
+def test_lc02_each_page_read_as_empty():
+    hits = [h for h in collect(empty_pages=[2]) if h.signal == "LC-02"]
+    assert [h.details for h in hits] == [{"page": 2, "reason": "no lines read"}]
+
+
 @pytest.mark.parametrize("doc_type", [LAB, RX])
 def test_lc08_a_parsed_type_without_a_parse(doc_type):
     assert "LC-08" in ids(collect(doc_type=doc_type, parsed=False))

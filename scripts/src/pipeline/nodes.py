@@ -798,6 +798,25 @@ def _breaker_switches() -> list[dict]:
     return list(step.run.breaker_switches) if step is not None else []
 
 
+def empty_pages(state: GraphState) -> list[int]:
+    """
+    Pages whose transcription holds no printed line (an empty reply, or the
+    end marker alone), whether read in this run or reused from an earlier
+    one. A capped page is left out: it has its own LC-02 already.
+
+    An empty reply can't be told apart from a page the model failed to
+    read, so it never counts as a page read in full: it raises LC-02 and
+    the document goes to a clinician, who can see the page image. See
+    docs/adr/0004-deterministic-checks-decide-routing.md.
+    """
+    capped = set(state.get("capped_pages", []))
+    return sorted(
+        t.page
+        for t in state.get("transcriptions", [])
+        if t.page not in capped and not any(line.strip() for line in t.lines)
+    )
+
+
 def marked_record(state: GraphState, provenance) -> tuple:
     """
     A copy of the state's record with provenance on every item and the
@@ -819,6 +838,7 @@ def marked_record(state: GraphState, provenance) -> tuple:
         parsed=parsed,
         findings=state.get("findings", []),
         capped_pages=state.get("capped_pages", []),
+        empty_pages=empty_pages(state),
         truncated_pages=state.get("truncated_pages", []),
         parse_truncated=parsed and state.get("parse_truncated", False),
         classify_disagree=state.get("classify_disagree", False),
