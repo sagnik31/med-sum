@@ -28,6 +28,7 @@ Rules:
   other than those printed as diagnoses.
 """
 
+import re
 from dataclasses import dataclass, field
 from datetime import date, datetime
 
@@ -240,10 +241,31 @@ def _fact(doc: DocEntry, item: RecordItem) -> Fact:
     return Fact(doc, item, doc.source(item.printed.citation), awaiting)
 
 
+# A panel naming a specimen other than blood makes its tests other tests:
+# a bare "Creatinine" under "Urine Biochemistry" is not serum creatinine,
+# and the two never share a trend or a "latest" value.
+_SPECIMENS = ("urine", "urinary", "urinalysis", "csf", "stool", "fluid", "ascitic", "pleural",
+              "synovial", "24 hr", "24 hour", "24hr", "spot")  # fmt: skip
+
+
+def _specimen(panel: str | None) -> str | None:
+    words = " ".join(panel.casefold().split()) if panel else ""
+    return next((w for w in _SPECIMENS if re.search(rf"\b{w}\b", words)), None)
+
+
 def _series_key(o: Observation) -> str:
+    """
+    One test across documents: its analyte, else its name, and the
+    specimen its panel names, if any. A trend is one test in one printed
+    unit, never two tests that share a word.
+    See docs/adr/0007-pages-built-by-code.md.
+    """
     if o.derived.analyte:
-        return "analyte:" + o.derived.analyte
-    return "name:" + " ".join(o.printed.test_name.casefold().split())
+        key = "analyte:" + o.derived.analyte
+    else:
+        key = "name:" + " ".join(o.printed.test_name.casefold().split())
+    specimen = _specimen(o.printed.panel)
+    return f"{key}|{specimen}" if specimen else key
 
 
 def _vital_key(v: Vital) -> str:
@@ -304,6 +326,13 @@ def _series(facts: list[Fact], key_of, name_of, panel_of) -> list[Series]:
     return out
 
 
+def _flagged(o: Observation) -> bool:
+    return o.printed.flag_printed is not None or (
+        o.derived.flag_computed is not None
+        and o.derived.flag_computed.value != "normal"
+    )
+
+
 def _prescription(doc: DocEntry) -> Prescription:
     r = doc.record
     return Prescription(
@@ -339,17 +368,14 @@ def build_facts(inputs: list[SummaryInput]) -> Facts:
         lambda v: None,
     )
 
+    # Every flagged value of a test on its latest report, not just the
+    # last one listed: a report can print the same test twice.
     attention = []
     for s in labs:
         latest = s.latest
         if latest is None:
             continue
-        o: Observation = latest.item
-        if o.printed.flag_printed is not None or (
-            o.derived.flag_computed is not None
-            and o.derived.flag_computed.value != "normal"
-        ):
-            attention.append(latest)
+        attention += [v for v in s.values if v.doc is latest.doc and _flagged(v.item)]
 
     prescriptions = [
         _prescription(d) for d in parsed if d.type is DocumentType.PRESCRIPTION

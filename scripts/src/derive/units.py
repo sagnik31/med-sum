@@ -212,15 +212,26 @@ for _row in _ANALYTE_ROWS:
         _BY_NAME[_nk] = _analyte
 
 
-# Every word that is part of some listed test name. A qualifier made of
-# other words ("Ultrasensitive", "CLIA") says how the test was done, not
-# which test it is.
-# A specimen other than blood is a different test even though no listed
-# name has the word: "Creatinine (Urine)" is not serum creatinine.
-_NAME_WORDS = frozenset(w for nk in _BY_NAME for w in nk.split()) | {
-    "urine", "urinary", "csf", "stool", "fluid", "ascitic", "pleural", "synovial",
-}  # fmt: skip
-
+# The words a trailing qualifier may be made of and still be ignored: how
+# the test was done (an assay or method) or that the sample is blood. Any
+# other qualifier may name another test: "T4 (Free)" is not total T4,
+# "Hb (Fetal)" is not haemoglobin, "Creatinine (Spot)" is a urine test, so
+# a word not listed here keeps the name from an analyte, and the value is
+# never converted or trended as that analyte. An allow-list, because an
+# unknown word that slipped through would merge two tests.
+# See docs/adr/0003-printed-and-derived-values.md.
+_METHOD_WORDS = frozenset(
+    """
+    ultrasensitive ultra sensitive sensitivity high us hs 3rd third generation
+    clia cmia eclia cia elisa eia ria elfa immunoassay chemiluminescence
+    chemiluminescent electrochemiluminescence immunoturbidimetric
+    immunoturbidimetry turbidimetric turbidimetry nephelometry nephelometric
+    enzymatic jaffe kinetic colorimetric photometry photometric
+    spectrophotometry spectrophotometric hplc ise electrode
+    impedance flow cytometry automated manual calculated method by
+    serum plasma blood venous whole
+""".split()
+)
 # A trailing parenthesised qualifier: "TSH (Ultrasensitive)".
 _QUALIFIER = re.compile(r"^(?P<name>.*\S)\s*\((?P<qualifier>[^()]*)\)\s*$")
 
@@ -232,10 +243,9 @@ def lookup_analyte(test_name: str | None) -> Analyte | None:
     The whole name is looked up first ("T3 (Total)" is "t3 total"). Failing
     that, a trailing parenthesised qualifier is ignored, but only when it
     can't name a different test: it is another name of the same analyte
-    ("Glycated Haemoglobin (HbA1c)"), or none of its words is part of any
-    listed name ("TSH (Ultrasensitive)"). "Cholesterol (HDL)" and
-    "Bilirubin (Direct)" keep no analyte, since "HDL" and "Direct" would
-    pick another test than the bare name does.
+    ("Glycated Haemoglobin (HbA1c)"), or every one of its words is a
+    method word ("TSH (Ultrasensitive)", "Ferritin (CLIA)"). "Cholesterol
+    (HDL)", "T4 (Free)" and "Creatinine (Urine)" keep no analyte.
     """
     if not test_name:
         return None
@@ -251,7 +261,7 @@ def lookup_analyte(test_name: str | None) -> Analyte | None:
     qualifier = name_key(m["qualifier"])
     if _BY_NAME.get(qualifier) is base:
         return base
-    if not qualifier or any(w in _NAME_WORDS for w in qualifier.split()):
+    if qualifier and not all(w in _METHOD_WORDS for w in qualifier.split()):
         return None
     return base
 

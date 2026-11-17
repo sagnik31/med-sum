@@ -656,3 +656,47 @@ def test_an_undated_or_incomplete_document_keeps_its_values():
     [d11] = [d for d in facts.documents if d.document_id == "id-d11"]
     assert d11.reasons and not d11.in_doubt
     assert series(facts, "tsh").latest.doc is d11
+
+
+# -------------------------------------------------------------------
+# One series is one test
+# -------------------------------------------------------------------
+def with_urine_creatinine(doc_id: str):
+    """A later report whose first result is a bare "Creatinine" under a urine panel."""
+    record = key(doc_id)
+    o = record.observations[0]
+    o.printed.test_name, o.printed.panel = "Creatinine", "URINE BIOCHEMISTRY"
+    o.printed.value_text, o.printed.unit = "88", "mg/dL"
+    o.printed.reference_ranges, o.printed.flag_printed = [], None
+    o.derived = o.derived.model_copy(
+        update={"analyte": "creatinine", "value_num": 88.0, "ranges": [],
+                "flag_computed": None, "converted": None}
+    )  # fmt: skip
+    return record
+
+
+def test_a_urine_test_never_shares_a_series_with_the_blood_test():
+    # Serum creatinine 1.6 H, then a urine creatinine 88: not "rising",
+    # and the flagged 1.6 stays the latest serum value in Needs attention.
+    ins = inputs("d06", "d08", records={"d08": with_urine_creatinine("d08")})
+    facts, _, _ = page(ins)
+
+    keys = {s.key for s in facts.labs}
+    assert {"analyte:creatinine", "analyte:creatinine|urine"} <= keys
+    serum = series(facts, "creatinine")
+    assert [v.item.printed.value_text for v in serum.values] == ["1.6"]
+    assert serum.trend is None
+    assert "1.6" in [f.item.printed.value_text for f in facts.attention]
+
+
+def test_every_flagged_value_of_the_latest_report_needs_attention():
+    # The same test printed twice on one report, both flagged.
+    record = key("d06")
+    first = next(o for o in record.observations if o.derived.analyte == "creatinine")
+    twin = first.model_copy(deep=True)
+    twin.id = "obs-99"
+    record.observations.append(twin)
+    facts, _, _ = page(inputs("d06", records={"d06": record}))
+
+    ids = [f.item.id for f in facts.attention if f.item.derived.analyte == "creatinine"]
+    assert ids == [first.id, "obs-99"]

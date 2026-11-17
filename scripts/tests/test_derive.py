@@ -128,6 +128,8 @@ def test_every_analyte_in_the_dataset_is_in_the_unit_table():
         ("Ferritin (CLIA)", "ferritin"),
         ("Serum Creatinine (Enzymatic)", "creatinine"),
         ("Haemoglobin ( Photometry )", "haemoglobin"),
+        ("CRP (hs)", "crp"),
+        ("Sodium (Serum, ISE)", "sodium"),
         # The whole name is listed, so the brackets are just punctuation.
         ("T3 (Total)", "t3_total"),
         ("Bilirubin (Direct)", "bilirubin_direct"),
@@ -154,6 +156,17 @@ def test_a_trailing_qualifier_that_names_no_other_test_is_ignored(name, analyte)
         "Protein (Ultrasensitive)",
         # A nested qualifier.
         "Ferritin (CLIA (v2))",
+        # Another test of the same substance: free, fetal, urine, timed.
+        "T4 (Free)",
+        "T3 (Free)",
+        "PSA (Free)",
+        "Hb (Fetal)",
+        "Creatinine (Spot)",
+        "Albumin (Micro)",
+        "Sodium (24 hr)",
+        "Bilirubin (Indirect)",
+        # A word the method list doesn't know is not taken as a method.
+        "TSH (Neonatal)",
     ],
 )  # fmt: skip
 def test_a_qualifier_that_could_name_another_test_keeps_no_analyte(name):
