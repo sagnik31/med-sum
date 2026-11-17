@@ -124,14 +124,26 @@ def test_a_summary_request_claims_the_job(db, client, summary_jobs):
     assert summary_row(db, user)[1] == "processing"
 
 
-def test_a_second_request_during_a_live_summary_is_not_queued(db, client, summary_jobs):
+def rerun_requested(db, patient_id) -> bool:
+    with db.cursor() as cur:
+        cur.execute(
+            "SELECT rerun_requested FROM patient_summaries WHERE patient_id = %s",
+            (patient_id,),
+        )
+        return cur.fetchone()[0]
+
+
+def test_a_second_request_during_a_live_summary_is_queued_behind_it(
+    db, client, summary_jobs
+):
     user = add_user(db)
     request_summary(client, user)
 
     response = request_summary(client, user)
 
-    assert response.json() == {"status": "already_processing"}
-    assert summary_jobs == [user]
+    assert response.json() == {"status": "queued"}
+    assert summary_jobs == [user]  # no second job: the live run builds again
+    assert rerun_requested(db, user)
 
 
 def test_a_stale_summary_job_is_taken_over(db, client, summary_jobs):
@@ -315,6 +327,93 @@ def test_the_run_holding_the_claim_still_writes_after_a_late_one_gave_up(
     assert status == "completed" and "TSH" in html
 
 
+def test_a_request_during_a_run_builds_the_summary_again_from_fresh_inputs(
+    db, model_client, monkeypatch, json_log
+):
+    user = add_user(db)
+    add_processed(db, user, "d01", "2025-06-01 10:00+05:30")
+    gone = add_processed(db, user, "d04", "2025-06-06 10:00+05:30")
+    model_client.replies[llm.PRIMARY_MODEL] = ["The documents cover lab reports."] * 2
+    real_build = service_build()
+    builds = []
+
+    def build_with_a_delete_meanwhile(inputs, **kwargs):
+        builds.append([i.document_id for i in inputs])
+        if len(builds) == 1:
+            # The inputs are read; a document is deleted and Go asks for a
+            # rebuild while this run is still building.
+            with db.cursor() as cur:
+                cur.execute("UPDATE documents SET deleted_at = NOW() WHERE id = %s",
+                            (gone,))  # fmt: skip
+            assert service.claim_patient_summary(user) is None
+        return real_build(inputs, **kwargs)
+
+    monkeypatch.setattr("summary.build.build_summary", build_with_a_delete_meanwhile)
+
+    run_summary(user)
+
+    assert len(builds) == 2
+    assert gone in builds[0] and gone not in builds[1]
+    html, status, error = summary_row(db, user)
+    assert (status, error) == ("completed", None)
+    assert model_client.calls[-1]["messages"][1]["content"].startswith("Documents: 1 (")
+    assert not rerun_requested(db, user)
+    assert line_with(json_log, "summary_rebuild")["patient_id"] == user
+
+
+def test_a_request_during_a_failing_run_builds_the_summary_again(
+    db, model_client, monkeypatch
+):
+    user = add_user(db)  # no processed documents yet: the first build fails
+    model_client.replies[llm.PRIMARY_MODEL] = ["The latest report flags TSH."]
+    real_load = load_inputs
+    loads = []
+
+    def load_then_a_document_lands(conn, patient_id):
+        inputs = real_load(conn, patient_id)
+        loads.append(len(inputs))
+        if len(loads) == 1:
+            add_processed(db, user, "d09", "2024-09-06 10:00+05:30")
+            assert service.claim_patient_summary(user) is None
+        return inputs
+
+    monkeypatch.setattr("summary.build.load_inputs", load_then_a_document_lands)
+
+    run_summary(user)
+
+    assert loads == [0, 1]
+    html, status, error = summary_row(db, user)
+    assert (status, error) == ("completed", None) and "TSH" in html
+
+
+def test_a_finished_run_is_not_built_again(db, model_client, monkeypatch):
+    user = add_user(db)
+    add_processed(db, user, "d09", "2024-09-06 10:00+05:30")
+    model_client.replies[llm.PRIMARY_MODEL] = ["The latest report flags TSH."]
+    real_build = service_build()
+    builds = []
+    monkeypatch.setattr(
+        "summary.build.build_summary",
+        lambda inputs, **kw: builds.append(1) or real_build(inputs, **kw),
+    )
+
+    run_summary(user)
+
+    assert builds == [1]
+    assert summary_row(db, user)[1] == "completed"
+    assert not rerun_requested(db, user)
+
+
+def test_a_takeover_clears_a_request_queued_behind_the_stale_run(db):
+    user = add_user(db)
+    service.claim_patient_summary(user)
+    assert service.claim_patient_summary(user) is None  # queued behind it
+
+    take_over(db, user)  # the new run reads fresh inputs
+
+    assert not rerun_requested(db, user)
+
+
 def service_build():
     from summary import build
 
@@ -400,7 +499,8 @@ def test_a_summary_being_built_is_left_to_that_run(db, model_client, json_log):
 
     assert summary_row(db, user)[1] == "processing"
     assert model_client.calls == []
-    assert line_with(json_log, "summary_refresh_skipped")["patient_id"] == user
+    assert rerun_requested(db, user)  # that run builds again when it ends
+    assert line_with(json_log, "summary_refresh_queued")["patient_id"] == user
 
 
 def test_a_stale_summary_run_is_taken_over(db, model_client):

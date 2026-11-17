@@ -345,7 +345,9 @@ func (s *Server) handleGeneratePatientSummary(w http.ResponseWriter, r *http.Req
 
 // requestPatientSummary asks the AI service to (re)build a patient's
 // summary. The AI service acts on any patient ID, so callers check the
-// organisation first.
+// organisation first. A request made while a build is running is not
+// dropped: that build runs once more when it ends, from inputs read after
+// the request, so a review or a delete always reaches the summary.
 func (s *Server) requestPatientSummary(r *http.Request, patientID string) error {
 	err := s.callInsightsService(r.Context(), "/internal/generate-patient-summary",
 		map[string]string{"patient_id": patientID})

@@ -285,7 +285,27 @@ def generate_patient_summary_endpoint(
     claim = claim_patient_summary(req.patient_id)
     if claim is not None:
         background_tasks.add_task(run_patient_summary, req.patient_id, claim)
-    return {"status": "accepted" if claim is not None else "already_processing"}
+    # "queued": a live run holds the summary and will build it once more
+    # when it ends (claim_patient_summary).
+    return {"status": "accepted" if claim is not None else "queued"}
+
+
+# Whether a request may take the summary: no live run holds it, or the run
+# holding it has gone stale (STALE_PROCESSING_AFTER).
+_TAKEABLE = "(s.status <> 'processing' OR s.updated_at < NOW() - %(stale)s::interval)"
+
+# One statement, so a run ending at the same moment can't miss the request:
+# the row lock orders it before or after the run's own final write.
+_CLAIM_SUMMARY = f"""
+INSERT INTO patient_summaries AS s (patient_id, status, updated_at)
+SELECT id, 'processing', NOW() FROM patients WHERE id = %(patient_id)s
+ON CONFLICT (patient_id) DO UPDATE
+SET status = 'processing',
+    error = NULL,
+    rerun_requested = NOT {_TAKEABLE},
+    updated_at = CASE WHEN {_TAKEABLE} THEN NOW() ELSE s.updated_at END
+RETURNING s.updated_at, s.rerun_requested
+"""
 
 
 def claim_patient_summary(patient_id: str) -> datetime | None:
@@ -295,30 +315,28 @@ def claim_patient_summary(patient_id: str) -> datetime | None:
     stale (STALE_PROCESSING_AFTER) is taken over.
 
     Returns the claim (the updated_at it set), or None when a live run
-    holds it or there is no such patient. Nothing else writes that column
-    while a run is processing, so the timestamp identifies this claim: a
-    takeover sets a new one, at least STALE_PROCESSING_AFTER later.
+    holds it or there is no such patient. When a live run holds it, the
+    request is not dropped: it sets rerun_requested, and that run builds
+    the summary once more when it ends, because it read its inputs before
+    this request (a correction or a delete may have changed them).
+    Nothing else writes updated_at while a run is processing, so the
+    timestamp identifies this claim: a takeover sets a new one, at least
+    STALE_PROCESSING_AFTER later.
     """
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
             cur.execute(
-                """
-                INSERT INTO patient_summaries AS s (patient_id, status, updated_at)
-                SELECT id, 'processing', NOW() FROM patients WHERE id = %s
-                ON CONFLICT (patient_id) DO UPDATE
-                SET status = 'processing', error = NULL, updated_at = NOW()
-                WHERE s.status <> 'processing'
-                   OR s.updated_at < NOW() - %s::interval
-                RETURNING s.updated_at
-                """,
-                (patient_id, STALE_PROCESSING_AFTER),
+                _CLAIM_SUMMARY,
+                {"patient_id": patient_id, "stale": STALE_PROCESSING_AFTER},
             )
             row = cur.fetchone()
         conn.commit()
     finally:
         conn.close()
-    return None if row is None else row[0]
+    if row is None or row[1]:  # no such patient, or queued behind a live run
+        return None
+    return row[0]
 
 
 # The patient of a document, if they have a patient summary (asked for at
@@ -338,7 +356,7 @@ def refresh_after_document(job) -> None:
     After a document job (the worker's after_job): rebuild the document's
     patient's summary, in this thread, if they already have one and no
     other document of theirs is queued or running. A summary someone else is
-    building is left to that run.
+    building is left to that run, which builds it once more when it ends.
     """
     conn = get_db_connection()
     try:
@@ -353,8 +371,8 @@ def refresh_after_document(job) -> None:
     claim = claim_patient_summary(patient_id)
     if claim is None:
         logger.info(
-            "patient summary refresh skipped: one is being built",
-            extra=_obs("summary_refresh_skipped", patient_id=patient_id,
+            "patient summary refresh queued behind the one being built",
+            extra=_obs("summary_refresh_queued", patient_id=patient_id,
                        document_id=job.document_id),
         )  # fmt: skip
         return
@@ -371,21 +389,40 @@ def refresh_after_document(job) -> None:
 # its claim: a run that went quiet for STALE_PROCESSING_AFTER and was taken
 # over must not overwrite the newer run's summary or mark it failed. Same
 # rule as document jobs (document_jobs: every write conditional on the claim).
+#
+# If a request came in during the run (rerun_requested), the write keeps the
+# row processing under a new claim (clock_timestamp: NOW() is when this
+# run's transaction began) and the run builds again from fresh inputs; the
+# html written meanwhile is shown until then. RETURNING gives the row after
+# the write: status 'processing' means build again under that updated_at.
 _FINISH_SUMMARY = """
 UPDATE patient_summaries
-SET html = %(html)s, status = 'completed', updated_at = NOW()
+SET html = %(html)s,
+    status = CASE WHEN rerun_requested THEN 'processing' ELSE 'completed' END,
+    rerun_requested = false,
+    updated_at = clock_timestamp()
 WHERE patient_id = %(patient_id)s
   AND status = 'processing'
   AND updated_at = %(claim)s
+RETURNING status, updated_at
 """
 
 _FAIL_SUMMARY = """
 UPDATE patient_summaries
-SET status = 'failed', error = %(error)s, updated_at = NOW()
+SET status = CASE WHEN rerun_requested THEN 'processing' ELSE 'failed' END,
+    error = CASE WHEN rerun_requested THEN NULL ELSE %(error)s END,
+    rerun_requested = false,
+    updated_at = clock_timestamp()
 WHERE patient_id = %(patient_id)s
   AND status = 'processing'
   AND updated_at = %(claim)s
+RETURNING status, updated_at
 """
+
+
+def _next_claim(row) -> datetime | None:
+    """The new claim when the final write kept the summary processing."""
+    return row[1] if row is not None and row[0] == "processing" else None
 
 
 def run_patient_summary(patient_id: str, claim: datetime) -> None:
@@ -396,11 +433,27 @@ def run_patient_summary(patient_id: str, claim: datetime) -> None:
 
     `claim` is what claim_patient_summary returned. If another run has taken
     the claim over by the time this one ends, it writes nothing and logs
-    summary_claim_lost.
+    summary_claim_lost. If a request came in while it ran, it builds the
+    summary again (a request can't wait for it, so this run serves it).
+    """
+    next_claim = _build_patient_summary(patient_id, claim)
+    while next_claim is not None:
+        logger.info(
+            "patient summary built again: a request came in during the run",
+            extra=_obs("summary_rebuild", patient_id=patient_id),
+        )
+        next_claim = _build_patient_summary(patient_id, next_claim)
+
+
+def _build_patient_summary(patient_id: str, claim: datetime) -> datetime | None:
+    """
+    One build under `claim`. Returns the new claim when a request came in
+    meanwhile and the summary is to be built again, else None.
     """
     logger.info(
         "patient summary started", extra=_obs("summary_started", patient_id=patient_id)
     )
+    next_claim = None
     conn = get_db_connection()
     try:
         from summary.build import build_summary, load_inputs
@@ -430,6 +483,7 @@ def run_patient_summary(patient_id: str, claim: datetime) -> None:
                 raise LostClaim(
                     f"patient summary claim for {patient_id} was taken over"
                 )
+            next_claim = _next_claim(cur.fetchone())
         conn.commit()
         logger.info(
             "patient summary completed",
@@ -463,8 +517,10 @@ def run_patient_summary(patient_id: str, claim: datetime) -> None:
                     {"error": redact(str(e) or type(e).__name__),
                      "patient_id": patient_id, "claim": claim},
                 )  # fmt: skip
-                lost = cur.rowcount == 0
+                row = cur.fetchone() if cur.rowcount else None
             conn.commit()
+            lost = row is None
+            next_claim = _next_claim(row)
             if lost:
                 logger.warning(
                     "patient summary claim lost; failure not written",
@@ -477,3 +533,4 @@ def run_patient_summary(patient_id: str, claim: datetime) -> None:
             )
     finally:
         conn.close()
+    return next_claim

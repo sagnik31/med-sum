@@ -48,7 +48,7 @@ COLUMNS: dict[str, dict[str, str]] = {
         **_cols(CLINICAL, "mrn full_name date_of_birth age_years sex"),
     },
     "patient_summaries": {
-        **_cols(SAFE, "patient_id status updated_at"),
+        **_cols(SAFE, "patient_id status rerun_requested updated_at"),
         **_cols(CLINICAL, "html"),
         **_cols(TELEMETRY, "error"),
     },

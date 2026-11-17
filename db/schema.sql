@@ -142,12 +142,17 @@ CREATE INDEX patients_org_id_name_idx ON patients (org_id, lower(full_name));
 -- patient's document records. No row until one is first asked for.
 -- status 'processing' while a run holds the claim; the run's result and
 -- failure are written only while updated_at still equals the claim it set.
+-- A request that arrives while a run holds the claim sets rerun_requested:
+-- that run read its inputs before the request (a review or a delete may
+-- have changed them), so when it ends it claims the summary again and
+-- builds it once more instead of finishing.
 CREATE TABLE patient_summaries (
-    patient_id uuid PRIMARY KEY REFERENCES patients (id) ON DELETE CASCADE,
-    html       text,                 -- the summary page, kept while a new one is built
-    status     text NOT NULL CHECK (status IN ('processing', 'completed', 'failed')),
-    error      text,                 -- masked; set when status is failed
-    updated_at timestamptz NOT NULL DEFAULT now()
+    patient_id      uuid PRIMARY KEY REFERENCES patients (id) ON DELETE CASCADE,
+    html            text,            -- the summary page, kept while a new one is built
+    status          text NOT NULL CHECK (status IN ('processing', 'completed', 'failed')),
+    error           text,            -- masked; set when status is failed
+    rerun_requested boolean NOT NULL DEFAULT false,
+    updated_at      timestamptz NOT NULL DEFAULT now()
 );
 
 -- -------------------------------------------------------------------
