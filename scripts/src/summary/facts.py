@@ -15,6 +15,15 @@ Rules:
   trend. A trend says how many reports it is based on and cites each.
 - A document that awaits review is included. A value awaiting review is
   shown with its reasons, and is not used for a trend.
+- A document printed for someone else (LC-13: the printed patient does
+  not match the patient it was uploaded to) has every one of its values
+  awaiting review with the document's reasons: marked, counted, left out
+  of trends, and never "the latest" of a test or a prescription. The
+  patient header is never taken from it. Until a clinician confirms the
+  document, nothing it says is the patient's. Other document-level
+  reasons (a row or page possibly missing, undated) leave its values,
+  each checked on its own line, in place, with the reason shown at the
+  document. See docs/adr/0007-pages-built-by-code.md.
 - No organ systems, no severities, no confidence labels, no diagnoses
   other than those printed as diagnoses.
 """
@@ -31,6 +40,7 @@ from record.document import (
     Vital,
 )
 from record.printed import DocumentType, PrintedText, RemarkScope
+from record.review import signal_ids
 from views.reasons import PlainReason, plain
 
 PARSED_TYPES = (DocumentType.LAB_REPORT, DocumentType.PRESCRIPTION)
@@ -69,6 +79,7 @@ class DocEntry:
     record: DocumentRecord = field(repr=False)
     awaiting: int = 0  # items and header values awaiting review
     reasons: list[PlainReason] = field(default_factory=list)  # document-level
+    in_doubt: bool = False  # printed for another patient (LC-13), not yet confirmed
 
     @property
     def parsed(self) -> bool:
@@ -113,8 +124,11 @@ class Series:
 
     @property
     def latest(self) -> Fact | None:
-        """The value on the latest dated document; undated values never count."""
-        dated = [v for v in self.values if v.date is not None]
+        """
+        The value on the latest dated document; undated values, and values
+        of a document in doubt, never count.
+        """
+        dated = [v for v in self.values if v.date is not None and not v.doc.in_doubt]
         return dated[-1] if dated else None
 
 
@@ -172,6 +186,11 @@ def _reasons(p: Provenance | None) -> list[PlainReason]:
     return [plain(r) for r in p.low_confidence_reasons] if _awaits(p) else []
 
 
+def _another_patient(p: Provenance | None) -> bool:
+    """The document awaits review because it is printed for another patient."""
+    return _awaits(p) and "LC-13" in signal_ids(p.low_confidence_reasons)
+
+
 def order_documents(inputs: list[SummaryInput]) -> tuple[list[DocEntry], int]:
     """The documents with a finished record, in document-date order (undated last)."""
     usable = [
@@ -189,8 +208,10 @@ def order_documents(inputs: list[SummaryInput]) -> tuple[list[DocEntry], int]:
     docs = []
     for n, i in enumerate(usable, start=1):
         r = i.record
-        holders = [r.patient.provenance if r.patient else None]
+        holders = [r.patient.provenance] if r.patient else []
         holders += [it.provenance for it in r.items()]
+        reasons = _reasons(r.document.provenance)
+        in_doubt = _another_patient(r.document.provenance)
         docs.append(
             DocEntry(
                 number=n,
@@ -201,15 +222,22 @@ def order_documents(inputs: list[SummaryInput]) -> tuple[list[DocEntry], int]:
                 date_source=r.document.derived.date_source.value,
                 status=i.status,
                 record=r,
-                awaiting=sum(1 for p in holders if _awaits(p)),
-                reasons=_reasons(r.document.provenance),
+                # A document in doubt has every value awaiting review.
+                awaiting=sum(1 for p in holders if in_doubt or _awaits(p)),
+                reasons=reasons,
+                in_doubt=in_doubt,
             )
         )
     return docs, len(inputs) - len(usable)
 
 
 def _fact(doc: DocEntry, item: RecordItem) -> Fact:
-    return Fact(doc, item, doc.source(item.printed.citation), _reasons(item.provenance))
+    """An item with its own reasons, then its document's when that is in doubt."""
+    own = _reasons(item.provenance)
+    if not doc.in_doubt:
+        return Fact(doc, item, doc.source(item.printed.citation), own)
+    awaiting = own + [r for r in doc.reasons if r not in own]
+    return Fact(doc, item, doc.source(item.printed.citation), awaiting)
 
 
 def _series_key(o: Observation) -> str:
@@ -284,7 +312,7 @@ def _prescription(doc: DocEntry) -> Prescription:
 
 
 def _header(docs: list[DocEntry]) -> PatientHeader | None:
-    with_patient = [d for d in docs if d.record.patient is not None]
+    with_patient = [d for d in docs if d.record.patient is not None and not d.in_doubt]
     if not with_patient:
         return None
     dated = [d for d in with_patient if d.date is not None]
@@ -327,7 +355,8 @@ def build_facts(inputs: list[SummaryInput]) -> Facts:
         _prescription(d) for d in parsed if d.type is DocumentType.PRESCRIPTION
     ]
     dated_rx = [p for p in prescriptions if p.doc.date is not None]
-    latest_rx = dated_rx[-1] if dated_rx else None
+    trusted_rx = [p for p in dated_rx if not p.doc.in_doubt]
+    latest_rx = trusted_rx[-1] if trusted_rx else None
     # Earlier prescriptions: most recent first, then the undated ones.
     earlier = [p for p in reversed(dated_rx) if p is not latest_rx]
     earlier += [p for p in prescriptions if p.doc.date is None]

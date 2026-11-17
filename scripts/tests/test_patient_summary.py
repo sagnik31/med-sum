@@ -320,7 +320,11 @@ def test_a_document_awaiting_review_is_included_with_its_flags():
     assert SIGNALS["LC-10"].reason in item.get_text()
     warnings = soup.select_one('[data-section="warnings"]').get_text(" ")
     assert SIGNALS["LC-13"].reason in warnings  # document-level, at its document
-    assert soup.select_one('[data-warning="awaiting"]').get_text().startswith("1 ")
+    # d16 is printed for another patient: each of its values awaits review.
+    d16_values = 1 + len(list(d16.items()))  # the patient details too
+    assert facts.awaiting == 1 + d16_values
+    awaiting = soup.select_one('[data-warning="awaiting"]').get_text()
+    assert awaiting.startswith(f"{1 + d16_values} ")
     timeline = soup.select('[data-section="timeline"] tr')
     assert [r.select("td")[-1].get_text() for r in timeline] == [
         "verified", "awaiting review", "awaiting review",
@@ -587,3 +591,68 @@ def test_html_in_a_printed_value_is_escaped_in_the_summary():
     _, html, _ = page(inputs("d09", records={"d09": r}))
     assert "<script" not in html and "<img" not in html
     assert "&lt;script&gt;x()&lt;/script&gt;" in html
+
+
+# -------------------------------------------------------------------
+# A document printed for another patient (LC-13)
+# -------------------------------------------------------------------
+def another_patients_documents():
+    """Fatima's reports and prescription, then Nandini's, uploaded to Fatima."""
+    lc13 = [SignalHit(signal="LC-13", details={"field": "name"})]
+    records = {"d20": marked("d20", lc13), "d21": marked("d21", lc13)}
+    ins = inputs("d09", "d11", "d12")
+    ins += inputs("d20", "d21", records=records, status="needs_review")
+    return ins, records
+
+
+def test_another_patients_values_all_await_review():
+    ins, records = another_patients_documents()
+    facts, _, soup = page(ins)
+
+    [d20] = [d for d in facts.documents if d.document_id == "id-d20"]
+    assert d20.in_doubt
+    lab_facts = [v for s in facts.labs for v in s.values if v.doc is d20]
+    assert lab_facts
+    reason = SIGNALS["LC-13"].reason
+    assert all(reason in [r.text for r in v.awaiting] for v in lab_facts)
+    expected = sum(1 + len(list(r.items())) for r in records.values())
+    assert facts.awaiting == expected
+    for v in lab_facts:
+        item = soup.find(
+            "li", attrs={"data-item": v.item.id, "data-doc": f"D{d20.number}"}
+        )
+        assert "awaiting review" in item.get_text()
+
+
+def test_another_patients_values_are_never_the_latest_or_in_a_trend():
+    ins, _ = another_patients_documents()
+    facts, _, _ = page(ins)
+
+    tsh = series(facts, "tsh")
+    assert tsh.latest.doc.document_id == "id-d11"
+    assert all(
+        v.doc.document_id in ("id-d09", "id-d11")
+        for v in (tsh.trend.values if tsh.trend else [])
+    )
+    assert not [f for f in facts.attention if f.doc.in_doubt]
+    assert facts.latest_prescription.doc.document_id == "id-d12"
+
+
+def test_the_header_is_never_taken_from_another_patients_document():
+    ins, _ = another_patients_documents()
+    facts, _, soup = page(ins)
+
+    assert facts.patient.doc.document_id == "id-d12"
+    assert "Nandini" not in soup.select_one("dl").get_text()
+
+
+def test_an_undated_or_incomplete_document_keeps_its_values():
+    # Only a patient mismatch puts a document's values in doubt: a dropped
+    # row or an undated document is shown at the document, and its other
+    # values, each checked on its line, stay as they are.
+    record = marked("d11", [SignalHit(signal="LC-17")])
+    facts, _, _ = page(inputs("d09") + inputs("d11", records={"d11": record}))
+
+    [d11] = [d for d in facts.documents if d.document_id == "id-d11"]
+    assert d11.reasons and not d11.in_doubt
+    assert series(facts, "tsh").latest.doc is d11
