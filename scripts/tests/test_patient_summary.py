@@ -415,7 +415,7 @@ def test_a_live_overview_of_one_report_passes():
         ("TSH fell to 2.5.", 1, 0),  # a number not in the facts
         ("The latest prescription lists Eltroxin.", 0, 1),  # a medicine
         # A test, though "4" is a number of the facts: "T4" is checked whole.
-        ("Free T4 was not tested.", 1, 2),
+        ("Free T4 was not tested.", 1, 3),
         # A fact's value beside another test.
         ("TSH was 18.4 ng/mL.", 1, 0),
         # A fact's date for something it isn't the date of.
@@ -700,3 +700,54 @@ def test_every_flagged_value_of_the_latest_report_needs_attention():
 
     ids = [f.item.id for f in facts.attention if f.item.derived.analyte == "creatinine"]
     assert ids == [first.id, "obs-99"]
+
+
+# -------------------------------------------------------------------
+# The overview check: words the facts know, used to say the opposite
+# -------------------------------------------------------------------
+ROHAN_LINES = facts_text(build_facts(inputs(*PATIENTS["rohan"])))
+
+
+@pytest.mark.parametrize(
+    "lines, text",
+    [
+        # A direction no trend has (creatinine has one value).
+        ("rohan", "Serum Creatinine is rising."),
+        # The opposite direction: TSH's trend falls.
+        ("fatima", "TSH is rising."),
+        # A flagged value called in range or normal.
+        ("rohan", "Serum Creatinine 1.6 mg/dL is within range."),
+        ("rohan", "Serum Creatinine 1.6 mg/dL is normal."),
+        # A list the facts hold something of, called empty.
+        ("fatima", "The patient has no allergies."),
+        ("fatima", "No prescriptions are listed."),
+        # A count in words that isn't the count.
+        ("fatima", "Five documents are included."),
+        # A flag said of a value that isn't flagged.
+        ("fatima", "TSH is flagged."),
+    ],
+)
+def test_an_overview_that_contradicts_the_facts_fails(lines, text):
+    facts_lines = {"rohan": ROHAN_LINES, "fatima": FATIMA_LINES}[lines]
+    assert not check(text, facts_lines).ok
+
+
+@pytest.mark.parametrize(
+    "lines, text",
+    [
+        ("fatima", "TSH is falling."),
+        ("fatima", "Four documents are included."),
+        ("fatima", "Vitamin D (25-OH) 18.4 ng/mL is flagged low."),
+        ("rohan", "No trends are listed."),
+    ],
+)
+def test_the_same_words_pass_where_the_facts_say_them(lines, text):
+    facts_lines = {"rohan": ROHAN_LINES, "fatima": FATIMA_LINES}[lines]
+    assert check(text, facts_lines).ok
+
+
+def test_a_word_of_a_printed_diagnosis_is_known_only_beside_it():
+    # "evaluated" is printed in "Chronic kidney disease, to be evaluated";
+    # it can't be said of anything else.
+    assert check("Chronic kidney disease, to be evaluated, is stated.", ROHAN_LINES).ok
+    assert not check("Serum Creatinine is to be evaluated.", ROHAN_LINES).ok

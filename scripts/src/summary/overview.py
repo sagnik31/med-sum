@@ -15,9 +15,20 @@ reply is checked token by token:
   documents. So "TSH at 8.9" passes, and a fact's value put beside
   another test, or a date given to a diagnosis it isn't the date of,
   fails;
-- every other word must be a word of the facts or one of a fixed list of
-  ordinary words (OVERVIEW_WORDS), which holds no test, medicine,
-  diagnosis, organ system, severity or judgement.
+- a word that claims something (CLAIMS: rising, falling, high, low,
+  normal, flagged) must stand near what the facts say it of, and a
+  negation (no, not, none) right next to a kind of fact the facts list
+  none of ("Trends: none."), so "TSH is rising", "1.6 is normal" or "no
+  allergies" fail when the facts say otherwise; a number written as a
+  word ("five") is checked as that number;
+- a word of printed free text (a diagnosis, an allergy, a medicine's
+  instructions) must stand beside another word of that text, so a word
+  printed in one place ("improving" in a diagnosis) can't be said of
+  something else;
+- every other word must be a fixed word of the facts' own lines, a test,
+  medicine or unit name, or one of a fixed list of ordinary words
+  (OVERVIEW_WORDS), which holds no test, medicine, diagnosis, organ
+  system, severity, judgement, negation or direction.
 So a test, medicine or diagnosis that isn't in the facts can't get
 through, whatever it is called, and neither can "improving", "worsening",
 "abnormal" or a confidence label. A reply that fails is sent back once
@@ -40,12 +51,12 @@ OVERVIEW_WORDS = frozenset(
     """
     a an the this that these those it its they them their there here
     and or but nor so yet also both either neither each every all any some
-    no not none only just still again
+    only just still again
     is are was were be been being has have had do does did
-    of in on at to from by for with without within over under between across
+    of in on at to from by for with over under between across
     after before during since until through per about into than then
     as such same other another more most less fewer first last latest earlier
-    later previous recent next one two three four five six seven eight nine ten
+    later previous recent next
     patient patients document documents report reports record records
     result results value values test tests reading readings
     lab labs laboratory prescription prescriptions prescribed medicine medicines
@@ -54,10 +65,10 @@ OVERVIEW_WORDS = frozenset(
     included including cover covers covered span spans spanning
     date dated dates undated period time times
     based reported reports latest earliest
-    rising falling rose fell trend trends
+    trend trends
     information provided available given found
     fact facts summary
-    flag flagged flags range ranges reference outside within above below
+    range ranges reference
     awaiting await awaits review reviewed reviewing clinician clinicians
     allergy allergies
     diagnosis diagnoses impression impressions history
@@ -69,6 +80,30 @@ OVERVIEW_WORDS = frozenset(
     """.split()
 )
 
+# Words that claim something about a value or a list, so they are true
+# only beside what the facts say it of, like a number: "falling" only
+# within CONTEXT tokens of a test whose trend falls, "high" or "flagged"
+# beside a value flagged so, "no" or "none" right next to a kind of fact
+# the facts list none of ("No prescriptions": the facts say
+# "Prescriptions: none"). Anywhere else they would contradict the facts
+# with words the check otherwise knows ("TSH is rising", "1.6 is within
+# range", "no allergies" when one is recorded), so they are checked by
+# place even when another fact happens to contain them.
+# See docs/adr/0007-pages-built-by-code.md.
+CLAIMS = frozenset(
+    "rising falling rose fell rises falls increasing decreasing"
+    " high low normal flag flags flagged".split()
+)
+NEGATIONS = frozenset("no not none nil neither nor never without".split())
+# A number written as a word is checked as that number: "Five documents"
+# is the number 5, beside "documents".
+NUMBER_WORDS = {
+    w: str(n)
+    for n, w in enumerate(
+        "zero one two three four five six seven eight nine ten".split()
+    )
+}
+
 RETRIES = 1  # a rejected reply is sent back once with what failed
 
 # A token: letters and digits, joined by . , ' or - inside it ("8.9",
@@ -78,6 +113,8 @@ _TOKEN = re.compile(r"[^\W_]+(?:[.,'’\-][^\W_]+)*", re.UNICODE)
 _SENTENCE_END = re.compile(r"[.!?;]+(?:\s+|$)|\n+")
 # Tokens of the facts a number stands near, either side.
 CONTEXT = 3
+# The same for a claim word (CLAIMS).
+CLAIM_CONTEXT = 6
 # Words skipped when finding a number's neighbours: they say nothing
 # about what the number is.
 FILLERS = frozenset(
@@ -136,33 +173,91 @@ def _values_near(segment: list[str]):
 
 class FactLines(str):
     """
-    The facts as text (a str, what the model reads), knowing for each value
-    in it the words of what it is: `subjects[value]` is one set of words
-    per place the value appears.
+    The facts as text (a str, what the model reads), knowing what each
+    word or value in it may stand beside:
+    - `subjects[value]`: the words of what the value is, one set per place;
+    - `claims[word]`: for a claim word (CLAIMS), what it is said of;
+    - `absent`: the words for kinds of fact the facts have none of, which
+      a negation may stand right next to;
+    - `phrases[word]`: for a word of printed free text (a diagnosis, an
+      allergy, a medicine's instructions), the other words of that text;
+      it may be used only beside one of them;
+    - `vocabulary`: every other word of the facts (fixed wording, test,
+      medicine and unit names), usable anywhere.
     """
 
     subjects: dict[str, list[set[str]]]
+    claims: dict[str, list[set[str]]]
+    absent: set[str]
+    phrases: dict[str, list[set[str]]]
+    vocabulary: set[str]
+
+
+def _subject_words(text: str) -> set[str]:
+    return {t for t in _tokens(text) if t not in FILLERS}
 
 
 class _Writer:
     def __init__(self):
         self.lines: list[str] = []
         self.subjects: dict[str, list[set[str]]] = {}
+        self.claims: dict[str, list[set[str]]] = {}
+        self.absent: set[str] = set()
+        self.phrases: dict[str, list[set[str]]] = {}
+        self.vocabulary: set[str] = set()
 
-    def add(self, line: str, *about: tuple[str | None, str]) -> None:
-        """A line, and for each (text, subject) the subject of the text's values."""
+    def add(
+        self,
+        line: str,
+        *about: tuple[str | None, str],
+        free: tuple[str | None, ...] = (),
+        free_beside: str = "",
+        claims: tuple[tuple[str, str], ...] = (),
+    ) -> None:
+        """
+        A line; for each (text, subject) the subject of the text's values;
+        the printed free texts in it, whose words may stand beside each
+        other or the words of `free_beside`; and each (claim words, what
+        they are said of).
+        """
         self.lines.append(line)
         for text, subject in about:
             if not text:
                 continue
-            words_of = {t for t in _tokens(subject) if t not in FILLERS}
+            words_of = _subject_words(subject)
             for token in _tokens(text):
                 if _is_number(token) and _is_value(token):
                     self.subjects.setdefault(token, []).append(words_of - {token})
+        rest = line
+        for text in free:
+            if not text:
+                continue
+            rest = rest.replace(text, " ")
+            phrase = words(text)
+            for word in phrase:
+                partners = (phrase | _subject_words(free_beside)) - {word}
+                if partners:
+                    self.phrases.setdefault(word, []).append(partners)
+                else:  # a one-word text ("Penicillin") stands alone
+                    self.vocabulary.add(word)
+        self.vocabulary |= words(rest)
+        for claim_words, subject in claims:
+            for w in _tokens(claim_words):
+                self.claims.setdefault(w, []).append(_subject_words(subject) - {w})
+
+    def none_of(self, line: str, kind: str) -> None:
+        """A line saying the facts hold nothing of a kind, which "no" may be said of."""
+        self.lines.append(line)
+        self.vocabulary |= words(line) - NEGATIONS
+        self.absent |= _subject_words(kind)
 
     def done(self) -> FactLines:
         out = FactLines("\n".join(self.lines))
         out.subjects = self.subjects
+        out.claims = self.claims
+        out.absent = self.absent
+        out.phrases = self.phrases
+        out.vocabulary = self.vocabulary
         return out
 
 
@@ -217,6 +312,8 @@ def facts_text(facts: Facts) -> FactLines:
             )
         unit = f" {o.unit}" if o.unit else ""
         when = _when(f.doc)
+        said_of = f"{o.test_name} {o.value_text}"
+        direction = f.item.derived.flag_computed
         w.add(
             f"Flagged in the latest report: {o.test_name} {o.value_text}{unit}"
             f" ({'; '.join(flag)}), {when}.",
@@ -226,18 +323,28 @@ def facts_text(facts: Facts) -> FactLines:
             (o.flag_printed, o.test_name),
             # A date is near its test's name, or its value and unit.
             (when, f"{o.test_name} {o.value_text}{unit} latest report reports dated"),
+            claims=(
+                ("flag flags flagged", said_of),
+                *(((direction.value, said_of),) if direction is not None else ()),
+                *_printed_direction(o.flag_printed, said_of),
+            ),
         )
+    if not facts.attention:
+        w.none_of("Flagged in the latest report: none.", "flagged flags values value")
     for series in facts.labs:
         if series.trend is not None:
             dates = ", ".join(_when(v.doc) for v in series.trend.values)
             n = str(len(series.trend.values))
+            direction = series.trend.direction
             w.add(
-                f"Trend: {series.name} {series.trend.direction}, based on "
-                f"{n} reports ({dates}).",
+                f"Trend: {series.name} {direction}, based on {n} reports ({dates}).",
                 (series.name, series.name),
                 (n, f"{series.name} reports report based"),
                 (dates, f"{series.name} reports report"),
+                claims=((_DIRECTION_WORDS[direction], series.name),),
             )
+    if not any(s.trend is not None for s in facts.labs):
+        w.none_of("Trends: none.", "trends trend")
     rx = facts.latest_prescription
     if rx is not None:
         lines = [(m, " ".join(medicine_line(m.item))) for m in rx.medicines]
@@ -251,7 +358,10 @@ def facts_text(facts: Facts) -> FactLines:
                 (line, f"{m.item.printed.form or ''} {m.item.printed.name}")
                 for m, line in lines
             ),
+            free=tuple(_free_parts(m.item) for m, _ in lines),
         )
+    else:
+        w.none_of("Prescriptions: none.", "prescriptions prescription medicines")
     for c in facts.conditions:
         kind = c.item.printed.kind.value.replace("_", " ")
         text, when = c.item.printed.text, _when(c.doc)
@@ -259,15 +369,43 @@ def facts_text(facts: Facts) -> FactLines:
             f"Stated {kind}: {text} ({when}).",
             (text, text),  # "Type 2 diabetes mellitus"
             (when, f"{text} {kind} stated"),
+            free=(text,),
         )
+    if not facts.conditions:
+        w.none_of("Stated diagnoses: none.", "diagnoses diagnosis conditions")
     for a in facts.allergies:
         text, when = a.item.printed.text, _when(a.doc)
         w.add(
             f"Allergy recorded: {text} ({when}).",
             (text, text),
             (when, f"{text} allergy allergies recorded"),
+            free=(text,),
+            free_beside="allergy allergies allergic",
         )
+    if not facts.allergies:
+        w.none_of("Allergies recorded: none.", "allergies allergy")
     return w.done()
+
+
+_DIRECTION_WORDS = {
+    "rising": "rising rose rises increasing",
+    "falling": "falling fell falls decreasing",
+}
+_PRINTED_FLAG_WORDS = {"h": "high", "high": "high", "l": "low", "low": "low"}
+
+
+def _printed_direction(flag: str | None, said_of: str) -> tuple:
+    """A printed H or L, which the overview may call high or low."""
+    word = _PRINTED_FLAG_WORDS.get((flag or "").strip().casefold())
+    return ((word, said_of),) if word else ()
+
+
+def _free_parts(m) -> str:
+    """The printed parts of a medicine line that are free text, not its name."""
+    p = m.printed
+    return " ".join(
+        v for v in (p.dose, p.frequency, p.route, p.duration, p.instructions) if v
+    )
 
 
 # -------------------------------------------------------------------
@@ -302,16 +440,62 @@ def check(overview: str, facts_lines: FactLines) -> CheckResult:
     """
     if not isinstance(facts_lines, FactLines):
         raise TypeError("check needs the facts as facts_text writes them")
-    vocabulary = words(facts_lines) | OVERVIEW_WORDS
+    vocabulary = facts_lines.vocabulary | OVERVIEW_WORDS
     known = facts_lines.subjects
     names = {t for t in numbers(facts_lines) if not _is_value(t)}
-    bad_numbers = {t for t in numbers(overview) if not _is_value(t) and t not in names}
-    for segment in _sentences(overview):
+    bad_numbers, bad_words = set(), set()
+    for raw in _sentences(overview):
+        segment = [NUMBER_WORDS.get(t, t) for t in raw]
+        for token in segment:
+            if _is_number(token) and not _is_value(token) and token not in names:
+                bad_numbers.add(token)
         for token, near in _values_near(segment):
             if not any(near & there for there in known.get(token, [])):
                 bad_numbers.add(token)
-    bad_words = {w for w in words(overview) if not _known(w, vocabulary)}
+        for i, token in enumerate(segment):
+            if not _is_number(token) and not _word_ok(
+                segment, i, facts_lines, vocabulary
+            ):
+                bad_words.add(token)
     return CheckResult(tuple(sorted(bad_numbers)), tuple(sorted(bad_words)))
+
+
+def _near(segment: list[str], i: int, span: int = CONTEXT) -> tuple[list, list]:
+    """The non-filler tokens before and after position i, nearest first."""
+    before = [t for t in segment[:i] if t not in FILLERS][-span:][::-1]
+    after = [t for t in segment[i + 1 :] if t not in FILLERS][:span]
+    return before, after
+
+
+def _forms(word: str) -> set[str]:
+    """A word and its plural or singular."""
+    return {word, word[:-1] if word.endswith("s") else word + "s"}
+
+
+def _beside(near: set[str], subjects: list[set[str]]) -> bool:
+    return any(near & {f for w in s for f in _forms(w)} for s in subjects)
+
+
+def _word_ok(
+    segment: list[str], i: int, lines: FactLines, vocabulary: set[str]
+) -> bool:
+    """Whether the word at position i of a sentence may stand there."""
+    word = segment[i]
+    before, after = _near(segment, i)
+    near = set(before) | set(after)
+    phrase = _beside(near, lines.phrases.get(word, []))
+    if word in NEGATIONS:
+        # Right next to a kind of fact the facts have none of, or inside a
+        # printed phrase that holds it ("No known allergies").
+        nxt = set(after[:1] + (before[:1] if word == "none" else []))
+        absent = {f for w in lines.absent for f in _forms(w)}
+        return bool(nxt & absent) or phrase
+    if word in CLAIMS:
+        # A claim often ends a list ("flags Hb 11.9 g/dL, MCV 81 fL as
+        # low"), so it may sit further from its value, in the same sentence.
+        wide = set().union(*_near(segment, i, CLAIM_CONTEXT))
+        return _beside(wide, lines.claims.get(word, [])) or phrase
+    return _known(word, vocabulary) or phrase
 
 
 def retry_message(result: CheckResult) -> str:
