@@ -234,16 +234,37 @@ def results_table_rows(lines: list[str]) -> list[int]:
 
 def check_result_coverage(record: DocumentRecord) -> list[Finding]:
     """
-    Every data row of a results table is cited by a result. A dropped row
-    would otherwise reach the summary as nothing at all, so it is an error
-    (a re-parse can add it), like a dropped medicine line.
+    Every data row of a results table is cited by a result, and each
+    result cites one data row. A dropped row would otherwise reach the
+    summary as nothing at all, so it is an error (a re-parse can add it),
+    like a dropped medicine line.
+
+    A result whose citation spans several data rows is an error too, and
+    covers none of them: validators 1 and 2 look for its values anywhere
+    in the cited lines, so two results citing the same pair of rows could
+    trade values, and one result citing a whole table would hide every
+    row it dropped. See docs/adr/0004-deterministic-checks-decide-routing.md.
     """
-    cited = {
-        (o.printed.citation.page, n)
-        for o in record.observations
-        for n in range(o.printed.citation.first_line, o.printed.citation.last_line + 1)
-    }
-    return [
+    rows = result_rows(record)
+    data_rows = set(rows)
+    cited, findings = set(), []
+    for o in record.observations:
+        c = o.printed.citation
+        spanned = [
+            (c.page, n)
+            for n in range(c.first_line, c.last_line + 1)
+            if (c.page, n) in data_rows
+        ]
+        if len(spanned) > 1:
+            findings.append(Finding(
+                validator=Validator.RESULT_COVERAGE, severity=Severity.ERROR,
+                message=f"result {o.printed.test_name!r} cites {len(spanned)} rows "
+                        "of a results table; a result is on one row",
+                item_id=o.id, field="citation", page=c.page,
+                lines=[n for _, n in spanned]))  # fmt: skip
+        else:
+            cited.update(spanned)
+    findings += [
         Finding(
             validator=Validator.RESULT_COVERAGE,
             severity=Severity.ERROR,
@@ -252,9 +273,10 @@ def check_result_coverage(record: DocumentRecord) -> list[Finding]:
             lines=[n],
             details={"line": record.pages[page - 1].lines[n - 1]},
         )
-        for page, n in result_rows(record)
+        for page, n in rows
         if (page, n) not in cited
     ]
+    return findings
 
 
 # -------------------------------------------------------------------

@@ -7,7 +7,7 @@ and finish nodes do, and count how many faults reach review. No model.
 
 A fault is the kind of mistake a model makes when it reads or parses a
 page: a digit swapped, a decimal point moved, a unit or a range bound taken
-for the value, a "<" or "Non-" dropped from it, a row dropped, a medicine invented, a remark put on the
+for the value, a "<" or "Non-" dropped from it, two rows' values swapped under one citation, a row dropped, a medicine invented, a remark put on the
 wrong test, a day and month swapped. Each one is applied to one item of
 one document's parse at a time, so every result names its document and
 item. Two faults are not the parse's: `transcription_misread` changes a
@@ -256,6 +256,10 @@ def _result_faults(case: Case) -> Iterator[Mutant]:
         del mutant.parse.results[i]
         yield Mutant("dropped_result", case.doc_id, None, mutant)
 
+    for i in range(len(results) - 1):
+        if swapped := _values_swapped(case, i):
+            yield swapped
+
     if results:
         mutant = _copy(case)
         last = mutant.parse.results[-1]
@@ -281,6 +285,31 @@ def _result_faults(case: Case) -> Iterator[Mutant]:
         mutant = _copy(case)
         mutant.parse.remarks[i].test_name = other
         yield Mutant("remark_moved", case.doc_id, f"rem-{i + 1}", mutant)
+
+
+def _values_swapped(case: Case, i: int) -> Mutant | None:
+    """
+    Two results on adjacent one-line rows with different values, each
+    cited on both rows and given the other's value: every value is still
+    on its cited lines, so only a check that a result is one row can tell.
+    """
+    a, b = case.parse.results[i], case.parse.results[i + 1]
+    ca, cb = a.citation, b.citation
+    if not (
+        ca.page == cb.page
+        and ca.first_line == ca.last_line
+        and cb.first_line == cb.last_line == ca.first_line + 1
+        and a.value_text != b.value_text
+    ):
+        return None
+    lines = case.pages[ca.page - 1].lines[ca.first_line - 1 : cb.first_line]
+    both = ca.model_copy(update={"last_line": cb.first_line, "quote": "\n".join(lines)})
+    mutant = _copy(case)
+    x, y = mutant.parse.results[i], mutant.parse.results[i + 1]
+    x.value_text, y.value_text = b.value_text, a.value_text
+    x.citation = both
+    y.citation = both.model_copy()
+    return Mutant("values_swapped", case.doc_id, f"obs-{i + 1}", mutant)
 
 
 def _misread(case: Case, i: int) -> Mutant | None:

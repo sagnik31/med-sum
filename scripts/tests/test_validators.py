@@ -874,7 +874,7 @@ def test_results_printed_as_lines_stay_with_coverage():
     assert check_coverage(record)
 
 
-def test_a_result_citing_several_lines_covers_each():
+def test_a_result_citing_two_rows_covers_neither():
     record = keyed_record("d06")
     o = obs(record, "Blood Urea")
     nxt = obs(record, "Blood Urea Nitrogen (BUN)")
@@ -886,7 +886,11 @@ def test_a_result_citing_several_lines_covers_each():
         ]
     )
 
-    assert check_result_coverage(record) == []
+    # The dropped BUN row is not hidden by Blood Urea's wider citation.
+    findings = check_result_coverage(record)
+    assert {(f.item_id, tuple(f.lines)) for f in findings} == {
+        (o.id, (21, 22)), (None, (21,)), (None, (22,))
+    }  # fmt: skip
 
 
 def rebuilt_with_lines(record: DocumentRecord, from_line: int, shift: int = 1):
@@ -1047,3 +1051,56 @@ def test_validate_runs_every_validator():
     found = {f.validator for f in validate(record, today=TODAY)}
     assert {Validator.SOURCE_TEXT, Validator.TEXT_LAYER, Validator.FLAG_AGREEMENT,
             Validator.DATES, Validator.COVERAGE} <= found  # fmt: skip
+
+
+def cite_rows(record: DocumentRecord, o, first: int, last: int) -> None:
+    """Cite lines first-last of the item's page, quoting them in full."""
+    c = o.printed.citation
+    lines = record.pages[c.page - 1].lines[first - 1 : last]
+    o.printed.citation = c.model_copy(
+        update={"first_line": first, "last_line": last, "quote": "\n".join(lines)}
+    )
+
+
+def test_two_results_that_trade_values_under_one_citation_are_errors():
+    # Sodium and potassium each cite both their rows and carry the other's
+    # value: every value is on its cited lines, so validators 1 and 2 pass.
+    record = keyed_record("d06")
+    na, k = obs(record, "Sodium"), obs(record, "Potassium")
+    na.printed.value_text, k.printed.value_text = "4.6", "138"
+    cite_rows(record, na, 31, 32)
+    cite_rows(record, k, 31, 32)
+
+    assert check_source_text(record) == []
+    findings = check_result_coverage(record)
+    assert {(f.item_id, f.field) for f in findings if f.item_id} == {
+        (na.id, "citation"),
+        (k.id, "citation"),
+    }
+    assert {f.lines[0] for f in findings if f.item_id is None} == {31, 32}
+
+
+def test_one_result_citing_a_whole_table_covers_none_of_its_rows():
+    # Blood Urea cites lines 21-25 and the four rows after it are dropped.
+    record = keyed_record("d06")
+    urea = obs(record, "Blood Urea")
+    for name in ("Blood Urea Nitrogen (BUN)", "Serum Creatinine", "eGFR", "Uric Acid"):
+        dropped(record, name)
+    cite_rows(record, urea, 21, 25)
+
+    findings = check_result_coverage(record)
+    [wide] = [f for f in findings if f.item_id == urea.id]
+    assert wide.lines == [21, 22, 23, 24, 25]
+    assert sorted(f.lines[0] for f in findings if f.item_id is None) == [
+        21, 22, 23, 24, 25
+    ]  # fmt: skip
+
+
+def test_a_result_citing_its_row_and_a_comment_under_it_is_one_row():
+    record = keyed_record("d06")
+    urea = obs(record, "Blood Urea")
+    page = record.pages[0]
+    page.lines.insert(21, "Fasting sample.")  # not a table row: ends the table
+    # Line 22 is now the comment; only line 21 is a data row of the citation.
+    cite_rows(record, urea, 21, 22)
+    assert not [f for f in check_result_coverage(record) if f.item_id == urea.id]

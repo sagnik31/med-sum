@@ -55,6 +55,10 @@
     "injected": 154,
     "flagged": 154
   },
+  "values_swapped": {
+    "injected": 117,
+    "flagged": 117
+  },
   "wrong_patient": {
     "injected": 23,
     "flagged": 23
