@@ -169,7 +169,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
 
 // openAuditOfTheRecord is the SQL for whether document $1 has an open
 // audit sample of the run its record is from. A sample is of one run (see
-// docs/adr/0011-review-and-correction.md): a reprocess leaves the old
+// docs/adr/0011-clinician-review.md): a reprocess leaves the old
 // run's sample open but dead, and it must not tag reviews of the new
 // record as audit reviews, which would take them out of signal precision
 // and count their corrections as escapes.
