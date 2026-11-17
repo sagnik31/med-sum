@@ -237,7 +237,7 @@ func (s *Server) handleCompleteAudit(w http.ResponseWriter, r *http.Request, doc
 	if doc == nil {
 		return
 	}
-	now := time.Now().UTC()
+	now := s.now().UTC()
 	err := s.db.CompleteAudit(r.Context(), p.OrgID, docID, p.UserID, now,
 		s.documentEvent(r, actAuditCompleted, doc))
 	if errors.Is(err, db.ErrNoOpenAudit) {

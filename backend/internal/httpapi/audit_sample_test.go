@@ -28,6 +28,11 @@ func TestAnAuditSampleWaitsInTheQueueUntilItsAuditIsFinished(t *testing.T) {
 	if rec.Code != http.StatusOK {
 		t.Fatalf("status = %d: %s", rec.Code, rec.Body)
 	}
+	// Finished at the server's clock (fixed in tests), the one its reviews
+	// were stamped with, not the wall clock.
+	if done := re.store.auditDone[re.doc]; !done.Equal(re.now()) {
+		t.Errorf("finished at %v, want the server's clock %v", done, re.now())
+	}
 	ev := re.store.audit[len(re.store.audit)-1]
 	if ev.Action != actAuditCompleted || ev.TargetID == nil || *ev.TargetID != re.doc {
 		t.Errorf("audit = %+v", ev)
