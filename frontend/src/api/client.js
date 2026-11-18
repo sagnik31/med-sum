@@ -312,18 +312,19 @@ export function fetchReviewQueue() {
   return apiRequest("/review/queue");
 }
 
+// Finish the audit of a verified document sampled for one; it leaves the
+// queue. 409 when it is not waiting for an audit.
+export function completeAudit(documentId) {
+  return apiRequest(`/documents/${enc(documentId)}/audit-complete`, { method: "POST" });
+}
+
 // Confirm an item's reading ({ action: "confirm", item_id }) or correct one
 // field ({ action: "correct", item_id, field, value, note }). recordUpdatedAt
 // is the record's updated_at as loaded; a record changed since answers 409.
 // When a corrected value fails a check, nothing is saved and this throws a
 // ReviewFindings with what the checks found; send it again with
-// acceptFindings to keep the value. See docs/adr/0011-clinician-review.md.
-// Finish the audit of a verified document sampled for one; it leaves the
-// queue. 409 when it is not waiting for an audit.
-export function completeAudit(documentId) {
-  return apiRequest(`/documents/${encodeURIComponent(documentId)}/audit-complete`, { method: "POST" });
-}
-
+// acceptFindings to keep the value. The answer is { document_id, status,
+// record_updated_at, flagged, findings }. See docs/adr/0011-clinician-review.md.
 export async function reviewDocument(documentId, review, { recordUpdatedAt, acceptFindings = false }) {
   try {
     return await apiRequest(`/documents/${enc(documentId)}/review`, {

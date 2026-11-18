@@ -18,3 +18,4 @@ scripts/evals/results/
 backend/.env.local
 scripts/.env.local
 scripts/mcp.env.local
+frontend/.env.local

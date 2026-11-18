@@ -148,7 +148,7 @@ On PowerShell, set the same variables with `$env:NAME = "value"`.
 | `MEDSUM_AUDIT_SAMPLE_RATE` | AI service | `0.10`; the share of verified documents sent back to a clinician as an audit (0 to 1) |
 | `MEDSUM_JOB_LEASE`, `MEDSUM_JOB_HEARTBEAT_S`, `MEDSUM_JOB_MAX_ATTEMPTS` | AI service | `5 minutes`, `60`, `3`; how long a claim lasts, how often it is renewed, and how many claims a job gets before it is set aside |
 | `MEDSUM_LOG_FILE` | AI service logs (`observability`) | `scripts/logs/medsum.jsonl`; JSON log lines (ids, events, timings) without patient content, also on stderr. Set up when the service starts |
-| `VITE_API_BASE_URL` | Frontend | `/api`, set in `frontend/.env.local`; the Vite dev server proxies it to the backend |
+| `VITE_API_BASE_URL` | Frontend | `/api`, set in the committed `frontend/.env` (it holds no secret; a `frontend/.env.local` overrides it and stays untracked); the Vite dev server proxies it to the backend |
 | `MEDSUM_API_TARGET` | Frontend (Vite proxy) | `http://localhost:8080` |
 
 The AI service reads its database settings and its token in one place, `scripts/src/settings.py`, and checks them when it starts: outside `MEDSUM_ENV=dev`, a missing `DATABASE_URL` stops it at start-up instead of connecting somewhere by default, and a missing or short `INTERNAL_API_TOKEN` stops it everywhere. The Go server checks its own in `cmd/server/config.go`.
