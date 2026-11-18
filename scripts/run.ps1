@@ -13,5 +13,5 @@ foreach ($line in Get-Content $envFile) {
 }
 
 # Listens on 127.0.0.1 only: only the Go backend on this machine calls it.
-# Uses the virtual environment from the README's setup steps (scripts\.venv).
+# Uses the virtual environment from the setup steps in docs/setup.md (scripts\.venv).
 .\.venv\Scripts\python.exe -m uvicorn insights_service:app --app-dir src --reload --host 127.0.0.1 --port 9000

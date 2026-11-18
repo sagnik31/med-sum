@@ -112,11 +112,12 @@ def test_only_the_settings_module_holds_the_development_database_url():
 
 def test_the_service_is_started_on_localhost_only():
     # Only the Go backend on the same machine calls it; uvicorn's commands
-    # in the run script and the README name the loopback address.
+    # in the run script and the setup docs name the loopback address.
     root = SRC.parents[1]
     texts = [
         (root / "scripts" / "run.ps1").read_text(encoding="utf-8"),
         (root / "README.md").read_text(encoding="utf-8"),
+        (root / "docs" / "setup.md").read_text(encoding="utf-8"),
     ]
     commands = [
         line for text in texts for line in text.splitlines()

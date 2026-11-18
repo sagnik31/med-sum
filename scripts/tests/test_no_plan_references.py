@@ -7,7 +7,7 @@ the ADR that records it ("See docs/adr/00NN-<name>.md"). See
 docs/adr/README.md.
 
 The check reads every file git tracks, as text. It is deliberately narrow,
-to keep false alarms rare: a bare "step 4" stays allowed (the README
+to keep false alarms rare: a bare "step 4" stays allowed (docs/setup.md
 numbers its own setup steps), and so does a step number inside a test's
 data. This file is the one exemption: it has to quote what it looks for.
 """

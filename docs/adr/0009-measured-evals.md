@@ -29,7 +29,7 @@ The design rests on "deterministic checks catch what the model gets wrong". That
 
 ## Consequences
 
-- The checks' blind spots are known by name and count, and the README lists them.
+- The checks' blind spots are known by name and count, and the [limitations page](../limitations.md) lists them.
 - The dataset is small, so gates set as percentages are coarse.
 
 ## What would change it

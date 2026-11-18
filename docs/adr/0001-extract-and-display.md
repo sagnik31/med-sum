@@ -24,7 +24,7 @@ The first versions had a model write the summaries, and they invented things: a 
 - **Patients have no accounts.** A patient is a record: name, date of birth (or age when that is all that is known), sex, and the hospital's patient ID (MRN), which is required and unique within an organisation.
 - Clinicians upload through the UI only; hospital systems don't call the API.
 - **One organisation**, in which every clinician sees every patient. Every patient, account and audit row still carries `org_id`, so separating hospitals later is a query change.
-- A clinician's registration number is stored as entered and **not verified**; the README says so.
+- A clinician's registration number is stored as entered and **not verified**; the [limitations page](../limitations.md) says so.
 
 ## Alternatives rejected
 

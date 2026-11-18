@@ -7,7 +7,7 @@ through the Go API, its organisation scope and its audit log).
 
 Before a run: the synthetic dataset loaded into the development database
 (python -m dataset.load --yes) and processed, the API running, and
-scripts/mcp.env.local filled in (see the README's "MCP server" section).
+scripts/mcp.env.local filled in (see the "MCP server" section of docs/api.md).
 The server starts only under MEDSUM_ENV=dev.
 
 Questions are built from the dataset's answer keys, never from a model:

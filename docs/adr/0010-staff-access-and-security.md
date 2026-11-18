@@ -42,7 +42,7 @@ The first version logged in with a phone number and an OTP field nothing checked
 ## Consequences
 
 - Covered: credential stuffing and guessing, account enumeration, token theft by script, CSRF, session fixation, stale access after someone leaves, access across hospitals, privilege escalation, stolen database rows (hashed passwords and tokens), and untraceable access once the audit log exists.
-- Open, and stated in the README: licences not verified; links handed over in person; one organisation; no per-patient restrictions or break-glass access; no encryption at rest for uploads; TLS is the deployer's job.
+- Open, and stated on the [limitations page](../limitations.md): licences not verified; links handed over in person; one organisation; no per-patient restrictions or break-glass access; no encryption at rest for uploads; TLS is the deployer's job.
 - API clients must send the CSRF header on non-GET requests; an audit failure blocks access rather than letting it through.
 
 ## What would change it
