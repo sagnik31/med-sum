@@ -12,8 +12,10 @@ import {
   isPdfName,
   originalFileUrl,
   queueLabel,
+  reprocessQuestion,
   reviewLink,
   reviewNote,
+  reviewedCount,
   reviewOutcome,
 } from "./review.js";
 
@@ -120,4 +122,19 @@ test("a saved review gives the next one its record time, and verifies the page",
   });
   // An answer without a time leaves the page to reload the record.
   assert.deepEqual(reviewOutcome(null, "ready"), { status: "ready", recordUpdatedAt: null });
+});
+
+test("reprocessing asks first and says how many reviews it discards", () => {
+  assert.equal(reviewedCount(record), 0);
+  assert.doesNotMatch(reprocessQuestion(record), /review/);
+
+  const reviewed = structuredClone(record);
+  reviewed.observations[0].provenance = { ...reviewed.observations[0].provenance, reviewed_by: "Dr. A" };
+  reviewed.document.corrections = [{ field: "report_date", original: null, corrected: "01/03/2025" }];
+  assert.equal(reviewedCount(reviewed), 2);
+  assert.match(reprocessQuestion(reviewed), /The 2 reviews made on it will be discarded/);
+
+  reviewed.document.corrections = [];
+  assert.match(reprocessQuestion(reviewed), /The review made on it will be discarded/);
+  assert.equal(reviewedCount(null), 0);
 });

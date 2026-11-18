@@ -143,6 +143,27 @@ export function reviewOutcome(result, status) {
   };
 }
 
+// How many values of the record a clinician has confirmed or corrected
+// (the document's and the patient's details count once each).
+export function reviewedCount(record) {
+  if (!record) return 0;
+  const holders = [record.document, record.patient];
+  for (const group of Object.keys(CORRECTABLE)) holders.push(...(record[group] || []));
+  return holders.filter((h) => h?.provenance?.reviewed_by || h?.corrections?.length).length;
+}
+
+// What to ask before reprocessing: a new run replaces the record, so its
+// reviews start again (docs/adr/0011-clinician-review.md), and on a CPU it
+// takes minutes a page.
+export function reprocessQuestion(record) {
+  const n = reviewedCount(record);
+  const lost =
+    n === 0
+      ? ""
+      : ` The ${n === 1 ? "review" : `${n} reviews`} made on it will be discarded and must be made again.`;
+  return `Process this document again from the start? The new run replaces what was read.${lost} It can take several minutes a page.`;
+}
+
 // A queue entry's wait, in plain words: "3 values to review", "audit".
 export function queueLabel(entry) {
   if (entry.reason === "audit") return "audit sample: check every value";

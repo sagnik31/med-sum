@@ -12,7 +12,7 @@ import {
 } from "../api/client.js";
 import { useAuth } from "../auth/context.js";
 import { PERM, can } from "../auth/permissions.js";
-import { flaggedCount, isPdfName, reviewOutcome } from "../record/review.js";
+import { flaggedCount, isPdfName, reprocessQuestion, reviewOutcome } from "../record/review.js";
 import OriginalFile from "../components/OriginalFile.jsx";
 import ProcessingPanel from "../components/ProcessingPanel.jsx";
 import TracePanel from "../components/TracePanel.jsx";
@@ -44,6 +44,7 @@ function InsightPage() {
   // review.write turns it on. Bumped by a saved review to reload.
   const { user } = useAuth();
   const canReview = can(user, PERM.reviewWrite);
+  const canReprocess = can(user, PERM.documentReprocess);
   const [reviewing, setReviewing] = useState(searchParamsHasReview());
   const [reviewed, setReviewed] = useState(0);
   // True while a review is being saved: every review control waits, so a
@@ -187,6 +188,7 @@ function InsightPage() {
   }
 
   async function handleReprocess() {
+    if (!window.confirm(reprocessQuestion(record))) return;
     setError(null);
     try {
       await reprocessDocument(id);
@@ -282,12 +284,16 @@ function InsightPage() {
           <div className="bg-slate-50 border border-slate-200 rounded-md">
             <HtmlFrame html={insight} title="Document insight" />
           </div>
-          <button
-            onClick={handleReprocess}
-            className="mt-2 text-sm text-blue-600 hover:underline font-medium"
-          >
-            Reprocess
-          </button>
+          {/* Not while reviewing: a new run discards the reviews. */}
+          {canReprocess && !reviewing && (
+            <button
+              type="button"
+              onClick={handleReprocess}
+              className="mt-2 text-sm text-blue-600 hover:underline font-medium"
+            >
+              Reprocess
+            </button>
+          )}
         </div>
       )}
 
