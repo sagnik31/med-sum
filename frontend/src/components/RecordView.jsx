@@ -88,7 +88,8 @@ function headerFields(values) {
 // `onReview`, when given, shows the review controls: it is called with a
 // review ({action, item_id, field?, value?, note?}) and {acceptFindings},
 // and its promise settles when the review is saved (see ReviewControls).
-function RecordView({ record, initialCitation, onReview, sourceSlot }) {
+// `saving` is true while a review is being saved; every control waits.
+function RecordView({ record, initialCitation, onReview, saving = false, sourceSlot }) {
   const [selected, setSelected] = useState(() => {
     if (!initialCitation) return null;
     return sourceLines(record.pages, initialCitation).found ? initialCitation : null;
@@ -148,6 +149,7 @@ function RecordView({ record, initialCitation, onReview, sourceSlot }) {
                         holder={holder}
                         fields={headerFields(values)}
                         onReview={onReview}
+                        locked={saving}
                         confirmLabel={label}
                       />
                     )}
@@ -181,6 +183,7 @@ function RecordView({ record, initialCitation, onReview, sourceSlot }) {
                       holder={raw(g.key, it.id)}
                       fields={correctableFields(g.key, raw(g.key, it.id).printed)}
                       onReview={onReview}
+                      locked={saving}
                     />
                   )}
                 </li>

@@ -12,7 +12,7 @@ import {
 } from "../api/client.js";
 import { useAuth } from "../auth/context.js";
 import { PERM, can } from "../auth/permissions.js";
-import { flaggedCount, isPdfName } from "../record/review.js";
+import { flaggedCount, isPdfName, reviewOutcome } from "../record/review.js";
 import OriginalFile from "../components/OriginalFile.jsx";
 import ProcessingPanel from "../components/ProcessingPanel.jsx";
 import TracePanel from "../components/TracePanel.jsx";
@@ -46,6 +46,9 @@ function InsightPage() {
   const canReview = can(user, PERM.reviewWrite);
   const [reviewing, setReviewing] = useState(searchParamsHasReview());
   const [reviewed, setReviewed] = useState(0);
+  // True while a review is being saved: every review control waits, so a
+  // second save never goes out with the record's old updated_at.
+  const [saving, setSaving] = useState(false);
   // An audit sample (the queue links with &audit=1): a verified document a
   // clinician checks value by value, then marks finished.
   const [auditing, setAuditing] = useState(searchParamsHas("audit"));
@@ -124,10 +127,17 @@ function InsightPage() {
   // pipeline stored none (it can't happen for a finished document, but the
   // page then shows the insight alone).
   const processed = status === "ready" || status === "needs_review";
+  // Another document: drop the last one's record.
+  useEffect(() => {
+    setRecord(null);
+    setRecordUpdatedAt(null);
+  }, [id]);
+  // A reload after a review keeps the list on screen until the new record
+  // arrives, so the scroll position, the selected source and any open
+  // correction stay where they were.
   useEffect(() => {
     if (!id || !processed) return undefined;
     let cancelled = false;
-    setRecord(null);
     setRecordError(null);
     fetchDocumentRecord(id)
       .then((data) => {
@@ -145,14 +155,24 @@ function InsightPage() {
     };
   }, [id, processed, attempt, reviewed]);
 
-  // Save one review, then load the record and the page again. A
-  // ReviewFindings error is left to the controls to show.
+  // Save one review, then load the record and the page again. Only the
+  // save itself can fail the review: a ReviewFindings error is left to the
+  // controls to show, and once the save is done a failed refresh of the
+  // page is not reported as a failed save.
   async function handleReview(review, { acceptFindings }) {
-    const result = await reviewDocument(id, review, { recordUpdatedAt, acceptFindings });
-    if (result?.status === "verified") setStatus("ready");
+    setSaving(true);
+    try {
+      const result = await reviewDocument(id, review, { recordUpdatedAt, acceptFindings });
+      const outcome = reviewOutcome(result, status);
+      setStatus(outcome.status);
+      if (outcome.recordUpdatedAt) setRecordUpdatedAt(outcome.recordUpdatedAt);
+    } finally {
+      setSaving(false);
+    }
     setReviewed((n) => n + 1);
-    const data = await getInsight(id);
-    if (data?.insights_html) setInsight(data.insights_html);
+    getInsight(id)
+      .then((data) => data?.insights_html && setInsight(data.insights_html))
+      .catch((err) => console.error(err)); // the next load shows it
   }
 
   async function handleFinishAudit() {
@@ -296,6 +316,7 @@ function InsightPage() {
               record={record}
               initialCitation={linkedCitation}
               onReview={reviewing && canReview ? handleReview : undefined}
+              saving={saving}
               sourceSlot={
                 reviewing || showOriginal
                   ? (page) => <OriginalFile documentId={id} isPdf={isPdfName(doc?.original_name)} page={page} />

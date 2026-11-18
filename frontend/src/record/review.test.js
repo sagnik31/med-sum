@@ -14,6 +14,7 @@ import {
   queueLabel,
   reviewLink,
   reviewNote,
+  reviewOutcome,
 } from "./review.js";
 
 const record = JSON.parse(readFileSync(new URL("./fixtures/record.json", import.meta.url), "utf8"));
@@ -105,4 +106,18 @@ test("the original opens at the cited page", () => {
 test("an audit sample opens marked as an audit", () => {
   assert.equal(reviewLink({ document_id: "d1", reason: "needs_review" }), "/insights/d1?review=1");
   assert.equal(reviewLink({ document_id: "d1", reason: "audit" }), "/insights/d1?review=1&audit=1");
+});
+
+test("a saved review gives the next one its record time, and verifies the page", () => {
+  const at = "2025-03-05T10:00:01.5Z";
+  assert.deepEqual(reviewOutcome({ status: "needs_review", record_updated_at: at, flagged: 1 }, "needs_review"), {
+    status: "needs_review",
+    recordUpdatedAt: at,
+  });
+  assert.deepEqual(reviewOutcome({ status: "verified", record_updated_at: at, flagged: 0 }, "needs_review"), {
+    status: "ready",
+    recordUpdatedAt: at,
+  });
+  // An answer without a time leaves the page to reload the record.
+  assert.deepEqual(reviewOutcome(null, "ready"), { status: "ready", recordUpdatedAt: null });
 });

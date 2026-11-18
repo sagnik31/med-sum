@@ -131,6 +131,18 @@ export function flaggedCount(record) {
   return holders.filter((h) => h?.provenance?.status === "low_confidence").length;
 }
 
+// What a saved review changes on the page, from the API's answer
+// ({ status, record_updated_at, flagged }): the document's status as the
+// page names it ("ready" once verified) and the record's new updated_at,
+// which the next review must send. Taken from the answer itself, so a
+// second review needs no reload of the record first.
+export function reviewOutcome(result, status) {
+  return {
+    status: result?.status === "verified" ? "ready" : status,
+    recordUpdatedAt: result?.record_updated_at ?? null,
+  };
+}
+
 // A queue entry's wait, in plain words: "3 values to review", "audit".
 export function queueLabel(entry) {
   if (entry.reason === "audit") return "audit sample: check every value";

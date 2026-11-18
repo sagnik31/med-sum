@@ -31,20 +31,22 @@ export function CorrectionList({ holder }) {
   );
 }
 
-function ReviewControls({ itemId, holder, fields, onReview, confirmLabel = "Confirm" }) {
+// `locked` is true while any review of the document is being saved.
+function ReviewControls({ itemId, holder, fields, onReview, locked = false, confirmLabel = "Confirm" }) {
   const [open, setOpen] = useState(false);
   const [field, setField] = useState(fields[0]?.field ?? "");
   const [value, setValue] = useState("");
   const [note, setNote] = useState("");
   const [findings, setFindings] = useState(null);
   const [error, setError] = useState(null);
-  const [busy, setBusy] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const busy = saving || locked;
 
   const chosen = fields.find((f) => f.field === field);
   const shown = chosen ? currentValue(holder, chosen.field, chosen.value) : null;
 
   async function send(review, acceptFindings = false) {
-    setBusy(true);
+    setSaving(true);
     setError(null);
     try {
       await onReview(review, { acceptFindings });
@@ -56,7 +58,7 @@ function ReviewControls({ itemId, holder, fields, onReview, confirmLabel = "Conf
       if (err instanceof ReviewFindings) setFindings(err.findings);
       else setError(err.message || "The review could not be saved.");
     } finally {
-      setBusy(false);
+      setSaving(false);
     }
   }
 
