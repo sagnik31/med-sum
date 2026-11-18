@@ -105,6 +105,7 @@ Then install each service's dependencies, set the shared `INTERNAL_API_TOKEN`, s
 | [API and MCP server](docs/api.md) | REST routes, internal routes, the MCP server's tools and how to connect a client |
 | [Development](docs/development.md) | Repository layout, checks and tests, the synthetic dataset, the evals |
 | [Limitations](docs/limitations.md) | What isn't built, and what the checks let through |
+| [CLAUDE.md](CLAUDE.md) | How to work on the code: commands, the rules the code depends on, conventions (for Claude Code and for people) |
 
 ## Roadmap
 
