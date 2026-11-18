@@ -19,7 +19,7 @@ import TracePanel from "../components/TracePanel.jsx";
 import ApiErrorNotice from "../components/ApiErrorNotice.jsx";
 import HtmlFrame from "../components/HtmlFrame.jsx";
 import RecordView from "../components/RecordView.jsx";
-import { citationFromQuery } from "../record/recordView.js";
+import { citationFromQuery, reviewedRecordOf } from "../record/recordView.js";
 
 // How often to check a document that is still being processed.
 const POLL_MS = 5000;
@@ -132,10 +132,14 @@ function InsightPage() {
     fetchDocumentRecord(id)
       .then((data) => {
         if (cancelled) return;
-        setRecord(data.record);
+        // The reviewed view, never the stored record: after a correction
+        // the stored one still holds the misread value and its flag.
+        const view = reviewedRecordOf(data);
+        if (!view) throw new Error("The record came back without its reviewed values.");
+        setRecord(view);
         setRecordUpdatedAt(data.updated_at);
       })
-      .catch((err) => !cancelled && err.status !== 404 && setRecordError(err));
+      .catch((err) => !cancelled && err?.status !== 404 && setRecordError(err));
     return () => {
       cancelled = true;
     };

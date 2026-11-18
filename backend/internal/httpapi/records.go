@@ -1,6 +1,7 @@
 package httpapi
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -15,13 +16,18 @@ import (
 // provenance, and the page transcriptions the citations point into), plus
 // a flat list of those citations so a client need not walk the record.
 type recordResponse struct {
-	DocumentID    string           `json:"document_id"`
-	Status        string           `json:"status"` // the document's processing status, as on /insight
-	SchemaVersion int              `json:"schema_version"`
-	RunID         *string          `json:"run_id"`
-	UpdatedAt     time.Time        `json:"updated_at"`
-	Record        json.RawMessage  `json:"record"`
-	Citations     []citationResult `json:"citations"`
+	DocumentID    string          `json:"document_id"`
+	Status        string          `json:"status"` // the document's processing status, as on /insight
+	SchemaVersion int             `json:"schema_version"`
+	RunID         *string         `json:"run_id"`
+	UpdatedAt     time.Time       `json:"updated_at"`
+	Record        json.RawMessage `json:"record"`
+	// Reviewed is the record as clinicians reviewed it, sent only for
+	// ?view=reviewed: every correction applied and each corrected item's
+	// derived values computed again by the AI service. The review screen
+	// shows it; Record keeps what the model read.
+	Reviewed  json.RawMessage  `json:"reviewed,omitempty"`
+	Citations []citationResult `json:"citations"`
 }
 
 // citationResult is where one printed value is on the page transcriptions,
@@ -76,6 +82,23 @@ func (s *Server) handleGetDocumentRecord(w http.ResponseWriter, r *http.Request,
 		return
 	}
 
+	// The reviewed view is computed, never stored (see
+	// docs/adr/0011-clinician-review.md): a record with corrections is sent
+	// to the AI service, which applies them with the code that built the
+	// record. Without corrections the view is the record itself. If it
+	// can't be computed nothing is sent, so a stale value is never shown as
+	// the current one, and no audit row is written for a read that didn't
+	// happen.
+	var reviewed json.RawMessage
+	if r.URL.Query().Get("view") == "reviewed" {
+		reviewed, err = s.reviewedRecord(ctx, rec.Record)
+		if err != nil {
+			log.Printf("reviewed view of document %s: %v", docID, err)
+			http.Error(w, "the corrected values can't be shown right now; try again shortly", http.StatusServiceUnavailable)
+			return
+		}
+	}
+
 	if !s.recordAudit(w, r, s.documentEvent(r, actRecordViewed, doc)) {
 		return
 	}
@@ -86,8 +109,68 @@ func (s *Server) handleGetDocumentRecord(w http.ResponseWriter, r *http.Request,
 		RunID:         rec.RunID,
 		UpdatedAt:     rec.UpdatedAt,
 		Record:        rec.Record,
+		Reviewed:      reviewed,
 		Citations:     citations,
 	})
+}
+
+// reviewedRecord is a stored record with its clinicians' corrections
+// applied, from the AI service; a record without corrections as it is.
+func (s *Server) reviewedRecord(ctx context.Context, raw json.RawMessage) (json.RawMessage, error) {
+	corrected, err := hasCorrections(raw)
+	if err != nil {
+		return nil, err
+	}
+	if !corrected {
+		return raw, nil
+	}
+	var out struct {
+		Record json.RawMessage `json:"record"`
+	}
+	status, detail, err := s.callInsightsServiceJSON(ctx, "/internal/reviewed-view", map[string]any{"record": raw}, &out)
+	if err != nil {
+		return nil, err
+	}
+	if status != http.StatusOK || len(out.Record) == 0 {
+		return nil, fmt.Errorf("insights service refused the record: %s", detail)
+	}
+	return out.Record, nil
+}
+
+// hasCorrections says whether any holder of a record (the document, the
+// patient, an item of any group) carries a clinician's correction.
+func hasCorrections(raw json.RawMessage) (bool, error) {
+	type holder struct {
+		Corrections []json.RawMessage `json:"corrections"`
+	}
+	var rec map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &rec); err != nil {
+		return false, err
+	}
+	for key, part := range rec {
+		switch key {
+		case "document", "patient":
+			var h *holder
+			if err := json.Unmarshal(part, &h); err != nil {
+				return false, err
+			}
+			if h != nil && len(h.Corrections) > 0 {
+				return true, nil
+			}
+		case "pages", "schema_version":
+		default:
+			var items []holder
+			if json.Unmarshal(part, &items) != nil {
+				continue // not a group of items
+			}
+			for _, it := range items {
+				if len(it.Corrections) > 0 {
+					return true, nil
+				}
+			}
+		}
+	}
+	return false, nil
 }
 
 // The parts of a stored record the citation list reads. Everything else

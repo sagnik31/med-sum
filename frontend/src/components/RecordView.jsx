@@ -2,8 +2,11 @@
 //
 // Every value of a document's record with the page and lines it was read
 // from. Choosing a value's source shows those lines on the page beside it.
-// Printed values are as the model read them; derived values were computed
-// by code and are labelled. See docs/adr/0003-printed-and-derived-values.md.
+// `record` is the reviewed view: a corrected value is shown as corrected,
+// with its derived values computed again, and what was read is listed
+// beside it. Derived values were computed by code and are labelled. See
+// docs/adr/0003-printed-and-derived-values.md and
+// docs/adr/0011-clinician-review.md.
 import React, { useState } from "react";
 import {
   citationKey,

@@ -262,12 +262,15 @@ export function deleteDocument(id) {
   return apiRequest(`/documents/${enc(id)}`, { method: "DELETE" });
 }
 
-// The document's structured record: { document_id, status, record, citations, ... }.
-// record holds every value as printed, what code derived from it, and the
-// page transcriptions each value's citation points into. 404 until the
-// pipeline has stored one.
+// The document's structured record: { document_id, status, record,
+// reviewed, citations, ... }. record holds every value as the model read
+// it, what code derived from it, and the page transcriptions each value's
+// citation points into; reviewed is the same record with the clinicians'
+// corrections applied and their derived values computed again (by the AI
+// service, never here). 404 until the pipeline has stored one; 503 when
+// the reviewed view can't be computed. See docs/adr/0011-clinician-review.md.
 export function fetchDocumentRecord(id) {
-  return apiRequest(`/documents/${enc(id)}/record`);
+  return apiRequest(`/documents/${enc(id)}/record?view=reviewed`);
 }
 
 export function getInsight(documentId) {

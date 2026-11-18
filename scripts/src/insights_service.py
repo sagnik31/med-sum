@@ -136,6 +136,10 @@ class ReviewApplyRequest(BaseModel):
     review: ReviewRequest
 
 
+class ReviewedViewRequest(BaseModel):
+    record: dict
+
+
 # -------------------------------------------------------------------
 # Clinician review
 # -------------------------------------------------------------------
@@ -192,6 +196,25 @@ def review_apply_endpoint(req: ReviewApplyRequest):
         "original": result.original,
         "flagged": result.flagged,
     }
+
+
+@app.post("/internal/reviewed-view", dependencies=[Depends(require_internal_token)])
+def reviewed_view_endpoint(req: ReviewedViewRequest):
+    """
+    A stored record as clinicians reviewed it: every correction applied and
+    the derived values of each corrected item computed again, by the same
+    code that built them. The document page's list of values shows this
+    view, as its code-built page does (see docs/adr/0011-clinician-review.md).
+
+    Like review-apply it reads and writes nothing: the Go backend sends the
+    record it loaded after its own checks. Nothing is logged; the record is
+    patient data.
+    """
+    try:
+        view = reviewed_view(DocumentRecord.model_validate(req.record))
+    except ValidationError:
+        raise HTTPException(status_code=422, detail="the record is not valid") from None
+    return {"record": view.model_dump(mode="json")}
 
 
 # -------------------------------------------------------------------

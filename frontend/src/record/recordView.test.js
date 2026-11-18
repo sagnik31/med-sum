@@ -15,6 +15,7 @@ import {
   formatCitation,
   patientValues,
   recordGroups,
+  reviewedRecordOf,
   sourceLines,
   statusLabel,
 } from "./recordView.js";
@@ -160,4 +161,13 @@ test("a summary source link leads to the document's lines, and only a well-forme
   ]) {
     assert.equal(citeLink(bad), null, JSON.stringify(bad));
   }
+});
+
+test("the page shows the reviewed view, never the stored record", () => {
+  const view = { ...record, observations: [] };
+  assert.equal(reviewedRecordOf({ record, reviewed: view }), view);
+  // Without a view there is nothing to show: the stored record would put
+  // a misread value and its flag where the correction belongs.
+  assert.equal(reviewedRecordOf({ record }), null);
+  assert.equal(reviewedRecordOf(null), null);
 });

@@ -5,12 +5,23 @@
 // Plain functions, no React, so `npm test` can check them with Node's test
 // runner.
 //
-// Printed values are exactly what the model read off the page; derived
-// values were computed by code from them and are always labelled as such.
+// The page shows the record as clinicians reviewed it (reviewedRecordOf):
+// printed values are what the model read off the page, or a clinician's
+// correction of one, and derived values were computed by code from them
+// and are always labelled as such. A corrected value's derived values are
+// computed again by the AI service; this module never computes one.
 // See docs/adr/0003-printed-and-derived-values.md. Every printed value has
 // a citation into the page transcriptions (docs/adr/0002-two-model-steps.md),
 // and the page shows those lines next to it so a clinician can check the
 // reading against the source.
+
+// The record a document page shows: the reviewed view from
+// GET /documents/{id}/record?view=reviewed. Never the stored record, whose
+// values and derived values are still those of the model's reading after a
+// correction. Null when the response has no view.
+export function reviewedRecordOf(response) {
+  return response?.reviewed ?? null;
+}
 
 // The clinical groups, in the record's order.
 export const GROUPS = [

@@ -401,3 +401,46 @@ def test_the_endpoint_logs_ids_and_counts_only(client, json_log):
     text = json_log.getvalue()
     assert '"review_applied"' in text and '"obs-1"' in text
     assert "13.1" not in text and "10.4" not in text and DR not in text
+
+
+# -------------------------------------------------------------------
+# The reviewed view, for the document page's list of values
+# -------------------------------------------------------------------
+def test_the_view_endpoint_applies_corrections_and_recomputes_derived(client):
+    corrected = apply_review(
+        flagged_record(), req(field="value_text", value="13.1"), today=TODAY
+    ).record
+    response = client.post(
+        "/internal/reviewed-view",
+        json={"record": corrected.model_dump(mode="json")},
+        headers={"X-Internal-Token": TOKEN},
+    )
+    assert response.status_code == 200
+    view = DocumentRecord.model_validate(response.json()["record"])
+    hb = obs(view)
+    assert hb.printed.value_text == "13.1"
+    assert hb.derived.value_num == 13.1
+    # What was read stays beside the correction.
+    assert hb.corrections[0].original == "10.4"
+    assert hb == obs(reviewed_view(corrected))
+
+
+def test_the_view_endpoint_returns_an_unreviewed_record_as_it_is(client):
+    record = flagged_record()
+    response = client.post(
+        "/internal/reviewed-view",
+        json={"record": record.model_dump(mode="json")},
+        headers={"X-Internal-Token": TOKEN},
+    )
+    assert response.status_code == 200
+    assert response.json()["record"] == record.model_dump(mode="json")
+
+
+def test_the_view_endpoint_refuses_an_invalid_record_and_needs_the_token(client):
+    data = flagged_record().model_dump(mode="json")
+    data["pages"] = []
+    headers = {"X-Internal-Token": TOKEN}
+    bad = client.post("/internal/reviewed-view", json={"record": data}, headers=headers)
+    assert bad.status_code == 422
+    anon = client.post("/internal/reviewed-view", json={"record": data})
+    assert anon.status_code == 401
