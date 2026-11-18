@@ -17,6 +17,7 @@ import {
   recordGroups,
   reviewedRecordOf,
   sourceLines,
+  sourceShownFor,
   statusLabel,
 } from "./recordView.js";
 
@@ -170,4 +171,19 @@ test("the page shows the reviewed view, never the stored record", () => {
   // a misread value and its flag where the correction belongs.
   assert.equal(reviewedRecordOf({ record }), null);
   assert.equal(reviewedRecordOf(null), null);
+});
+
+test("a value's source is on screen only when one of its own citations is selected", () => {
+  const groups = recordGroups(record);
+  const [a, b] = groups[0].items.map((i) => i.citation);
+  assert.notEqual(citationKey(a), citationKey(b));
+  assert.equal(sourceShownFor([a], null), false);
+  assert.equal(sourceShownFor([a], b), false);
+  assert.equal(sourceShownFor([a], { ...a }), true);
+  // The patient's details: any of its header values' lines will do.
+  const header = patientValues(record).map((v) => v.citation);
+  assert.equal(sourceShownFor(header, header.at(-1)), true);
+  // Nothing printed, nothing to show.
+  assert.equal(sourceShownFor([], null), true);
+  assert.equal(sourceShownFor([null], null), true);
 });

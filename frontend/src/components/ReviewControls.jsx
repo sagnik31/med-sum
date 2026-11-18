@@ -4,7 +4,10 @@
 // header values): confirm the reading, or correct one field. A corrected
 // value that fails a check (its flag no longer agrees with its range, a
 // date that isn't one) is shown with what failed and saved only when the
-// clinician saves it again. See docs/adr/0011-clinician-review.md.
+// clinician saves it again. Nothing is confirmed unless the value's source
+// (its lines and its page of the original) is on screen: the first press
+// of Confirm shows it, the next one confirms. Opening "Correct…" shows it
+// too. See docs/adr/0011-clinician-review.md.
 import React, { useState } from "react";
 import { ReviewFindings } from "../api/client.js";
 import { correctionsOf, currentValue, reviewNote } from "../record/review.js";
@@ -32,13 +35,26 @@ export function CorrectionList({ holder }) {
 }
 
 // `locked` is true while any review of the document is being saved.
-function ReviewControls({ itemId, holder, fields, onReview, locked = false, confirmLabel = "Confirm" }) {
+// `sourceShown` says whether this value's source is the one on screen, and
+// `onShowSource` puts it there.
+function ReviewControls({
+  itemId,
+  holder,
+  fields,
+  onReview,
+  locked = false,
+  confirmLabel = "Confirm",
+  sourceShown = false,
+  onShowSource = () => {},
+}) {
   const [open, setOpen] = useState(false);
   const [field, setField] = useState(fields[0]?.field ?? "");
   const [value, setValue] = useState("");
   const [note, setNote] = useState("");
   const [findings, setFindings] = useState(null);
   const [error, setError] = useState(null);
+  // Set when Confirm was pressed without the source on screen.
+  const [askedToCheck, setAskedToCheck] = useState(false);
   const [saving, setSaving] = useState(false);
   const busy = saving || locked;
 
@@ -62,6 +78,21 @@ function ReviewControls({ itemId, holder, fields, onReview, locked = false, conf
     }
   }
 
+  function confirm() {
+    if (!sourceShown) {
+      onShowSource();
+      setAskedToCheck(true);
+      return;
+    }
+    setAskedToCheck(false);
+    send({ action: "confirm", item_id: itemId });
+  }
+
+  function toggleCorrect() {
+    if (!open) onShowSource();
+    setOpen((o) => !o);
+  }
+
   function correction() {
     return { action: "correct", item_id: itemId, field, value, note: note || null };
   }
@@ -72,7 +103,7 @@ function ReviewControls({ itemId, holder, fields, onReview, locked = false, conf
         <button
           type="button"
           disabled={busy}
-          onClick={() => send({ action: "confirm", item_id: itemId })}
+          onClick={confirm}
           className="rounded border border-emerald-300 bg-emerald-50 px-2 py-0.5 text-emerald-800 hover:bg-emerald-100 disabled:opacity-50"
         >
           {confirmLabel}
@@ -81,7 +112,7 @@ function ReviewControls({ itemId, holder, fields, onReview, locked = false, conf
           <button
             type="button"
             disabled={busy}
-            onClick={() => setOpen((o) => !o)}
+            onClick={toggleCorrect}
             aria-expanded={open}
             className="rounded border border-slate-300 bg-white px-2 py-0.5 hover:bg-slate-50 disabled:opacity-50"
           >
@@ -89,6 +120,11 @@ function ReviewControls({ itemId, holder, fields, onReview, locked = false, conf
           </button>
         )}
       </div>
+      {askedToCheck && sourceShown && (
+        <p className="mt-1 text-slate-700" role="status">
+          Its lines and the original are shown beside the list. Check them, then confirm.
+        </p>
+      )}
       {open && (
         <form
           className="mt-2 space-y-1 rounded border border-slate-200 bg-slate-50 p-2"

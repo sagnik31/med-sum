@@ -16,6 +16,7 @@ import {
   patientValues,
   recordGroups,
   sourceLines,
+  sourceShownFor,
   statusLabel,
 } from "../record/recordView.js";
 import { correctableFields, headerTarget } from "../record/review.js";
@@ -101,6 +102,15 @@ function RecordView({ record, initialCitation, onReview, saving = false, sourceS
     setPage(c.page);
   }
   const isSelected = (c) => selected !== null && citationKey(c) === citationKey(selected);
+  // The review controls of a holder show its source before a review: the
+  // first of its citations, unless one of them is already selected.
+  const sourceProps = (citations) => ({
+    sourceShown: sourceShownFor(citations, selected),
+    onShowSource: () => {
+      const first = citations.find(Boolean);
+      if (first && !sourceShownFor(citations, selected)) select(first);
+    },
+  });
 
   const patient = patientValues(record);
   const docValues = documentValues(record);
@@ -151,6 +161,7 @@ function RecordView({ record, initialCitation, onReview, saving = false, sourceS
                         onReview={onReview}
                         locked={saving}
                         confirmLabel={label}
+                        {...sourceProps(values.map((v) => v.citation))}
                       />
                     )}
                   </li>
@@ -184,6 +195,7 @@ function RecordView({ record, initialCitation, onReview, saving = false, sourceS
                       fields={correctableFields(g.key, raw(g.key, it.id).printed)}
                       onReview={onReview}
                       locked={saving}
+                      {...sourceProps([it.citation])}
                     />
                   )}
                 </li>
