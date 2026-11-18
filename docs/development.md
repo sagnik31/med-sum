@@ -78,7 +78,7 @@ Checks and tests for each part:
 
 The tests never call a model: model calls are replaced with fakes, so Ollama need not be running. The database tests create a throwaway database (`med_sum_test_go` for Go, `med_sum_test_py` for Python) from `db/schema.sql`, and drop it afterwards; your `med_sum` database is not touched. The Go tests need `psql` on the `PATH`. Both connect as `postgres:postgres@localhost:5432` unless `MEDSUM_TEST_ADMIN_URL` says otherwise. When Postgres can't be reached they are skipped; set `MEDSUM_REQUIRE_DB=1` to make that a failure. `pytest -m "not db"` runs only the tests that need no database.
 
-**CI** ([`.github/workflows/ci.yml`](../.github/workflows/ci.yml)) runs the same checks on GitHub Actions on each push to `main` and each pull request, with a Postgres service so the database tests run rather than skip, plus the fault check. A fourth job replays the evals (the main set and the injection set) from the recorded replies and compares the result with the last live run; it is skipped until the first live run has recorded them. No job calls a model or holds a secret.
+**CI** ([`.github/workflows/ci.yml`](../.github/workflows/ci.yml)) runs the same checks on GitHub Actions on each push to `main` and each pull request, with a Postgres service so the database tests run rather than skip, plus the fault check and `npm audit --omit=dev --audit-level=high`, which fails on a high or critical advisory in the frontend's runtime dependencies. A fourth job replays the evals (the main set and the injection set) from the recorded replies and compares the result with the last live run; it is skipped until the first live run has recorded them. No job calls a model or holds a secret.
 
 ### Synthetic dataset
 
