@@ -1,7 +1,8 @@
 """
-Counts with their uncertainty. The dataset is small (17 documents, about
-a hundred clinical items), so a rate alone overstates what it shows: every
-rate in a report carries its count and a Wilson score interval.
+Counts with their uncertainty. The dataset is small (a few dozen
+documents, a few hundred clinical items), so a rate alone overstates what
+it shows: every rate in a report carries its count and a Wilson score
+interval.
 """
 
 from dataclasses import dataclass

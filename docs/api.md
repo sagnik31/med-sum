@@ -78,7 +78,7 @@ cd backend
 go run ./cmd/medsumctl create-user --email mcp-client@med-sum.test --name "MCP client"
 ```
 
-Then copy `scripts/mcp.env.example` to `scripts/mcp.env.local` (untracked) and fill in `MEDSUM_MCP_EMAIL` and `MEDSUM_MCP_PASSWORD`. `MEDSUM_MCP_API_URL` defaults to `http://localhost:8080`, and `MEDSUM_ENV=dev` must stay. A variable set in the environment wins over the file. When the session ends (idle or absolute timeout, a revoke, a new password), the server logs in again.
+Then copy `scripts/mcp.env.example` to `scripts/mcp.env.local` (untracked) and fill in `MEDSUM_MCP_EMAIL` and `MEDSUM_MCP_PASSWORD`. `MEDSUM_MCP_API_URL` defaults to `http://localhost:8080`; it must be `https`, or `http` to this machine (`localhost`, `127.0.0.1`), since the server sends its password there. `MEDSUM_ENV=dev` must stay. A variable set in the environment wins over the file. When the session ends (idle or absolute timeout, a revoke, a new password), the server logs in again.
 
 **Connect a client.** The server speaks MCP over stdio: the client starts it as a subprocess. Most clients take a JSON entry like this one, with your clone's paths (on macOS or Linux, the interpreter is `scripts/.venv/bin/python`):
 

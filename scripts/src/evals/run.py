@@ -272,7 +272,7 @@ def main(argv: list[str] | None = None) -> int:
     mode.add_argument("--replay", action="store_true", help="answer from cassettes")
     parser.add_argument("--model", action="append", dest="models")
     parser.add_argument("--docs", help="comma-separated ids, e.g. d02,d09")
-    parser.add_argument("--split", choices=["dev", "test"])
+    parser.add_argument("--split", choices=["dev", "test", "held_out"])
     parser.add_argument("--label")
     parser.add_argument("--out", type=Path)
     parser.add_argument("--cassettes", type=Path, default=CASSETTE_DIR)

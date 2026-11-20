@@ -17,6 +17,7 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 import httpx
 
@@ -72,7 +73,34 @@ def credentials(environ=os.environ) -> Credentials:
             "(copy scripts/mcp.env.example to scripts/mcp.env.local)"
         )
     url = environ.get("MEDSUM_MCP_API_URL", DEFAULT_API_URL).rstrip("/")
+    check_api_url(url)
     return Credentials(api_url=url, email=email, password=password)
+
+
+# Hosts plain http may reach: this machine, or a name reserved for local
+# and test use (RFC 6761), which never resolves to another network.
+LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1"}
+LOCAL_SUFFIXES = (".localhost", ".test")
+
+
+def check_api_url(url: str) -> None:
+    """
+    The API URL the server logs in to with its password: https anywhere,
+    plain http only to this machine. Anything else is refused at start-up,
+    so a mistyped or planted URL can't receive the password in clear text.
+    """
+    parts = urlsplit(url)
+    host = (parts.hostname or "").lower()
+    if parts.scheme == "https" and host:
+        return
+    if parts.scheme == "http" and (
+        host in LOCAL_HOSTS or host.endswith(LOCAL_SUFFIXES)
+    ):
+        return
+    raise ConfigError(
+        "MEDSUM_MCP_API_URL must be https, or http to this machine "
+        "(localhost, 127.0.0.1)"
+    )
 
 
 class ApiClient:

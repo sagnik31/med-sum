@@ -51,6 +51,22 @@ def test_an_overlap_found_in_two_places_is_not_joined():
     assert join_halves(top, ["| Protein | Nil |", "| Glucose | Nil |", "end"]) is None
 
 
+@pytest.mark.parametrize(
+    "top, bottom",
+    [
+        # "A B A B" straddles the cut: the halves could share two cycles or one.
+        (["x", "| A | Nil |", "| B | Nil |", "| A | Nil |", "| B | Nil |"],
+         ["| A | Nil |", "| B | Nil |", "| A | Nil |", "| B | Nil |", "y"]),
+        # Two identical lines shared.
+        (["x", "| Cast | Nil |", "| Cast | Nil |"],
+         ["| Cast | Nil |", "| Cast | Nil |", "y"]),
+    ],
+    ids=["cycle", "repeated line"],
+)  # fmt: skip
+def test_an_overlap_that_repeats_in_a_cycle_is_not_joined(top, bottom):
+    assert join_halves(top, bottom) is None
+
+
 def test_the_longest_overlap_wins():
     # A run of two that also appears inside the true four-line overlap.
     lines, overlap = join_halves(PAGE[:12], PAGE[8:])

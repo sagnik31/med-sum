@@ -188,6 +188,8 @@ def _earlier_transcription(state: GraphState, n: int, step):
             prompt_hash=step.prompt_hash,
             model=llm.PRIMARY_MODEL,
             run_id=step.run.id,
+            request=llm.request_of(MAX_TOKENS_PER_PAGE, stop_marker=END_MARKER),
+            digest=llm.model_digest(llm.PRIMARY_MODEL),
         )
     except psycopg.Error:
         return None  # the page is read again

@@ -105,6 +105,9 @@ def test_the_step_log_names_the_step_it_reused(db, model_client, first, json_log
         "UPDATE pipeline_steps SET status = 'failed'",
         # Its prompt may have been cut: a reuse would drop that run's LC-18.
         "UPDATE pipeline_model_calls SET prompt_truncated = true",
+        # Read with other options (a smaller context window).
+        "UPDATE pipeline_model_calls SET request = jsonb_set(request, '{num_ctx}',"
+        " '4096')",
     ],
     ids=[
         "other prompt",
@@ -113,6 +116,7 @@ def test_the_step_log_names_the_step_it_reused(db, model_client, first, json_log
         "other image",
         "failed",
         "truncated",
+        "other options",
     ],
 )
 def test_a_page_is_read_again_unless_everything_matches(
@@ -193,3 +197,28 @@ def test_a_reused_empty_page_still_counts_as_not_read(db, model_client):
     assert len(model_client.calls) == 1
     assert page.lines == []
     assert nodes.empty_pages({"transcriptions": [page]}) == [1]
+
+
+def test_other_weights_under_the_same_tag_are_read_again(db, model_client, first):
+    doc, _, _ = first
+    with db.cursor() as cur:
+        cur.execute("UPDATE pipeline_model_calls SET model_digest = 'sha256:old'")
+    model_client.digests[llm.PRIMARY_MODEL] = "sha256:new"
+    llm._digests.clear()
+    model_client.replies[llm.PRIMARY_MODEL] = ["read again"]
+
+    _, page = transcribe_in_a_run(doc)
+
+    assert page.lines == ["read again"]
+
+
+def test_a_reuse_points_at_the_reading_that_made_the_calls(db, model_client, first):
+    doc, run1, _ = first
+    transcribe_in_a_run(doc)  # run 2 reuses run 1's reading
+
+    run3, _ = transcribe_in_a_run(doc)
+
+    [original] = steps(db, run1)
+    [row] = steps(db, run3)
+    assert len(model_client.calls) == 1
+    assert row["output"]["reused_from_step"] == str(original["id"])

@@ -22,16 +22,11 @@ import pytest
 
 from dataset.build import DATASET_DIR
 from dataset_records import DOCS
-from pipeline.prompts import prompt
+from evals.model_texts import model_texts
 from record.printed import ConditionKind, DocumentType, RemarkKind, RemarkScope
 
-SCORED_PROMPTS = [
-    "extract_page",
-    "classify_document",
-    "parse_lab_report",
-    "parse_prescription",
-    "repair_parse",
-]
+TEXTS = model_texts()
+SCORED_PROMPTS = sorted(TEXTS)
 MIN_EXAMPLE_CHARS = 8
 SCHEMA_WORDS = {
     e.value
@@ -65,15 +60,22 @@ def quoted_examples(text: str) -> list[str]:
 
 @pytest.mark.parametrize("name", SCORED_PROMPTS)
 def test_no_prompt_line_is_a_dataset_line(name):
-    shared = {n for n in map(norm, prompt(name).splitlines()) if n} & LINES
+    shared = {n for n in map(norm, TEXTS[name].splitlines()) if n} & LINES
     assert not shared
 
 
 @pytest.mark.parametrize("name", SCORED_PROMPTS)
 def test_no_prompt_example_comes_from_the_dataset(name):
-    found = [q for q in quoted_examples(prompt(name))
+    found = [q for q in quoted_examples(TEXTS[name])
              if any(norm(q) in line for line in LINES)]  # fmt: skip
     assert not found
+
+
+def test_every_instruction_text_is_checked():
+    # The pipeline's prompts, and every other text a model is instructed with.
+    assert {"extract_page", "parse_lab_report", "summary_overview",
+            "tool_repair.reading_note", "toolprobe.system", "mcp_eval.system",
+            "mcp_server.instructions"} <= set(TEXTS)  # fmt: skip
 
 
 def test_the_check_would_catch_an_example_copied_from_the_dataset():

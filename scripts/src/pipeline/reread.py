@@ -31,6 +31,11 @@ def _key(line: str) -> str:
     return line.strip()
 
 
+def _periodic(run: list[str]) -> bool:
+    """The run repeats with a shorter period: "A A", "A B A B", "A B A"."""
+    return any(run[p:] == run[:-p] for p in range(1, len(run)))
+
+
 def join_halves(top: list[str], bottom: list[str]) -> tuple[list[str], int] | None:
     """
     The page's lines from its two halves, and how many lines they shared;
@@ -54,5 +59,10 @@ def join_halves(top: list[str], bottom: list[str]) -> tuple[list[str], int] | No
     if len(at) != 1:
         return None
     ti, bi = at[0]
+    if _periodic([t[ti + j][1] for j in range(best)]):
+        # Lines that repeat in a cycle ("A B A B") straddling the cut: the
+        # halves could share any whole number of cycles, so where they join
+        # can't be told from the text.
+        return None
     # Top's lines before the shared run, then bottom's from the run on.
     return top[: t[ti][0]] + bottom[b[bi][0] :], best

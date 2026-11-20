@@ -566,3 +566,8 @@ def test_the_worker_runs_its_after_job_once_per_job_and_survives_its_errors(
         worker.stop(timeout=5)
 
     assert seen == docs
+
+
+@pytest.mark.parametrize("path", ["/docs", "/redoc", "/openapi.json"])
+def test_the_service_publishes_no_api_docs(client, path):
+    assert client.get(path).status_code == 404

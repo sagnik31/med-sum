@@ -487,3 +487,26 @@ def test_the_env_file_is_untracked_and_its_example_holds_no_secret():
     assert "scripts/mcp.env.local" in (root / ".gitignore").read_text(encoding="utf-8")
     example = (root / "scripts" / "mcp.env.example").read_text(encoding="utf-8")
     assert re.search(r"^MEDSUM_MCP_PASSWORD=\s*$", example, re.M)
+
+
+@pytest.mark.parametrize(
+    "url, ok",
+    [
+        ("http://localhost:8080", True),
+        ("http://127.0.0.1:8080", True),
+        ("http://api.test", True),
+        ("https://medsum.example.org", True),
+        ("http://medsum.example.org", False),  # the password in clear text
+        ("ftp://localhost", False),
+        ("file:///etc/passwd", False),
+        ("localhost:8080", False),
+    ],
+)
+def test_the_password_goes_only_over_https_or_to_this_machine(url, ok):
+    env = {"MEDSUM_MCP_EMAIL": EMAIL, "MEDSUM_MCP_PASSWORD": PASSWORD,
+           "MEDSUM_MCP_API_URL": url}  # fmt: skip
+    if ok:
+        assert mcp_api.credentials(env).api_url == url
+    else:
+        with pytest.raises(mcp_api.ConfigError):
+            mcp_api.credentials(env)

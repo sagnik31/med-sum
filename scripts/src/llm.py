@@ -156,6 +156,24 @@ def model_for(role: ModelRole) -> str:
     return _MODELS[role]
 
 
+def _options(max_tokens: int, stop_marker: str | None = None) -> dict:
+    options = {**GENERATION_OPTIONS, "num_ctx": NUM_CTX, "num_predict": max_tokens}
+    if stop_marker:
+        options["stop"] = [stop_marker]
+    return options
+
+
+def request_of(
+    max_tokens: int, *, stop_marker: str | None = None, format: dict | None = None
+) -> dict:
+    """What a chat() call with these arguments records as its request."""
+    return {
+        **_options(max_tokens, stop_marker),
+        "think": False,
+        "structured_output": format is not None,
+    }
+
+
 def chat(
     messages: list[dict],
     *,
@@ -175,10 +193,8 @@ def chat(
     if model_role not in _MODELS:
         raise ValueError(f"unknown model role {model_role!r}")
     roles = ("primary", "fallback") if model_role == "primary" else ("fallback",)
-    options = {**GENERATION_OPTIONS, "num_ctx": NUM_CTX, "num_predict": max_tokens}
-    if stop_marker:
-        options["stop"] = [stop_marker]
-    request = {**options, "think": False, "structured_output": format is not None}
+    options = _options(max_tokens, stop_marker)
+    request = request_of(max_tokens, stop_marker=stop_marker, format=format)
     sizes = _message_sizes(messages)
     failures = []
     capped = False

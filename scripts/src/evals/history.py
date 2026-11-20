@@ -18,7 +18,7 @@ from pathlib import Path
 
 from dataset.build import DATASET_DIR
 from observability.versions import code_version
-from pipeline.prompts import FILES
+from evals.model_texts import model_texts, text_files
 
 HISTORY_DIR = DATASET_DIR.parent / "history"
 REPORTS_DIR = DATASET_DIR.parent / "reports"
@@ -26,10 +26,16 @@ HISTORY_VERSION = 1
 
 
 def prompt_hashes() -> dict[str, str]:
-    """The SHA-256 of every pipeline prompt file, as the steps record them."""
+    """
+    The SHA-256 of every text a model is instructed with (evals.model_texts):
+    a file's bytes, as the steps record them, else the text in UTF-8.
+    """
+    files = text_files()
     return {
-        name: hashlib.sha256(path.read_bytes()).hexdigest()
-        for name, path in sorted(FILES.items())
+        name: hashlib.sha256(
+            files[name].read_bytes() if name in files else text.encode("utf-8")
+        ).hexdigest()
+        for name, text in sorted(model_texts().items())
     }
 
 

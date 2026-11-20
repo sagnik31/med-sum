@@ -214,3 +214,15 @@ def test_a_report_written_elsewhere_keeps_no_machine_path(
     (entry_path,) = (no_model_run / "history").glob("*.json")
     assert json.loads(entry_path.read_text(encoding="utf-8"))["report"] is None
     assert (out / "report.json").exists()
+
+
+def test_the_held_out_split_can_be_chosen(monkeypatch):
+    class Chosen(Exception):
+        pass
+
+    def select(docs, split):
+        raise Chosen(split)
+
+    monkeypatch.setattr(runner, "select", select)
+    with pytest.raises(Chosen, match="held_out"):
+        runner.main(["--replay", "--split", "held_out"])

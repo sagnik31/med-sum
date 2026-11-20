@@ -102,7 +102,15 @@ async def lifespan(app: FastAPI):
             worker.stop(timeout=5)
 
 
-app = FastAPI(title="Insights Generation Service", lifespan=lifespan)
+# No /docs, /redoc or /openapi.json: the service is internal, and its
+# routes are documented in docs/api.md.
+app = FastAPI(
+    title="Insights Generation Service",
+    lifespan=lifespan,
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None,
+)
 
 
 def require_internal_token(x_internal_token: str = Header(default="")) -> None:

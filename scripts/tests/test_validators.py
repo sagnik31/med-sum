@@ -843,10 +843,19 @@ def test_a_results_table_is_known_by_its_result_column(header):
 
 
 def test_tables_without_a_result_column_are_not_results_tables():
-    # d20's patient details are a two-column key-value table.
-    record = keyed_record("d20")
+    # Patient details printed as a two-column key-value table, above the
+    # results (a layout some held-out documents use; built here on a test
+    # document, so no held-out document is a fixture).
+    record = keyed_record("d06")
+    record.pages[0].lines[:0] = [
+        "| Field | Details |",
+        "| --- | --- |",
+        "| Patient Name | Test Patient |",
+        "| Age / Sex | 40 Y / F |",
+        "",
+    ]
     details = [n for n, line in enumerate(record.pages[0].lines, start=1)
-               if "Patient Name" in line]  # fmt: skip
+               if "Patient Name" in line or "Age / Sex" in line]  # fmt: skip
     rows = result_rows(record)
 
     assert details and not any((1, n) in rows for n in details)
@@ -878,10 +887,27 @@ def test_a_table_without_a_header_row_is_not_judged():
     assert check_result_coverage(record) == []
 
 
+def as_result_lines(record: DocumentRecord) -> DocumentRecord:
+    """
+    The record with its results tables printed as "Test: value unit (Ref:
+    range)" lines in place, one per row, so every citation keeps its line.
+    """
+    for page in record.pages:
+        for n, line in enumerate(page.lines):
+            if not line.startswith("|"):
+                continue
+            cells = [c.strip() for c in line.strip().strip("|").split("|")]
+            if set(line) <= set("|-: ") or cells[0] == "Test":
+                page.lines[n] = ""  # the header and its separator
+            else:
+                page.lines[n] = f"{cells[0]}: {cells[1]} {cells[3]} (Ref: {cells[4]})"
+    return record
+
+
 def test_results_printed_as_lines_stay_with_coverage():
-    # d18 prints "Test: value unit (Ref: ...)" lines, not a table: a dropped
-    # one is only listed as unused, which the fault check reports.
-    record = keyed_record("d18")
+    # "Test: value unit (Ref: ...)" lines, not a table: a dropped one is
+    # only listed as unused, which the fault check reports.
+    record = as_result_lines(keyed_record("d06"))
     assert result_rows(record) == []
     dropped(record, record.observations[0].printed.test_name)
     assert check_result_coverage(record) == []
