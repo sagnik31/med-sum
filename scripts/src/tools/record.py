@@ -40,6 +40,59 @@ def _name(printed) -> str | None:
     return None
 
 
+STATUS_DESCRIPTION = (
+    "Where the item stands in review: validated (passed every check), "
+    "low_confidence (flagged; a clinician has not checked it yet, so it may be "
+    "wrong), clinician_confirmed, clinician_corrected, or extracted (not "
+    "checked yet)."
+)
+
+
+def _status(item) -> str:
+    p = item.provenance
+    return p.status.value if p is not None else "extracted"
+
+
+class LastCorrection(ToolOutput):
+    field: str
+    original: str | None = Field(description="What was read before, as printed.")
+    corrected: str
+    clinician: str
+    at: str
+
+
+class ItemReview(ToolOutput):
+    status: str = Field(description=STATUS_DESCRIPTION)
+    reasons: list[str] = Field(
+        description="Why the checks flagged it for a clinician, if they did."
+    )
+    last_correction: LastCorrection | None = Field(
+        description="The latest value a clinician entered. The item shows the "
+        "corrected value; its citation and cited lines still show what the "
+        "document printed."
+    )
+
+
+def _review(item) -> ItemReview:
+    p = item.provenance
+    last = (getattr(item, "corrections", None) or [None])[-1]
+    return ItemReview(
+        status=_status(item),
+        reasons=list(p.low_confidence_reasons) if p is not None else [],
+        last_correction=(
+            LastCorrection(
+                field=last.field,
+                original=last.original,
+                corrected=last.corrected,
+                clinician=last.clinician,
+                at=last.at.isoformat(),
+            )
+            if last is not None
+            else None
+        ),
+    )
+
+
 def _no_record() -> ToolError:
     return ToolError("not_found", "there is no record: the document has no parse yet")
 
@@ -58,6 +111,7 @@ class ItemSummary(ToolOutput):
     item_id: str
     kind: str
     name: str | None
+    status: str = Field(description=STATUS_DESCRIPTION)
     cite: str
 
 
@@ -87,6 +141,7 @@ def _list_items(
                 item_id=item.id,
                 kind=kind,
                 name=_name(item.printed),
+                status=_status(item),
                 cite=cite(c.page, c.first_line, c.last_line),
             )
         )
@@ -97,8 +152,8 @@ LIST_ITEMS = Tool(
     name="list_items",
     description=(
         "List the items of the document's record (lab results, medicines, "
-        "conditions, remarks, ...): each item's id, kind, name and where it "
-        "is cited."
+        "conditions, remarks, ...): each item's id, kind, name, review status "
+        "and where it is cited."
     ),
     input_model=ListItemsInput,
     output_model=ListItemsOutput,
@@ -125,6 +180,7 @@ class GetItemOutput(ToolOutput):
     cited_lines: list[str] = Field(
         description="The transcription's text of the lines the citation points at."
     )
+    review: ItemReview
     cite: str
 
     def sizes(self) -> dict[str, int]:
@@ -154,6 +210,7 @@ def _get_item(source: ToolSource, args: GetItemInput) -> GetItemOutput | ToolErr
         printed=item.printed.model_dump(mode="json"),
         derived=derived.model_dump(mode="json", exclude_none=True) if derived else None,
         cited_lines=lines,
+        review=_review(item),
         cite=cite(c.page, c.first_line, c.last_line),
     )
 
@@ -162,8 +219,9 @@ GET_ITEM = Tool(
     name="get_item",
     description=(
         "Return one item of the record by its id: the item as parsed, what "
-        "code derived from it, and the transcription's text of the lines its "
-        "citation points at, so the two can be compared."
+        "code derived from it, the transcription's text of the lines its "
+        "citation points at, so the two can be compared, and where it stands "
+        "in review (why it was flagged, and a clinician's latest correction)."
     ),
     input_model=GetItemInput,
     output_model=GetItemOutput,

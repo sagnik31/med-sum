@@ -22,11 +22,13 @@ correction applied, as the patient summary shows it.
 See docs/adr/0012-shared-tool-layer.md.
 """
 
+import logging
 import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from typing import Any
 
+import httpx
 from pydantic import BaseModel, Field, ValidationError, create_model
 
 import tools as shared
@@ -34,6 +36,13 @@ from medsum_mcp.api import ApiClient, ApiError
 from record.document import DocumentRecord
 from record.review import reviewed_view
 from tools.base import ToolInput, ToolOutput, ToolSource, _describe
+
+log = logging.getLogger("medsum_mcp")
+
+# What a tool's run can raise besides ApiError: the API unreachable or its
+# answer unreadable (not JSON, or a record that doesn't fit the schema).
+# Each is answered as "unavailable", and logged by type only.
+UNAVAILABLE = (httpx.HTTPError, ValidationError, ValueError, KeyError, TypeError)
 
 UUID_PATTERN = (
     r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
@@ -349,6 +358,20 @@ async def call(api: ApiClient, name: str, arguments: Any) -> Answer:
         out = await tool.run(api, args)
     except ApiError as e:
         return Answer(name, error=_api_error(e), api_status=e.status)
+    except UNAVAILABLE as e:
+        log.warning(
+            "tool %s could not read its answer: %s",
+            name,
+            type(e).__name__,
+            extra={"obs": {"event": "mcp_tool_unavailable", "tool": name,
+                           "error_type": type(e).__name__}},
+        )  # fmt: skip
+        return Answer(
+            name,
+            error=ErrorAnswer(
+                "unavailable", "the API could not be reached or its answer read"
+            ),
+        )
     if isinstance(out, ErrorAnswer):
         return Answer(name, error=out, api_status=200)
     return Answer(name, structured=out, api_status=200)

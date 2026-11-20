@@ -289,6 +289,68 @@ def test_get_item_reads_the_record_as_reviewed(fake):
     assert item["cite"] == f"document:{DOC}#p1:8"
 
 
+def test_a_corrected_item_says_who_corrected_it_and_what_was_read(fake):
+    # The corrected 13.9 shows next to a cited line that still prints 10.4:
+    # the answer says so, rather than leaving the two to contradict.
+    fake.record = apply_review(
+        flagged_record(), req(field="value_text", value="13.9", note="re-read")
+    ).record
+    result, _ = run(
+        fake,
+        lambda c: c.call_tool("get_item", {"document_id": DOC, "item_id": "obs-1"}),
+    )
+    review = structured(result)["result"]["review"]
+    assert review["status"] == "clinician_corrected"
+    last = review["last_correction"]
+    assert (last["field"], last["original"], last["corrected"]) == (
+        "value_text",
+        "10.4",
+        "13.9",
+    )
+    assert last["clinician"] and last["at"]
+
+
+def test_a_flagged_item_says_why_and_the_list_shows_each_status(fake):
+    async def calls(c):
+        listed = await c.call_tool("list_items", {"document_id": DOC})
+        item = await c.call_tool("get_item", {"document_id": DOC, "item_id": "obs-1"})
+        return listed, item
+
+    (listed, item), _ = run(fake, calls)
+    statuses = {
+        i["item_id"]: i["status"] for i in structured(listed)["result"]["items"]
+    }
+    assert statuses["obs-1"] == "low_confidence"
+    review = structured(item)["result"]["review"]
+    assert review["status"] == "low_confidence" and review["reasons"]
+    assert review["last_correction"] is None
+
+
+@pytest.mark.parametrize(
+    "broken",
+    [
+        lambda r: httpx.Response(200, text="<html>not json</html>"),
+        lambda r: httpx.Response(200, json={"document_id": DOC, "record": {"x": 1}}),
+        lambda r: (_ for _ in ()).throw(httpx.ConnectError("refused")),
+    ],
+    ids=["not json", "not a record", "unreachable"],
+)
+def test_an_unreadable_api_answer_is_an_unavailable_answer(fake, broken, caplog):
+    real = fake._read
+
+    def read(path, params):
+        return broken(path) if path.endswith("/record") else real(path, params)
+
+    fake._read = read
+    with caplog.at_level("WARNING", logger="medsum_mcp"):
+        result, _ = run(fake, lambda c: c.call_tool("list_items", {"document_id": DOC}))
+    assert result.is_error and "unavailable" in result.content[0].text
+    assert any(
+        getattr(r, "obs", {}).get("event") == "mcp_tool_unavailable"
+        for r in caplog.records
+    )
+
+
 def test_an_empty_search_has_no_values_and_no_citations(fake):
     result, _ = run(
         fake,

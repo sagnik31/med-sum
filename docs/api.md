@@ -63,13 +63,13 @@ A local [MCP](https://modelcontextprotocol.io) server lets an MCP client (a desk
 |---|---|---|
 | `find_patients` | `GET /patients?q=` | patients of the organisation by part of the name or the start of the MRN (at most 25) |
 | `list_documents` | `GET /patients/{id}/documents` | a patient's documents, newest first, with their processing status |
-| `list_items` | `GET /documents/{id}/record` | the record's items (lab results, medicines, conditions, ...), each with its id and citation |
-| `get_item` | `GET /documents/{id}/record` | one item as parsed, as clinicians reviewed it, with what code derived and the text of the lines it cites |
+| `list_items` | `GET /documents/{id}/record` | the record's items (lab results, medicines, conditions, ...), each with its id, review status and citation |
+| `get_item` | `GET /documents/{id}/record` | one item as parsed, as clinicians reviewed it, with what code derived, the text of the lines it cites, and its review: status, why the checks flagged it, and the latest correction (field, what was read, the new value, who and when), since a corrected value differs from the lines it cites |
 | `search_transcription` | `GET /documents/{id}/record` | the transcription's lines that contain some text (at most 12) |
 | `get_lines` | `GET /documents/{id}/record` | lines of one page of the transcription (at most 40) |
 | `get_text_layer` | `GET /documents/{id}/record` | the PDF's own text of one page, which the transcription is checked against |
 
-Every answer is `{"citations": [...], "result": {...}}`, and every entry of the result carries its own `cite`: `patient:<id>`, `document:<id>`, `document:<id>#p2:7-9` (transcription lines) or `document:<id>#text-layer:p3:1-40`. No value comes without the place it was read from. Each tool call is one API request, so one audit row, and the row's details name the tool (the server sends `X-Medsum-Tool`). Admins see the rows on the Audit log page, under the server's account. A call whose arguments don't fit the tool's schema is answered before any request is made and reads nothing.
+Every answer is `{"citations": [...], "result": {...}}`, and every entry of the result carries its own `cite`: `patient:<id>`, `document:<id>`, `document:<id>#p2:7-9` (transcription lines) or `document:<id>#text-layer:p3:1-40`. No value comes without the place it was read from. Each tool call is one API request, so one audit row, and the row's details name the tool (the server sends `X-Medsum-Tool`). Admins see the rows on the Audit log page, under the server's account. A call whose arguments don't fit the tool's schema is answered before any request is made and reads nothing. When the API can't be reached or its answer can't be read, the answer is the error `unavailable`, and the server logs the error's type only.
 
 **Set it up.** Create an account for the server alone, so its reads are told apart from a person's, and set its password with the link `medsumctl` prints:
 
