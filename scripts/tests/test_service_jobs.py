@@ -205,6 +205,31 @@ def test_a_file_uploaded_twice_counts_once(db, model_client):
     assert [i.document_id for i in inputs] == [first, other]
 
 
+@pytest.mark.parametrize("first_status", ["failed", "processing"])
+def test_a_finished_copy_stands_in_for_one_that_did_not_finish(
+    db, model_client, first_status
+):
+    user = add_user(db)
+    first = add_processed(db, user, "d01", "2025-06-01 10:00+05:30", first_status)
+    again = add_processed(db, user, "d01", "2025-06-05 10:00+05:30")
+    with db.cursor() as cur:
+        cur.execute("UPDATE documents SET sha256 = repeat('a', 64) WHERE id IN (%s, %s)",
+                    (first, again))  # fmt: skip
+        inputs = load_inputs(db, user)
+    assert [(i.document_id, i.status) for i in inputs] == [(again, "verified")]
+
+
+def test_with_no_finished_copy_the_earliest_stands_in(db, model_client):
+    user = add_user(db)
+    first = add_processed(db, user, "d01", "2025-06-01 10:00+05:30", "failed")
+    again = add_processed(db, user, "d01", "2025-06-05 10:00+05:30", "failed")
+    with db.cursor() as cur:
+        cur.execute("UPDATE documents SET sha256 = repeat('a', 64) WHERE id IN (%s, %s)",
+                    (first, again))  # fmt: skip
+        inputs = load_inputs(db, user)
+    assert [i.document_id for i in inputs] == [first]
+
+
 def test_a_deleted_document_is_left_out_and_its_copy_stands_in(db, model_client):
     user = add_user(db)
     first = add_processed(db, user, "d01", "2025-06-01 10:00+05:30")

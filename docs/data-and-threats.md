@@ -51,7 +51,7 @@ Logs carry only safe and telemetry fields, and every log message is masked by pa
 - **Deletion is accountable, and a purge is complete.** Only the uploader can delete a document. Deleting it in the app hides it from every screen, the pipeline and the summary, but keeps its rows and file, with who deleted it and when ([0010](adr/0010-staff-access-and-security.md)). Purging a patient's records at the database leaves no row that names their documents in any schema, and a test checks this.
 - **Every access is recorded.** Each read or change of patient data, and each login, logout and staff change, writes an audit row; a read that can't be recorded is refused, and a change commits with its row or not at all. The table refuses UPDATE and DELETE ([0010](adr/0010-staff-access-and-security.md)).
 - **Organisations are kept apart in SQL.** Every query that finds a patient or a document filters on the caller's organisation, and another organisation's ids answer 404 ([0010](adr/0010-staff-access-and-security.md)).
-- **Duplicates are visible.** The same file uploaded twice for one patient is flagged and counted once in the summary.
+- **Duplicates are visible.** The same file uploaded twice for one patient is flagged and counted once in the summary, by the earliest copy that finished processing (so a copy that failed doesn't hide one that worked).
 
 ## What isn't protected yet
 

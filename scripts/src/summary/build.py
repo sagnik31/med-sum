@@ -36,24 +36,30 @@ def load_inputs(conn, patient_id: str) -> list[SummaryInput]:
     Every live document of the patient, with its processing status and
     record (if any). A deleted document is left out. A file uploaded again
     (the same SHA-256) is left out too, so its values don't count twice in
-    trends; the first live upload stands for it.
+    trends: one copy stands for the file, the earliest that finished
+    processing (verified or needs_review), else the earliest. So a copy
+    that failed doesn't hide a later one that worked.
     See docs/adr/0008-patient-data-protection.md.
     """
     with conn.cursor() as cur:
         cur.execute(
             """
-            SELECT d.id::text, d.original_name, d.uploaded_at, i.status, r.record
-            FROM documents d
-            LEFT JOIN insights i ON i.document_id = d.id
-            LEFT JOIN document_records r ON r.document_id = d.id
-            WHERE d.patient_id = %s
-              AND d.deleted_at IS NULL
-              AND NOT EXISTS (
-                  SELECT 1 FROM documents o
-                  WHERE o.patient_id = d.patient_id AND o.sha256 = d.sha256
-                    AND o.deleted_at IS NULL
-                    AND (o.uploaded_at, o.id) < (d.uploaded_at, d.id))
-            ORDER BY d.uploaded_at
+            SELECT id, original_name, uploaded_at, status, record FROM (
+                SELECT d.id::text AS id, d.original_name, d.uploaded_at,
+                       i.status, r.record,
+                       row_number() OVER (
+                           PARTITION BY coalesce(d.sha256, d.id::text)
+                           ORDER BY coalesce(i.status IN ('verified', 'needs_review'),
+                                             false) DESC,
+                                    d.uploaded_at, d.id
+                       ) AS copy
+                FROM documents d
+                LEFT JOIN insights i ON i.document_id = d.id
+                LEFT JOIN document_records r ON r.document_id = d.id
+                WHERE d.patient_id = %s AND d.deleted_at IS NULL
+            ) live
+            WHERE copy = 1
+            ORDER BY uploaded_at, id
             """,
             (patient_id,),
         )
