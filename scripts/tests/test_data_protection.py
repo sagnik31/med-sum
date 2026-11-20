@@ -249,3 +249,87 @@ def test_no_dataset_identifier_reaches_a_log_or_a_telemetry_column(
         for place, text in places.items()
     }
     assert {p: n for p, n in leaks.items() if n} == {}
+
+
+# -------------------------------------------------------------------
+# Masking where a run is resumed, a job or summary fails, or a client logs
+# -------------------------------------------------------------------
+def test_a_finding_s_nested_details_are_masked():
+    finding = {
+        "message": "two patients",
+        "details": {"parts": [{"name": "Meera Iyer"}, {"name": "Rohan Kulkarni"}],
+                    "count": 2},
+    }  # fmt: skip
+    out = redact_finding(finding, ["Meera Iyer", "Rohan Kulkarni"])
+    assert out["details"] == {
+        "parts": [{"name": PATIENT}, {"name": PATIENT}],
+        "count": 2,
+    }
+
+
+def test_a_graph_state_names_every_identifier_it_holds():
+    from datetime import date
+
+    record = key("d09")
+    state = {
+        "uploaded_by": "Dr Test",
+        "expected_patient": ExpectedPatient(
+            name="Asha Rao", mrn="MRN-1", date_of_birth=date(1970, 5, 1)
+        ),
+        "record": record,
+    }
+    found = set(nodes.state_identifiers(state))
+    assert {"Dr Test", "Asha Rao", "MRN-1", "01/05/1970"} <= found
+    assert record.patient.printed.name.text in found
+
+
+def test_a_resumed_run_notes_the_identifiers_its_checkpoint_holds():
+    from types import SimpleNamespace
+
+    import document_jobs
+
+    record = key("d09")
+    saved = {"record": record, "end_state": "verified", "uploaded_by": "Dr Test"}
+
+    class Graph:
+        def get_state(self, config):
+            return SimpleNamespace(values=saved, next=())
+
+    class Run:
+        id = "run-1"
+        identifiers: set = set()
+
+        def add_identifiers(self, *values):
+            self.identifiers |= {v for v in values if v}
+
+    run = Run()
+    assert document_jobs._invoke(Graph(), run, {}) is saved
+    assert record.patient.printed.name.text in run.identifiers
+    assert "Dr Test" in run.identifiers
+
+
+def test_a_summary_failure_is_masked_with_the_patient_s_identifiers(db):
+    import insights_service
+
+    patient = add_patient(db, name="Meera Iyer", mrn="UHID-4471")
+    with db.cursor() as cur:
+        known = insights_service._summary_identifiers(cur, patient)
+    assert {"Meera Iyer", "UHID-4471"} <= set(known)
+    assert redact("no record for Meera Iyer (UHID-4471)", known) == (
+        f"no record for {PATIENT} ({PATIENT})"
+    )
+
+
+def test_http_clients_log_no_request_urls():
+    # httpx logs "GET .../patients?q=Asha+Rao" at INFO: warnings only.
+    import logging
+
+    before = {n: logging.getLogger(n).level for n in logs.QUIET_LOGGERS}
+    try:
+        logs.configure_logging(console=False)
+        for name in logs.QUIET_LOGGERS:
+            assert not logging.getLogger(name).isEnabledFor(logging.INFO)
+            assert logging.getLogger(name).isEnabledFor(logging.WARNING)
+    finally:
+        for name, level in before.items():
+            logging.getLogger(name).setLevel(level)

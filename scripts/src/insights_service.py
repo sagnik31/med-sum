@@ -443,6 +443,44 @@ RETURNING status, updated_at
 """
 
 
+# The patient's identifiers, as registered and as printed on their
+# documents, to mask a failure's message with before it is stored.
+_SUMMARY_IDENTIFIERS = """
+SELECT p.full_name, p.mrn, p.date_of_birth FROM patients p WHERE p.id = %(p)s
+UNION ALL
+SELECT r.record #>> '{patient,printed,name,text}',
+       r.record #>> '{patient,printed,patient_id,text}',
+       NULL
+FROM document_records r JOIN documents d ON d.id = r.document_id
+WHERE d.patient_id = %(p)s
+"""
+
+
+def _summary_identifiers(cur, patient_id: str) -> list[str]:
+    """
+    The identifiers a summary failure is masked with: the patient's name,
+    MRN and date of birth (in the formats documents print), and the name
+    and ID printed on each of their documents. Empty if the lookup fails,
+    leaving the pattern masking. See docs/adr/0008-patient-data-protection.md.
+    """
+    try:
+        cur.execute(_SUMMARY_IDENTIFIERS, {"p": patient_id})
+        rows = cur.fetchall()
+    except psycopg.Error:
+        cur.connection.rollback()
+        return []
+    known: list[str] = []
+    for name, mrn, dob in rows:
+        known += [v for v in (name, mrn) if v]
+        if dob is not None:
+            known += [
+                dob.isoformat(),
+                dob.strftime("%d/%m/%Y"),
+                dob.strftime("%d-%m-%Y"),
+            ]
+    return known
+
+
 def _next_claim(row) -> datetime | None:
     """The new claim when the final write kept the summary processing."""
     return row[1] if row is not None and row[0] == "processing" else None
@@ -535,9 +573,10 @@ def _build_patient_summary(patient_id: str, claim: datetime) -> datetime | None:
         try:
             conn.rollback()
             with conn.cursor() as cur:
+                known = _summary_identifiers(cur, patient_id)
                 cur.execute(
                     _FAIL_SUMMARY,
-                    {"error": redact(str(e) or type(e).__name__),
+                    {"error": redact(str(e) or type(e).__name__, known),
                      "patient_id": patient_id, "claim": claim},
                 )  # fmt: skip
                 row = cur.fetchone() if cur.rowcount else None

@@ -42,7 +42,7 @@ import psycopg
 
 from observability import ClaimLost, resume_run, start_run
 from observability.redact import redact
-from pipeline import checkpoints
+from pipeline import checkpoints, nodes
 from pipeline import graph as document_graph
 from pipeline.nodes import plain_text
 from pipeline.state import initial_state
@@ -433,6 +433,10 @@ def _invoke(graph, run, state: dict) -> dict:
         "configurable": {"thread_id": run.id},
     }
     saved = graph.get_state(config)
+    # A resumed run starts with no identifiers noted: note what its
+    # checkpoint holds, so what it stores from now on is masked.
+    # See docs/adr/0008-patient-data-protection.md.
+    run.add_identifiers(*nodes.state_identifiers(saved.values or state))
     if saved.values and not saved.next:
         return saved.values  # it finished before the worker died
     return graph.invoke(None if saved.values else state, config)
@@ -464,8 +468,7 @@ def process(job: Job, worker: str, *, build=None, heartbeat_s: float = HEARTBEAT
     with connect() as conn:
         try:
             state = _document_state(conn, job.document_id)
-            expected = state.get("expected_patient")
-            known = [state.get("uploaded_by"), getattr(expected, "name", None)]
+            known = nodes.expected_identifiers(state)
             with (
                 checkpoints.open_checkpointer() as saver,
                 Heartbeat(job, worker, every=heartbeat_s) as beat,
@@ -474,6 +477,10 @@ def process(job: Job, worker: str, *, build=None, heartbeat_s: float = HEARTBEAT
                 run_id = None
                 try:
                     run = _open_run(conn, job, worker)
+                    run.add_identifiers(*nodes.expected_identifiers(state))
+                    # A failure from here on is masked with every identifier
+                    # the run has noted, the printed patient's included.
+                    known = run.identifiers
                     run.claim = JobClaim(job, worker, beat)
                     with run:
                         run_id = run.id

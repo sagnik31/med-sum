@@ -81,9 +81,17 @@ def redact_finding(finding: dict, known: Iterable[str] = ()) -> dict:
     known = list(known)
     out = dict(finding)
     out["message"] = redact(out.get("message"), known)
-    details = out.get("details")
-    if isinstance(details, dict):
-        out["details"] = {
-            k: redact(v, known) if isinstance(v, str) else v for k, v in details.items()
-        }
+    if isinstance(out.get("details"), dict):
+        out["details"] = _redact_values(out["details"], known)
     return out
+
+
+def _redact_values(value, known: list[str]):
+    """Every string inside `value` (dicts and lists walked) redacted."""
+    if isinstance(value, str):
+        return redact(value, known)
+    if isinstance(value, dict):
+        return {k: _redact_values(v, known) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_redact_values(v, known) for v in value]
+    return value

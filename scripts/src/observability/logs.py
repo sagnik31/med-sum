@@ -148,6 +148,9 @@ class JsonFormatter(logging.Formatter):
         return json.dumps(entry, ensure_ascii=False)
 
 
+QUIET_LOGGERS = ("httpx", "httpcore")
+
+
 def configure_logging(
     *,
     log_file: str | None = None,
@@ -182,4 +185,8 @@ def configure_logging(
         handler._medsum_json = True
         root.addHandler(handler)
     root.setLevel(level)
+    # HTTP clients log each request's URL at INFO, and a URL can carry a
+    # patient search (the MCP server's "?q=<name>"): warnings only.
+    for name in QUIET_LOGGERS:
+        logging.getLogger(name).setLevel(max(level, logging.WARNING))
     return handlers

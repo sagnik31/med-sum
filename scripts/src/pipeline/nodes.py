@@ -85,14 +85,11 @@ def _page_numbers(state: GraphState) -> list[int]:
     return [p.page for p in state.get("transcriptions", [])]
 
 
-def _note_expected_patient(state: GraphState) -> None:
-    """
-    Who the document should be for, noted on the run so stored findings
-    and errors mask it (observability.redact).
-    """
+def expected_identifiers(state) -> list:
+    """The uploader and the expected patient's name, MRN and date of birth."""
     expected = state.get("expected_patient")
     dob = getattr(expected, "date_of_birth", None)
-    add_identifiers(
+    return [
         state.get("uploaded_by"),
         getattr(expected, "name", None),
         getattr(expected, "mrn", None),
@@ -101,18 +98,46 @@ def _note_expected_patient(state: GraphState) -> None:
             if dob
             else ()
         ),
-    )
+    ]
+
+
+def printed_identifiers(patient) -> list:
+    """The patient's name, ID and date of birth as printed (parsed or stored)."""
+    if patient is None:
+        return []
+    printed = getattr(patient, "printed", patient)  # a record item or a parse
+    return [
+        getattr(getattr(printed, name, None), "text", None)
+        for name in ("name", "patient_id", "date_of_birth")
+    ]
+
+
+def state_identifiers(state) -> list:
+    """
+    Every identifier a graph state holds: the expected patient, and the
+    patient as printed in the record or in any part parsed so far. A run
+    resumed from a checkpoint notes these first, so what it stores from
+    then on is masked as in the run it continues.
+    """
+    found = expected_identifiers(state)
+    found += printed_identifiers(getattr(state.get("record"), "patient", None))
+    found += printed_identifiers(getattr(state.get("parse"), "patient", None))
+    for part in state.get("part_results") or []:
+        found += printed_identifiers(getattr(part.parse, "patient", None))
+    return found
+
+
+def _note_expected_patient(state: GraphState) -> None:
+    """
+    Who the document should be for, noted on the run so stored findings
+    and errors mask it (observability.redact).
+    """
+    add_identifiers(*expected_identifiers(state))
 
 
 def _note_printed_patient(parsed) -> None:
     """The patient as the parse read them, noted like the expected one."""
-    patient = getattr(parsed, "patient", None)
-    if patient is None:
-        return
-    add_identifiers(*(
-        getattr(getattr(patient, name, None), "text", None)
-        for name in ("name", "patient_id", "date_of_birth")
-    ))  # fmt: skip
+    add_identifiers(*printed_identifiers(getattr(parsed, "patient", None)))
 
 
 def _step():
