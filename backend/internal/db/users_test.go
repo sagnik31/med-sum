@@ -50,6 +50,13 @@ func TestCreateUserThenFindIt(t *testing.T) {
 	if err != nil || byID == nil || byID.Email != u.Email {
 		t.Errorf("GetUserByID = %+v, %v", byID, err)
 	}
+	if inOrg, err := s.GetOrgUser(ctx, u.OrgID, u.ID); err != nil || inOrg == nil || inOrg.ID != u.ID {
+		t.Errorf("GetOrgUser = %+v, %v", inOrg, err)
+	}
+	otherOrg, _ := mustOtherOrg(t, s)
+	if other, err := s.GetOrgUser(ctx, otherOrg, u.ID); other != nil || err != nil {
+		t.Errorf("GetOrgUser from another organisation = %+v, %v; want nil, nil", other, err)
+	}
 	if missing, err := s.GetUserByEmail(ctx, "nobody@hospital.test"); missing != nil || err != nil {
 		t.Errorf("unknown email = %+v, %v; want nil, nil", missing, err)
 	}

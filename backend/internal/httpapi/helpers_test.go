@@ -192,6 +192,20 @@ func (f *fakeStore) GetUserByID(_ context.Context, id string) (*db.User, error) 
 	return &copied, nil
 }
 
+func (f *fakeStore) GetOrgUser(_ context.Context, orgID, id string) (*db.User, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return nil, f.failWith
+	}
+	u, ok := f.users[id]
+	if !ok || u.OrgID != orgID {
+		return nil, nil
+	}
+	copied := *u
+	return &copied, nil
+}
+
 func (f *fakeStore) RecordLoginFailure(_ context.Context, userID string, maxFailures int, lockUntil time.Time, ev *db.AuditEvent) (*time.Time, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()

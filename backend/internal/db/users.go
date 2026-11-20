@@ -153,6 +153,14 @@ func (s *Store) GetUserByID(ctx context.Context, id string) (*User, error) {
 		`SELECT `+userColumns+` FROM staff_users u JOIN organizations o ON o.id = u.org_id WHERE u.id = $1`, id))
 }
 
+// GetOrgUser returns the account if it belongs to the organisation, or nil:
+// another organisation's account is not found, by the query itself. See
+// docs/adr/0010-staff-access-and-security.md.
+func (s *Store) GetOrgUser(ctx context.Context, orgID, id string) (*User, error) {
+	return scanUser(s.pool.QueryRow(ctx,
+		`SELECT `+userColumns+` FROM staff_users u JOIN organizations o ON o.id = u.org_id WHERE u.id = $1 AND u.org_id = $2`, id, orgID))
+}
+
 // RecordLoginFailure counts a failed password for the account. The
 // maxFailures-th failure in a row locks the account until lockUntil and
 // starts the count again. It returns the lock time, if one is set. ev

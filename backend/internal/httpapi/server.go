@@ -33,6 +33,7 @@ type Store interface {
 	// Accounts and sessions
 	GetUserByEmail(ctx context.Context, email string) (*db.User, error)
 	GetUserByID(ctx context.Context, id string) (*db.User, error)
+	GetOrgUser(ctx context.Context, orgID, id string) (*db.User, error)
 	RecordLoginFailure(ctx context.Context, userID string, maxFailures int, lockUntil time.Time, ev *db.AuditEvent) (*time.Time, error)
 	RecordLoginSuccess(ctx context.Context, userID string, now time.Time, ev *db.AuditEvent) error
 	SetPasswordHash(ctx context.Context, userID, hash string, now time.Time, ev *db.AuditEvent) error

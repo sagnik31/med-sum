@@ -305,14 +305,14 @@ func (s *Server) handleUpdateStaff(w http.ResponseWriter, r *http.Request, id st
 // (active account). Earlier unused links stop working.
 func (s *Server) handleStaffLink(w http.ResponseWriter, r *http.Request, id string) {
 	p, _ := principalFromContext(r.Context())
-	user, err := s.db.GetUserByID(r.Context(), id)
+	user, err := s.db.GetOrgUser(r.Context(), p.OrgID, id)
 	if err != nil {
-		log.Printf("GetUserByID error: %v", err)
+		log.Printf("GetOrgUser error: %v", err)
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
-	if user == nil || user.OrgID != p.OrgID {
-		http.NotFound(w, r)
+	if user == nil {
+		http.NotFound(w, r) // no such account, or another organisation's
 		return
 	}
 	if user.Status == db.StatusDisabled {
