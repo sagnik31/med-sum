@@ -45,7 +45,7 @@ def finding(validator, severity, item_id=None, field=None):
 # The catalogue
 # -------------------------------------------------------------------
 def test_the_catalogue_is_the_documented_list():
-    routing = {f"LC-{n:02}" for n in range(1, 20)}
+    routing = {f"LC-{n:02}" for n in range(1, 21)}
     info = {"LC-I1", "LC-I2", "LC-I3"}
     assert {s for s, v in SIGNALS.items() if v.kind is Kind.ROUTING} == routing
     assert {s for s, v in SIGNALS.items() if v.kind is Kind.INFO} == info
@@ -181,6 +181,17 @@ def test_lc01_a_cited_unreadable_line_is_not_raised_twice():
     hits = [h for h in collect(record=record) if h.signal == "LC-01"]
 
     assert [h.item_id for h in hits] == [o.id]
+
+
+def test_lc20_each_detail_the_parts_print_differently():
+    conflicts = [{"field": "patient.name", "parts": [0, 2]}]
+
+    hits = [h for h in collect(header_conflicts=conflicts) if h.signal == "LC-20"]
+
+    assert [(h.item_id, h.field, h.details) for h in hits] == [
+        (None, "patient.name", {"parts": "1, 3"})
+    ]
+    assert signals.needs_review(hits)
 
 
 def test_lc02_each_capped_page():

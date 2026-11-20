@@ -80,6 +80,7 @@ SIGNALS = _signals(
     ("LC-17", R, "A row of a results table has no result in the record."),
     ("LC-18", R, "A model's input may have been cut short; content may be missing."),
     ("LC-19", R, "This item is in the record twice, read from the same lines."),
+    ("LC-20", R, "Pages of the document print different patient details or dates."),
     ("LC-I1", INFO, "No PDF text layer, so the reading has no independent check."),
     ("LC-I2", INFO, "Transcription lines that no extracted item uses."),
     ("LC-I3", INFO, "A range, flag or unit that code could not read."),
@@ -191,6 +192,7 @@ def collect(
     empty_pages: list[int] = (),
     truncated_pages: list[int] = (),
     parse_truncated: bool = False,
+    header_conflicts: list[dict] = (),
     classify_disagree: bool = False,
     record_model_role: str | None = None,
     repairs: int = 0,
@@ -207,6 +209,9 @@ def collect(
     `truncated_pages` and `parse_truncated` say which calls' prompts may
     have been cut to fit the context window (LC-18: a page's transcription
     request, or a part of the parse the record was built from).
+    `header_conflicts` are the patient details and dates the parts of a
+    split parse print differently (LC-20, pipeline.parts.header_conflicts):
+    one hit each, on the document, naming the field and the parts (from 1).
     """
     hits: list[SignalHit] = []
     if record is not None:
@@ -221,6 +226,14 @@ def collect(
     ]
     if parse_truncated:
         hits.append(SignalHit(signal="LC-18", details={"step": "parse"}))
+    hits += [
+        SignalHit(
+            signal="LC-20",
+            field=c["field"],
+            details={"parts": ", ".join(str(i + 1) for i in c["parts"])},
+        )
+        for c in header_conflicts
+    ]
     hits += from_findings(findings)
     if doc_type in PARSE_MODELS and not parsed:
         hits.append(SignalHit(signal="LC-08"))

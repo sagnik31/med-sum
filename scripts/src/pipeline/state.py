@@ -113,6 +113,9 @@ class GraphState(TypedDict):
     parse_model_role: NotRequired[ModelRole | None]
     # A part of the last merged parse had its prompt cut (signal LC-18).
     parse_truncated: NotRequired[bool]
+    # Patient details or dates the parts print differently, which the merge
+    # resolved by keeping the first part's: {"field", "parts"} each (LC-20).
+    parse_conflicts: NotRequired[list[dict]]
     # Repairs so far, over both models (signal OP-2).
     repairs: NotRequired[int]
     # What each part's repair took (variant, turns, tool calls, tokens,

@@ -483,8 +483,10 @@ def _combined(state: GraphState, results: list[PartResult]) -> dict:
             ),
         }
     roles = {r.model_role for r in results}
+    parses = [r.parse for r in results]
     return {
-        "parse": parts.merge([r.parse for r in results]),
+        "parse": parts.merge(parses),
+        "parse_conflicts": parts.header_conflicts(parses),
         "parse_error": None,
         "parse_provenance": results[0].provenance,
         "part_provenance": [r.provenance for r in results],
@@ -866,6 +868,7 @@ def marked_record(state: GraphState, provenance) -> tuple:
         empty_pages=empty_pages(state),
         truncated_pages=state.get("truncated_pages", []),
         parse_truncated=parsed and state.get("parse_truncated", False),
+        header_conflicts=state.get("parse_conflicts", []) if parsed else [],
         classify_disagree=state.get("classify_disagree", False),
         record_model_role=state.get("parse_model_role") if parsed else None,
         repairs=state.get("repairs", 0),

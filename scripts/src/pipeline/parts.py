@@ -20,14 +20,17 @@ See docs/adr/0002-two-model-steps.md.
 """
 
 import math
+import re
 import unicodedata
 
 from pydantic import Field
 
+from derive.dates import parse_date
 from record.common import Provenance, Strict
 from record.document import PageTranscription
 from record.printed import DocumentType, LabReportParse, PrescriptionParse
 from validators.layout import medicine_line_numbers, results_table_rows
+from validators.patient import names_match, read_age, read_sex
 from validators.text import is_blank, is_heading
 
 Parse = LabReportParse | PrescriptionParse
@@ -208,6 +211,63 @@ def merge(parses: list[Parse]) -> Parse:
             [item.model_copy(deep=True) for p in parses for item in getattr(p, name)],
         )
     return merged
+
+
+# The details merge takes from the first part that prints them, and how two
+# printings are compared: a name in its words (titles and initials aside), an
+# ID without spaces or case, a date as the date it states, an age in years,
+# a sex as M, F or O. Anything code can't read is compared as text.
+def _same_name(a: str, b: str) -> bool:
+    return names_match(a, b)
+
+
+def _same_id(a: str, b: str) -> bool:
+    return re.sub(r"\s+", "", a).casefold() == re.sub(r"\s+", "", b).casefold()
+
+
+def _same_read(read):
+    def same(a: str, b: str) -> bool:
+        ra, rb = read(a), read(b)
+        if ra is not None and rb is not None:
+            return ra == rb
+        return _key(a) == _key(b)
+
+    return same
+
+
+_COMPARED = {
+    ("patient", "name"): _same_name,
+    ("patient", "patient_id"): _same_id,
+    ("patient", "date_of_birth"): _same_read(parse_date),
+    ("patient", "age"): _same_read(read_age),
+    ("patient", "sex"): _same_read(read_sex),
+    ("details", "report_date"): _same_read(parse_date),
+    ("details", "collection_date"): _same_read(parse_date),
+    ("details", "prescription_date"): _same_read(parse_date),
+}
+
+
+def header_conflicts(parses: list[Parse]) -> list[dict]:
+    """
+    The patient details and document dates that two parts print
+    differently, one {"field", "parts"} each ("patient.name", and the
+    indexes of the parts that print it). The merge keeps the first part's,
+    so without this a later page printed for another patient, or on another
+    date, would vanish from the record; it raises LC-20 instead. No values:
+    they are patient data. See docs/adr/0004-deterministic-checks-decide-routing.md.
+    """
+    conflicts = []
+    for (holder, name), same in _COMPARED.items():
+        printed = [
+            (i, value.text)
+            for i, p in enumerate(parses)
+            if (value := getattr(getattr(p, holder), name, None)) is not None
+        ]
+        if any(not same(printed[0][1], text) for _, text in printed[1:]):
+            conflicts.append(
+                {"field": f"{holder}.{name}", "parts": [i for i, _ in printed]}
+            )
+    return conflicts
 
 
 def _first(parses: list[Parse], holder: str, name: str):

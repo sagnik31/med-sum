@@ -182,3 +182,54 @@ def test_the_parts_of_the_dataset_s_longest_document():
     longest = max((d for d in PARSED_IDS if d != LONG), key=lambda d: DOCS[d]["pages"])
     record = key(longest)
     assert len(parts.plan(record.pages, record.document.type)) == len(record.pages)
+
+
+# -------------------------------------------------------------------
+# Details the parts print differently (LC-20)
+# -------------------------------------------------------------------
+@pytest.mark.parametrize("doc_id", PARSED_IDS)
+@pytest.mark.parametrize("max_rows", [None, 2])
+def test_the_dataset_s_parts_agree_on_their_details(doc_id, max_rows):
+    record = key(doc_id)
+    plan = parts.plan(record.pages, record.document.type, max_rows=max_rows)
+    assert parts.header_conflicts(split_parse(parse_of(record), plan)) == []
+
+
+def test_a_later_part_printed_for_another_patient_or_date_is_a_conflict():
+    first, second = split_parse(
+        parse_of(key("d01")), parts.plan(key("d01").pages, LAB)
+    )[:2]
+    first.patient.name = text("Mrs. Meera Iyer")
+    second.patient.name = text("Somebody Else", page=2)
+    first.details.report_date = text("05/09/2024")
+    second.details.report_date = text("06/09/2024", page=2)
+    first.details.facility = text("Sunrise Lab")
+    second.details.facility = text("Another Lab", page=2)  # letterheads vary
+
+    conflicts = parts.header_conflicts([first, second])
+
+    assert conflicts == [
+        {"field": "patient.name", "parts": [0, 1]},
+        {"field": "details.report_date", "parts": [0, 1]},
+    ]
+    # Field names and part numbers only: no patient data.
+    assert "Somebody" not in str(conflicts) and "2024" not in str(conflicts)
+
+
+def test_the_same_details_printed_another_way_are_no_conflict():
+    first, second = split_parse(
+        parse_of(key("d01")), parts.plan(key("d01").pages, LAB)
+    )[:2]
+    pairs = {
+        "name": ("Mrs. Meera Iyer", "MEERA  IYER"),
+        "age": ("57 Y", "57 Years"),
+        "sex": ("F", "Female"),
+        "date_of_birth": ("05/09/1967", "5 Sep 1967"),
+        "patient_id": ("UHID 4471", "uhid4471"),
+    }
+    for field, (a, b) in pairs.items():
+        setattr(first.patient, field, text(a))
+        setattr(second.patient, field, text(b, page=2))
+    second.details.report_date = None  # printed on one part only
+
+    assert parts.header_conflicts([first, second]) == []
