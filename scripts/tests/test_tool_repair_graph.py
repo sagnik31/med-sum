@@ -152,7 +152,8 @@ def test_when_the_reading_turns_are_used_the_last_turn_must_be_the_fix(
     # tool exchange written into its request.
     assert "tools" not in last and last["format"] is not None
     request = last["messages"][-1]["content"]
-    assert "What the tools returned:" in request
+    assert "What the tools returned" in request
+    assert "<tool_results>" in request and "</tool_results>" in request
     assert (
         "You called get_lines" in request
         and "You called search_transcription" in request

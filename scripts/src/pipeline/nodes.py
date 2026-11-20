@@ -588,6 +588,22 @@ def part_problems(state: GraphState) -> dict[int, list[str]]:
     return found
 
 
+PROBLEMS_OPEN, PROBLEMS_CLOSE = "<problems>", "</problems>"
+
+
+def repair_request(instructions: str, lines: list[str]) -> str:
+    """
+    The repair's user message: its instructions, then the problem lines
+    fenced, since they quote the document and quoted text is data, never
+    an instruction (repair_parse says so). Instructions stored before the
+    fence existed get the lines bare, so an old repair replays as it ran.
+    """
+    body = "\n".join(lines)
+    if PROBLEMS_OPEN not in instructions:
+        return instructions + body
+    return f"{instructions}{PROBLEMS_OPEN}\n{body}\n{PROBLEMS_CLOSE}"
+
+
 def problems(state: GraphState) -> list[str]:
     """Every part's problems, in part order."""
     found = part_problems(state)
@@ -679,7 +695,7 @@ def repair(state: GraphState) -> dict:
         if reply:
             messages.append({"role": "assistant", "content": reply})
         messages.append(
-            {"role": "user", "content": instructions + "\n".join(found[index])}
+            {"role": "user", "content": repair_request(instructions, found[index])}
         )
         calls_before = len(step.model_call_list())
         started = time.monotonic()

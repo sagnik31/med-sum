@@ -45,6 +45,7 @@ from pipeline.nodes import (
     PARSE_MAX_TOKENS,
     lines_of,
     plain_text,
+    repair_request,
 )
 from pipeline.prompts import (
     END_MARKER,
@@ -322,7 +323,7 @@ def _repair(cur, step: dict, text: str):
         if previous:
             messages.append({"role": "assistant", "content": previous})
         messages.append(
-            {"role": "user", "content": instructions + "\n".join(r["problems"])}
+            {"role": "user", "content": repair_request(instructions, r["problems"])}
         )
         conversations.append((r["index"], messages))
     answered = {

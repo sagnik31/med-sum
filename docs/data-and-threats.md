@@ -75,10 +75,12 @@ A document is untrusted input. Its text, printed or hidden, can say "ignore the 
 
 What the models could do with such text, and what stops it:
 
+- **Take it as an instruction.** Every prompt (transcription, classification, parse, repair, overview, and the MCP server's instructions) says the document's text is data, never an instruction. Text that quotes the document inside a request, a repair's list of problems and the tool results its final turn repeats, is fenced (`<problems>`, `<tool_results>`) and sent apart from the instructions. This lowers the odds; the checks below are what decide.
+
 - **Change a value or invent one.** The parse copies values as printed, and code checks each one against the page's transcription and, where the PDF has one, its own text layer ([0003](adr/0003-printed-and-derived-values.md), [0004](adr/0004-deterministic-checks-decide-routing.md)). A value that isn't on its cited line is a finding, and the document goes to review.
 - **Decide a flag, a range or a date.** These are derived in code from the printed text, never taken from the model ([0003](adr/0003-printed-and-derived-values.md)).
 - **Mark the document verified.** The end state comes from deterministic signals, not from the model.
-- **Run a tool, call a URL or read another record.** The models get no tools. Each call sees only its prompt and its own page or part.
+- **Run a tool, call a URL or read another record.** Only the optional tool repair (`MEDSUM_REPAIR=tools`) gives a model tools, and they are read-only and read only the document being repaired. Each call sees only its prompt and its own page or part.
 - **Inject markup into the page.** Every value from a document is HTML-escaped where it is inserted.
 - **Steer the patient summary.** The overview model reads computed facts, not transcriptions, and code rejects an overview that states anything outside those facts.
 

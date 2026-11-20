@@ -339,7 +339,10 @@ def test_a_repair_step_stores_what_its_conversation_needs(db, repaired):
     (part,) = given["repairs"]
     assert part["index"] == 0 and part["part"]["page"] == 1
     # The problem lines are what the model was sent, after the instructions.
-    assert call["messages"][3]["content"].endswith("\n".join(part["problems"]))
+    problems = "\n".join(part["problems"])
+    assert call["messages"][3]["content"].endswith(
+        f"<problems>\n{problems}\n</problems>"
+    )
     assert any("strength" in line for line in part["problems"])
     # The previous reply is a reference, not a second copy.
     assert set(part["previous"]) == {"sha256", "chars"}
