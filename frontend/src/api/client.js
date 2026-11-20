@@ -5,86 +5,20 @@
 // Vite serves the app and proxies /api to the Go server, so the cookie is
 // first-party (see vite.config.js).
 
+import {
+  ApiError,
+  ReviewFindings,
+  apiRequest as requestAt,
+  findingsOf,
+  onSessionExpiry,
+  onUnauthorized,
+} from "./request.js";
+
+export { ApiError, ReviewFindings, onSessionExpiry, onUnauthorized };
+
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
 
-// The API refuses state-changing requests without this header (CSRF
-// protection).
-const CSRF_HEADER = { "X-Requested-With": "med-sum" };
-
-// Fired when the API answers 401, so the app can return to the login page.
-const UNAUTHORIZED_EVENT = "medsum:unauthorized";
-
-export function onUnauthorized(handler) {
-  window.addEventListener(UNAUTHORIZED_EVENT, handler);
-  return () => window.removeEventListener(UNAUTHORIZED_EVENT, handler);
-}
-
-// Fired with the seconds the session has left (from the API's
-// X-Session-Expires-In header) after every request that carried a session,
-// so the app can warn before the idle timeout. See IdleWarning.jsx.
-const SESSION_EXPIRY_EVENT = "medsum:session-expiry";
-
-export function onSessionExpiry(handler) {
-  const listener = (e) => handler(e.detail);
-  window.addEventListener(SESSION_EXPIRY_EVENT, listener);
-  return () => window.removeEventListener(SESSION_EXPIRY_EVENT, listener);
-}
-
-function reportSessionExpiry(response) {
-  const value = response.headers.get("X-Session-Expires-In");
-  if (value === null || !/^\d+$/.test(value)) return;
-  window.dispatchEvent(new CustomEvent(SESSION_EXPIRY_EVENT, { detail: Number(value) }));
-}
-
-export class ApiError extends Error {
-  constructor(status, message) {
-    super(message);
-    this.status = status;
-  }
-}
-
-/**
- * Send a request to the API.
- * - json: a value to send as a JSON body
- * - body: a raw body (FormData for uploads)
- * - signalUnauthorized: fire UNAUTHORIZED_EVENT on a 401 (default true)
- */
-async function apiRequest(
-  path,
-  { method = "GET", json, body, signalUnauthorized = true } = {}
-) {
-  const headers = new Headers();
-  if (method !== "GET" && method !== "HEAD") {
-    for (const [k, v] of Object.entries(CSRF_HEADER)) headers.set(k, v);
-  }
-  if (json !== undefined) {
-    headers.set("Content-Type", "application/json");
-    body = JSON.stringify(json);
-  }
-
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    method,
-    headers,
-    body,
-    credentials: "include",
-  });
-  reportSessionExpiry(response);
-
-  if (!response.ok) {
-    const text = (await response.text().catch(() => "")).trim();
-    if (response.status === 401) {
-      if (signalUnauthorized) window.dispatchEvent(new Event(UNAUTHORIZED_EVENT));
-      throw new ApiError(401, text ? `Unauthorized: ${text}` : "Unauthorized: please log in.");
-    }
-    throw new ApiError(response.status, text || `API error ${response.status}: ${response.statusText}`);
-  }
-  if (response.status === 204) return null;
-  try {
-    return await response.json();
-  } catch {
-    return null;
-  }
-}
+const apiRequest = (path, options) => requestAt(API_BASE_URL, path, options);
 
 // ---------- Auth API ----------
 
@@ -335,21 +269,5 @@ export async function reviewDocument(documentId, review, { recordUpdatedAt, acce
     const findings = err instanceof ApiError && err.status === 422 ? findingsOf(err.message) : null;
     if (findings) throw new ReviewFindings(findings);
     throw err;
-  }
-}
-
-export class ReviewFindings extends Error {
-  constructor(findings) {
-    super("The corrected value fails a check.");
-    this.findings = findings;
-  }
-}
-
-function findingsOf(text) {
-  try {
-    const body = JSON.parse(text);
-    return Array.isArray(body?.findings) ? body.findings : null;
-  } catch {
-    return null;
   }
 }

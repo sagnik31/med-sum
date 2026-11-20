@@ -2,18 +2,10 @@
 import React, { useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/context.js";
+import { safeNext } from "../auth/links.js";
 
 export const inputClass =
   "w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300";
-
-// next must be a path in this app: "/x", never "//host" or "https://...",
-// so the login page can't be used to send someone to another site.
-function safeNext(next) {
-  if (!next || !next.startsWith("/") || next.startsWith("//") || next.startsWith("/\\")) {
-    return "/";
-  }
-  return next;
-}
 
 function LoginPage() {
   const { status, login } = useAuth();

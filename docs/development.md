@@ -17,10 +17,10 @@ db/ai_service_role.sql   the AI service's least-privilege role (see Database rol
 db/api_role.sql          the Go API's least-privilege role
 docs/adr/                architecture decision records: why the system is built this way
 frontend/
-  src/api/               API client
+  src/api/               API client, and the request code it uses (with tests)
   src/components/        shared components (sandboxed HTML viewer, record view and source page, processing and trace panels, sessions list, idle warning)
   src/record/            what the record view, processing and trace panels show: values, derived values, citations, steps (with tests)
-  src/auth/              the logged-in account (AuthProvider), permissions and the route guard
+  src/auth/              the logged-in account (AuthProvider), permissions, the route guard, and the login links (with tests)
   src/pages/             login, set password, account, staff, audit log, pipeline runs, patients, patient, document, patient summary, review queue
 scripts/
   src/insights_service.py    FastAPI service; starts the document worker
@@ -60,7 +60,7 @@ postman/                 API collection
 
 ## Checks and tests
 
-The frontend's tests (`npm test`) use Node's own test runner on the functions in `src/record/`, with a synthetic record that a pytest test keeps valid against the record schema.
+The frontend's tests (`npm test`) use Node's own test runner on the functions in `src/record/`, with a synthetic record that a pytest test keeps valid against the record schema, and on the request code (`src/api/request.js`: the CSRF header, the 401 and session-expiry events, review findings, with `fetch` stubbed) and the login links (`src/auth/links.js`: where `?next=` may lead, the set-password token).
 
 Install the Python test tools (pytest, [Ruff](https://docs.astral.sh/ruff/) and Beautiful Soup, which the tests use to read the generated pages) into the AI service's virtual environment:
 

@@ -5,17 +5,14 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchSetupInfo, setPasswordWithLink } from "../api/client.js";
+import { tokenFromHash } from "../auth/links.js";
 import { inputClass } from "./LoginPage.jsx";
 
 const MIN_LENGTH = 12;
 
-function tokenFromHash() {
-  const params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-  return params.get("token") || "";
-}
 
 function SetPasswordPage() {
-  const [token] = useState(tokenFromHash);
+  const [token] = useState(() => tokenFromHash(window.location.hash));
   const [info, setInfo] = useState(null); // { email, full_name, org }
   const [linkError, setLinkError] = useState("");
   const [password, setPassword] = useState("");

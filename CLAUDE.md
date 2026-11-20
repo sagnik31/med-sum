@@ -59,7 +59,7 @@ Don't break these without a new or amended ADR.
 
 ## How to work here
 
-- **Tests come with the change.** Pytest goes in `scripts/tests/`, and Go tests sit next to the code. Frontend tests cover `src/record/` with Node's test runner.
+- **Tests come with the change.** Pytest goes in `scripts/tests/`, and Go tests sit next to the code. Frontend tests cover the plain modules (`src/record/`, `src/api/request.js`, `src/auth/links.js`) with Node's test runner.
 - **Tests never call a model.** An autouse fake model client in `scripts/tests/conftest.py` fails a test on any call it wasn't told to expect. Go handlers are tested against an in-memory store fake (`backend/internal/httpapi/helpers_test.go`).
 - **Live model runs are slow on a CPU and are not part of the checks.** Use `python -m evals.run --replay` (recorded replies) where cassettes exist, and ask before starting a live run (`--live`).
 - **Synthetic data only.** Use the dataset in `scripts/evals/dataset/` (`python -m dataset.load --yes` uploads it). Never commit or open real patient documents; `data/` is gitignored for that reason.
