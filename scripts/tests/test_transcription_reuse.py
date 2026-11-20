@@ -103,8 +103,17 @@ def test_the_step_log_names_the_step_it_reused(db, model_client, first, json_log
         "UPDATE pipeline_steps SET input = jsonb_set(input, '{image,sha256}',"
         " '\"0000\"')",
         "UPDATE pipeline_steps SET status = 'failed'",
+        # Its prompt may have been cut: a reuse would drop that run's LC-18.
+        "UPDATE pipeline_model_calls SET prompt_truncated = true",
     ],
-    ids=["other prompt", "other model", "fallback model", "other image", "failed"],
+    ids=[
+        "other prompt",
+        "other model",
+        "fallback model",
+        "other image",
+        "failed",
+        "truncated",
+    ],
 )
 def test_a_page_is_read_again_unless_everything_matches(
     db, model_client, first, change

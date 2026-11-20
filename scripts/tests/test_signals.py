@@ -154,6 +154,35 @@ def test_lc01_a_header_value_on_an_unreadable_line_is_on_the_document():
     assert [(h.item_id, h.field) for h in hits] == [(None, "facility")]
 
 
+def test_lc01_an_unreadable_line_no_item_cites_is_on_the_document():
+    # What couldn't be read may be a value the record lacks, so it routes.
+    record = keyed_record("d09")
+    cited = {
+        (c.page, n)
+        for _, _, c in signals.item_citations(record)
+        for n in range(c.first_line, c.last_line + 1)
+    }
+    page = record.pages[0]
+    free = next(n for n in range(1, len(page.lines) + 1) if (1, n) not in cited)
+    page.lines[free - 1] = "Impression: [unreadable]"
+
+    hits = [h for h in collect(record=record) if h.signal == "LC-01"]
+
+    assert [(h.item_id, h.details) for h in hits] == [(None, {"page": 1, "line": free})]
+    assert signals.needs_review(hits)
+
+
+def test_lc01_a_cited_unreadable_line_is_not_raised_twice():
+    record = keyed_record("d09")
+    o = record.observations[0]
+    c = o.printed.citation
+    record.pages[c.page - 1].lines[c.first_line - 1] += " [unreadable]"
+
+    hits = [h for h in collect(record=record) if h.signal == "LC-01"]
+
+    assert [h.item_id for h in hits] == [o.id]
+
+
 def test_lc02_each_capped_page():
     hits = [h for h in collect(capped_pages=[1, 3]) if h.signal == "LC-02"]
     assert [h.details for h in hits] == [{"page": 1}, {"page": 3}]

@@ -157,13 +157,27 @@ def from_findings(findings: list[Finding]) -> list[SignalHit]:
 
 
 def unreadable(record: DocumentRecord) -> list[SignalHit]:
-    """LC-01: an item, or a header value, cites a line marked unreadable."""
+    """
+    LC-01: an item, or a header value, cites a line marked unreadable. A
+    marked line that nothing cites raises LC-01 on the document, with its
+    page and line: what couldn't be read may be a value the record lacks.
+    """
     hits = []
+    cited: set[tuple[int, int]] = set()
     for item_id, field, citation in item_citations(record):
         lines = cited_lines(record, citation) or []
+        cited.update(
+            (citation.page, n)
+            for n in range(citation.first_line, citation.last_line + 1)
+        )
         if any(UNREADABLE in line for line in lines):
             item = None if item_id == "document" else item_id
             hits.append(SignalHit(signal="LC-01", item_id=item, field=field))
+    for page in record.pages:
+        for n, line in enumerate(page.lines, start=1):
+            if UNREADABLE in line and (page.page, n) not in cited:
+                details = {"page": page.page, "line": n}
+                hits.append(SignalHit(signal="LC-01", details=details))
     return hits
 
 

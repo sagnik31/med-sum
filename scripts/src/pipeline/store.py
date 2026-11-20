@@ -66,6 +66,10 @@ _EARLIER = (
     " AND s.status = 'ok' AND s.model = %(model)s AND s.model_role = 'primary'"
     " AND s.prompt_hash = %(prompt)s AND s.input -> 'image' ->> 'sha256' = %(sha)s"
     " AND s.run_id <> %(run)s"
+    # A reading whose prompt may have been cut is never reused: its LC-18
+    # comes from the call, and a reuse makes no call.
+    " AND NOT EXISTS (SELECT 1 FROM pipeline_model_calls c"
+    " WHERE c.step_id = s.id AND c.prompt_truncated)"
     " ORDER BY s.ended_at DESC LIMIT 1"
 )
 
@@ -83,7 +87,7 @@ def earlier_transcription(
     The latest earlier transcription of this page of this document by the
     same model and prompt, as (step id, lines), or None. Only steps that
     ended ok count, so a capped page or a fallback model's reading is read
-    again. The image hash ties it to the page's pixels, not its number.
+    again, and so is one whose prompt may have been cut short (LC-18). The image hash ties it to the page's pixels, not its number.
     """
     with connect() as conn, conn.cursor() as cur:
         cur.execute(
