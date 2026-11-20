@@ -32,10 +32,20 @@ def _key(text: str) -> str:
     return re.sub(r"\s+", " ", text.replace(".", "").casefold()).strip()
 
 
-def _slot(text: str) -> float:
+# No single dose slot is this large; "1-1-2024" is a date, not a schedule.
+# Insulin units ("20-0-12") stay well under it.
+MAX_SLOT = 100
+
+
+def _slot(text: str) -> float | None:
+    """One slot's dose, or None when it can't be a dose ("1/0", "2024")."""
     for symbol, fraction in _FRACTIONS.items():
         text = text.replace(symbol, f" {fraction}")
-    return float(sum(Fraction(part) for part in text.split()))
+    try:
+        dose = float(sum(Fraction(part) for part in text.split()))
+    except ZeroDivisionError:
+        return None
+    return dose if dose <= MAX_SLOT else None
 
 
 def parse_frequency(text: str | None) -> DoseSchedule | None:
@@ -45,6 +55,8 @@ def parse_frequency(text: str | None) -> DoseSchedule | None:
     text = text.strip()
     if m := _FIXED.fullmatch(text):
         morning, noon, night = (_slot(m[i]) for i in (1, 2, 3))
+        if None in (morning, noon, night):
+            return None
         return DoseSchedule(
             morning=morning,
             noon=noon,
@@ -54,6 +66,8 @@ def parse_frequency(text: str | None) -> DoseSchedule | None:
     if m := _FOUR.fullmatch(text):
         # Morning, noon, evening, night: no slot for evening, so only a count.
         doses = [_slot(m[i]) for i in (1, 2, 3, 4)]
+        if None in doses:
+            return None
         return DoseSchedule(times_per_day=float(sum(1 for x in doses if x)))
     key = _key(text)
     if key in TIMES_PER_DAY:

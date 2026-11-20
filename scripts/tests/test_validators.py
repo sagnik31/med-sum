@@ -553,6 +553,19 @@ def test_a_range_with_its_bounds_reversed():
     }
 
 
+def test_a_value_at_another_scale_than_its_unitless_range():
+    record = keyed_record("d01")
+    o = obs(record, "Haemoglobin")
+    o.printed.value_text = "2000"
+    o.printed.reference_ranges = ["12.0 - 15.0"]
+
+    assert problems(check_units_ranges(record)) == {
+        ("units_ranges", "obs-1", "reference_ranges[0]")
+    }
+    # The finding replaces the flag: no HIGH computed across two scales.
+    assert obs(rebuilt(record), "Haemoglobin").derived.flag_computed is None
+
+
 def test_a_range_in_another_unit_than_the_value():
     record = keyed_record("d01")
     obs(record, "Haemoglobin").printed.reference_ranges = ["120 - 150 g/L"]

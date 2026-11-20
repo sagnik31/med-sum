@@ -15,9 +15,10 @@ from derive.units import lookup_unit
 from record.document import ComputedFlag, ReferenceRange
 
 # Digit grouping is either Indian (1,50,000) or international (150,000);
-# a validly grouped number means the same in both, so commas just go.
-_INDIAN = r"\d{1,2}(?:,\d{2})*,\d{3}"
-_INTERNATIONAL = r"\d{1,3}(?:,\d{3})+"
+# a validly grouped number means the same in both, so commas just go. The
+# first group starts 1-9: "0,500" is a decimal comma or a misread, not 500.
+_INDIAN = r"[1-9]\d?(?:,\d{2})*,\d{3}"
+_INTERNATIONAL = r"[1-9]\d{0,2}(?:,\d{3})+"
 _NUMBER = re.compile(rf"(?:{_INDIAN}|{_INTERNATIONAL}|\d+)(?:\.\d+)?")
 
 
@@ -127,8 +128,12 @@ def compute_flag(
     r = ranges[0]
     if not r.parsed or (r.low is None and r.high is None):
         return None
+    if r.low is not None and r.high is not None and r.low > r.high:
+        return None  # validator 3 reports the inverted range
     if r.unit is not None and not same_unit(r.unit, value_unit):
         return None
+    if off_scale(value, r):
+        return None  # validator 3 reports it: the range is likely at another scale
     if r.low is not None and (
         value < r.low or (value == r.low and not r.low_inclusive)
     ):
@@ -138,6 +143,24 @@ def compute_flag(
     ):
         return ComputedFlag.HIGH
     return ComputedFlag.NORMAL
+
+
+# A value this many times outside a range that prints no unit is more likely
+# at another scale ("7500" /cumm against "4.0 - 11.0" thousand) than abnormal.
+OFF_SCALE_FACTOR = 100
+
+
+def off_scale(value: float | None, r: ParsedRange) -> bool:
+    """
+    The value is about 100x or more outside a parsed range that prints no
+    unit of its own, so a flag computed from it would compare different
+    scales. Such a value gets no computed flag and a routing finding instead.
+    """
+    if value is None or not r.parsed or r.unit is not None:
+        return False
+    if r.high is not None and r.high > 0 and value >= r.high * OFF_SCALE_FACTOR:
+        return True
+    return r.low is not None and r.low > 0 and 0 < value <= r.low / OFF_SCALE_FACTOR
 
 
 def same_unit(a: str | None, b: str | None) -> bool:

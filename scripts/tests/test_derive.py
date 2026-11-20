@@ -193,6 +193,8 @@ def test_tests_without_an_analyte_get_none():
         ("Nil", None), ("Trace", None), ("Positive", None), ("", None),
         ("1,5", None), ("12,34", None), ("1,2345", None), (".5", None),
         ("10.4 L", None), ("-2.0", None), ("1.2.3", None), (None, None),
+        # A first group of 0 is a decimal comma or a misread, not a thousand.
+        ("0,500", None), ("00,000", None), ("0,50,000", None), ("10,000", 10000.0),
     ],
 )  # fmt: skip
 def test_parse_number_reads_only_plain_numbers(text, expected):
@@ -281,6 +283,23 @@ def flag(value, *ranges, unit=None):
 )
 def test_a_flag_is_computed_only_when_one_range_applies(value, ranges, expected):
     assert flag(value, *ranges) == expected
+
+
+def test_a_range_with_its_bounds_reversed_gives_no_flag():
+    # Validator 3 routes the inverted range; a flag from it would be a guess.
+    assert flag(13.0, "15 - 12") is None
+    assert flag(16.0, "15 - 12") is None
+
+
+def test_a_value_far_outside_a_unitless_range_gives_no_flag():
+    # "7500" /cumm against "4.0 - 11.0" (thousands): another scale, not HIGH.
+    assert flag(7500, "4.0 - 11.0", unit="/cumm") is None
+    assert flag(250000, "1.5 - 4.5") is None
+    assert flag(0.04, "4.0 - 11.0") is None
+    # Just under the factor, or a range that prints its unit, still flags.
+    assert flag(1099, "4.0 - 11.0") == "high"
+    assert flag(0.0, "1 - 6") == "low"
+    assert flag(250000, "1.5 - 4.5 lakh/cumm", unit="lakh/cumm") == "high"
 
 
 def test_a_range_printed_in_another_unit_gives_no_flag():
@@ -415,6 +434,9 @@ def schedule(text):
         ("SOS", {"as_needed": True}), ("PRN", {"as_needed": True}),
         ("Once a week", None), ("Weekly", None), ("STAT", None),
         ("Alternate days", None), ("1-0", None), (None, None),
+        # A zero denominator or a slot no dose reaches is not a schedule.
+        ("1/0-0-1", None), ("1-1-2024", None), ("1-0/0-1-1", None),
+        ("20-0-12", {"morning": 20, "noon": 0, "night": 12, "times_per_day": 2}),
     ],
 )  # fmt: skip
 def test_parse_frequency(text, expected):

@@ -10,7 +10,14 @@ import re
 from datetime import date
 
 from derive.dates import parse_date
-from derive.numbers import has_digits, parse_number, parse_range, same_unit
+from derive.numbers import (
+    OFF_SCALE_FACTOR,
+    has_digits,
+    off_scale,
+    parse_number,
+    parse_range,
+    same_unit,
+)
 from derive.units import convertible, lookup_analyte
 from record.document import ComputedFlag, DocumentRecord
 from validators.findings import Finding, Severity, Validator
@@ -49,6 +56,10 @@ def check_units_ranges(record: DocumentRecord) -> list[Finding]:
             ):
                 add(Severity.FLAG, f"range {text!r} is in {r.unit!r} but the value is "
                     f"in {p.unit!r}", o, field)  # fmt: skip
+            if off_scale(parse_number(p.value_text), r):
+                add(Severity.FLAG, f"the value is {OFF_SCALE_FACTOR} times or more "
+                    f"outside range {text!r}, which prints no unit: the two may be "
+                    "at different scales, so no flag is computed", o, field)  # fmt: skip
 
         analyte = lookup_analyte(p.test_name)
         if analyte is not None and p.unit is not None:
