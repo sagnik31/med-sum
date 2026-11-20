@@ -2,7 +2,8 @@
 Model health: a circuit breaker per model, and counts of quality failures.
 
 Only infrastructure failures count toward the breaker: an error or timeout
-from the model server (llm.MODEL_ERRORS). After FAILURES of them in a row
+from the model server (llm.MODEL_ERRORS, less 4xx answers, which are the
+request's fault; see llm.is_outage), or a stream that ends early. After FAILURES of them in a row
 the model is **open**: llm.chat skips it, so a dead primary costs nothing
 and the request goes straight to the fallback. After COOLDOWN_S it is
 **half-open**: the next call is let through as a probe (one at a time).

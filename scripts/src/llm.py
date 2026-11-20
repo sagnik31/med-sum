@@ -72,6 +72,24 @@ PROVIDER = "ollama"
 # a streamed call raises those as they are, not as ConnectionError.
 MODEL_ERRORS = (ollama.ResponseError, ConnectionError, httpx.TransportError)
 
+
+class IncompleteReplyError(ConnectionError):
+    """The stream ended without Ollama's final chunk: the reply may be cut short."""
+
+
+def is_outage(error: BaseException) -> bool:
+    """
+    Whether a model error says the server is unwell, and so counts toward
+    the circuit breaker. A 4xx answer (a bad request, an unknown model) is
+    the request's fault: it still falls back, but never switches a model
+    off. Ollama gives -1 for an error with no HTTP status, such as one sent
+    mid-stream, which counts.
+    """
+    if isinstance(error, ollama.ResponseError):
+        return not 400 <= error.status_code < 500
+    return isinstance(error, MODEL_ERRORS)
+
+
 ModelRole = Literal["primary", "fallback"]
 _MODELS = {"primary": PRIMARY_MODEL, "fallback": FALLBACK_MODEL}
 
@@ -188,12 +206,17 @@ def chat(
         attempt = _Attempt()
         try:
             _stream(attempt, model, messages, options, format)
-        except Exception as e:
+        except BaseException as e:
+            if not isinstance(e, Exception):  # an interrupt: free a probe slot
+                model_health.abandoned(model)
+                raise
             _report(attempt, model, role, request, sizes, error=e)
             if not isinstance(e, MODEL_ERRORS):
                 model_health.abandoned(model)
                 raise
-            if model_health.failed(model, role, e):
+            if not is_outage(e):
+                model_health.abandoned(model)
+            elif model_health.failed(model, role, e):
                 _breaker_switched("model_disabled", model, role)
             failures.append(f"{model}: {e}")
             # The type only: the message stays in the exception for the caller.
@@ -300,12 +323,17 @@ def chat_with_tools(
     attempt = _Attempt()
     try:
         _stream(attempt, model, messages, options, None, tools)
-    except Exception as e:
+    except BaseException as e:
+        if not isinstance(e, Exception):  # an interrupt: free a probe slot
+            model_health.abandoned(model)
+            raise
         _report(attempt, model, model_role, request, sizes, error=e)
         if not isinstance(e, MODEL_ERRORS):
             model_health.abandoned(model)
             raise
-        if model_health.failed(model, model_role, e):
+        if not is_outage(e):
+            model_health.abandoned(model)
+        elif model_health.failed(model, model_role, e):
             _breaker_switched("model_disabled", model, model_role)
         raise ModelOutputError(f"{model}: {type(e).__name__}") from e
     text, complete = _report(attempt, model, model_role, request, sizes)
@@ -366,6 +394,9 @@ def _stream(attempt, model, messages, options, format, tools=None):
         )
         if chunk.done:
             attempt.done = chunk
+    if attempt.done is None:
+        # A stream that just stops is never taken as a whole reply.
+        raise IncompleteReplyError("the reply ended without its final chunk")
 
 
 def _breaker_switched(event: str, model: str, role: str) -> None:

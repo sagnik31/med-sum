@@ -7,6 +7,7 @@ cool-down, then probed; quality failures never count toward it.
 import json
 
 import httpx
+import ollama
 import pytest
 from fastapi.testclient import TestClient
 
@@ -313,3 +314,38 @@ def test_the_health_endpoint_shows_each_models_breaker(model_client, clock):
     primary = body["model_health"]["models"][PRIMARY]
     assert (primary["state"], primary["retry_in_s"]) == ("open", 900)
     assert body["model_health"]["models"][FALLBACK]["state"] == "closed"
+
+
+# -------------------------------------------------------------------
+# What counts, and a probe that never finishes
+# -------------------------------------------------------------------
+def test_a_4xx_answer_falls_back_but_never_opens_the_breaker(model_client, clock):
+    bad = ollama.ResponseError("bad request", 400)
+    model_client.replies[PRIMARY] = [bad] * 4
+    model_client.replies[FALLBACK] = ["from the fallback"] * 4
+    for _ in range(4):
+        assert llm.chat(MESSAGES, max_tokens=10) == "from the fallback"
+
+    assert state_of(PRIMARY) == "closed"
+
+
+def test_a_5xx_answer_counts_toward_the_breaker(model_client, clock):
+    down = ollama.ResponseError("server error", 500)
+    model_client.replies[PRIMARY] = [down] * 3
+    model_client.replies[FALLBACK] = ["from the fallback"] * 3
+    for _ in range(3):
+        llm.chat(MESSAGES, max_tokens=10)
+
+    assert state_of(PRIMARY) == "open"
+
+
+def test_an_interrupted_probe_frees_the_slot_for_the_next_call(model_client, clock):
+    fail_primary(model_client, 3)
+    clock(900)
+    model_client.replies[PRIMARY] = [KeyboardInterrupt()]
+    with pytest.raises(KeyboardInterrupt):
+        llm.chat(MESSAGES, max_tokens=10)
+
+    model_client.replies[PRIMARY] = ["back"]
+    assert llm.chat(MESSAGES, max_tokens=10) == "back"
+    assert state_of(PRIMARY) == "closed"

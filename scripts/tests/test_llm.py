@@ -1,5 +1,7 @@
 """llm.chat: the primary model, the fallback, token caps and stop markers."""
 
+from types import SimpleNamespace
+
 import httpx
 import ollama
 import pytest
@@ -207,3 +209,42 @@ def test_an_unknown_role_is_refused(model_client):
 def test_model_for_names_the_configured_models():
     assert llm.model_for("primary") == llm.PRIMARY_MODEL
     assert llm.model_for("fallback") == llm.FALLBACK_MODEL
+
+
+def test_a_stream_that_ends_without_its_final_chunk_is_not_a_reply(
+    model_client, monkeypatch
+):
+    # "| Hb | 13." and then nothing: never taken as the whole reply.
+    real_chat = model_client.chat
+
+    def cut_stream(**kw):
+        if kw["model"] != llm.PRIMARY_MODEL:
+            return real_chat(**kw)
+        model_client.calls.append({"model": kw["model"]})
+        return iter(
+            [SimpleNamespace(message=SimpleNamespace(content="| Hb | 13.",
+                                                     tool_calls=None),
+                             done=False, done_reason=None)]
+        )  # fmt: skip
+
+    monkeypatch.setattr(model_client, "chat", cut_stream)
+    model_client.replies[llm.FALLBACK_MODEL] = ["| Hb | 13.2 |"]
+
+    assert llm.chat(MESSAGES, max_tokens=100) == "| Hb | 13.2 |"
+    assert models_called(model_client) == [llm.PRIMARY_MODEL, llm.FALLBACK_MODEL]
+
+
+@pytest.mark.parametrize(
+    "error, outage",
+    [
+        (ollama.ResponseError("bad request", 400), False),
+        (ollama.ResponseError("model not found", 404), False),
+        (ollama.ResponseError("server error", 500), True),
+        (ollama.ResponseError("error mid-stream"), True),  # no HTTP status: -1
+        (ConnectionError("refused"), True),
+        (llm.IncompleteReplyError("cut"), True),
+        (httpx.ReadTimeout("timed out"), True),
+    ],
+)
+def test_only_server_trouble_is_an_outage(error, outage):
+    assert llm.is_outage(error) is outage
