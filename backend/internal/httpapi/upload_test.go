@@ -5,7 +5,9 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"io"
+	"mime/multipart"
 	"net/http"
+	"net/textproto"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -43,11 +45,14 @@ func TestCheckFileType(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			f := memFile{bytes.NewReader(tt.content)}
 
-			err := checkFileType(f, tt.file)
+			got, err := checkFileType(f, tt.file)
 
 			if tt.wantErr == "" {
 				if err != nil {
 					t.Fatalf("rejected: %v", err)
+				}
+				if got != allowedTypes[strings.ToLower(filepath.Ext(tt.file))] {
+					t.Errorf("type = %q, want the one its content was checked to be", got)
 				}
 				rest, _ := io.ReadAll(f)
 				if !bytes.Equal(rest, tt.content) {
@@ -59,6 +64,54 @@ func TestCheckFileType(t *testing.T) {
 				t.Errorf("err = %v, want one containing %q", err, tt.wantErr)
 			}
 		})
+	}
+}
+
+func TestCleanFileName(t *testing.T) {
+	long := strings.Repeat("é", 300) + ".pdf"
+	tests := []struct{ name, in, want string }{
+		{"plain", "cbc report.pdf", "cbc report.pdf"},
+		{"control characters", "cbc\r\n\x1b[31mreport\t.pdf", "cbc[31mreport.pdf"},
+		{"bidi override", "report\u202efdp.exe.pdf", "reportfdp.exe.pdf"},
+		{"surrounding space", "  cbc.pdf  ", "cbc.pdf"},
+		{"nothing left", "\x00\x01.pdf", "upload.pdf"},
+		{"too long keeps its extension", long, strings.Repeat("é", 251) + ".pdf"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := cleanFileName(tt.in); got != tt.want {
+				t.Errorf("cleanFileName(%q) = %q, want %q", tt.in, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestUploadStoresTheCheckedTypeAndACleanName(t *testing.T) {
+	e := newTestEnv(t)
+	_, auth := e.login("me@hospital.test")
+	// The browser says text/html; the content is a PDF.
+	var buf bytes.Buffer
+	w := multipart.NewWriter(&buf)
+	h := textproto.MIMEHeader{}
+	// A BEL and a newline in the name, sent percent-encoded (RFC 2231).
+	h.Set("Content-Disposition", `form-data; name="file"; filename*=UTF-8''cbc%07%0A.pdf`)
+	h.Set("Content-Type", "text/html")
+	part, _ := w.CreatePart(h)
+	_, _ = part.Write(pdfBytes)
+	_ = w.Close()
+
+	rec := e.do(http.MethodPost, e.uploadPath(), auth, &buf, w.FormDataContentType())
+
+	if rec.Code != http.StatusCreated {
+		t.Fatalf("status = %d, want 201: %s", rec.Code, rec.Body)
+	}
+	doc := decodeJSON[db.Document](t, rec)
+	stored := e.store.documents[doc.ID]
+	if stored.ContentType != "application/pdf" {
+		t.Errorf("content type = %q, want the checked application/pdf", stored.ContentType)
+	}
+	if stored.OriginalName != "cbc.pdf" {
+		t.Errorf("original name = %q, want cbc.pdf", stored.OriginalName)
 	}
 }
 

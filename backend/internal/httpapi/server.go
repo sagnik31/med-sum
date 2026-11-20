@@ -17,6 +17,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	"unicode"
+	"unicode/utf8"
 
 	"backend/internal/auth"
 	"backend/internal/authz"
@@ -239,7 +241,8 @@ func (s *Server) handleUploadDocument(w http.ResponseWriter, r *http.Request, pa
 	}
 	defer file.Close()
 
-	if err := checkFileType(file, header.Filename); err != nil {
+	contentType, err := checkFileType(file, header.Filename)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnsupportedMediaType)
 		return
 	}
@@ -274,8 +277,8 @@ func (s *Server) handleUploadDocument(w http.ResponseWriter, r *http.Request, pa
 	doc, err := s.db.CreateDocument(r.Context(), p.OrgID, db.NewDocument{
 		PatientID:    patientID,
 		UploadedBy:   p.UserID,
-		OriginalName: header.Filename,
-		ContentType:  header.Header.Get("Content-Type"),
+		OriginalName: cleanFileName(header.Filename),
+		ContentType:  contentType, // the type the content was checked to be
 		StoragePath:  storagePath,
 		SHA256:       hex.EncodeToString(hash.Sum(nil)),
 	}, forPatient(on(s.auditEvent(r, actDocumentUploaded), targetDocument, ""), patientID))
@@ -310,24 +313,53 @@ var allowedTypes = map[string]string{
 }
 
 // checkFileType accepts PDF, JPEG and PNG files whose content matches their
-// extension, then rewinds the file for saving.
-func checkFileType(file multipart.File, name string) error {
+// extension, then rewinds the file for saving. It returns the content type
+// the file was checked to be, which is what gets stored: the browser's own
+// Content-Type header is never trusted.
+func checkFileType(file multipart.File, name string) (string, error) {
 	want, ok := allowedTypes[strings.ToLower(filepath.Ext(name))]
 	if !ok {
-		return errors.New("unsupported file type: upload a PDF, JPG or PNG")
+		return "", errors.New("unsupported file type: upload a PDF, JPG or PNG")
 	}
 	head := make([]byte, 512)
 	n, err := io.ReadFull(file, head)
 	if err != nil && !errors.Is(err, io.ErrUnexpectedEOF) {
-		return errors.New("could not read the uploaded file")
+		return "", errors.New("could not read the uploaded file")
 	}
 	if http.DetectContentType(head[:n]) != want {
-		return errors.New("file content does not match its extension")
+		return "", errors.New("file content does not match its extension")
 	}
 	if _, err := file.Seek(0, io.SeekStart); err != nil {
-		return errors.New("could not read the uploaded file")
+		return "", errors.New("could not read the uploaded file")
 	}
-	return nil
+	return want, nil
+}
+
+// maxFileNameRunes caps the stored original name, which lists and the review
+// queue show.
+const maxFileNameRunes = 255
+
+// cleanFileName is the upload's name as stored and shown: control characters
+// (newlines, tabs, escapes, bidi overrides are format characters and go too)
+// removed, surrounding space trimmed, and at most maxFileNameRunes runes, cut
+// from the stem so the extension stays. An empty result becomes "upload" plus
+// the extension.
+func cleanFileName(name string) string {
+	name = strings.TrimSpace(strings.Map(func(r rune) rune {
+		if unicode.IsControl(r) || unicode.Is(unicode.Cf, r) || r == utf8.RuneError {
+			return -1
+		}
+		return r
+	}, name))
+	ext := filepath.Ext(name) // one of allowedTypes: checkFileType ran first
+	stem := []rune(strings.TrimSuffix(name, ext))
+	if room := maxFileNameRunes - len([]rune(ext)); len(stem) > room {
+		stem = stem[:room]
+	}
+	if strings.TrimSpace(string(stem)) == "" {
+		return "upload" + ext
+	}
+	return string(stem) + ext
 }
 
 // newStoragePath returns a fresh random path in dir. It keeps the upload's
