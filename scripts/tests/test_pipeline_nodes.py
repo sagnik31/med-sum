@@ -850,7 +850,10 @@ def test_repair_shows_the_model_its_reply_and_the_problems(db, run, model_client
     assert messages[2] == {"role": "assistant", "content": '{"previous": "reply"}'}
     assert messages[3]["role"] == "user"
     assert messages[3]["content"].startswith(prompt("repair_parse"))
-    assert messages[3]["content"].endswith("\n".join(nodes.problems(state)))
+    # The problems quote the document, so they come fenced as data.
+    assert messages[3]["content"].endswith(
+        "<problems>\n" + "\n".join(nodes.problems(state)) + "\n</problems>"
+    )
     assert model_client.calls[0]["format"] == parse_output_schema(LAB)
     [row] = step_rows(db, run)
     assert (row["node"], row["status"]) == ("repair", "ok")
