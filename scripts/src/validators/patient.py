@@ -41,9 +41,15 @@ def name_tokens(name: str) -> list[str]:
 
 
 def names_match(printed: str, expected: str) -> bool:
-    """Same words in any order, or in order with initials for some ("M. Iyer")."""
+    """
+    Same words in any order, or in order with initials for some ("M. Iyer").
+    A printed name of initials only ("A R") never matches: it fits too many
+    patients to confirm one.
+    """
     a, b = name_tokens(printed), name_tokens(expected)
     if not a or not b:
+        return False
+    if all(len(x) == 1 for x in a):
         return False
     if sorted(a) == sorted(b):
         return True
@@ -75,12 +81,36 @@ def age_on(born: date, on: date) -> int:
     return on.year - born.year - ((on.month, on.day) < (born.month, born.day))
 
 
+# The message of the finding for a document on which nothing that names
+# the patient was read (signal LC-22, pipeline.signals).
+UNCONFIRMED = "no printed name, patient ID or date of birth was read"
+
+
+def _known(expected: ExpectedPatient) -> bool:
+    return bool(expected.name or expected.mrn or expected.date_of_birth)
+
+
 def check_patient_match(
     record: DocumentRecord, expected: ExpectedPatient | None
 ) -> list[Finding]:
-    if expected is None or record.patient is None:
+    """
+    Validator 9: the printed patient against the patient the document was
+    uploaded to. A mismatch is a flag on the field. When the patient is
+    known but nothing that names them (name, patient ID, date of birth) was
+    read, the document can't be tied to them: a flag on the document with
+    no field, so it goes to review instead of ending verified. See
+    docs/adr/0004-deterministic-checks-decide-routing.md.
+    """
+    if expected is None:
         return []
-    printed = record.patient.printed
+    printed = record.patient.printed if record.patient is not None else None
+    if printed is None or not (
+        printed.name or printed.patient_id or printed.date_of_birth
+    ):
+        if not _known(expected):
+            return []
+        return [Finding(validator=Validator.PATIENT_MATCH, severity=Severity.FLAG,
+                        message=UNCONFIRMED, item_id="document")]  # fmt: skip
     findings = []
 
     def flag(field: str, value: PrintedText, message: str):

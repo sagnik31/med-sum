@@ -92,7 +92,7 @@ def test_every_fault_is_injected_somewhere(check):
         "dropped_result", "duplicated_item", "frequency_change", "invented_medicine",
         "invented_result", "range_bound", "remark_moved", "strength_shift",
         "qualifier_dropped", "transcription_misread", "unit_swap", "values_swapped",
-        "wrong_patient",
+        "wrong_patient", "patient_unread",
     }  # fmt: skip
 
 
@@ -210,3 +210,8 @@ def test_main_writes_the_report_and_passes_against_the_baseline(tmp_path):
 )  # fmt: skip
 def test_a_qualifier_is_dropped_from_the_start_of_a_value(value, dropped):
     assert fc.drop_qualifier(value) == dropped
+
+
+def test_a_document_with_nothing_naming_its_patient_goes_to_review(check):
+    unread = [r for r in check.results if r.fault == "patient_unread"]
+    assert unread and all(r.flagged and "LC-22" in r.signals for r in unread)

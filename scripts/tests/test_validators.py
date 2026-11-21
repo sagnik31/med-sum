@@ -1004,6 +1004,9 @@ def test_coverage_is_never_more_than_info():
         ("Arjun Mehta", "Arjun Menon", False),
         ("Meera", "Meera Iyer", False),
         ("Mrs.", "Meera Iyer", False),
+        ("A R", "Anil Rao", False),  # initials only fit too many patients
+        ("Mr. A. R.", "Anil Rao", False),
+        ("A. Rao", "Anil Rao", True),
     ],
 )
 def test_names_match(printed, expected, match):
@@ -1194,3 +1197,33 @@ def test_the_same_item_on_other_lines_is_not_a_duplicate():
 def test_every_clean_dataset_document_has_no_duplicate():
     for doc_id in DOC_IDS:
         assert check_duplicates(keyed_record(doc_id)) == [], doc_id
+
+
+def test_a_known_patient_with_nothing_naming_them_read_is_not_confirmed():
+    from pipeline.signals import finding_signal
+
+    record = keyed_record("d06")
+    printed = record.patient.printed
+    printed.name = printed.patient_id = printed.date_of_birth = None
+    (finding,) = check_patient_match(record, expected_patient("d06"))
+    assert (finding.item_id, finding.field, finding.severity) == (
+        "document",
+        None,
+        Severity.FLAG,
+    )
+    assert finding_signal(finding) == "LC-22"
+    record.patient = None  # no patient section at all
+    assert len(check_patient_match(record, expected_patient("d06"))) == 1
+    # Nothing known to compare with: nothing to confirm either.
+    assert check_patient_match(record, ExpectedPatient(sex="M")) == []
+
+
+def test_one_printed_identifier_is_enough_to_compare():
+    record = keyed_record("d06")
+    record.patient.printed.name = record.patient.printed.patient_id = None
+    record.patient.printed.date_of_birth = None
+    record.patient.printed.date_of_birth = PrintedText(
+        citation=record.patient.printed.age.citation, text="01/01/1999"
+    )
+    findings = check_patient_match(record, expected_patient("d06"))
+    assert all(f.field is not None for f in findings)

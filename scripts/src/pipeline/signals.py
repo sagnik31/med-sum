@@ -82,6 +82,11 @@ SIGNALS = _signals(
     ("LC-19", R, "This item is in the record twice, read from the same lines."),
     ("LC-20", R, "Pages of the document print different patient details or dates."),
     ("LC-21", R, "The page prints the end-of-page marker; its reading may stop early."),
+    (
+        "LC-22",
+        R,
+        "No patient name, ID or date of birth was read; the patient is not confirmed.",
+    ),
     ("LC-I1", INFO, "No PDF text layer, so the reading has no independent check."),
     ("LC-I2", INFO, "Transcription lines that no extracted item uses."),
     ("LC-I3", INFO, "A range, flag or unit that code could not read."),
@@ -112,7 +117,7 @@ _BY_FINDING = {
 }
 
 # Hits on the document as a whole, whatever item the finding names.
-_DOCUMENT_LEVEL = {"LC-06", "LC-13", "LC-17"}
+_DOCUMENT_LEVEL = {"LC-06", "LC-13", "LC-17", "LC-22"}
 
 
 class SignalHit(Strict):
@@ -138,6 +143,12 @@ class SignalHit(Strict):
 
 def finding_signal(finding: Finding) -> str | None:
     """The signal a finding raises, or None for one that raises none."""
+    if (
+        finding.validator is Validator.PATIENT_MATCH
+        and finding.severity is Severity.FLAG
+        and finding.field is None
+    ):
+        return "LC-22"  # nothing naming the patient was read, so no match
     if finding.validator is Validator.MEDICINE_COVERAGE:
         if finding.severity is not Severity.ERROR:
             return None

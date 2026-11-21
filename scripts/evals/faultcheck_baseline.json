@@ -35,6 +35,10 @@
     "injected": 14,
     "flagged": 14
   },
+  "patient_unread": {
+    "injected": 24,
+    "flagged": 24
+  },
   "qualifier_dropped": {
     "injected": 1,
     "flagged": 1

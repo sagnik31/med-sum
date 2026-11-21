@@ -14,7 +14,9 @@ one document's parse at a time, so every result names its document and
 item. Two faults are not the parse's: `transcription_misread` changes a
 value in the transcription as well, so every line agrees with it and only
 the PDF's text layer can tell; `wrong_patient` uploads the document to
-another patient of the dataset.
+another patient of the dataset; `patient_unread` drops every printed
+detail that names the patient (name, ID, date of birth), as a parse that
+missed the header would.
 
 A fault is **flagged** when the altered copy raises a routing signal that
 the clean document does not raise; **routed** when it ends needs_review
@@ -407,6 +409,13 @@ def _document_faults(
         mutant = _copy(case)
         getattr(mutant.parse.details, name).text = swapped
         yield Mutant("date_swap", case.doc_id, "document", mutant)
+
+    patient = case.parse.patient
+    if patient.name or patient.patient_id or patient.date_of_birth:
+        mutant = _copy(case)
+        for name in ("name", "patient_id", "date_of_birth"):
+            setattr(mutant.parse.patient, name, None)
+        yield Mutant("patient_unread", case.doc_id, "document", mutant)
 
     if "LC-13" not in clean.routing_ids():
         uploaded_to = documents()[case.doc_id]["patient"]

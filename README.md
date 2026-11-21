@@ -58,7 +58,7 @@ Measured on a committed synthetic dataset of 25 documents for 6 fictional patien
 
 | The checks alone, without a model (`python -m evals.faultcheck`) | Result |
 |---|---|
-| Injected faults caught | 1104/1130 (97.7%, 95% CI 96.6%-98.4%) |
+| Injected faults caught | 1128/1154 (97.7%, 95% CI 96.7%-98.5%) |
 | Faults in a value, unit, strength, frequency or date caught | all |
 | Dropped lab results caught | 161/167 |
 | Value misreads in the transcription caught | 110/130 (all 20 missed were on pages without a text layer) |
