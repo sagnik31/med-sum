@@ -19,7 +19,7 @@ import {
   sourceShownFor,
   statusLabel,
 } from "../record/recordView.js";
-import { correctableFields, headerTarget } from "../record/review.js";
+import { addableDates, correctableFields, headerTarget } from "../record/review.js";
 import ReviewControls, { CorrectionList } from "./ReviewControls.jsx";
 import SourcePanel from "./SourcePanel.jsx";
 
@@ -122,7 +122,7 @@ function RecordView({ record, initialCitation, onReview, saving = false, sourceS
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <div className="space-y-4 min-w-0">
-        {header.length > 0 && (
+        {(header.length > 0 || date || onReview) && (
           <section>
             <h3 className="text-sm font-semibold text-slate-700 mb-1">As printed on the document</h3>
             <ul className="divide-y divide-slate-100 border border-slate-200 rounded-md">
@@ -157,7 +157,11 @@ function RecordView({ record, initialCitation, onReview, saving = false, sourceS
                       <ReviewControls
                         itemId={id}
                         holder={holder}
-                        fields={headerFields(values)}
+                        fields={
+                          id === "document"
+                            ? [...headerFields(values), ...addableDates(holder)]
+                            : headerFields(values)
+                        }
                         onReview={onReview}
                         locked={saving}
                         confirmLabel={label}

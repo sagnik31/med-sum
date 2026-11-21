@@ -246,6 +246,68 @@ def test_a_corrected_test_name_moves_its_remark():
     assert view.remarks[0].derived.observation_id is None  # no test of that name now
 
 
+def undated_record() -> DocumentRecord:
+    """The flagged CBC record with no date read (LC-12)."""
+    data = flagged_record().model_dump(mode="json")
+    for field in ("report_date", "collection_date", "prescription_date"):
+        data["document"]["printed"][field] = None
+    data["document"]["derived"] = {
+        "report_date": None, "collection_date": None, "prescription_date": None,
+        "document_date": None, "date_source": "undated",
+    }  # fmt: skip
+    return DocumentRecord.model_validate(data)
+
+
+def test_an_undated_document_can_be_dated_in_review():
+    # ADR 0003: an undated document goes to review so a clinician dates it.
+    result = apply_review(
+        undated_record(),
+        req(item_id="document", field="collection_date", value="01/03/2025"),
+        today=date(2025, 6, 1),
+    )
+    assert result.original is None
+    added = result.record.document.corrections[-1]
+    assert (added.field, added.original, added.corrected) == (
+        "collection_date", None, "01/03/2025",
+    )  # fmt: skip
+    view = reviewed_view(result.record)
+    assert view.document.printed.collection_date is None  # nothing printed
+    assert view.document.derived.collection_date == date(2025, 3, 1)
+    assert view.document.derived.document_date == date(2025, 3, 1)
+    assert view.document.derived.date_source is DateSource.COLLECTION_DATE
+    # The stored record keeps what was read.
+    assert result.record.document.derived.document_date is None
+
+
+def test_a_later_added_date_replaces_the_earlier_one():
+    record = apply_review(
+        undated_record(),
+        req(item_id="document", field="report_date", value="01/03/2025"),
+        today=date(2025, 6, 1),
+    ).record
+    record = apply_review(
+        record,
+        req(item_id="document", field="report_date", value="02/03/2025"),
+        today=date(2025, 6, 1),
+    ).record
+    assert reviewed_view(record).document.derived.document_date == date(2025, 3, 2)
+
+
+@pytest.mark.parametrize(
+    "value, reason",
+    [("31/02/2025", "can be read"), ("March 2025", "can be read"),
+     ("01/07/2025", "future")],
+)  # fmt: skip
+def test_an_added_date_that_can_t_be_read_or_is_ahead_is_refused(value, reason):
+    with pytest.raises(ReviewError) as err:
+        apply_review(
+            undated_record(),
+            req(item_id="document", field="report_date", value=value),
+            today=date(2025, 6, 1),
+        )
+    assert reason in str(err.value) and value not in str(err.value)
+
+
 @pytest.mark.parametrize(
     "item_id, field, value",
     [
@@ -254,7 +316,7 @@ def test_a_corrected_test_name_moves_its_remark():
         ("obs-1", "reference_ranges", "1 - 2"),  # a list needs an entry
         ("obs-1", "reference_ranges[3]", "1 - 2"),
         ("obs-1", "no_such_field", "x"),
-        ("document", "prescription_date", "01/01/2025"),  # nothing was read
+        ("document", "prescription_date", "01/01/2025"),  # dated: none to add
         ("obs-9", "value_text", "1"),
         ("obs-1", "value_text", "10.4"),  # unchanged: confirm instead
         ("obs-1", "value_text", "   "),

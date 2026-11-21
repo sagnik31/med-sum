@@ -81,6 +81,27 @@ export function correctableFields(groupKey, printed) {
   return out;
 }
 
+const DOCUMENT_DATES = [
+  ["report_date", "Report date"],
+  ["collection_date", "Collection date"],
+  ["prescription_date", "Prescription date"],
+];
+
+// The dates a clinician may add to the document: [{ field, label, value }],
+// value null. An undated document goes to review so that it can be dated
+// there (docs/adr/0003-printed-and-derived-values.md), so when no date was
+// read each date nobody printed is offered; a date added earlier stays
+// correctable.
+export function addableDates(document) {
+  if (!document) return [];
+  const printed = document.printed || {};
+  const added = new Set((document.corrections || []).map((c) => c.field));
+  const undated = !DOCUMENT_DATES.some(([field]) => printed[field]);
+  return DOCUMENT_DATES.filter(([field]) => !printed[field] && (undated || added.has(field))).map(
+    ([field, label]) => ({ field, label: `${label} (not read; add it)`, value: null })
+  );
+}
+
 // A header value's key ("patient.name", "document.clinicians[0]") as the
 // review API names it: { itemId, field }.
 export function headerTarget(key) {

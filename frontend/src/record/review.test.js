@@ -4,6 +4,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
+  addableDates,
   correctableFields,
   correctionsOf,
   currentValue,
@@ -57,6 +58,27 @@ test("a date nobody printed can't be corrected, a missing unit can", () => {
   assert.deepEqual(fields.map((f) => f.field), ["kind"]);
   const vital = correctableFields("vitals", { name: "BP", value_text: "120/80", unit: null });
   assert.deepEqual(vital.find((f) => f.field === "unit"), { field: "unit", label: "Unit", value: null });
+});
+
+test("an undated document offers each date nobody printed, to add", () => {
+  const undated = { printed: { report_date: null, collection_date: null }, corrections: [] };
+  assert.deepEqual(
+    addableDates(undated).map((f) => [f.field, f.value]),
+    [
+      ["report_date", null],
+      ["collection_date", null],
+      ["prescription_date", null],
+    ]
+  );
+  const dated = { printed: { collection_date: { text: "01/03/2025" } }, corrections: [] };
+  assert.deepEqual(addableDates(dated), []);
+  // A date added earlier stays correctable once the document is dated.
+  const added = {
+    printed: { report_date: { text: "02/03/2025" } },
+    corrections: [{ field: "collection_date", original: null, corrected: "01/03/2025" }],
+  };
+  assert.deepEqual(addableDates(added).map((f) => f.field), ["collection_date"]);
+  assert.deepEqual(addableDates(null), []);
 });
 
 test("header keys name the patient or the document and the field", () => {

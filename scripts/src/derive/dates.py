@@ -55,16 +55,23 @@ DATE_RULES = (
 )
 
 
-def document_dates(details: PrintedDocumentDetails) -> DocumentDates:
+def document_dates(
+    details: PrintedDocumentDetails, entered: dict[str, str] | None = None
+) -> DocumentDates:
     """
     Every printed date, and the document date: the report date, otherwise
     the collection date, otherwise the prescription date; else undated.
     A printed date that can't be read is skipped (validator 7 reports it).
+    `entered` holds dates a clinician added in review where none was
+    printed (field -> text); they count as that field's date, by the same
+    rule. See docs/adr/0003-printed-and-derived-values.md.
     """
+    entered = entered or {}
     found = {}
     for rule in DATE_RULES:
         printed = getattr(details, rule.value)
-        found[rule] = parse_date(printed.text) if printed else None
+        text = printed.text if printed else entered.get(rule.value)
+        found[rule] = parse_date(text) if text else None
     chosen = next((rule for rule in DATE_RULES if found[rule] is not None), None)
     return DocumentDates(
         report_date=found[DateSource.REPORT_DATE],

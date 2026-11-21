@@ -30,7 +30,7 @@ from datetime import date, datetime
 from enum import Enum
 
 from derive.build import allergy, medication, observation, remark, vital
-from derive.dates import document_dates
+from derive.dates import document_dates, parse_date
 from record.common import (
     REVIEWED,
     Correction,
@@ -51,6 +51,12 @@ DOCUMENT = "document"
 # Fields that are not readings and can't be corrected: where it is printed,
 # and the labels the model chose from a fixed list.
 NOT_CORRECTABLE = {"citation", "kind", "scope"}
+
+# The document's dates: when none was read, a clinician may add one, so an
+# undated document can be dated in review. The date is kept as a correction
+# with no original; the view derives the document date from it.
+# See docs/adr/0003-printed-and-derived-values.md.
+DATE_FIELDS = ("report_date", "collection_date", "prescription_date")
 
 MAX_VALUE_CHARS = 500
 MAX_NOTE_CHARS = 1000
@@ -193,8 +199,19 @@ def _write_field(printed, path: str, text: str):
 # -------------------------------------------------------------------
 def _corrected(printed, corrections: list[Correction]):
     for c in corrections:  # in order, so the latest of a field wins
+        if getattr(printed, c.field, None) is None and c.field in DATE_FIELDS:
+            continue  # an added date: nothing printed to replace (_entered)
         printed = _write_field(printed, c.field, c.corrected)
     return printed
+
+
+def _entered(printed, corrections: list[Correction]) -> dict[str, str]:
+    """The dates a clinician added where none was printed (latest wins)."""
+    return {
+        c.field: c.corrected
+        for c in corrections
+        if c.field in DATE_FIELDS and getattr(printed, c.field, None) is None
+    }
 
 
 def reviewed_view(record: DocumentRecord) -> DocumentRecord:
@@ -225,8 +242,9 @@ def reviewed_view(record: DocumentRecord) -> DocumentRecord:
     document = record.document
     if document.corrections:
         details = _corrected(document.printed, document.corrections)
+        added = _entered(document.printed, document.corrections)
         document = document.model_copy(
-            update={"printed": details, "derived": document_dates(details)}
+            update={"printed": details, "derived": document_dates(details, added)}
         )
     patient = record.patient
     if patient is not None and patient.corrections:
@@ -321,7 +339,29 @@ def apply_review(
             raise ReviewError("a correction needs the right value")
         if len(value) > MAX_VALUE_CHARS:
             raise ReviewError(f"the value is longer than {MAX_VALUE_CHARS} characters")
-        original = read_field(holder.printed, request.field)
+        if (
+            request.item_id == DOCUMENT
+            and request.field in DATE_FIELDS
+            and getattr(holder.printed, request.field) is None
+        ):
+            # No date was read here: on an undated document the clinician
+            # adds one from the source; a dated one has its printed dates.
+            if any(getattr(holder.printed, f) is not None for f in DATE_FIELDS):
+                raise ReviewError(
+                    f"nothing was read for {request.field!r} and the document "
+                    "has a printed date: correct that one"
+                )
+            original = None
+            on = parse_date(value)
+            if on is None:
+                raise ReviewError(
+                    f"{request.field!r} is not a date that can be read (day "
+                    "first, four-digit year)"
+                )
+            if on > (today or date.today()):
+                raise ReviewError(f"{request.field!r} is in the future")
+        else:
+            original = read_field(holder.printed, request.field)
         current = latest_correction(holder, request.field)
         shown = current.corrected if current is not None else original
         if value == shown:
