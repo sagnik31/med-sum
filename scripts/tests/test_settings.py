@@ -9,6 +9,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 import insights_service as service
+import llm
 import settings
 
 SRC = Path(settings.__file__).resolve().parent
@@ -87,6 +88,18 @@ def test_the_service_does_not_start_without_a_database_url(monkeypatch):
     monkeypatch.setenv("MEDSUM_WORKER", "0")
 
     with pytest.raises(settings.SettingsError):
+        with TestClient(service.app):
+            pass
+
+
+def test_the_service_does_not_start_with_a_remote_ollama_host(monkeypatch):
+    # ADR 0005: documents go only to a model server on this machine.
+    monkeypatch.setenv("DATABASE_URL", URL)
+    monkeypatch.setenv("INTERNAL_API_TOKEN", TOKEN)
+    monkeypatch.setenv("MEDSUM_WORKER", "0")
+    monkeypatch.setenv("OLLAMA_HOST", "ollama.example.com")
+
+    with pytest.raises(llm.ModelHostError, match="OLLAMA_HOST"):
         with TestClient(service.app):
             pass
 

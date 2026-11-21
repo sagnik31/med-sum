@@ -139,7 +139,9 @@ On PowerShell, set the same variables with `$env:NAME = "value"`.
 | `MEDSUM_APP_URL` | Backend, `medsumctl` | `http://localhost:5173`; where setup and reset links point |
 | `MEDSUM_ENV`, `MEDSUM_DEV_PASSWORD` | `medsumctl seed-dev`, `dataset.load`, AI service | none; `seed-dev` runs only with `MEDSUM_ENV=dev`, and only then may the AI service and the eval runner fall back to the local database |
 | `MEDSUM_EVAL_ADMIN_URL` | `evals.run` (required unless `MEDSUM_ENV=dev`) | none; a connection to the server where the eval runner creates and drops its throwaway database. With `MEDSUM_ENV=dev`, the local server as `postgres` |
+| `OLLAMA_HOST` | AI service, evals | `127.0.0.1:11434`; Ollama's own setting. It must be this machine (localhost, a loopback address or `0.0.0.0`): the AI service refuses to start otherwise, and every model is treated as a cloud model (ADR 0005) |
 | `MEDSUM_PRIMARY_MODEL` | AI service | `qwen3.5:4b` |
+| `MEDSUM_CLOUD_MODELS` | AI service | none; comma-separated model names to treat as cloud models (case ignored). Only the two configured models are ever local |
 | `MEDSUM_FALLBACK_MODEL` | AI service | `gemma4:e2b` |
 | `MEDSUM_NUM_CTX` | AI service | `16384` (context window for each model call) |
 | `MEDSUM_WORKER` | AI service | `1`; `0` starts the service without its document worker (nothing queued is processed) |

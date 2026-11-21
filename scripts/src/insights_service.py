@@ -44,6 +44,7 @@ import os
 
 import config
 import document_jobs
+import llm
 import model_health
 import settings
 from document_jobs import LostClaim
@@ -87,6 +88,9 @@ async def lifespan(app: FastAPI):
     # at the first job or call.
     global INTERNAL_API_TOKEN
     INTERNAL_API_TOKEN = settings.load().internal_api_token
+    # Nor does it start with OLLAMA_HOST off this machine: documents go only
+    # to local models (docs/adr/0005-local-models-with-fallback.md).
+    llm.require_local_host()
     configure_logging(log_file=config.LOG_FILE)
     logger.info("service started", extra=_obs("service_started"))
     worker = None

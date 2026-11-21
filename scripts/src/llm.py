@@ -29,6 +29,7 @@ with tool calls (Ollama's `tools`), which the caller runs and sends back.
 
 import base64
 import binascii
+import ipaddress
 import logging
 import os
 import struct
@@ -97,20 +98,64 @@ def is_outage(error: BaseException) -> bool:
 ModelRole = Literal["primary", "fallback"]
 _MODELS = {"primary": PRIMARY_MODEL, "fallback": FALLBACK_MODEL}
 
-# Models that run off this machine: names a cloud provider uses, Ollama's
-# cloud-hosted tags, and any listed in MEDSUM_CLOUD_MODELS. None is
-# configured; the guard is there so that adding one can't leak patient data.
-# See docs/adr/0005-local-models-with-fallback.md.
+# "Cloud" is decided by where a model runs, not by its name: a model is
+# local only when Ollama is on this machine (OLLAMA_HOST resolves to a
+# loopback address) and the model is one of the two configured ones. Any
+# other is treated as cloud, and so are names a cloud provider uses,
+# Ollama's cloud-hosted tags and any listed in MEDSUM_CLOUD_MODELS, even
+# when configured. See docs/adr/0005-local-models-with-fallback.md.
 CLOUD_MODEL_PREFIXES = ("gemini", "gpt-", "claude", "o1", "o3", "o4")
 CLOUD_TAG_SUFFIXES = ("-cloud", ":cloud")
 
 
+class ModelHostError(RuntimeError):
+    """OLLAMA_HOST names a server off this machine."""
+
+
+def ollama_host(environ=os.environ) -> str:
+    """The host name the Ollama client connects to, as it resolves OLLAMA_HOST."""
+    from ollama._client import _parse_host
+
+    return httpx.URL(_parse_host(environ.get("OLLAMA_HOST"))).host
+
+
+def is_local_host(host: str) -> bool:
+    """
+    Whether a host is this machine: localhost or a loopback address. The
+    unspecified address (0.0.0.0, ::) counts too, since connecting to it
+    reaches this machine; it is what OLLAMA_HOST holds when the server is
+    told to listen on every interface.
+    """
+    if host.lower().rstrip(".") == "localhost":
+        return True
+    try:
+        address = ipaddress.ip_address(host.strip("[]"))
+    except ValueError:
+        return False  # any other name may resolve anywhere
+    return address.is_loopback or address.is_unspecified
+
+
+def require_local_host(environ=os.environ) -> None:
+    """Raise ModelHostError unless OLLAMA_HOST is this machine (checked at start)."""
+    host = ollama_host(environ)
+    if not is_local_host(host):
+        raise ModelHostError(
+            "OLLAMA_HOST must be this machine (localhost or a loopback address): "
+            "documents are never sent to a model server elsewhere"
+        )
+
+
 def is_cloud(model: str, environ=os.environ) -> bool:
-    """Whether a model runs at a cloud provider rather than on this machine."""
-    listed = {m.strip() for m in environ.get("MEDSUM_CLOUD_MODELS", "").split(",")}
-    name = model.lower()
+    """Whether a model may run off this machine (anything but the local two)."""
+    listed = {
+        m.strip().lower() for m in environ.get("MEDSUM_CLOUD_MODELS", "").split(",")
+    }
+    name = model.strip().lower()
+    local = {PRIMARY_MODEL.lower(), FALLBACK_MODEL.lower()}
     return (
-        model in listed
+        not is_local_host(ollama_host(environ))
+        or name not in local
+        or name in listed
         or name.startswith(CLOUD_MODEL_PREFIXES)
         or name.endswith(CLOUD_TAG_SUFFIXES)
     )

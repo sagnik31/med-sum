@@ -131,9 +131,48 @@ def test_cloud_models_are_recognised(model):
     assert llm.is_cloud(model)
 
 
+@pytest.mark.parametrize(
+    "model",
+    ["mistral-large-latest", "grok-4", "deepseek-chat", "openai/gpt-4o",
+     "models/gemini-2.5-flash", "llama3:8b"],
+)  # fmt: skip
+def test_a_model_that_is_not_configured_is_treated_as_cloud(model):
+    assert llm.is_cloud(model, environ={})
+
+
 def test_local_and_listed_models():
-    assert not llm.is_cloud("qwen3.5:4b") and not llm.is_cloud("gemma4:e2b")
-    assert llm.is_cloud("my-model", environ={"MEDSUM_CLOUD_MODELS": "x, my-model"})
+    assert not llm.is_cloud("qwen3.5:4b", environ={})
+    assert not llm.is_cloud("Gemma4:E2B", environ={})  # names ignore case
+    assert llm.is_cloud("qwen3.5:4b", environ={"MEDSUM_CLOUD_MODELS": "x, QWEN3.5:4b"})
+
+
+@pytest.mark.parametrize(
+    "host, local",
+    [(None, True), ("", True), ("localhost", True), ("127.0.0.1:11434", True),
+     ("http://127.0.0.2:8080", True), ("[::1]:11434", True), ("0.0.0.0", True),
+     ("LOCALHOST", True), ("192.168.1.20", False), ("ollama.example.com", False),
+     ("https://api.example.com:443", False), ("10.0.0.5:11434", False),
+     ("localhost.example.com", False)],
+)  # fmt: skip
+def test_a_model_is_local_only_on_an_ollama_on_this_machine(host, local):
+    environ = {} if host is None else {"OLLAMA_HOST": host}
+    assert llm.is_local_host(llm.ollama_host(environ)) is local
+    assert llm.is_cloud("qwen3.5:4b", environ=environ) is not local
+    if local:
+        llm.require_local_host(environ)
+    else:
+        with pytest.raises(llm.ModelHostError) as err:
+            llm.require_local_host(environ)
+        assert host not in str(err.value)
+
+
+def test_a_remote_ollama_host_is_never_sent_a_page_image(model_client, monkeypatch):
+    monkeypatch.setenv("OLLAMA_HOST", "http://192.168.1.20:11434")
+    with context.synthetic_documents():
+        with pytest.raises(llm.ModelUnavailableError, match="page images"):
+            llm.chat(IMAGE, max_tokens=10)
+    assert model_client.calls == []
+
 
 
 @pytest.fixture
