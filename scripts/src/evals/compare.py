@@ -22,7 +22,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-from evals.history import read
+from evals.history import read, stage_of
 
 # Metric -> how far it may fall (a rate, 0.01 = one point). Higher is better.
 MAY_FALL = {
@@ -73,6 +73,8 @@ def _values(m: dict) -> dict:
 def unlike(a: dict, b: dict) -> list[str]:
     """Why runs `a` and `b` can't be compared; empty when they can."""
     why = []
+    if stage_of(a) != stage_of(b):
+        why.append(f"stage {stage_of(a)} vs {stage_of(b)}")
     if a.get("dataset") != b.get("dataset"):
         why.append(f"dataset {a.get('dataset')!r} vs {b.get('dataset')!r}")
     if set(a["models"]) != set(b["models"]):

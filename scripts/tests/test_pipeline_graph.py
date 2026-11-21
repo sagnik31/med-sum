@@ -121,6 +121,22 @@ def test_every_node_of_the_compiled_graph_is_traced():
     assert all(is_traced(nodes.NODES[n]) for n in names)
 
 
+def _nodes_of(compiled) -> set[str]:
+    return set(compiled.get_graph().nodes) - {"__start__", "__end__"}
+
+
+def test_the_graph_of_one_stage_has_only_its_nodes():
+    assert _nodes_of(pipeline_graph.build(only_transcribe=True)) == {
+        "open",
+        "transcribe",
+    }
+    assert _nodes_of(pipeline_graph.build(from_transcriptions=True)) == (
+        set(nodes.NODES) - {"transcribe"}
+    )
+    with pytest.raises(ValueError):
+        pipeline_graph.build(only_transcribe=True, from_transcriptions=True)
+
+
 # -------------------------------------------------------------------
 # Paths through it
 # -------------------------------------------------------------------

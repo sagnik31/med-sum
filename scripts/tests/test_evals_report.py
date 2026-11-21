@@ -199,3 +199,40 @@ def test_answer_keys_load_from_the_dataset(doc_id):
     from evals.keys import answer_key
 
     assert answer_key(doc_id) == key(doc_id)
+
+
+# -------------------------------------------------------------------
+# Stages
+# -------------------------------------------------------------------
+def vision_run(model="qwen"):
+    return ModelRun(
+        model,
+        [DocumentResult(d, None, score_transcription(key(d).pages, key(d)), 5.0)
+         for d in DOC_IDS],
+    )  # fmt: skip
+
+
+def test_a_vision_report_scores_pages_only_and_chooses_no_model():
+    report = build_report("v", [vision_run()], MANIFEST, AT, stage="vision")
+    assert report["stage"] == "vision"
+    assert report["choice"] is None
+    assert report["value_recall_gate"] == {"qwen": True}
+    model = report["models"]["qwen"]
+    assert model["transcription"]["values"]["value"] == 1.0
+    assert model["summary"]["documents"] == 0  # no record was scored
+    assert model["routing"] is None
+    md = render_markdown(report)
+    assert "stage vision" in md and "`qwen`: passes" in md
+    assert "Field F1 |" not in md.split("## By split")[0]
+    assert "| Doc | CER | Line F1 |" in md
+
+
+def test_a_reasoning_report_leaves_the_value_recall_gate_to_the_vision_run():
+    run = perfect_run()
+    for d in run.documents:
+        d.transcription = None
+    report = build_report("r", [run], MANIFEST, AT, stage="reasoning")
+    assert report["choice"]["model"] == "qwen"  # chosen with no transcription
+    e2e = build_report("e", [run], MANIFEST, AT)
+    assert e2e["choice"]["model"] is None  # the whole gate applies
+    assert "Transcription CER" not in render_markdown(report)

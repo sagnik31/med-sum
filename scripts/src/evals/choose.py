@@ -48,8 +48,13 @@ def gate_failure(
     c: Candidate,
     max_unsafe_rate: float = MAX_UNSAFE_RATE,
     min_value_recall: float = MIN_VALUE_RECALL,
+    require_transcription: bool = True,
 ) -> str | None:
-    """Why a candidate fails the safety gate, or None when it passes."""
+    """
+    Why a candidate fails the safety gate, or None when it passes. Without
+    `require_transcription` (a reasoning run, which read no page) the
+    value-recall part of the gate is left to the vision run.
+    """
     if c.summary.all_fields.f1 is None:
         return "nothing was scored"
     rate = c.summary.unsafe_rate
@@ -58,6 +63,8 @@ def gate_failure(
             f"unsafe-error rate {rate:.2%} is above {max_unsafe_rate:.2%} "
             f"({c.summary.unsafe} of {c.summary.clinical_items} clinical items)"
         )
+    if not require_transcription:
+        return None
     recall = c.transcription.values.value if c.transcription is not None else None
     if recall is None:
         return "no transcription scores"
@@ -74,10 +81,13 @@ def choose_primary(
     candidates: list[Candidate],
     max_unsafe_rate: float = MAX_UNSAFE_RATE,
     min_value_recall: float = MIN_VALUE_RECALL,
+    require_transcription: bool = True,
 ) -> Choice:
     qualified, excluded = [], {}
     for c in candidates:
-        failure = gate_failure(c, max_unsafe_rate, min_value_recall)
+        failure = gate_failure(
+            c, max_unsafe_rate, min_value_recall, require_transcription
+        )
         if failure is None:
             qualified.append(c)
         else:

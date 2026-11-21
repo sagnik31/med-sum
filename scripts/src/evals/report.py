@@ -12,6 +12,11 @@ clinician looks at them), and the unsafe errors inside that share. Counts
 carry Wilson intervals (stats.py), and the dev documents (manifest
 `split`) are reported apart from the test documents.
 
+A report is of one stage (evals/run.py): a vision report has only
+transcription scores and chooses no model (it says which models pass the
+value-recall gate); a reasoning report has no transcription scores, and
+its choice leaves that gate to the vision report; an e2e report has both.
+
 Pure code: it takes the scores, it doesn't run anything. The JSON holds
 everything, including every field error; the Markdown is for reading and
 lists only unsafe errors and missed or invented items.
@@ -23,18 +28,18 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
-from evals.choose import Candidate, choose_primary
+from evals.choose import MIN_VALUE_RECALL, Candidate, choose_primary
 from evals.score import DocumentScore, summarise
 from evals.stats import wilson
 from evals.transcription import TranscriptionScore, summarise_transcriptions
 
-REPORT_VERSION = 2
+REPORT_VERSION = 3
 
 
 @dataclass
 class DocumentResult:
     document_id: str
-    record: DocumentScore
+    record: DocumentScore | None  # None in a vision run, which makes no record
     transcription: TranscriptionScore | None = None
     seconds: float | None = None  # wall time for the document's run
 
@@ -59,22 +64,26 @@ def build_report(
     manifest: dict,
     generated_at: datetime | None = None,
     outcomes: dict[str, dict[str, dict]] | None = None,
+    stage: str = "e2e",
 ) -> dict:
     """
     Everything the report says, as JSON-ready data. `outcomes` (model ->
     document -> {end_state, signals, record_model_role, error}) adds
-    routing and risk coverage; without it those are left out.
+    routing and risk coverage; without it (or in a vision report, whose
+    runs end before routing) those are left out.
     """
     generated_at = generated_at or datetime.now(timezone.utc)
-    outcomes = outcomes or {}
+    outcomes = {} if stage == "vision" else outcomes or {}
     entries = {d["id"]: d for d in manifest["documents"]}
     cases = _cases(manifest)
-    models, candidates = {}, []
+    models, candidates, gate = {}, [], {}
     for run in runs:
-        total = summarise(d.record for d in run.documents)
+        total = summarise(_records(run.documents))
         transcribed = [d.transcription for d in run.documents if d.transcription]
         trans = summarise_transcriptions(transcribed) if transcribed else None
         candidates.append(Candidate(run.model, total, trans, run.seconds_per_document))
+        recall = trans.values.value if trans else None
+        gate[run.model] = recall is not None and recall >= MIN_VALUE_RECALL
         models[run.model] = {
             "seconds_per_document": run.seconds_per_document,
             "summary": total.as_dict(),
@@ -84,7 +93,8 @@ def build_report(
             "routing": _routing(run, entries, outcomes.get(run.model)),
             "documents": [
                 {
-                    "record": d.record.as_dict(),
+                    "document_id": d.document_id,
+                    "record": d.record.as_dict() if d.record else None,
                     "transcription": (
                         d.transcription.as_dict() if d.transcription else None
                     ),
@@ -94,10 +104,15 @@ def build_report(
                 for d in sorted(run.documents, key=lambda d: d.document_id)
             ],
         }
-    choice = choose_primary(candidates) if candidates else None
+    choice = None
+    if candidates and stage != "vision":
+        choice = choose_primary(candidates, require_transcription=stage != "reasoning")
     return {
         "report_version": REPORT_VERSION,
+        "stage": stage,
         "label": label,
+        # A vision report chooses no model: which ones read enough values.
+        "value_recall_gate": gate if stage == "vision" else None,
         "generated_at": generated_at.isoformat(timespec="seconds"),
         "dataset": manifest.get("name"),
         "choice": None
@@ -111,6 +126,10 @@ def build_report(
         "cases": {case: sorted(ids) for case, ids in sorted(cases.items())},
         "models": models,
     }
+
+
+def _records(documents) -> list[DocumentScore]:
+    return [d.record for d in documents if d.record is not None]
 
 
 def _cases(manifest: dict) -> dict[str, set[str]]:
@@ -135,7 +154,7 @@ def _splits(run: ModelRun, entries: dict[str, dict]) -> dict[str, dict]:
     out = {}
     for split in sorted({_split_of(entries, d.document_id) for d in run.documents}):
         docs = [d for d in run.documents if _split_of(entries, d.document_id) == split]
-        total = summarise(d.record for d in docs)
+        total = summarise(_records(docs))
         transcribed = [d.transcription for d in docs if d.transcription]
         trans = summarise_transcriptions(transcribed) if transcribed else None
         out[split] = {
@@ -173,7 +192,7 @@ def _routing(run: ModelRun, entries: dict[str, dict], outcomes: dict | None):
         if o["end_state"] == "verified":
             verified.append(d)
     n = len(rows)
-    in_verified = summarise(d.record for d in verified)
+    in_verified = summarise(_records(verified))
     return {
         "end_state_right": wilson(sum(r["end_state_right"] for r in rows), n).as_dict(),
         "signals_right": wilson(sum(r["signals_right"] for r in rows), n).as_dict(),
@@ -187,7 +206,7 @@ def _routing(run: ModelRun, entries: dict[str, dict], outcomes: dict | None):
 
 def _case_row(run: ModelRun, ids: set[str]) -> dict:
     docs = [d for d in run.documents if d.document_id in ids]
-    total = summarise(d.record for d in docs)
+    total = summarise(_records(docs))
     transcribed = [d.transcription for d in docs if d.transcription]
     trans = summarise_transcriptions(transcribed) if transcribed else None
     return {
@@ -208,20 +227,29 @@ def _case_row(run: ModelRun, ids: set[str]) -> dict:
 def render_markdown(report: dict) -> str:
     models = report["models"]
     names = list(models)
+    stage = report.get("stage", "e2e")
     out = [f"# Eval results: {report['label']}", ""]
     out.append(
         f"Generated {report['generated_at']} on dataset "
-        f"{report['dataset'] or 'unnamed'}; models: "
-        + (", ".join(f"`{m}`" for m in names) or "none")
-        + "."
+        f"{report['dataset'] or 'unnamed'}; stage {stage} ({STAGE_TEXT[stage]}); "
+        "models: " + (", ".join(f"`{m}`" for m in names) or "none") + "."
     )
     out += ["", "## Model choice", ""]
-    out += _choice_lines(report["choice"])
+    if stage == "vision":
+        out += _gate_lines(report.get("value_recall_gate") or {})
+    else:
+        out += _choice_lines(report["choice"])
     if not names:
         return "\n".join(out) + "\n"
 
     out += ["", "## Overview", ""]
-    out += _table(["Metric", *names], _overview_rows(models, names))
+    rows = _overview_rows(models, names)
+    if stage == "vision":
+        rows = [r for r in rows if r[0] in VISION_ROWS]
+    elif stage == "reasoning":
+        rows = [r for r in rows if not r[0].startswith(("Transcription", "Layout",
+                                                         "Unreadable"))]  # fmt: skip
+    out += _table(["Metric", *names], rows)
 
     if any(models[n]["routing"] for n in names):
         out += ["", "## Routing and risk coverage", ""]
@@ -280,6 +308,12 @@ def render_markdown(report: dict) -> str:
                        "Frequency", "Value recall"], rows)  # fmt: skip
 
     out += ["", "## By document", ""]
+    if stage == "vision":
+        out += _vision_documents(models, names)
+        out.append(
+            "Every line, layout difference and missing value is in the JSON report."
+        )
+        return "\n".join(out) + "\n"
     for name in names:
         out += [f"### `{name}`", ""]
         rows = []
@@ -311,6 +345,50 @@ def render_markdown(report: dict) -> str:
         "is in the JSON report."
     )
     return "\n".join(out) + "\n"
+
+
+STAGE_TEXT = {
+    "vision": "reading the pages only",
+    "reasoning": "from the expected transcriptions",
+    "e2e": "the whole pipeline",
+}
+VISION_ROWS = {
+    "Documents",
+    "Transcription CER",
+    "Transcription line F1",
+    "Transcription value recall",
+    "Layout kept",
+    "Unreadable lines",
+    "Median time per document",
+}
+
+
+def _gate_lines(gate: dict[str, bool]) -> list[str]:
+    lines = [
+        "A vision run chooses no model. The primary must also read at least "
+        f"{MIN_VALUE_RECALL:.0%} of the answer keys' printed values:"
+    ]
+    for model, ok in gate.items():
+        lines.append(f"- `{model}`: {'passes' if ok else '**fails**'}.")
+    return lines
+
+
+def _vision_documents(models: dict, names: list[str]) -> list[str]:
+    out = []
+    for name in names:
+        out += [f"### `{name}`", ""]
+        rows = []
+        for d in models[name]["documents"]:
+            t = d["transcription"]
+            rows.append([
+                d["document_id"], _pct(t["cer"]), _pct(t["lines"]["f1"]),
+                _ratio(t["values"]), _ratio(t["layout"]), str(t["unreadable"]),
+                _seconds(d["seconds"]),
+            ])  # fmt: skip
+        out += _table(["Doc", "CER", "Line F1", "Value recall", "Layout",
+                       "Unreadable", "Time"], rows)  # fmt: skip
+        out.append("")
+    return out
 
 
 def _choice_lines(choice: dict | None) -> list[str]:

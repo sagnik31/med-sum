@@ -2,8 +2,24 @@
 The eval runner: every dataset document through the real document graph,
 scored against its answer key, for each model as the primary.
 
-    python -m evals.run --live   [--model M ...] [--docs d01,d02] [--split dev]
-    python -m evals.run --replay [--model M ...] [--docs ...] [--split ...]
+    python -m evals.run --live   [--stage S] [--model M ...] [--docs d01,d02]
+                                 [--split dev]
+    python -m evals.run --replay [same options]
+
+--stage picks what is measured (docs/adr/0009-measured-evals.md):
+
+- vision: only reading the pages (open, then transcribe), scored against
+  the dataset's expected transcriptions. No record is made.
+- reasoning: the rest of the graph (classify, parse, repair, validate,
+  render, finish) from the expected transcriptions, so a parse error is
+  never a reading error. Scored on the record and its routing.
+- e2e (the default): the whole graph. A live e2e run answers each page's
+  reading from the vision run's cassette where it has one (the same
+  model, prompt, page and options), so reading is paid for once; the
+  recorded model time of those replies is added to the document's time.
+
+The vision and reasoning cassettes sit in vision/ and reasoning/ under
+the cassette directory; the e2e ones at its top.
 
 --live calls Ollama and records every reply as a cassette
 (scripts/evals/cassettes/<model>/<doc>.json); a live run of the whole
@@ -52,25 +68,50 @@ import reset_db
 import settings
 from dataset.build import DATASET_DIR
 from evals import history, progress
-from evals.cassettes import Cassette, CassetteMiss, RecordingClient, ReplayClient
+from evals.cassettes import (
+    Cassette,
+    CassetteMiss,
+    RecordingClient,
+    ReplayClient,
+    ReusingClient,
+)
 from evals.faultcheck import TODAY
-from evals.keys import answer_key, documents, expected_patient, manifest
+from evals.keys import (
+    answer_key,
+    documents,
+    expected_patient,
+    manifest,
+    with_text_layers,
+)
 from evals.report import DocumentResult, ModelRun, build_report, write_report
 from evals.score import score_document
 from evals.transcription import score_transcription
 from pipeline import checkpoints, graph, nodes
 from pipeline.state import initial_state
-from record.document import DocumentRecord
+from record.document import DocumentRecord, PageTranscription
 
 RESULTS_DIR = DATASET_DIR.parent / "results"
 CASSETTE_DIR = DATASET_DIR.parent / "cassettes"
 EVAL_DB_NAME = os.environ.get("MEDSUM_EVAL_DB_NAME", "med_sum_evals")
 UPLOADED_BY = "Eval runner"
+STAGES = ("e2e", "vision", "reasoning")
+# The graph each stage runs, and the version its pipeline runs carry.
+_GRAPHS = {
+    "e2e": ({}, graph.GRAPH_VERSION),
+    "vision": ({"only_transcribe": True}, graph.GRAPH_VERSION + "+vision-only"),
+    "reasoning": (
+        {"from_transcriptions": True},
+        graph.GRAPH_VERSION + "+from-transcriptions",
+    ),
+}
 
 
-def cassette_path(model: str, doc_id: str, root: Path = CASSETTE_DIR) -> Path:
+def cassette_path(
+    model: str, doc_id: str, root: Path = CASSETTE_DIR, stage: str = "e2e"
+) -> Path:
     slug = "".join(c if c.isalnum() or c in "-." else "_" for c in model)
-    return root / slug / f"{doc_id}.json"
+    base = root if stage == "e2e" else root / stage
+    return base / slug / f"{doc_id}.json"
 
 
 @dataclass
@@ -115,8 +156,10 @@ def insert_document(user_id: str, doc_id: str, dataset_dir: Path = DATASET_DIR) 
             return str(cur.fetchone()[0])
 
 
-def run_one(doc_id: str, user_id: str, dataset_dir: Path = DATASET_DIR):
-    """One document through the graph; the final state, or the error."""
+def run_one(
+    doc_id: str, user_id: str, dataset_dir: Path = DATASET_DIR, stage: str = "e2e"
+):
+    """One document through the stage's graph; the final state, or the error."""
     entry = documents(dataset_dir)[doc_id]
     document_id = insert_document(user_id, doc_id, dataset_dir)
     state = initial_state(
@@ -125,15 +168,55 @@ def run_one(doc_id: str, user_id: str, dataset_dir: Path = DATASET_DIR):
         uploaded_by=UPLOADED_BY,
         expected_patient=expected_patient(doc_id, dataset_dir),
     )
-    return graph.run_document(state)
+    if stage == "reasoning":
+        key = answer_key(doc_id, dataset_dir)
+        state["transcriptions"] = with_text_layers(doc_id, key.pages, dataset_dir)
+    options, version = _GRAPHS[stage]
+    return graph.run_document(
+        state,
+        graph=graph.build(**options),
+        graph_version=version,
+        # A run that stops after reading has no record to verify.
+        end_state="needs_review" if stage == "vision" else None,
+    )
+
+
+def scores_of(
+    doc_id: str,
+    record: DocumentRecord | None,
+    pages: list[PageTranscription] | None,
+    stage: str,
+    dataset_dir: Path = DATASET_DIR,
+):
+    """
+    A document's record and transcription scores for its stage: a vision
+    run makes no record to score, and a reasoning run reads no page.
+    """
+    key = answer_key(doc_id, dataset_dir)
+    rec = None if stage == "vision" else score_document(record, key)
+    trans = None if stage == "reasoning" else score_transcription(pages, key)
+    return rec, trans
+
+
+def pages_of(final: dict | None) -> list[PageTranscription] | None:
+    """The pages a run read: its record's, or (with no record) its state's."""
+    if not final:
+        return None
+    record = final.get("record")
+    if record is not None:
+        return record.pages or None
+    return list(final.get("transcriptions") or []) or None
 
 
 def unit_data(final: dict | None, outcome: Outcome, seconds: float, **extra) -> dict:
-    """What a finished document keeps in its progress file: the record (the
-    scores are worked out from it again), its outcome and its time."""
+    """What a finished document keeps in its progress file: the record and,
+    for a run that made none, the pages it read (the scores are worked out
+    from them again), its outcome and its time."""
     record = final.get("record") if final else None
+    pages = None if record is not None else pages_of(final)
     return {
         "record": record.model_dump(mode="json") if record is not None else None,
+        "pages": [p.model_dump(mode="json") for p in pages] if pages else None,
         "outcome": dict(outcome.__dict__),
         "seconds": seconds,
         **extra,
@@ -141,19 +224,20 @@ def unit_data(final: dict | None, outcome: Outcome, seconds: float, **extra) -> 
 
 
 def result_of(
-    doc_id: str, data: dict, dataset_dir: Path = DATASET_DIR
+    doc_id: str, data: dict, dataset_dir: Path = DATASET_DIR, stage: str = "e2e"
 ) -> tuple[DocumentResult, Outcome]:
     """A document's result and outcome from its progress file."""
-    key = answer_key(doc_id, dataset_dir)
     record = DocumentRecord.model_validate(data["record"]) if data["record"] else None
-    pages = (record.pages or None) if record is not None else None
-    result = DocumentResult(
-        doc_id,
-        score_document(record, key),
-        score_transcription(pages, key),
-        data["seconds"],
+    if record is not None:
+        pages = record.pages or None
+    elif data.get("pages"):
+        pages = [PageTranscription.model_validate(p) for p in data["pages"]]
+    else:
+        pages = None
+    rec, trans = scores_of(doc_id, record, pages, stage, dataset_dir)
+    return DocumentResult(doc_id, rec, trans, data["seconds"]), Outcome(
+        **data["outcome"]
     )
-    return result, Outcome(**data["outcome"])
 
 
 def run_model(
@@ -166,6 +250,8 @@ def run_model(
     after_document: Callable[[str], None] = lambda doc_id: None,
     on_final: Callable[[str, dict | None], None] = lambda doc_id, final: None,
     on_unit: Callable[[str, dict | None, Outcome, float], None] | None = None,
+    stage: str = "e2e",
+    extra_seconds: Callable[[str], float] = lambda doc_id: 0.0,
 ) -> tuple[ModelRun, dict[str, Outcome]]:
     """
     Every document with `model` as the primary. `client_for(doc_id)` gives
@@ -176,7 +262,9 @@ def run_model(
     final, outcome, seconds)` runs last, to keep the finished document. A
     CassetteMiss is raised at once: a replay that can't answer is not a
     result. An infrastructure error (evals.progress) raises RunStopped
-    before anything of the document is kept.
+    before anything of the document is kept. `stage` picks the graph
+    (STAGES); `extra_seconds(doc_id)` is model time spent outside this run
+    (reused page readings), added to the document's time.
     """
     other = llm.FALLBACK_MODEL if model != llm.FALLBACK_MODEL else llm.PRIMARY_MODEL
     saved_models, saved_client, saved_today = (
@@ -189,45 +277,34 @@ def run_model(
     run, outcomes = ModelRun(model), {}
     try:
         for doc_id in doc_ids:
-            key = answer_key(doc_id, dataset_dir)
             model_health.reset()
             llm._client = client_for(doc_id)
             llm._digests.clear()
             start = time.monotonic()
             try:
-                final = run_one(doc_id, user_id, dataset_dir)
+                final = run_one(doc_id, user_id, dataset_dir, stage)
             except CassetteMiss:
                 raise
             except Exception as e:  # the run failed: everything is missed
                 progress.stop_if_infrastructure(e)
-                seconds = time.monotonic() - start
-                run.documents.append(
-                    DocumentResult(
-                        doc_id,
-                        score_document(None, key),
-                        score_transcription(None, key),
-                        seconds,
-                    )
-                )
+                seconds = time.monotonic() - start + extra_seconds(doc_id)
+                rec, trans = scores_of(doc_id, None, None, stage, dataset_dir)
+                run.documents.append(DocumentResult(doc_id, rec, trans, seconds))
                 outcomes[doc_id] = Outcome("failed", [], None, type(e).__name__)
                 on_final(doc_id, None)
                 after_document(doc_id)
                 if on_unit is not None:
                     on_unit(doc_id, None, outcomes[doc_id], seconds)
                 continue
-            seconds = time.monotonic() - start
-            record = final["record"]
-            run.documents.append(
-                DocumentResult(
-                    doc_id,
-                    score_document(record, key),
-                    score_transcription(record.pages or None, key),
-                    seconds,
-                )
-            )
+            seconds = time.monotonic() - start + extra_seconds(doc_id)
+            record = final.get("record")
+            rec, trans = scores_of(doc_id, record, pages_of(final), stage, dataset_dir)
+            run.documents.append(DocumentResult(doc_id, rec, trans, seconds))
             routing = sorted({h.signal for h in final.get("signals", []) if h.routes})
             role = final.get("parse_model_role") if final.get("record_parsed") else None
-            outcomes[doc_id] = Outcome(final["end_state"], routing, role)
+            # A vision run ends nowhere a clinician would see it.
+            end = None if stage == "vision" else final["end_state"]
+            outcomes[doc_id] = Outcome(end, routing, role)
             on_final(doc_id, final)
             after_document(doc_id)
             if on_unit is not None:
@@ -386,6 +463,7 @@ def main(argv: list[str] | None = None) -> int:
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--live", action="store_true", help="call Ollama, record")
     mode.add_argument("--replay", action="store_true", help="answer from cassettes")
+    parser.add_argument("--stage", choices=STAGES, default="e2e")
     parser.add_argument("--model", action="append", dest="models")
     parser.add_argument("--docs", help="comma-separated ids, e.g. d02,d09")
     parser.add_argument("--split", choices=["dev", "test", "held_out"])
@@ -394,11 +472,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--cassettes", type=Path, default=CASSETTE_DIR)
     parser.add_argument("--no-history", action="store_true")
     args = parser.parse_args(argv)
+    stage = args.stage
 
     models = args.models or [llm.PRIMARY_MODEL, llm.FALLBACK_MODEL]
     doc_ids = select(args.docs, args.split)
     mode = "live" if args.live else "replay"
-    label = args.resume or args.label or f"{time.strftime('%Y-%m-%d')}-{mode}"
+    default = f"{time.strftime('%Y-%m-%d')}-{mode}"
+    if stage != "e2e":
+        default += f"-{stage}"
+    label = args.resume or args.label or default
     live_client = llm._client
     installed = live_digests(live_client, models, args.live)
     if installed is None:
@@ -410,32 +492,51 @@ def main(argv: list[str] | None = None) -> int:
     run_progress = open_progress(
         "run", label, args.resume is not None, models=models, units=units,
         dataset=progress.json_hash(manifest()),
-        digests=installed, selection={"mode": mode, "split": args.split},
+        digests=installed,
+        selection={"mode": mode, "split": args.split, "stage": stage},
     )  # fmt: skip
     if run_progress is None:
         return 2
     with EvalDatabase() as db:
         for model in models:
             cassettes: dict[str, Cassette] = {}
+            reused: dict[str, ReusingClient] = {}
 
-            def client_for(doc_id: str, model=model, cassettes=cassettes):
-                path = cassette_path(model, doc_id, args.cassettes)
+            def client_for(
+                doc_id: str, model=model, cassettes=cassettes, reused=reused
+            ):
+                path = cassette_path(model, doc_id, args.cassettes, stage)
                 if args.live:
                     cassettes[doc_id] = Cassette()
-                    return RecordingClient(live_client, cassettes[doc_id])
+                    recording = RecordingClient(live_client, cassettes[doc_id])
+                    read = cassette_path(model, doc_id, args.cassettes, "vision")
+                    if stage != "e2e" or not read.exists():
+                        return recording
+                    reused[doc_id] = ReusingClient(
+                        Cassette.load(read), recording, expect_digests=installed
+                    )
+                    return reused[doc_id]
                 if not path.exists():
                     raise CassetteMiss(f"{model}: no cassette {path}; re-record")
                 return ReplayClient(Cassette.load(path), expect_digests=expect)
 
             def save(doc_id: str, model=model, cassettes=cassettes):
                 if args.live:
-                    cassettes[doc_id].save(cassette_path(model, doc_id, args.cassettes))
+                    path = cassette_path(model, doc_id, args.cassettes, stage)
+                    cassettes[doc_id].save(path)
 
-            def keep(doc_id, final, outcome, seconds, model=model, cassettes=cassettes):
+            def earlier(doc_id: str, reused=reused) -> float:
+                return reused[doc_id].reused_seconds if doc_id in reused else 0.0
+
+            def keep(
+                doc_id, final, outcome, seconds, model=model, cassettes=cassettes,
+                reused=reused,
+            ):  # fmt: skip
                 digests = cassettes[doc_id].digests() if doc_id in cassettes else {}
+                n = reused[doc_id].reused if doc_id in reused else 0
                 run_progress.save(
                     progress.unit_id(model, doc_id),
-                    unit_data(final, outcome, seconds, digests=digests),
+                    unit_data(final, outcome, seconds, digests=digests, reused=n),
                     seconds=seconds,
                     end=outcome.end_state,
                 )
@@ -452,6 +553,8 @@ def main(argv: list[str] | None = None) -> int:
                     client_for=client_for,
                     after_document=save,
                     on_unit=keep,
+                    stage=stage,
+                    extra_seconds=earlier,
                 )
             except CassetteMiss as e:
                 print(f"FAIL replay: {e}", file=sys.stderr)
@@ -467,12 +570,14 @@ def main(argv: list[str] | None = None) -> int:
         run, out = ModelRun(model), {}
         for doc_id in doc_ids:
             data = run_progress.load(progress.unit_id(model, doc_id))
-            result, out[doc_id] = result_of(doc_id, data)
+            result, out[doc_id] = result_of(doc_id, data, stage=stage)
             run.documents.append(result)
             digests.update(data.get("digests") or {})
         runs.append(run)
         outcomes[model] = out
-    report = build_report(label, runs, manifest(), outcomes=_as_dicts(outcomes))
+    report = build_report(
+        label, runs, manifest(), outcomes=_as_dicts(outcomes), stage=stage
+    )
     kept = args.live and not args.no_history
     name = history.run_name(label, report["generated_at"])
     out_dir = args.out or (history.REPORTS_DIR / name if kept else RESULTS_DIR / label)

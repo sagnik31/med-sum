@@ -43,21 +43,44 @@ _ROUTES = {
 }
 
 
-def build(checkpointer=None, **compile_options):
+def build(
+    checkpointer=None,
+    *,
+    only_transcribe: bool = False,
+    from_transcriptions: bool = False,
+    **compile_options,
+):
     """
     The compiled graph; with a checkpointer, every node's state is saved.
     `compile_options` go to LangGraph's compile (e.g. interrupt_before).
+
+    Two parts of it exist for the evals that measure one stage
+    (docs/adr/0009-measured-evals.md), never for the service:
+    `only_transcribe` stops after the last page is read, and
+    `from_transcriptions` skips reading, for a state that already holds
+    every page's transcription.
     """
+    if only_transcribe and from_transcriptions:
+        raise ValueError("a graph can't both stop after reading and skip it")
+    if only_transcribe:
+        names = ["open", "transcribe"]
+    elif from_transcriptions:
+        names = [n for n in NODES if n != "transcribe"]
+    else:
+        names = list(NODES)
     builder = StateGraph(GraphState)
-    for name, node in NODES.items():
-        builder.add_node(name, node)
+    for name in names:
+        builder.add_node(name, NODES[name])
     builder.add_edge(START, "open")
-    builder.add_edge("open", "transcribe")
+    builder.add_edge("open", "classify" if from_transcriptions else "transcribe")
     for name, (route, targets) in _ROUTES.items():
-        builder.add_conditional_edges(name, route, targets)
-    builder.add_edge("fallback", "parse")
-    builder.add_edge("render", "finish")
-    builder.add_edge("finish", END)
+        if name in names:
+            path_map = {t: t if t in names else END for t in targets}
+            builder.add_conditional_edges(name, route, path_map)
+    if "finish" in names:
+        builder.add_edge("fallback", "parse")
+        builder.add_edge("render", "finish")
+        builder.add_edge("finish", END)
     return builder.compile(checkpointer=checkpointer, **compile_options)
 
 
@@ -67,10 +90,13 @@ def run_document(
     graph=None,
     graph_version: str = GRAPH_VERSION,
     connect=None,
+    end_state: str | None = None,
 ) -> GraphState:
     """
     One document through the graph, as one pipeline run. Returns the final
-    state; its end_state is the run's.
+    state; its end_state is the run's. `end_state` ends the run of a graph
+    that stops before finish (`build(only_transcribe=True)`), which sets
+    none.
     """
     graph = graph or build()
     with start_run(state["document_id"], graph_version, connect=connect) as run:
@@ -81,5 +107,5 @@ def run_document(
                 "configurable": {"thread_id": run.id},
             },
         )
-        run.finish(final["end_state"])
+        run.finish(end_state or final["end_state"])
     return final

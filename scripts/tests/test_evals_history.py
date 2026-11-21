@@ -172,3 +172,14 @@ def test_runs_of_another_dataset_or_model_set_are_not_comparable(entry):
 def test_an_entry_lists_each_models_documents(entry, report):
     docs = entry["documents"][selfcheck.LABEL]
     assert docs == sorted(docs) and len(docs) == _model(entry)["documents"]
+
+
+def test_runs_of_another_stage_are_not_comparable(entry):
+    assert entry["stage"] == "e2e"
+    vision = copy.deepcopy(entry)
+    vision["stage"] = "vision"
+    assert any("stage" in w for w in compare.unlike(entry, vision))
+    # An entry from before the stages measured the whole pipeline.
+    old = copy.deepcopy(entry)
+    del old["stage"]
+    assert compare.unlike(entry, old) == []

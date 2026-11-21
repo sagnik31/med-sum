@@ -1,6 +1,6 @@
 # 0009. Evals measure the safety net, on a committed synthetic dataset, with honest uncertainty
 
-- **Status:** Accepted, 2026-11-07 to 2026-11-12; resumable runs 2026-11-21. Built; the live runs over the dataset on both models are not made yet.
+- **Status:** Accepted, 2026-11-07 to 2026-11-12; resumable runs 2026-11-21; stages 2026-11-22. Built; the live runs over the dataset on both models are not made yet.
 
 ## Context
 
@@ -22,6 +22,8 @@ The design rests on "deterministic checks catch what the model gets wrong". That
 
 **Runs are checkpointed and resumable** (added 2026-11-21, `scripts/src/evals/progress.py`): a live suite takes hours on a CPU, so each finished unit (a document per model, a repair case per model and variant, an MCP question) is saved next to a fingerprint of the run (code, prompts, model digests, generation options, dataset, units), and `--resume <label>` carries on from the last one, refusing when the fingerprint changed, since a resumed run must be one run. The report is built from the unit files either way. An outage of every model, a lost database or a full disk stops the run rather than being scored, so a crash at night can't fill the report with misses.
 
+**Each stage is measured on its own** (added 2026-11-22). A miss in an end-to-end record can be a misread page or a misparsed one, and the report can't tell which. So `evals.run --stage` runs one part of the same graph: `vision` reads the pages and stops (scored on transcription only, no record, no routing), and `reasoning` starts from the expected transcriptions and runs the rest (scored on the record and routing, with no reading error possible). `e2e`, the default, is the whole graph. Each stage keeps its own cassettes, its report says its stage, and `evals.compare` refuses runs of different stages. Reading a page is most of a document's time on a CPU, so a live `e2e` run answers each page's reading from the vision run's cassette where the request is the same (model, prompt, page, options, model build) and calls the model only for the rest; the recorded model time of those replies is added to the document's time, so timings stay comparable. A vision report chooses no model (it says which pass the value-recall gate); a reasoning report's choice leaves that gate to the vision report; the e2e report applies the whole gate.
+
 ## Alternatives rejected
 
 - **Real or public documents.** Privacy and licensing.
@@ -29,6 +31,8 @@ The design rests on "deterministic checks catch what the model gets wrong". That
 - **Bare percentages.** At this size, 0 unsafe errors in about 200 items still allows nearly 2% at 95%.
 - **Results in a gitignored folder.** Nobody could see how the numbers moved.
 - **Scoring a document that failed on an outage.** The miss says nothing about the model; stopping and resuming keeps the run whole.
+- **Only an end-to-end run.** Its misses don't say which step made them, and every change pays for reading every page again.
+- **Only the stages.** How a reading error carries into the record and its routing is what reaches a doctor, so the end-to-end run stays; reusing the readings keeps it cheap.
 
 ## Consequences
 

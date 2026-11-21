@@ -268,6 +268,13 @@ class ReplayClient:
         return _models(self.cassette.digests())
 
     def chat(self, *, model, messages, stream, think, options, format=None, tools=None):
+        entry = self.entry_for(
+            model=model, messages=messages, options=options, format=format, tools=tools
+        )
+        return _chunks(entry.reply, entry.done_reason, entry.done, entry.tool_calls)
+
+    def entry_for(self, *, model, messages, options, format=None, tools=None) -> Entry:
+        """The recorded entry that answers this request (CassetteMiss if none)."""
         key = request_key(
             model=model, messages=messages, options=options, format=format, tools=tools
         )
@@ -287,7 +294,7 @@ class ReplayClient:
                 f"{expected}; re-record with a live run"
             )
         self._used[key.request] = n + 1
-        return _chunks(entry.reply, entry.done_reason, entry.done, entry.tool_calls)
+        return entry
 
     def _why(self, key: RequestKey, seen: bool) -> str:
         if seen:
@@ -304,3 +311,53 @@ class ReplayClient:
         else:
             what = "no recorded request matches"
         return f"{key.model}: {what} since the recording; re-record with a live run"
+
+
+class ReusingClient:
+    """
+    A live client that answers from an earlier recording where it can: a
+    request recorded there (the same model, prompt, page and options) gets
+    the recorded reply, and any other goes to the model. Both kinds are
+    recorded into `recording`, so the run replays on its own later.
+
+    The end-to-end eval reads its pages this way from the vision eval's
+    recordings, so a run of both pays for reading once. `reused_seconds`
+    adds up the recorded model time of the reused replies, so a
+    document's time stays comparable with a run that read its pages
+    itself. See docs/adr/0009-measured-evals.md.
+    """
+
+    def __init__(
+        self, earlier: Cassette, live: RecordingClient, *, expect_digests=None
+    ):
+        self.earlier = ReplayClient(earlier, expect_digests=expect_digests)
+        self.live = live
+        self.reused = 0
+        self.reused_seconds = 0.0
+
+    def list(self):
+        return self.live.list()
+
+    def chat(self, *, model, messages, stream, think, options, format=None, tools=None):
+        try:
+            entry = self.earlier.entry_for(
+                model=model,
+                messages=messages,
+                options=options,
+                format=format,
+                tools=tools,
+            )
+        except CassetteMiss:
+            return self.live.chat(
+                model=model,
+                messages=messages,
+                stream=stream,
+                think=think,
+                options=options,
+                format=format,
+                tools=tools,
+            )
+        self.live.cassette.entries.append(entry)
+        self.reused += 1
+        self.reused_seconds += entry.done.get("total_duration", 0) / 1e9
+        return _chunks(entry.reply, entry.done_reason, entry.done, entry.tool_calls)

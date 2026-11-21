@@ -225,3 +225,41 @@ def test_changed_tools_are_a_miss_that_says_so(recorded):
     with pytest.raises(CassetteMiss, match="tools changed"):
         list(replay.chat(model=MODEL, messages=messages(), stream=True, think=False,
                          options=OPTIONS, tools=TOOL_SPECS))  # fmt: skip
+
+
+# -------------------------------------------------------------------
+# Reusing an earlier recording
+# -------------------------------------------------------------------
+def test_a_reusing_client_answers_recorded_requests_and_records_both(model_client):
+    from evals.cassettes import ReusingClient
+
+    model_client.digests[MODEL] = "sha256:abc"
+    model_client.replies[MODEL] = [("the page", "stop", {"total_duration": 4e9})]
+    earlier = Cassette()
+    ask(RecordingClient(model_client, earlier), messages())
+
+    model_client.replies[MODEL] = ["the parse"]
+    now = Cassette()
+    client = ReusingClient(earlier, RecordingClient(model_client, now))
+    calls = len(model_client.calls)
+    assert ask(client, messages()) == "the page"  # from the recording
+    assert ask(client, messages(user="Parse it.", image=b"")) == "the parse"
+    assert len(model_client.calls) - calls == 1  # only the new request
+    assert [e.reply for e in now.entries] == ["the page", "the parse"]
+    assert (client.reused, client.reused_seconds) == (1, 4.0)
+    # The new recording replays on its own.
+    replay = ReplayClient(now)
+    assert ask(replay, messages()) == "the page"
+
+
+def test_a_reusing_client_asks_the_model_when_the_build_differs(recorded, model_client):
+    from evals.cassettes import ReusingClient
+
+    model_client.replies[MODEL] = ["read again"]
+    client = ReusingClient(
+        recorded,
+        RecordingClient(model_client, Cassette()),
+        expect_digests={MODEL: "sha256:other"},
+    )
+    assert ask(client, messages()) == "read again"
+    assert client.reused == 0

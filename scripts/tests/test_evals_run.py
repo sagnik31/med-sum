@@ -411,3 +411,86 @@ def test_a_replay_of_cassettes_from_another_build_fails(
                         "--cassettes", str(tmp_path / "c"), "--out", str(tmp_path / "o")])  # fmt: skip
     assert code == 2
     assert "recorded with digest sha256:old-build" in capsys.readouterr().err
+
+
+# -------------------------------------------------------------------
+# Stages
+# -------------------------------------------------------------------
+def page_replies(doc_id: str) -> list[str]:
+    return ["\n".join(p.lines) for p in key(doc_id).pages]
+
+
+def test_a_vision_run_reads_the_pages_and_makes_no_record(db, model_client):
+    model_client.replies[MODEL] = page_replies("d09")
+    cassette = Cassette()
+    run, outcomes = runner.run_model(
+        MODEL, ["d09"], user_id=add_account(db), stage="vision",
+        client_for=lambda doc: RecordingClient(model_client, cassette),
+    )  # fmt: skip
+    (result,) = run.documents
+    assert result.record is None
+    assert result.transcription.values.value == 1.0
+    assert outcomes["d09"] == runner.Outcome(None, [], None)
+    assert len(cassette.entries) == len(key("d09").pages)  # no classify, no parse
+
+
+def test_a_reasoning_run_parses_the_expected_transcription(db, model_client):
+    model_client.replies[MODEL] = replies_for("d09", "lab_report")[-2:]
+    cassette = Cassette()
+    run, outcomes = runner.run_model(
+        MODEL, ["d09"], user_id=add_account(db), stage="reasoning",
+        client_for=lambda doc: RecordingClient(model_client, cassette),
+    )  # fmt: skip
+    (result,) = run.documents
+    assert result.transcription is None
+    assert result.record.all_fields.f1 == 1.0
+    assert outcomes["d09"] == runner.Outcome("verified", [], "primary")
+    # Classify and parse; no page was read.
+    assert len(cassette.entries) == 2
+    assert not any(m.get("images") for c in model_client.calls for m in c["messages"])
+
+
+def test_each_stage_keeps_its_own_cassettes(tmp_path):
+    assert runner.cassette_path(MODEL, "d01", tmp_path, "vision") == (
+        tmp_path / "vision" / "qwen3.5_4b" / "d01.json"
+    )
+    assert runner.cassette_path(MODEL, "d01", tmp_path, "e2e") == (
+        runner.cassette_path(MODEL, "d01", tmp_path)
+    )
+
+
+def stage_args(tmp_path, stage, label, mode="--live"):
+    return [mode, "--stage", stage, "--model", MODEL, "--docs", "d09",
+            "--cassettes", str(tmp_path / "c"), "--out", str(tmp_path / label),
+            "--no-history", "--label", label]  # fmt: skip
+
+
+@pytest.mark.db
+def test_a_live_e2e_run_reads_its_pages_from_the_vision_cassettes(
+    eval_db, model_client, tmp_path, history_dir
+):
+    model_client.digests[MODEL] = "sha256:abc"
+    model_client.digests[llm.FALLBACK_MODEL] = "sha256:def"
+    model_client.replies[MODEL] = [
+        (page, "stop", {"total_duration": 9e9}) for page in page_replies("d09")
+    ]
+    assert runner.main(stage_args(tmp_path, "vision", "v")) == 0
+    vision = json.loads((tmp_path / "v" / "report.json").read_text(encoding="utf-8"))
+    assert vision["stage"] == "vision"
+    assert vision["value_recall_gate"] == {MODEL: True}
+    assert vision["models"][MODEL]["documents"][0]["record"] is None
+
+    model_client.replies[MODEL] = replies_for("d09", "lab_report")[-2:]
+    calls = len(model_client.calls)
+    assert runner.main(stage_args(tmp_path, "e2e", "e")) == 0
+    assert len(model_client.calls) - calls == 2  # classify and parse only
+    e2e = json.loads((tmp_path / "e" / "report.json").read_text(encoding="utf-8"))
+    (doc,) = e2e["models"][MODEL]["documents"]
+    assert doc["record"]["all_fields"]["f1"] == 1.0
+    assert doc["transcription"]["values"]["value"] == 1.0
+    assert doc["seconds"] >= 9  # the reused reading's model time counts
+
+    # The e2e cassette holds the reused reading too, so it replays alone.
+    calls = len(model_client.calls)
+    assert runner.main(stage_args(tmp_path, "e2e", "r", "--replay")) == 0
+    assert len(model_client.calls) == calls

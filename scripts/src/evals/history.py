@@ -83,9 +83,19 @@ def metrics(model: dict) -> dict:
 def document_ids(report: dict) -> dict[str, list[str]]:
     """The documents each model of a report ran, sorted."""
     return {
-        name: sorted(d["record"]["document_id"] for d in m.get("documents", []))
+        name: sorted(_document_id(d) for d in m.get("documents", []))
         for name, m in report["models"].items()
     }
+
+
+def _document_id(d: dict) -> str:
+    # Reports before the stages named a document only inside its record.
+    return d.get("document_id") or d["record"]["document_id"]
+
+
+def stage_of(entry: dict) -> str:
+    """The stage a history entry or report measured; e2e before the stages."""
+    return entry.get("stage") or "e2e"
 
 
 def entry(
@@ -102,6 +112,7 @@ def entry(
         "label": report["label"],
         "generated_at": report["generated_at"],
         "mode": mode,
+        "stage": stage_of(report),
         "dataset": report["dataset"],
         "code": code_version(),
         "prompts": prompt_hashes(),
@@ -152,6 +163,7 @@ def read(path: Path) -> dict:
             "label": data["label"],
             "generated_at": data["generated_at"],
             "mode": "report",
+            "stage": stage_of(data),
             "dataset": data["dataset"],
             "code": None,
             "prompts": {},
@@ -175,9 +187,10 @@ def _of(c: dict | None) -> str:
 
 def scoreboard(entries: list[dict]) -> str:
     """Every entry's numbers per model, newest first, as a Markdown table."""
-    header = ("| Date | Run | Commit | Model | Field F1 | Unsafe | Value recall "
-              "| End state right | Auto-verified | Unsafe in verified | Report |")  # fmt: skip
-    lines = [header, "| " + " | ".join("---" for _ in range(11)) + " |"]
+    header = ("| Date | Run | Stage | Commit | Model | Field F1 | Unsafe "
+              "| Value recall | End state right | Auto-verified | Unsafe in verified "
+              "| Report |")  # fmt: skip
+    lines = [header, "| " + " | ".join("---" for _ in range(12)) + " |"]
     for e in reversed(entries):
         commit = (e.get("code") or {}).get("commit", "")[:7] or "-"
         report = e.get("report") or "-"
@@ -185,7 +198,8 @@ def scoreboard(entries: list[dict]) -> str:
             r = m.get("routing") or {}
             unsafe = f"{m['unsafe']}/{m['clinical_items']}"
             lines.append(
-                f"| {e['generated_at'][:10]} | {e['label']} | {commit} | `{name}` | "
+                f"| {e['generated_at'][:10]} | {e['label']} | {stage_of(e)} | "
+                f"{commit} | `{name}` | "
                 f"{_pct(m['field_f1'])} | {unsafe} | {_pct(m['value_recall'])} | "
                 f"{_of(r.get('end_state_right'))} | {_of(r.get('auto_verified'))} | "
                 f"{_of(r.get('unsafe_in_verified'))} | {report} |"
