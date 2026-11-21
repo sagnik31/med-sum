@@ -320,8 +320,9 @@ class ReusingClient:
     the recorded reply, and any other goes to the model. Both kinds are
     recorded into `recording`, so the run replays on its own later.
 
-    The end-to-end eval reads its pages this way from the vision eval's
-    recordings, so a run of both pays for reading once. `reused_seconds`
+    The end-to-end eval answers this way from the vision and reasoning
+    evals' recordings, so it pays only for the requests they didn't make.
+    `reused_seconds`
     adds up the recorded model time of the reused replies, so a
     document's time stays comparable with a run that read its pages
     itself. See docs/adr/0009-measured-evals.md.

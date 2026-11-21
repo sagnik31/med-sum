@@ -13,10 +13,13 @@ scored against its answer key, for each model as the primary.
 - reasoning: the rest of the graph (classify, parse, repair, validate,
   render, finish) from the expected transcriptions, so a parse error is
   never a reading error. Scored on the record and its routing.
-- e2e (the default): the whole graph. A live e2e run answers each page's
-  reading from the vision run's cassette where it has one (the same
-  model, prompt, page and options), so reading is paid for once; the
-  recorded model time of those replies is added to the document's time.
+- e2e (the default): the whole graph. A live e2e run answers every
+  request the vision and reasoning runs recorded (the same model, prompt,
+  input and options): each page's reading, and, for a document the model
+  read exactly as expected, its classify and parse, which are then the
+  reasoning run's requests. So the model is called only where the e2e
+  run differs from the stages; the recorded model time of the reused
+  replies is added to the document's time.
 
 The vision and reasoning cassettes sit in vision/ and reasoning/ under
 the cassette directory; the e2e ones at its top.
@@ -179,6 +182,19 @@ def run_one(
         # A run that stops after reading has no record to verify.
         end_state="needs_review" if stage == "vision" else None,
     )
+
+
+def earlier_cassette(model: str, doc_id: str, root: Path) -> Cassette | None:
+    """
+    What the vision and reasoning runs recorded for this model and
+    document, as one cassette; None when neither did. A live e2e run
+    answers from it every request it holds: each page's reading, and, when
+    the model read the pages exactly as the expected transcription, the
+    classify and parse requests too, which are then the reasoning run's.
+    """
+    paths = [cassette_path(model, doc_id, root, s) for s in ("vision", "reasoning")]
+    entries = [e for p in paths if p.exists() for e in Cassette.load(p).entries]
+    return Cassette(entries) if entries else None
 
 
 def scores_of(
@@ -509,11 +525,11 @@ def main(argv: list[str] | None = None) -> int:
                 if args.live:
                     cassettes[doc_id] = Cassette()
                     recording = RecordingClient(live_client, cassettes[doc_id])
-                    read = cassette_path(model, doc_id, args.cassettes, "vision")
-                    if stage != "e2e" or not read.exists():
+                    earlier = earlier_cassette(model, doc_id, args.cassettes)
+                    if stage != "e2e" or earlier is None:
                         return recording
                     reused[doc_id] = ReusingClient(
-                        Cassette.load(read), recording, expect_digests=installed
+                        earlier, recording, expect_digests=installed
                     )
                     return reused[doc_id]
                 if not path.exists():

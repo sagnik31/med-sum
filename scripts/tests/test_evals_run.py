@@ -494,3 +494,24 @@ def test_a_live_e2e_run_reads_its_pages_from_the_vision_cassettes(
     calls = len(model_client.calls)
     assert runner.main(stage_args(tmp_path, "e2e", "r", "--replay")) == 0
     assert len(model_client.calls) == calls
+
+
+@pytest.mark.db
+def test_after_both_stages_an_e2e_run_calls_the_model_only_where_it_differs(
+    eval_db, model_client, tmp_path, history_dir
+):
+    model_client.digests[MODEL] = "sha256:abc"
+    model_client.digests[llm.FALLBACK_MODEL] = "sha256:def"
+    model_client.replies[MODEL] = page_replies("d09")
+    assert runner.main(stage_args(tmp_path, "vision", "v")) == 0
+    model_client.replies[MODEL] = replies_for("d09", "lab_report")[-2:]
+    assert runner.main(stage_args(tmp_path, "reasoning", "r")) == 0
+
+    # The page was read exactly as expected, so classify and parse are the
+    # reasoning run's requests: nothing is left to ask the model.
+    calls = len(model_client.calls)
+    assert runner.main(stage_args(tmp_path, "e2e", "e")) == 0
+    assert len(model_client.calls) == calls
+    e2e = json.loads((tmp_path / "e" / "report.json").read_text(encoding="utf-8"))
+    (doc,) = e2e["models"][MODEL]["documents"]
+    assert doc["record"]["all_fields"]["f1"] == 1.0
