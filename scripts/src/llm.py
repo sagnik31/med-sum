@@ -61,8 +61,11 @@ _client = ollama.Client(timeout=MODEL_TIMEOUT_SECONDS)
 # Deterministic output: these calls copy and condense clinical text, so there
 # is nothing to gain from sampling. presence_penalty is reset because Qwen's
 # default (1.5) penalises tokens that repeat, and reports legitimately repeat
-# units and flags.
-GENERATION_OPTIONS = {"temperature": 0, "presence_penalty": 0}
+# units and flags. A fixed seed makes what sampling remains (Ollama's own
+# defaults, a tie at temperature 0) repeat between runs; it is kept with every
+# model call's request and in every cassette entry. See
+# docs/adr/0005-local-models-with-fallback.md.
+GENERATION_OPTIONS = {"temperature": 0, "presence_penalty": 0, "seed": 0}
 
 PROVIDER = "ollama"
 

@@ -48,6 +48,7 @@ def test_calls_are_deterministic_streamed_and_capped(model_client):
     assert call["options"] == {
         "temperature": 0,
         "presence_penalty": 0,
+        "seed": 0,
         "num_ctx": llm.NUM_CTX,
         "num_predict": 123,
     }

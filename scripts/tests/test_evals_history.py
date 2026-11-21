@@ -34,6 +34,8 @@ def entry(report) -> dict:
 def test_an_entry_records_what_produced_it(entry):
     assert entry["mode"] == "live"
     assert entry["digests"] == {"m": "sha256:1"}
+    assert entry["generation_options"]["seed"] == 0
+    assert entry["generation_options"]["temperature"] == 0
     assert set(entry["prompts"]) >= {"extract_page", "parse_lab_report"}
     assert all(len(h) == 64 for h in entry["prompts"].values())
     assert entry["code"] is None or len(entry["code"]["commit"]) == 40

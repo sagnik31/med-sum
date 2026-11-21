@@ -169,6 +169,7 @@ def test_the_request_options_are_recorded_but_not_the_prompt(model_client, recor
     assert recorded[0].request == {
         "temperature": 0,
         "presence_penalty": 0,
+        "seed": 0,
         "num_ctx": llm.NUM_CTX,
         "num_predict": 123,
         "think": False,

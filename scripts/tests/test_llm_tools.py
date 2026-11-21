@@ -41,6 +41,7 @@ def test_the_tools_are_offered_and_the_options_are_the_usual_ones(model_client):
     assert sent["tools"] == SPECS
     assert sent["format"] is None and sent["think"] is False
     assert sent["options"]["temperature"] == 0
+    assert sent["options"]["seed"] == 0
     assert sent["options"]["num_predict"] == 200
 
 

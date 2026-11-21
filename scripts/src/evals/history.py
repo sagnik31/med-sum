@@ -1,7 +1,7 @@
 """
 The committed history of eval results: one small JSON file per live run
 in scripts/evals/history/, with what produced it (code version, prompt
-hashes, model digests) and the headline numbers per model and per split.
+hashes, model digests, generation options with the seed) and the headline numbers per model and per split.
 Entries hold counts only, so they are small enough to compare
 (evals/compare.py). Each one names its full report (every document's scores
 and field errors), which a live run writes to the committed
@@ -16,6 +16,7 @@ import re
 import sys
 from pathlib import Path
 
+import llm
 from dataset.build import DATASET_DIR
 from observability.versions import code_version
 from evals.model_texts import model_texts, text_files
@@ -97,6 +98,7 @@ def entry(
         "code": code_version(),
         "prompts": prompt_hashes(),
         "digests": dict(sorted((digests or {}).items())),
+        "generation_options": dict(llm.GENERATION_OPTIONS),
         "choice": (report.get("choice") or {}).get("model"),
         "report": report_path,
         "models": {name: metrics(m) for name, m in report["models"].items()},
@@ -145,6 +147,7 @@ def read(path: Path) -> dict:
             "code": None,
             "prompts": {},
             "digests": {},
+            "generation_options": {},
             "choice": (data.get("choice") or {}).get("model"),
             "report": None,
             "models": {n: metrics(m) for n, m in data["models"].items()},

@@ -70,6 +70,22 @@ def test_a_recording_keeps_the_reply_digest_and_counts(recorded):
     assert entry.done == {"eval_count": 3}
 
 
+def test_a_recording_keeps_the_seed_the_request_sent(model_client):
+    model_client.replies[MODEL] = ["the page"]
+    cassette = Cassette()
+    ask(RecordingClient(model_client, cassette), messages(), {**OPTIONS, "seed": 0})
+    assert cassette.entries[0].seed == 0
+
+
+def test_llm_chat_sends_and_records_seed_zero(model_client, monkeypatch):
+    model_client.replies[MODEL] = ["ok"]
+    cassette = Cassette()
+    monkeypatch.setattr(llm, "_client", RecordingClient(model_client, cassette))
+    llm.chat(messages(), max_tokens=10)
+    assert model_client.calls[0]["options"]["seed"] == 0
+    assert cassette.entries[0].seed == 0
+
+
 def test_replay_answers_without_the_model(recorded, model_client):
     calls = len(model_client.calls)
     assert ask(ReplayClient(recorded), messages()) == "the page"

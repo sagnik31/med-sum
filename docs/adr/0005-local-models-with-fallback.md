@@ -1,6 +1,6 @@
 # 0005. Local models with a fallback and a circuit breaker; cloud only for synthetic text
 
-- **Status:** Accepted, 2026-11-07 and 2026-11-09; cloud guard 2026-11-13. Built. No cloud provider is configured; whether to add one is decided later.
+- **Status:** Accepted, 2026-11-07 and 2026-11-09; cloud guard 2026-11-13; fixed seed 2026-11-21. Built. No cloud provider is configured; whether to add one is decided later.
 
 ## Context
 
@@ -8,7 +8,7 @@ Patient documents shouldn't leave the hospital's machines, and the project uses 
 
 ## Decision
 
-- **All inference is local**, through Ollama, with exactly two models: `qwen3.5:4b` (primary, vision and text) and `gemma4:e2b` (fallback). Which is primary is for the evals to decide. Calls are as deterministic as Ollama allows: temperature 0, thinking off, fixed context size, an output cap per call, Ollama's `stop` option for the end marker.
+- **All inference is local**, through Ollama, with exactly two models: `qwen3.5:4b` (primary, vision and text) and `gemma4:e2b` (fallback). Which is primary is for the evals to decide. Calls are as deterministic as Ollama allows: temperature 0, a fixed seed (`seed=0`, added 2026-11-21), thinking off, fixed context size, an output cap per call, Ollama's `stop` option for the end marker. The seed is part of every request, so it is kept in each model call's recorded request, in each cassette entry and in each eval history entry (`generation_options`); a changed seed is a cassette miss like any other changed option.
 - **Every model call goes through `scripts/src/llm.py`.** An error, a timeout (nothing for 600 seconds) or a capped reply on the primary sends the same request to the fallback. Cut-off output is never saved as a result.
 - **Fallback use is operational, not low confidence:** logged, kept in provenance (the model role) and shown in review, while the checks judge the output on its merits.
 - **A circuit breaker per model** (`scripts/src/model_health.py`), in memory: 3 consecutive infrastructure failures (server errors, timeouts, a stream cut short; not a 4xx answer) skip the model for 15 minutes, then one probe call decides. Quality failures (off-schema, capped, failing validation) are counted separately and never trip it. With every model skipped, a call fails at once with "No model available". State is on `GET /health`.

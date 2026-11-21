@@ -15,8 +15,8 @@ keeps its calls, and a replay sends them back as Ollama does. So a changed promp
 changed schema is a miss, and a miss is an error (`CassetteMiss`) that says
 which part differs from the nearest recording and to re-record, which is a
 live run. Each entry also keeps the model digest it was recorded with, the
-prompt hash (the system and instruction text) and the input hash (pages
-and document text), so a replay can be refused when the installed model is
+prompt hash (the system and instruction text), the input hash (pages
+and document text) and the seed the request sent, so a replay can be refused when the installed model is
 not the one recorded (`expect_digests`).
 
 Cassettes hold reply text, which for the synthetic dataset is synthetic
@@ -114,6 +114,9 @@ class Entry:
     done: dict = field(default_factory=dict)
     # The reply's tool calls, as {"name", "arguments"}; empty for text.
     tool_calls: list = field(default_factory=list)
+    # The sampling seed the request sent (also inside the options hash), so a
+    # cassette says on its face which seed it was recorded with.
+    seed: int | None = None
 
     def as_dict(self) -> dict:
         return dict(self.__dict__)
@@ -243,6 +246,7 @@ class RecordingClient:
                             if getattr(chunk, f, None) is not None
                         },
                         tool_calls=calls,
+                        seed=(options or {}).get("seed"),
                     )
                 )
             yield chunk
