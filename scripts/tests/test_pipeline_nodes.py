@@ -1112,3 +1112,37 @@ def test_a_page_with_no_printed_line_counts_as_not_read():
         "capped_pages": [4],
     }
     assert nodes.empty_pages(state) == [2, 3]
+
+
+# -------------------------------------------------------------------
+# The end marker printed on a page (LC-21)
+# -------------------------------------------------------------------
+def test_a_reply_that_goes_on_after_the_end_marker_marks_the_page(
+    db, run, model_client
+):
+    model_client.replies[llm.PRIMARY_MODEL] = [
+        f"# Sunrise Diagnostics\nName: A\n{END_MARKER}\n| Hb | 10.4 |"
+    ]
+    out = nodes.transcribe(opened("d09"))
+    assert out["transcriptions"][0].lines == ["# Sunrise Diagnostics", "Name: A"]
+    assert out["marker_pages"] == [1]
+    [row] = step_rows(db, run)
+    assert row["output"]["stop_marker_in_reply"] is True
+
+
+def test_a_reply_that_ends_at_the_marker_marks_nothing(db, run, model_client):
+    model_client.replies[llm.PRIMARY_MODEL] = [f"Name: A\n{END_MARKER}\n  \n"]
+    out = nodes.transcribe(opened("d09"))
+    assert "marker_pages" not in out
+
+
+def test_a_text_layer_that_prints_the_marker_marks_the_page(
+    db, run, model_client, monkeypatch
+):
+    real = page_files.text_layer
+    monkeypatch.setattr(
+        page_files, "text_layer", lambda p, n: real(p, n) + f"\n{END_MARKER}\nmore"
+    )
+    model_client.replies[llm.PRIMARY_MODEL] = ["Name: A"]
+    out = nodes.transcribe(opened("d09"))
+    assert out["marker_pages"] == [1]

@@ -71,6 +71,9 @@ _EARLIER = (
     # same weights. One whose prompt may have been cut is never reused: its
     # LC-18 comes from the call, and a reuse makes no call.
     " AND NOT (s.output ? 'reused_from_step')"
+    # Nor one whose reply went on after the end marker (LC-21 comes from
+    # the call, and a reuse makes no call).
+    " AND NOT (s.output ? 'stop_marker_in_reply')"
     " AND EXISTS (SELECT 1 FROM pipeline_model_calls c WHERE c.step_id = s.id)"
     " AND NOT EXISTS (SELECT 1 FROM pipeline_model_calls c"
     " WHERE c.step_id = s.id AND (c.prompt_truncated"

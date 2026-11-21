@@ -89,6 +89,9 @@ class GraphState(TypedDict):
     # Pages whose transcription prompt may have been cut to fit the
     # model's context window (signal LC-18).
     truncated_pages: NotRequired[list[int]]
+    # Pages whose reading may have stopped at a printed end marker: the page
+    # text holds it, or the reply went on after it (signal LC-21).
+    marker_pages: NotRequired[list[int]]
 
     # parse and repair ----------------------------------------------------
     # The document is parsed in parts (pipeline/parts.py, planned from the

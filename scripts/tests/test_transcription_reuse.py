@@ -222,3 +222,16 @@ def test_a_reuse_points_at_the_reading_that_made_the_calls(db, model_client, fir
     [row] = steps(db, run3)
     assert len(model_client.calls) == 1
     assert row["output"]["reused_from_step"] == str(original["id"])
+
+
+def test_a_reading_that_went_on_after_the_end_marker_is_read_again(db, model_client):
+    from pipeline.prompts import END_MARKER
+
+    doc = new_document(db)
+    model_client.replies[llm.PRIMARY_MODEL] = [
+        f"Name: A\n{END_MARKER}\nmore",
+        "Name: A",
+    ]
+    transcribe_in_a_run(doc)
+    transcribe_in_a_run(doc)
+    assert len(model_client.calls) == 2  # not reused: its LC-21 needs the call

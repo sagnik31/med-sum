@@ -216,7 +216,7 @@ def transcribe(state: GraphState) -> dict:
         step.reuse(step_id, model=llm.PRIMARY_MODEL, role="primary")
         page = PageTranscription(page=n, lines=lines, text_layer=text_layer)
         step.set_output({"transcriptions": [page], "reused_from_step": step_id})
-        return {"transcriptions": [page]}
+        return {"transcriptions": [page], **_marker_page(state, n, text_layer)}
     calls_before = len(step.model_call_list())
     note = None
     try:
@@ -238,9 +238,19 @@ def transcribe(state: GraphState) -> dict:
     else:
         page = PageTranscription(page=n, lines=lines, text_layer=text_layer)
         out = {"transcriptions": [page]}
-    if note is not None:  # the step's output says how the re-read went
-        step.set_output({"transcriptions": [page], "reread": note})
-    return {**out, **_truncated_page(state, step, calls_before, n)}
+    in_reply = _marker_in_reply(step, calls_before)
+    if note is not None or in_reply:  # the step's output says what happened
+        output = {"transcriptions": [page]}
+        if note is not None:
+            output["reread"] = note
+        if in_reply:  # such a reading is never reused (pipeline.store)
+            output[MARKER_IN_REPLY] = True
+        step.set_output(output)
+    return {
+        **out,
+        **_truncated_page(state, step, calls_before, n),
+        **_marker_page(state, n, text_layer, in_reply),
+    }
 
 
 def _read_page(image: bytes) -> str:
@@ -279,6 +289,30 @@ def _reread_in_halves(image: bytes) -> tuple[list[str] | None, dict]:
 
 def _note(outcome: str, halves: list[list[str]], **more) -> dict:
     return {"outcome": outcome, "half_lines": [len(h) for h in halves], **more}
+
+
+# The step output key of a transcription whose reply went on after the end
+# marker (pipeline.store never reuses such a reading).
+MARKER_IN_REPLY = "stop_marker_in_reply"
+
+
+def _marker_in_reply(step, calls_before: int) -> bool:
+    """Whether a call of this step printed the end marker before its end."""
+    return any(c.after_stop_chars for c in step.model_call_list()[calls_before:])
+
+
+def _marker_page(
+    state: GraphState, n: int, text_layer: str | None, in_reply: bool = False
+) -> dict:
+    """
+    The page added to marker_pages (LC-21) when its reading may have stopped
+    at a printed end marker. The marker is how a reading ends (Ollama stops
+    there), so a page that prints it, through its text layer or as text the
+    model went on to read after it, is read short without any error.
+    """
+    if not in_reply and END_MARKER not in (text_layer or ""):
+        return {}
+    return {"marker_pages": [*state.get("marker_pages", []), n]}
 
 
 def _truncated_page(state: GraphState, step, calls_before: int, n: int) -> dict:
@@ -885,6 +919,7 @@ def marked_record(state: GraphState, provenance) -> tuple:
         capped_pages=state.get("capped_pages", []),
         empty_pages=empty_pages(state),
         truncated_pages=state.get("truncated_pages", []),
+        marker_pages=state.get("marker_pages", []),
         parse_truncated=parsed and state.get("parse_truncated", False),
         header_conflicts=state.get("parse_conflicts", []) if parsed else [],
         classify_disagree=state.get("classify_disagree", False),

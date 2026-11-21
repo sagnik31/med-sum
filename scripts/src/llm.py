@@ -452,10 +452,13 @@ def _report(attempt, model, role, request, sizes, stop_marker=None, error=None):
     done = attempt.done if error is None else None
     done_reason = getattr(done, "done_reason", None)
     raw = attempt.raw
+    after_stop = 0
     if error is not None:
         text, complete, status = "", False, "failed"
     elif stop_marker and stop_marker in raw:
-        text, complete, status = raw.split(stop_marker)[0].strip(), True, "stopped"
+        text, rest = raw.split(stop_marker, 1)
+        text, complete, status = text.strip(), True, "stopped"
+        after_stop = len("".join(rest.split()))
     else:
         text, complete = raw.strip(), done_reason != "length"
         # Ollama trims a matched stop string and ends with done_reason
@@ -486,6 +489,7 @@ def _report(attempt, model, role, request, sizes, stop_marker=None, error=None):
         image_count=len(sizes.images),
         image_pixels=sizes.images,
         prompt_truncated=prompt_truncated(input_tokens, num_ctx, num_predict),
+        after_stop_chars=after_stop,
         started_at=attempt.started_at,
         ended_at=ended_at,
     )

@@ -69,6 +69,10 @@ class ModelCall:
     image_count: int = 0
     image_pixels: tuple = ()  # (width, height) per image, None if unknown
     prompt_truncated: bool | None = None
+    # Characters (spaces aside) the reply had after its stop marker: the
+    # model printed the marker before the end, e.g. because the page prints
+    # it. In memory only, for the step that made the call; not a column.
+    after_stop_chars: int = 0
     started_at: datetime | None = None
     ended_at: datetime | None = None
 

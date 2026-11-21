@@ -45,7 +45,7 @@ def finding(validator, severity, item_id=None, field=None):
 # The catalogue
 # -------------------------------------------------------------------
 def test_the_catalogue_is_the_documented_list():
-    routing = {f"LC-{n:02}" for n in range(1, 21)}
+    routing = {f"LC-{n:02}" for n in range(1, 22)}
     info = {"LC-I1", "LC-I2", "LC-I3"}
     assert {s for s, v in SIGNALS.items() if v.kind is Kind.ROUTING} == routing
     assert {s for s, v in SIGNALS.items() if v.kind is Kind.INFO} == info
@@ -338,3 +338,8 @@ def test_a_marked_record_still_validates():
     record = stamped(keyed_record("d09"))
     signals.apply(record, [SignalHit(signal="LC-04", item_id="obs-1")])
     type(record).model_validate(record.model_dump())
+
+
+def test_a_page_read_short_at_a_printed_end_marker_routes():
+    (hit,) = [h for h in collect(marker_pages=[2]) if h.signal == "LC-21"]
+    assert hit.routes and hit.item_id is None and hit.details == {"page": 2}

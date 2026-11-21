@@ -81,6 +81,7 @@ SIGNALS = _signals(
     ("LC-18", R, "A model's input may have been cut short; content may be missing."),
     ("LC-19", R, "This item is in the record twice, read from the same lines."),
     ("LC-20", R, "Pages of the document print different patient details or dates."),
+    ("LC-21", R, "The page prints the end-of-page marker; its reading may stop early."),
     ("LC-I1", INFO, "No PDF text layer, so the reading has no independent check."),
     ("LC-I2", INFO, "Transcription lines that no extracted item uses."),
     ("LC-I3", INFO, "A range, flag or unit that code could not read."),
@@ -191,6 +192,7 @@ def collect(
     capped_pages: list[int] = (),
     empty_pages: list[int] = (),
     truncated_pages: list[int] = (),
+    marker_pages: list[int] = (),
     parse_truncated: bool = False,
     header_conflicts: list[dict] = (),
     classify_disagree: bool = False,
@@ -209,6 +211,9 @@ def collect(
     `truncated_pages` and `parse_truncated` say which calls' prompts may
     have been cut to fit the context window (LC-18: a page's transcription
     request, or a part of the parse the record was built from).
+    `marker_pages` are pages whose reading may have stopped at the
+    transcription's end marker printed on the page (LC-21): the page's text
+    layer holds the marker, or the reply had text after it.
     `header_conflicts` are the patient details and dates the parts of a
     split parse print differently (LC-20, pipeline.parts.header_conflicts):
     one hit each, on the document, naming the field and the parts (from 1).
@@ -226,6 +231,7 @@ def collect(
     ]
     if parse_truncated:
         hits.append(SignalHit(signal="LC-18", details={"step": "parse"}))
+    hits += [SignalHit(signal="LC-21", details={"page": page}) for page in marker_pages]
     hits += [
         SignalHit(
             signal="LC-20",
