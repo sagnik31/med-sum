@@ -35,6 +35,7 @@ commands:
   create-admin  create-user with the admin role
   reset-link    print a password reset link for an account
   seed-dev      create the development accounts (MEDSUM_ENV=dev only)
+  orphan-uploads  list files in UPLOADS_DIR that no document names (deletes nothing)
 `
 
 func main() {
@@ -71,6 +72,8 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		return c.resetLink(ctx, rest)
 	case "seed-dev":
 		return c.seedDev(ctx, rest)
+	case "orphan-uploads":
+		return c.orphanUploads(ctx, rest)
 	default:
 		return fmt.Errorf("unknown command %q\n\n%s", cmd, usage)
 	}

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -33,5 +35,24 @@ func TestDevAccountEmailsAreValid(t *testing.T) {
 		if got, err := auth.NormalizeEmail(email); err != nil || got != email {
 			t.Errorf("%s: NormalizeEmail = %q, %v", email, got, err)
 		}
+	}
+}
+
+func TestOrphansAreTheFilesNoDocumentNames(t *testing.T) {
+	dir := t.TempDir()
+	for _, name := range []string{"a.pdf", "b.pdf", "c.png"} {
+		if err := os.WriteFile(filepath.Join(dir, name), []byte("x"), 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	got, err := orphans(dir, []string{filepath.Join(dir, "a.pdf"), filepath.Join(dir, "c.png"), "/elsewhere/z.pdf"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(got) != 1 || filepath.Base(got[0]) != "b.pdf" {
+		t.Errorf("orphans = %v", got)
+	}
+	if got, err := orphans(filepath.Join(dir, "missing"), nil); err != nil || len(got) != 0 {
+		t.Errorf("a missing directory = %v, %v", got, err)
 	}
 }

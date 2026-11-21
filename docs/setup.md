@@ -117,6 +117,8 @@ go run ./cmd/medsumctl seed-dev
 
 On PowerShell, set the same variables with `$env:NAME = "value"`.
 
+The API stops gracefully on Ctrl+C or SIGTERM: it takes no new requests and gives those in flight up to two minutes to finish. If it was killed between writing an upload's file and inserting its row, `go run ./cmd/medsumctl orphan-uploads` (with `DATABASE_URL`, and `UPLOADS_DIR` or `-dir`) lists the files in the uploads directory that no document names. It deletes nothing; check each and remove it by hand.
+
 ### 7. Try it out
 
 1. Open http://localhost:5173 and log in as `dev-clinician@med-sum.test` with your `MEDSUM_DEV_PASSWORD`.

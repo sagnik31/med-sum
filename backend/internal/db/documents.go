@@ -161,3 +161,15 @@ WHERE d.id = $1 AND p.id = d.patient_id AND p.org_id = $2 AND d.deleted_at IS NU
 	}
 	return marked, nil
 }
+
+// StoragePaths lists the stored file of every document, in every
+// organisation, for medsumctl's check for upload files no row names. It is
+// an operator's check, run with the database owner's connection; no API
+// handler calls it.
+func (s *Store) StoragePaths(ctx context.Context) ([]string, error) {
+	rows, err := s.pool.Query(ctx, `SELECT storage_path FROM documents`)
+	if err != nil {
+		return nil, err
+	}
+	return pgx.CollectRows(rows, pgx.RowTo[string])
+}

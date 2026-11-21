@@ -17,6 +17,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"sort"
+	"strings"
 	"testing"
 	"time"
 
@@ -588,5 +590,22 @@ VALUES ($1, 1, '{"schema_version": 1, "observations": [{"id": "obs-1"}]}')`, d.I
 	var got map[string]any
 	if err := json.Unmarshal(rec.Record, &got); err != nil || got["schema_version"] != float64(1) {
 		t.Errorf("record = %s (%v)", rec.Record, err)
+	}
+}
+
+func TestStoragePathsListsEveryDocumentsFile(t *testing.T) {
+	s := store(t)
+	org := mustOrg(t, s)
+	u := mustUser(t, s, "a@hospital.test")
+	p := mustPatient(t, s, org, u.ID, "SH-1")
+	mustDocument(t, s, p, u, "/uploads/one.pdf")
+	mustDocument(t, s, p, u, "/uploads/two.pdf")
+	got, err := s.StoragePaths(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	sort.Strings(got)
+	if strings.Join(got, ",") != "/uploads/one.pdf,/uploads/two.pdf" {
+		t.Errorf("paths = %v", got)
 	}
 }
