@@ -175,6 +175,25 @@ func TestACorrectionThatFailsACheckIsSavedOnlyOnceAcknowledged(t *testing.T) {
 	}
 }
 
+func TestAReviewWaitsLongerThanTheQueueCalls(t *testing.T) {
+	re := newReviewEnv(t)
+	// Scaled down: queue calls give up at 20 ms, a review at 2 s, and the
+	// AI service takes 200 ms to apply the review.
+	re.server.httpClient.Timeout = 20 * time.Millisecond
+	re.server.reviewClient.Timeout = 2 * time.Second
+	respond := re.ai.respond
+	re.ai.respond = func(path string, body []byte) (int, []byte) {
+		time.Sleep(200 * time.Millisecond)
+		return respond(path, body)
+	}
+	if rec := re.review(correction("value_text", "5.2")); rec.Code != http.StatusOK {
+		t.Fatalf("status = %d: %s", rec.Code, rec.Body)
+	}
+	if got := NewServer(re.store, Config{}).reviewClient.Timeout; got != DefaultReviewApplyTimeout {
+		t.Errorf("default timeout = %v", got)
+	}
+}
+
 func TestAReviewTheAIServiceCantApplyIsRefusedWithItsReason(t *testing.T) {
 	re := newReviewEnv(t)
 	re.ai.respond = func(string, []byte) (int, []byte) {

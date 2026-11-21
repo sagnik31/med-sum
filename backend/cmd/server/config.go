@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"backend/internal/httpapi"
 )
@@ -23,6 +24,8 @@ type config struct {
 	cookieSecure   bool
 	appURL         string
 	httpAddress    string
+	// How long a review waits for the AI service (REVIEW_APPLY_TIMEOUT).
+	reviewApplyTimeout time.Duration
 }
 
 // loadConfig reads the configuration and fails when a secret is missing
@@ -69,6 +72,15 @@ func loadConfig(getenv func(string) string) (config, error) {
 	for _, o := range c.allowedOrigins {
 		if o == "*" {
 			errs = append(errs, errors.New("ALLOWED_ORIGINS must list origins; * can't be used with cookies"))
+		}
+	}
+	c.reviewApplyTimeout = httpapi.DefaultReviewApplyTimeout
+	if v := get("REVIEW_APPLY_TIMEOUT", ""); v != "" {
+		d, err := time.ParseDuration(v)
+		if err != nil || d <= 0 || d > 10*time.Minute {
+			errs = append(errs, errors.New("REVIEW_APPLY_TIMEOUT must be a duration such as 90s, at most 10m"))
+		} else {
+			c.reviewApplyTimeout = d
 		}
 	}
 	return c, errors.Join(errs...)

@@ -160,7 +160,7 @@ func (s *Server) handleReviewDocument(w http.ResponseWriter, r *http.Request, do
 
 	now := s.now()
 	var applied reviewApplied
-	status, detail, err := s.callInsightsServiceJSON(ctx, "/internal/review-apply", map[string]any{
+	status, detail, err := s.callInsightsWith(s.reviewClient, ctx, "/internal/review-apply", map[string]any{
 		"record": rec.Record,
 		"review": map[string]any{
 			"action": req.Action, "item_id": req.ItemID, "field": req.Field,
@@ -367,6 +367,11 @@ func trimmedOrNil(s *string) *string {
 // returned as its status and the service's detail text (not an error);
 // any other status is an error.
 func (s *Server) callInsightsServiceJSON(ctx context.Context, path string, payload, out any) (int, string, error) {
+	return s.callInsightsWith(s.httpClient, ctx, path, payload, out)
+}
+
+// callInsightsWith is callInsightsServiceJSON with the client to use.
+func (s *Server) callInsightsWith(client *http.Client, ctx context.Context, path string, payload, out any) (int, string, error) {
 	body, err := json.Marshal(payload)
 	if err != nil {
 		return 0, "", err
@@ -377,7 +382,7 @@ func (s *Server) callInsightsServiceJSON(ctx context.Context, path string, paylo
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Internal-Token", s.internalToken)
-	resp, err := s.httpClient.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		return 0, "", err
 	}

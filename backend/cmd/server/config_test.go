@@ -4,6 +4,9 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
+
+	"backend/internal/httpapi"
 )
 
 const goodToken = "0123456789abcdef0123456789abcdef"
@@ -47,5 +50,27 @@ func TestConfigDefaults(t *testing.T) {
 		"COOKIE_SECURE": "false"}))
 	if c.cookieSecure {
 		t.Error("COOKIE_SECURE=false is ignored")
+	}
+}
+
+func TestTheReviewApplyTimeout(t *testing.T) {
+	base := map[string]string{"DATABASE_URL": "postgres://x", "INTERNAL_API_TOKEN": goodToken}
+	with := func(v string) (config, error) {
+		env := map[string]string{"REVIEW_APPLY_TIMEOUT": v}
+		for k, x := range base {
+			env[k] = x
+		}
+		return loadConfig(envOf(env))
+	}
+	if c, err := with(""); err != nil || c.reviewApplyTimeout != httpapi.DefaultReviewApplyTimeout {
+		t.Errorf("default = %v, %v", c.reviewApplyTimeout, err)
+	}
+	if c, err := with("90s"); err != nil || c.reviewApplyTimeout != 90*time.Second {
+		t.Errorf("90s = %v, %v", c.reviewApplyTimeout, err)
+	}
+	for _, bad := range []string{"90", "-1s", "0s", "11m"} {
+		if _, err := with(bad); err == nil {
+			t.Errorf("%q accepted", bad)
+		}
 	}
 }

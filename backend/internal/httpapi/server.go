@@ -95,7 +95,16 @@ type Config struct {
 	AppURL         string   // where the frontend is served; setup links point there
 	Hasher         *auth.Hasher
 	Now            func() time.Time // the clock; time.Now when nil
+	// How long a clinician's review waits for the AI service to apply it
+	// (DefaultReviewApplyTimeout when zero). Longer than the queue calls'
+	// timeout: it validates the record and rebuilds the page while the
+	// models may be using the same CPU.
+	ReviewApplyTimeout time.Duration
 }
+
+// DefaultReviewApplyTimeout is the review-apply call's timeout unless
+// REVIEW_APPLY_TIMEOUT sets another.
+const DefaultReviewApplyTimeout = 60 * time.Second
 
 type Server struct {
 	db             Store
@@ -108,6 +117,7 @@ type Server struct {
 	hasher         *auth.Hasher
 	now            func() time.Time
 	httpClient     *http.Client
+	reviewClient   *http.Client // for /internal/review-apply
 	mux            *http.ServeMux
 	handler        http.Handler
 	authLimiter    *rateLimiter
@@ -125,11 +135,15 @@ func NewServer(store Store, cfg Config) *Server {
 		hasher:         cfg.Hasher,
 		now:            cfg.Now,
 		httpClient:     &http.Client{Timeout: 10 * time.Second},
+		reviewClient:   &http.Client{Timeout: cfg.ReviewApplyTimeout},
 		mux:            http.NewServeMux(),
 		authLimiter:    newRateLimiter(authAttemptsPerWindow, authWindow),
 	}
 	if s.now == nil {
 		s.now = time.Now
+	}
+	if s.reviewClient.Timeout <= 0 {
+		s.reviewClient.Timeout = DefaultReviewApplyTimeout
 	}
 	for _, o := range cfg.AllowedOrigins {
 		s.allowedOrigins[o] = true

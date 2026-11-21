@@ -134,6 +134,7 @@ On PowerShell, set the same variables with `$env:NAME = "value"`.
 | `HTTP_ADDRESS` | Backend | `:8080` (`backend/.env.example` uses `127.0.0.1:8080`) |
 | `UPLOADS_DIR` | Backend | `./uploads` (resolved to an absolute path) |
 | `INSIGHTS_SERVICE_URL` | Backend | `http://localhost:9000` |
+| `REVIEW_APPLY_TIMEOUT` | Backend | `60s`; how long saving a clinician's review waits for the AI service (a Go duration, at most `10m`). The queue calls keep 10 s |
 | `ALLOWED_ORIGINS` | Backend | `http://localhost:5173`; comma-separated browser origins that may call the API |
 | `COOKIE_SECURE` | Backend | `true`; set `false` only for a browser that won't keep a `Secure` cookie on plain-HTTP `localhost` |
 | `MEDSUM_APP_URL` | Backend, `medsumctl` | `http://localhost:5173`; where setup and reset links point |

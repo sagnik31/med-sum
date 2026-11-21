@@ -49,6 +49,8 @@ func main() {
 		CookieSecure:   cfg.cookieSecure,
 		AppURL:         cfg.appURL,
 		Hasher:         hasher,
+
+		ReviewApplyTimeout: cfg.reviewApplyTimeout,
 	})
 
 	api.PurgeExpiredSessions(ctx)
