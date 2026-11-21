@@ -1,6 +1,6 @@
 # 0011. Clinician review: confirm or correct beside the reading, never over it
 
-- **Status:** Accepted, 2026-11-14.
+- **Status:** Accepted, 2026-11-14; acknowledgement by name 2026-11-21.
 
 ## Context
 
@@ -9,6 +9,8 @@ The pipeline sends a document to `needs_review` when a deterministic signal fire
 ## Decision
 
 **A review is stored inside the record, next to what it reviews.** Each item (and the patient and document header values) has a provenance with a status. Confirming an item sets its status to `clinician_confirmed`; correcting a field appends a `Correction` (field, the model's reading, the new value, the clinician's name, the time, an optional note) and sets `clinician_corrected`. Both set `reviewed_by` and `reviewed_at`. `printed` and `derived` are never changed, and the low-confidence reasons stay, so it is known afterwards what the review answered. Any item can be reviewed, flagged or not; there is no second approver.
+
+**Two document signals must be acknowledged by name.** LC-13 (the document prints another patient) and LC-17 (a results row may be missing) each say something about the whole document that no single value shows, so confirming the document's header values, or correcting one, doesn't clear them on its own. While the document awaits review, a review of it must list each of the two it carries in `acknowledge`, and the page shows each as a statement the clinician ticks ("I have checked that this document belongs to this patient"). The AI service refuses a review that leaves one out or names a signal the document doesn't carry. The acknowledged ids are kept in the review's audit row.
 
 **The reviewed view is computed, not stored** (`scripts/src/record/review.py`, `reviewed_view`): each corrected field replaced by its latest correction, and the item's derived values computed again from it by the same code that built them (a corrected result gets its number and flag again; a corrected report date moves the document date). The patient summary and the document page show this view; the page's list of values reads it from `GET /documents/{id}/record?view=reviewed`, for which the API asks the AI service (`POST /internal/reviewed-view`, a pure function like the one below), so the view is never computed twice in two languages. The summary marks each corrected value "corrected by Dr X on date"; the document page also says what was read. A date added to an undated document is the one correction with no original; it is never written into `printed`, and the view's derived dates include it (ADR 0003).
 

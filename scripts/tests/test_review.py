@@ -105,6 +105,49 @@ def test_once_everything_flagged_is_reviewed_nothing_awaits():
     assert result.flagged == 0
 
 
+def wrong_patient_record(*signals) -> DocumentRecord:
+    data = flagged_record().model_dump(mode="json")
+    data["document"]["provenance"]["low_confidence_reasons"] = [
+        f"{s}: a reason" for s in signals
+    ]
+    return DocumentRecord.model_validate(data)
+
+
+@pytest.mark.parametrize("signal", ["LC-13", "LC-17"])
+def test_a_document_signal_must_be_acknowledged_by_name(signal):
+    # ADR 0011: a plain confirm doesn't clear another patient or a lost row.
+    record = wrong_patient_record(signal, "LC-12")
+    for review in (
+        req("confirm", item_id="document"),
+        req("confirm", item_id="document", acknowledge=["LC-12"]),
+        req(item_id="document", field="clinicians[0]", value="Dr. K. Rao"),
+    ):
+        with pytest.raises(ReviewError, match=f"{signal} must be acknowledged"):
+            apply_review(record, review)
+    done = apply_review(
+        record, req("confirm", item_id="document", acknowledge=[signal])
+    )
+    assert done.record.document.provenance.status is ItemStatus.CLINICIAN_CONFIRMED
+    # Once reviewed, a later review of the document needs no second one.
+    again = apply_review(
+        done.record, req(item_id="document", field="clinicians[0]", value="Dr. K. Rao")
+    )
+    assert again.record.document.provenance.status is ItemStatus.CLINICIAN_CORRECTED
+
+
+def test_both_must_be_acknowledged_and_nothing_else():
+    record = wrong_patient_record("LC-13", "LC-17")
+    with pytest.raises(ReviewError, match="LC-17 must be"):
+        apply_review(record, req("confirm", item_id="document", acknowledge=["LC-13"]))
+    with pytest.raises(ReviewError, match="LC-06 is not a reason"):
+        apply_review(
+            record,
+            req("confirm", item_id="document", acknowledge=["LC-13", "LC-17", "LC-06"]),
+        )
+    both = req("confirm", item_id="document", acknowledge=["LC-17", "LC-13"])
+    assert apply_review(record, both).flagged == 1  # haemoglobin still awaits
+
+
 def test_a_confirmation_takes_no_field_or_value():
     with pytest.raises(ReviewError):
         apply_review(flagged_record(), req("confirm", field="value_text"))

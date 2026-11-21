@@ -46,6 +46,7 @@ function ReviewControls({
   confirmLabel = "Confirm",
   sourceShown = false,
   onShowSource = () => {},
+  acknowledgements = [],
 }) {
   const [open, setOpen] = useState(false);
   const [field, setField] = useState(fields[0]?.field ?? "");
@@ -56,7 +57,12 @@ function ReviewControls({
   // Set when Confirm was pressed without the source on screen.
   const [askedToCheck, setAskedToCheck] = useState(false);
   const [saving, setSaving] = useState(false);
+  // The signals ticked so far; every one of `acknowledgements` must be
+  // before the item can be confirmed or corrected (ADR 0011).
+  const [ticked, setTicked] = useState([]);
+  const unacknowledged = acknowledgements.some((a) => !ticked.includes(a.signal));
   const busy = saving || locked;
+  const acknowledge = acknowledgements.map((a) => a.signal);
 
   const chosen = fields.find((f) => f.field === field);
   const shown = chosen ? currentValue(holder, chosen.field, chosen.value) : null;
@@ -85,7 +91,7 @@ function ReviewControls({
       return;
     }
     setAskedToCheck(false);
-    send({ action: "confirm", item_id: itemId });
+    send({ action: "confirm", item_id: itemId, acknowledge });
   }
 
   function toggleCorrect() {
@@ -94,15 +100,32 @@ function ReviewControls({
   }
 
   function correction() {
-    return { action: "correct", item_id: itemId, field, value, note: note || null };
+    return { action: "correct", item_id: itemId, field, value, note: note || null, acknowledge };
   }
 
   return (
     <div className="mt-2 text-xs">
+      {acknowledgements.length > 0 && (
+        <fieldset className="mb-2 space-y-1 rounded border border-amber-200 bg-amber-50 p-2 text-amber-900">
+          <legend className="sr-only">Before reviewing</legend>
+          {acknowledgements.map((a) => (
+            <label key={a.signal} className="flex items-start gap-1">
+              <input
+                type="checkbox"
+                checked={ticked.includes(a.signal)}
+                onChange={(e) =>
+                  setTicked((t) => (e.target.checked ? [...t, a.signal] : t.filter((s) => s !== a.signal)))
+                }
+              />
+              <span>{a.text}</span>
+            </label>
+          ))}
+        </fieldset>
+      )}
       <div className="flex gap-2">
         <button
           type="button"
-          disabled={busy}
+          disabled={busy || unacknowledged}
           onClick={confirm}
           className="rounded border border-emerald-300 bg-emerald-50 px-2 py-0.5 text-emerald-800 hover:bg-emerald-100 disabled:opacity-50"
         >
@@ -185,7 +208,7 @@ function ReviewControls({
               </ul>
               <button
                 type="button"
-                disabled={busy}
+                disabled={busy || unacknowledged}
                 onClick={() => send(correction(), true)}
                 className="mt-1 rounded border border-amber-400 bg-white px-2 py-0.5 hover:bg-amber-100"
               >
@@ -196,7 +219,7 @@ function ReviewControls({
           {!findings && (
             <button
               type="submit"
-              disabled={busy || !value.trim()}
+              disabled={busy || unacknowledged || !value.trim()}
               className="rounded bg-blue-600 px-2 py-0.5 text-white hover:bg-blue-700 disabled:opacity-50"
             >
               Save correction

@@ -237,6 +237,44 @@ func TestAnAdminCantReview(t *testing.T) {
 	}
 }
 
+func TestAcknowledgedSignalsGoToTheAIServiceAndTheAuditRow(t *testing.T) {
+	re := newReviewEnv(t)
+	re.applied["signals"] = []string{"LC-13"}
+
+	rec := re.review(map[string]any{"action": "confirm", "item_id": "document", "acknowledge": []string{"LC-13"}})
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d: %s", rec.Code, rec.Body)
+	}
+	var sent struct {
+		Review map[string]any `json:"review"`
+	}
+	calls := re.ai.received()
+	if err := json.Unmarshal(calls[len(calls)-1].Raw, &sent); err != nil {
+		t.Fatal(err)
+	}
+	if got, _ := json.Marshal(sent.Review["acknowledge"]); string(got) != `["LC-13"]` {
+		t.Errorf("acknowledge sent = %s", got)
+	}
+	ev := re.store.audit[len(re.store.audit)-1]
+	if got, _ := json.Marshal(ev.Details["acknowledged"]); string(got) != `["LC-13"]` {
+		t.Errorf("audit details = %+v", ev.Details)
+	}
+
+	// Without any, the AI service is sent an empty list, never null.
+	re = newReviewEnv(t)
+	if rec := re.review(map[string]any{"action": "confirm", "item_id": "obs-2"}); rec.Code != http.StatusOK {
+		t.Fatalf("status = %d: %s", rec.Code, rec.Body)
+	}
+	calls = re.ai.received()
+	sent.Review = nil
+	if err := json.Unmarshal(calls[len(calls)-1].Raw, &sent); err != nil {
+		t.Fatal(err)
+	}
+	if got, _ := json.Marshal(sent.Review["acknowledge"]); string(got) != `[]` {
+		t.Errorf("acknowledge sent = %s", got)
+	}
+}
+
 func TestMalformedReviewsAreRefusedBeforeAnythingIsRead(t *testing.T) {
 	cases := map[string]map[string]any{
 		"unknown action":        {"action": "approve", "item_id": "obs-2"},
@@ -245,6 +283,9 @@ func TestMalformedReviewsAreRefusedBeforeAnythingIsRead(t *testing.T) {
 		"blank value":           correction("value_text", "  "),
 		"bad item id":           {"action": "confirm", "item_id": "../x"},
 		"long value":            correction("value_text", strings.Repeat("9", 501)),
+		"bad signal id":         {"action": "confirm", "item_id": "document", "acknowledge": []string{"LC-1x"}},
+		"too many signals": {"action": "confirm", "item_id": "document",
+			"acknowledge": []string{"LC-01", "LC-02", "LC-03", "LC-04", "LC-05", "LC-06", "LC-07", "LC-08", "LC-09"}},
 	}
 	for name, body := range cases {
 		t.Run(name, func(t *testing.T) {

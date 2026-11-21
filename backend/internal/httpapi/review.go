@@ -62,6 +62,12 @@ type reviewRequest struct {
 	// The checks on a corrected value found something, the clinician saw
 	// it and saves the value all the same.
 	AcceptFindings bool `json:"accept_findings"`
+	// Signal ids the clinician acknowledges by name. A review of the
+	// document while it carries LC-13 (printed for another patient) or
+	// LC-17 (a results row may be missing) needs each acknowledged; a
+	// plain confirmation doesn't clear them. The AI service checks which
+	// are needed. See docs/adr/0011-clinician-review.md.
+	Acknowledge []string `json:"acknowledge"`
 }
 
 // reviewFinding is one value check a corrected value failed, as the AI
@@ -96,6 +102,8 @@ const (
 	maxReviewValue = 500
 	maxReviewNote  = 1000
 	maxReviewBody  = 16 << 10
+	// More than the signals a document can carry at once.
+	maxAcknowledged = 8
 )
 
 func (s *Server) handleReviewDocument(w http.ResponseWriter, r *http.Request, docID string) {
@@ -145,7 +153,7 @@ func (s *Server) handleReviewDocument(w http.ResponseWriter, r *http.Request, do
 		"record": rec.Record,
 		"review": map[string]any{
 			"action": req.Action, "item_id": req.ItemID, "field": req.Field,
-			"value": req.Value, "note": req.Note,
+			"value": req.Value, "note": req.Note, "acknowledge": req.acknowledged(),
 			"reviewer": p.FullName, "at": now.UTC().Format(time.RFC3339Nano),
 		},
 	}, &applied)
@@ -190,6 +198,9 @@ func (s *Server) handleReviewDocument(w http.ResponseWriter, r *http.Request, do
 	}
 	if len(findings) > 0 {
 		details["findings_accepted"] = findings
+	}
+	if len(req.Acknowledge) > 0 {
+		details["acknowledged"] = req.Acknowledge
 	}
 	ev := with(s.documentEvent(r, action, doc), details)
 
@@ -269,6 +280,14 @@ func (req *reviewRequest) problem() string {
 	if req.Note != nil && len(*req.Note) > maxReviewNote {
 		return fmt.Sprintf("the note is longer than %d characters", maxReviewNote)
 	}
+	if len(req.Acknowledge) > maxAcknowledged {
+		return fmt.Sprintf("at most %d signals can be acknowledged", maxAcknowledged)
+	}
+	for _, id := range req.Acknowledge {
+		if !signalPattern(id) {
+			return "acknowledge must list signal ids such as LC-13"
+		}
+	}
 	switch req.Action {
 	case "confirm":
 		if req.Field != nil || req.Value != nil {
@@ -285,6 +304,22 @@ func (req *reviewRequest) problem() string {
 		return "action must be confirm or correct"
 	}
 	return ""
+}
+
+// acknowledged is the acknowledged signal ids, never null.
+func (req *reviewRequest) acknowledged() []string {
+	if req.Acknowledge == nil {
+		return []string{}
+	}
+	return req.Acknowledge
+}
+
+// signalPattern accepts a routing signal id: LC- and two digits.
+func signalPattern(id string) bool {
+	if len(id) != 5 || !strings.HasPrefix(id, "LC-") {
+		return false
+	}
+	return id[3] >= '0' && id[3] <= '9' && id[4] >= '0' && id[4] <= '9'
 }
 
 // idPattern accepts what record item ids look like: patient, document,

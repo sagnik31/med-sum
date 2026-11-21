@@ -102,6 +102,29 @@ export function addableDates(document) {
   );
 }
 
+// Document-level signals a review must acknowledge by name: a plain
+// confirm doesn't clear them (docs/adr/0011-clinician-review.md). Each is
+// the statement the clinician ticks.
+const ACKNOWLEDGED_BY_NAME = {
+  "LC-13": "I have checked that this document belongs to this patient.",
+  "LC-17": "I have checked the results table on the original: no result is missing from the list.",
+};
+
+// What a review of this holder must acknowledge, while it awaits review:
+// [{ signal, text }], in the order of its reasons.
+export function acknowledgementsNeeded(holder) {
+  const p = holder?.provenance;
+  if (!p || p.status !== "low_confidence") return [];
+  const out = [];
+  for (const reason of p.low_confidence_reasons || []) {
+    const signal = /^(LC-\d{2})\b/.exec(reason)?.[1];
+    if (signal && ACKNOWLEDGED_BY_NAME[signal] && !out.some((a) => a.signal === signal)) {
+      out.push({ signal, text: ACKNOWLEDGED_BY_NAME[signal] });
+    }
+  }
+  return out;
+}
+
 // A header value's key ("patient.name", "document.clinicians[0]") as the
 // review API names it: { itemId, field }.
 export function headerTarget(key) {

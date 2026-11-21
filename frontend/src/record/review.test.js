@@ -4,6 +4,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
+  acknowledgementsNeeded,
   addableDates,
   correctableFields,
   correctionsOf,
@@ -79,6 +80,24 @@ test("an undated document offers each date nobody printed, to add", () => {
   };
   assert.deepEqual(addableDates(added).map((f) => f.field), ["collection_date"]);
   assert.deepEqual(addableDates(null), []);
+});
+
+test("another patient and a missing row must be acknowledged by name", () => {
+  const holder = {
+    provenance: {
+      status: "low_confidence",
+      low_confidence_reasons: ["LC-12: undated", "LC-17: a row", "LC-13: another patient", "LC-17: again"],
+    },
+  };
+  assert.deepEqual(
+    acknowledgementsNeeded(holder).map((a) => a.signal),
+    ["LC-17", "LC-13"]
+  );
+  assert.ok(acknowledgementsNeeded(holder).every((a) => a.text.startsWith("I have checked")));
+  holder.provenance.status = "clinician_confirmed";
+  assert.deepEqual(acknowledgementsNeeded(holder), []);
+  assert.deepEqual(acknowledgementsNeeded({ provenance: { status: "low_confidence", low_confidence_reasons: ["LC-12: x"] } }), []);
+  assert.deepEqual(acknowledgementsNeeded(null), []);
 });
 
 test("header keys name the patient or the document and the field", () => {

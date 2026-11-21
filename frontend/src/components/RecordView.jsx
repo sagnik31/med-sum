@@ -19,7 +19,7 @@ import {
   sourceShownFor,
   statusLabel,
 } from "../record/recordView.js";
-import { addableDates, correctableFields, headerTarget } from "../record/review.js";
+import { acknowledgementsNeeded, addableDates, correctableFields, headerTarget } from "../record/review.js";
 import ReviewControls, { CorrectionList } from "./ReviewControls.jsx";
 import SourcePanel from "./SourcePanel.jsx";
 
@@ -165,6 +165,7 @@ function RecordView({ record, initialCitation, onReview, saving = false, sourceS
                         onReview={onReview}
                         locked={saving}
                         confirmLabel={label}
+                        acknowledgements={acknowledgementsNeeded(holder)}
                         {...sourceProps(values.map((v) => v.citation))}
                       />
                     )}

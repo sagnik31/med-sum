@@ -58,6 +58,13 @@ NOT_CORRECTABLE = {"citation", "kind", "scope"}
 # See docs/adr/0003-printed-and-derived-values.md.
 DATE_FIELDS = ("report_date", "collection_date", "prescription_date")
 
+# Document-level signals a review must acknowledge by name: a plain confirm
+# or a correction of the document doesn't clear them, since each says
+# something about the whole document that no single value shows: LC-13,
+# printed for another patient; LC-17, a results row may be missing.
+# See docs/adr/0011-clinician-review.md.
+ACKNOWLEDGED_BY_NAME = ("LC-13", "LC-17")
+
 MAX_VALUE_CHARS = 500
 MAX_NOTE_CHARS = 1000
 
@@ -81,6 +88,8 @@ class ReviewRequest(Strict):
     field: str | None = None  # for a correction: e.g. value_text, clinicians[0]
     value: str | None = None  # for a correction: the right value
     note: str | None = None
+    # Signal ids the clinician acknowledges by name (ACKNOWLEDGED_BY_NAME).
+    acknowledge: list[str] = []
     reviewer: str  # the clinician's name, as the summary shows it
     at: datetime
 
@@ -316,6 +325,7 @@ def apply_review(
     if note is not None and len(note) > MAX_NOTE_CHARS:
         raise ReviewError(f"the note is longer than {MAX_NOTE_CHARS} characters")
     signals = signal_ids(provenance.low_confidence_reasons)
+    _check_acknowledged(request, signals, provenance)
     update: dict = {}
     original = None
 
@@ -391,6 +401,29 @@ def apply_review(
     if request.action is ReviewAction.CORRECT:
         findings = _value_checks(reviewed_view(new_record), request.item_id, today)
     return ReviewResult(new_record, findings, signals, original, flagged(new_record))
+
+
+def _check_acknowledged(
+    request: ReviewRequest, signals: list[str], provenance: Provenance
+) -> None:
+    """
+    Raise ReviewError unless the review acknowledges each signal of the
+    item that must be acknowledged by name, while the item still awaits
+    review, and acknowledges nothing else.
+    """
+    stray = [s for s in request.acknowledge if s not in signals]
+    if stray:
+        raise ReviewError(f"{', '.join(stray)} is not a reason on {request.item_id!r}")
+    if provenance.status is not ItemStatus.LOW_CONFIDENCE:
+        return  # acknowledged when it was first reviewed
+    missing = [
+        s for s in signals if s in ACKNOWLEDGED_BY_NAME and s not in request.acknowledge
+    ]
+    if missing:
+        raise ReviewError(
+            f"{', '.join(missing)} must be acknowledged before {request.item_id!r} "
+            "is reviewed"
+        )
 
 
 def _replace(record: DocumentRecord, item_id: str, holder) -> DocumentRecord:
