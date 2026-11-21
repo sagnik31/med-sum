@@ -74,3 +74,21 @@ func TestTheReviewApplyTimeout(t *testing.T) {
 		}
 	}
 }
+
+func TestTheTrustedProxies(t *testing.T) {
+	env := map[string]string{"DATABASE_URL": "postgres://x", "INTERNAL_API_TOKEN": goodToken}
+	if c, err := loadConfig(envOf(env)); err != nil || len(c.trustedProxies) != 0 {
+		t.Errorf("default = %v, %v; want none", c.trustedProxies, err)
+	}
+	env["TRUSTED_PROXIES"] = "127.0.0.1, ::1"
+	c, err := loadConfig(envOf(env))
+	if err != nil || len(c.trustedProxies) != 2 || c.trustedProxies[1].String() != "::1" {
+		t.Errorf("two = %v, %v", c.trustedProxies, err)
+	}
+	for _, bad := range []string{"localhost", "10.0.0.0/8"} {
+		env["TRUSTED_PROXIES"] = bad
+		if _, err := loadConfig(envOf(env)); err == nil {
+			t.Errorf("%q accepted", bad)
+		}
+	}
+}

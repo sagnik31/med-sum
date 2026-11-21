@@ -56,6 +56,7 @@ func main() {
 
 		ReviewApplyTimeout: cfg.reviewApplyTimeout,
 		Environment:        cfg.environment,
+		TrustedProxies:     cfg.trustedProxies,
 	})
 
 	api.PurgeExpiredSessions(ctx)

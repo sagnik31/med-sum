@@ -5,6 +5,8 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/netip"
+	"strings"
 	"time"
 
 	"backend/internal/auth"
@@ -89,7 +91,7 @@ func (s *Server) startSession(ctx context.Context, w http.ResponseWriter, r *htt
 		CreatedAt:  now,
 		LastSeenAt: now,
 		ExpiresAt:  now.Add(absoluteTimeout),
-		IP:         clientIP(r),
+		IP:         s.clientIP(r),
 		UserAgent:  truncate(r.UserAgent(), 512),
 	})
 	if err != nil {
@@ -101,10 +103,32 @@ func (s *Server) startSession(ctx context.Context, w http.ResponseWriter, r *htt
 
 // clientIP is the address the request came from. Forwarding headers are
 // not trusted: nothing in front of the API sets them.
-func clientIP(r *http.Request) string {
+// clientIP is the address a request came from, for the login rate limit,
+// sessions and the audit log. Behind a trusted proxy every request's own
+// address is the proxy's, which would put every user in one rate-limit
+// bucket (anyone's failed logins locking everyone out) and every audit row
+// at the proxy, so a request from one is taken to come from the last
+// address in X-Forwarded-For that is not itself a trusted proxy: the one
+// the nearest proxy saw. The header is ignored from anyone else, since a
+// client can send any value.
+func (s *Server) clientIP(r *http.Request) string {
 	host, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
-		return r.RemoteAddr
+		host = r.RemoteAddr
+	}
+	addr, err := netip.ParseAddr(host)
+	if err != nil || !s.trustedProxies[addr.Unmap()] {
+		return host
+	}
+	hops := strings.Split(strings.Join(r.Header.Values("X-Forwarded-For"), ","), ",")
+	for i := len(hops) - 1; i >= 0; i-- {
+		hop, err := netip.ParseAddr(strings.TrimSpace(hops[i]))
+		if err != nil {
+			return host // a hop the proxy didn't write; trust no further
+		}
+		if !s.trustedProxies[hop.Unmap()] {
+			return hop.Unmap().String()
+		}
 	}
 	return host
 }

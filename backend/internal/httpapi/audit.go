@@ -87,7 +87,7 @@ func (s *Server) auditEvent(r *http.Request, action string) *db.AuditEvent {
 		At:        s.now(),
 		Action:    action,
 		Outcome:   db.OutcomeSuccess,
-		IP:        clientIP(r),
+		IP:        s.clientIP(r),
 		UserAgent: truncate(r.UserAgent(), auditUserAgentMaxSize),
 	}
 	if p, ok := principalFromContext(r.Context()); ok {

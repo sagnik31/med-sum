@@ -32,3 +32,7 @@ test("the dev server keeps its headers but no script policy", () => {
   assert.equal(SECURITY_HEADERS["Content-Security-Policy"], "frame-ancestors 'none'");
   assert.equal(config.preview.headers["X-Frame-Options"], "DENY");
 });
+
+test("the proxy names the browser's address to the API", () => {
+  assert.equal(config.server.proxy["/api"].xfwd, true);
+});

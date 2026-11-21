@@ -13,6 +13,7 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
+	"net/netip"
 	"os"
 	"path/filepath"
 	"strings"
@@ -104,6 +105,12 @@ type Config struct {
 	// MEDSUM_ENV as the server was started with ("dev" where every
 	// document is synthetic). GET /environment reports it.
 	Environment string
+	// The addresses of the reverse proxies in front of the API (the Vite
+	// dev server's, 127.0.0.1, in the documented setup). A request from
+	// one of them is taken to come from the address it names last in
+	// X-Forwarded-For; any other request's own address is used, whatever
+	// it sends. See clientIP.
+	TrustedProxies []netip.Addr
 }
 
 // DefaultReviewApplyTimeout is the review-apply call's timeout unless
@@ -123,6 +130,7 @@ type Server struct {
 	httpClient     *http.Client
 	reviewClient   *http.Client // for /internal/review-apply
 	environment    string
+	trustedProxies map[netip.Addr]bool
 	mux            *http.ServeMux
 	handler        http.Handler
 	authLimiter    *rateLimiter
@@ -142,6 +150,7 @@ func NewServer(store Store, cfg Config) *Server {
 		httpClient:     &http.Client{Timeout: 10 * time.Second},
 		reviewClient:   &http.Client{Timeout: cfg.ReviewApplyTimeout},
 		environment:    cfg.Environment,
+		trustedProxies: map[netip.Addr]bool{},
 		mux:            http.NewServeMux(),
 		authLimiter:    newRateLimiter(authAttemptsPerWindow, authWindow),
 	}
@@ -153,6 +162,9 @@ func NewServer(store Store, cfg Config) *Server {
 	}
 	for _, o := range cfg.AllowedOrigins {
 		s.allowedOrigins[o] = true
+	}
+	for _, a := range cfg.TrustedProxies {
+		s.trustedProxies[a.Unmap()] = true
 	}
 
 	// Public

@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"net/netip"
 	"path/filepath"
 	"strings"
 	"time"
@@ -27,6 +28,7 @@ type config struct {
 	// How long a review waits for the AI service (REVIEW_APPLY_TIMEOUT).
 	reviewApplyTimeout time.Duration
 	environment        string // MEDSUM_ENV
+	trustedProxies     []netip.Addr
 }
 
 // loadConfig reads the configuration and fails when a secret is missing
@@ -75,6 +77,18 @@ func loadConfig(getenv func(string) string) (config, error) {
 		if o == "*" {
 			errs = append(errs, errors.New("ALLOWED_ORIGINS must list origins; * can't be used with cookies"))
 		}
+	}
+	// The proxies in front of the API, whose X-Forwarded-For is believed.
+	for _, v := range strings.Split(get("TRUSTED_PROXIES", ""), ",") {
+		if v = strings.TrimSpace(v); v == "" {
+			continue
+		}
+		a, err := netip.ParseAddr(v)
+		if err != nil {
+			errs = append(errs, fmt.Errorf("TRUSTED_PROXIES must list IP addresses: %q is not one", v))
+			continue
+		}
+		c.trustedProxies = append(c.trustedProxies, a)
 	}
 	c.reviewApplyTimeout = httpapi.DefaultReviewApplyTimeout
 	if v := get("REVIEW_APPLY_TIMEOUT", ""); v != "" {

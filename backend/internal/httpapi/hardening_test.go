@@ -3,6 +3,7 @@ package httpapi
 import (
 	"net/http"
 	"net/http/httptest"
+	"net/netip"
 	"strconv"
 	"strings"
 	"testing"
@@ -171,5 +172,72 @@ func TestBrowsersMayReadTheSessionEnd(t *testing.T) {
 	e.server.ServeHTTP(rec, req)
 	if got := rec.Header().Get("Access-Control-Expose-Headers"); got != sessionExpiresHeader {
 		t.Errorf("exposed headers = %q", got)
+	}
+}
+
+// Behind the dev server's proxy every request comes from 127.0.0.1: the
+// address the proxy names counts, so one person's failed logins don't hold
+// back everyone else, and the audit row has the browser's address.
+func TestBehindATrustedProxyEachBrowserHasItsOwnLimit(t *testing.T) {
+	e := newTestEnv(t)
+	e.store.addUser("me@hospital.test", db.StatusActive)
+	e.store.addUser("you@hospital.test", db.StatusActive)
+	e.server.trustedProxies[netip.MustParseAddr("127.0.0.1")] = true
+	via := func(browser, email, password string) *httptest.ResponseRecorder {
+		req := httptest.NewRequest(http.MethodPost, "/auth/login",
+			strings.NewReader(`{"email":"`+email+`","password":"`+password+`"}`))
+		req.RemoteAddr = "127.0.0.1:50000"
+		req.Header.Set("X-Forwarded-For", browser)
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set(csrfHeader, csrfValue)
+		rec := httptest.NewRecorder()
+		e.server.ServeHTTP(rec, req)
+		return rec
+	}
+	for range authAttemptsPerWindow {
+		via("198.51.100.7", "me@hospital.test", "wrong password, long enough")
+	}
+	if rec := via("198.51.100.7", "you@hospital.test", testPassword); rec.Code != http.StatusTooManyRequests {
+		t.Fatalf("the guessing browser: status %d", rec.Code)
+	}
+	if rec := via("203.0.113.9", "you@hospital.test", testPassword); rec.Code != http.StatusOK {
+		t.Fatalf("another browser behind the same proxy: status %d", rec.Code)
+	}
+	if ev := e.store.audit[len(e.store.audit)-1]; ev.IP != "203.0.113.9" {
+		t.Errorf("audited from %q", ev.IP)
+	}
+}
+
+func TestTheClientAddress(t *testing.T) {
+	s := &Server{trustedProxies: map[netip.Addr]bool{
+		netip.MustParseAddr("127.0.0.1"): true,
+		netip.MustParseAddr("10.0.0.2"):  true,
+	}}
+	for _, c := range []struct {
+		remote string
+		xff    []string
+		want   string
+	}{
+		{"198.51.100.7:1", nil, "198.51.100.7"},
+		// Anyone else's header is ignored: a client can send any value.
+		{"198.51.100.7:1", []string{"203.0.113.9"}, "198.51.100.7"},
+		{"127.0.0.1:1", []string{"203.0.113.9"}, "203.0.113.9"},
+		// The last hop that is not a trusted proxy; what the client wrote
+		// before it isn't believed.
+		{"127.0.0.1:1", []string{"6.6.6.6, 203.0.113.9, 10.0.0.2"}, "203.0.113.9"},
+		{"127.0.0.1:1", []string{"6.6.6.6", "203.0.113.9"}, "203.0.113.9"},
+		{"[::ffff:127.0.0.1]:1", []string{"2001:db8::1"}, "2001:db8::1"},
+		// A proxy with no header, or one that can't be read, is the address.
+		{"127.0.0.1:1", nil, "127.0.0.1"},
+		{"127.0.0.1:1", []string{"203.0.113.9, not-an-address"}, "127.0.0.1"},
+	} {
+		r := httptest.NewRequest(http.MethodGet, "/", nil)
+		r.RemoteAddr = c.remote
+		for _, v := range c.xff {
+			r.Header.Add("X-Forwarded-For", v)
+		}
+		if got := s.clientIP(r); got != c.want {
+			t.Errorf("%s with %q: %q, want %q", c.remote, c.xff, got, c.want)
+		}
 	}
 }

@@ -48,6 +48,12 @@ export default {
       "/api": {
         target: API_TARGET,
         rewrite: (path) => path.replace(/^\/api/, ""),
+        // Every proxied request reaches the API from this machine, so the
+        // proxy appends the browser's address to X-Forwarded-For; the API
+        // believes it only from TRUSTED_PROXIES (backend/.env.example sets
+        // the loopback addresses), and keys its login limit and audit rows
+        // on it.
+        xfwd: true,
         // The dev server adds its own headers to every response, proxied
         // ones too. The API lets the app frame one route, a document's
         // original file (its CSP names who may frame it), so the dev

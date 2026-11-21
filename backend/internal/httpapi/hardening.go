@@ -105,7 +105,7 @@ func (s *Server) withAuthRateLimit(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
-		ok, wait := s.authLimiter.allow(clientIP(r), s.now())
+		ok, wait := s.authLimiter.allow(s.clientIP(r), s.now())
 		if ok {
 			next.ServeHTTP(w, r)
 			return
