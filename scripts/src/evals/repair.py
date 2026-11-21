@@ -55,6 +55,7 @@ from evals.faultcheck import TODAY
 from evals.keys import answer_key, split_parse
 from evals.run import (
     RESULTS_DIR,
+    replay_digests,
     EvalDatabase,
     add_resume_arguments,
     insert_document,
@@ -456,6 +457,9 @@ def main(argv: list[str] | None = None) -> int:
     installed = live_digests(live_client, models, args.live)
     if installed is None:
         return 2
+    expect = {} if args.live else replay_digests(models, installed)
+    if expect is None:
+        return 2
 
     def unit(model, variant, case_id):
         return progress.unit_id(model, variant, case_id)
@@ -482,7 +486,7 @@ def main(argv: list[str] | None = None) -> int:
                         return RecordingClient(live_client, recorded[case_id])
                     if not path.exists():
                         raise CassetteMiss(f"{model}: no cassette {path}; re-record")
-                    return ReplayClient(Cassette.load(path))
+                    return ReplayClient(Cassette.load(path), expect_digests=expect)
 
                 def save(case_id, model=model, variant=variant, recorded=recorded):
                     if args.live:

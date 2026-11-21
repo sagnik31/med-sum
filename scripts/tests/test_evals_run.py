@@ -352,3 +352,62 @@ def test_an_outage_of_both_models_stops_the_run_and_keeps_no_unit(
 def test_a_live_run_needs_the_installed_digests(model_client, capsys):
     assert runner.main(["--live", "--model", MODEL, "--docs", "d09"]) == 2
     assert "no installed digest" in capsys.readouterr().err
+
+
+# -------------------------------------------------------------------
+# Replay checks the model build
+# -------------------------------------------------------------------
+@pytest.fixture
+def history_dir(tmp_path, monkeypatch):
+    from evals import history
+
+    monkeypatch.setattr(history, "HISTORY_DIR", tmp_path / "history")
+
+    def write(digests, mode="live"):
+        history.write_entry({"label": f"l-{len(digests)}-{mode}", "mode": mode,
+                             "generated_at": "2026-11-21T10:00:00+00:00",
+                             "digests": digests, "models": {}}, history.HISTORY_DIR)  # fmt: skip
+
+    return write
+
+
+def test_replay_expects_the_build_of_the_latest_live_run(history_dir):
+    history_dir({MODEL: "sha256:live"})
+    history_dir({MODEL: "sha256:a-replay"}, mode="replay")  # not a recording
+    assert runner.replay_digests([MODEL], {MODEL: None}) == {MODEL: "sha256:live"}
+    assert runner.replay_digests([MODEL], {MODEL: "sha256:live"}) == {
+        MODEL: "sha256:live"
+    }
+
+
+def test_replay_is_refused_when_the_installed_build_differs(history_dir, capsys):
+    history_dir({MODEL: "sha256:live"})
+    assert runner.replay_digests([MODEL], {MODEL: "sha256:pulled-again"}) is None
+    assert "re-record" in capsys.readouterr().err
+
+
+def test_without_history_the_installed_build_is_expected(history_dir):
+    assert runner.replay_digests([MODEL], {MODEL: "sha256:mine"}) == {
+        MODEL: "sha256:mine"
+    }
+    assert runner.replay_digests([MODEL], {MODEL: None}) == {}
+
+
+@pytest.mark.db
+def test_a_replay_of_cassettes_from_another_build_fails(
+    recorded, history_dir, tmp_path, monkeypatch, capsys
+):
+    cassette, user, *_ = recorded
+
+    class TestDatabase(NoDatabase):
+        user_id = user
+
+    monkeypatch.setattr(runner, "EvalDatabase", TestDatabase)
+    for e in cassette.entries:
+        e.digest = "sha256:old-build"
+    cassette.save(runner.cassette_path(MODEL, "d09", tmp_path / "c"))
+    history_dir({MODEL: "sha256:new-build"})
+    code = runner.main(["--replay", "--model", MODEL, "--docs", "d09",
+                        "--cassettes", str(tmp_path / "c"), "--out", str(tmp_path / "o")])  # fmt: skip
+    assert code == 2
+    assert "recorded with digest sha256:old-build" in capsys.readouterr().err

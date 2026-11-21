@@ -10,7 +10,9 @@ scored against its answer key, for each model as the primary.
 dataset takes hours on a CPU, so ask before starting one. --replay runs the
 same graph from those cassettes without Ollama, in seconds, and fails with
 "re-record" when a prompt, page, option or schema has changed since the
-recording (evals/cassettes.py).
+recording (evals/cassettes.py), or when a cassette was recorded with
+another model build than the latest live run's history entry names or
+than the one installed (replay_digests).
 
 Each model runs as the primary with the other as its fallback, as the
 service runs; a record the fallback produced is counted (OP-1) so the
@@ -342,6 +344,35 @@ def live_digests(client, models: list[str], live: bool) -> dict | None:
     return digests
 
 
+def replay_digests(models: list[str], installed: dict) -> dict | None:
+    """
+    The model build each cassette must have been recorded with: the digests
+    of the latest committed live run (its history entry), checked against
+    the installed build where Ollama answers. None, after saying why, when
+    the installed build is not the recorded one: a replay would then only
+    reproduce a model that is no longer the one in use. CI, with no Ollama,
+    checks the cassettes against the history entry alone. See
+    docs/adr/0009-measured-evals.md.
+    """
+    recorded: dict[str, str] = {}
+    for entry in history.load(history.HISTORY_DIR):
+        if entry.get("mode") == "live":
+            recorded.update({m: d for m, d in entry.get("digests", {}).items() if d})
+    expected = {}
+    for model in models:
+        mine, theirs = installed.get(model), recorded.get(model)
+        if mine and theirs and mine != theirs:
+            print(
+                f"FAIL replay: {model} is installed as {mine}, but the latest "
+                f"live run recorded {theirs}; re-record with a live run",
+                file=sys.stderr,
+            )
+            return None
+        if mine or theirs:
+            expected[model] = mine or theirs
+    return expected
+
+
 def stopped(e: progress.RunStopped, label: str) -> int:
     print(
         f"STOPPED: {e}. Finished units are kept; carry on with --resume {label}",
@@ -372,6 +403,9 @@ def main(argv: list[str] | None = None) -> int:
     installed = live_digests(live_client, models, args.live)
     if installed is None:
         return 2
+    expect = {} if args.live else replay_digests(models, installed)
+    if expect is None:
+        return 2
     units = [progress.unit_id(m, d) for m in models for d in doc_ids]
     run_progress = open_progress(
         "run", label, args.resume is not None, models=models, units=units,
@@ -391,7 +425,7 @@ def main(argv: list[str] | None = None) -> int:
                     return RecordingClient(live_client, cassettes[doc_id])
                 if not path.exists():
                     raise CassetteMiss(f"{model}: no cassette {path}; re-record")
-                return ReplayClient(Cassette.load(path))
+                return ReplayClient(Cassette.load(path), expect_digests=expect)
 
             def save(doc_id: str, model=model, cassettes=cassettes):
                 if args.live:

@@ -353,6 +353,9 @@ def main(argv: list[str] | None = None) -> int:
     installed = runner.live_digests(live_client, models, args.live)
     if installed is None:
         return 2
+    expect = {} if args.live else runner.replay_digests(models, installed)
+    if expect is None:
+        return 2
     run_progress = runner.open_progress(
         "injection", label, args.resume is not None, models=models,
         units=[progress.unit_id(m, i) for m in models for i in ids],
@@ -372,7 +375,7 @@ def main(argv: list[str] | None = None) -> int:
                     return RecordingClient(live_client, cassettes[doc_id])
                 if not path.exists():
                     raise CassetteMiss(f"{model}: no cassette {path}; re-record")
-                return ReplayClient(Cassette.load(path))
+                return ReplayClient(Cassette.load(path), expect_digests=expect)
 
             def save(doc_id, model=model, cassettes=cassettes):
                 if args.live:

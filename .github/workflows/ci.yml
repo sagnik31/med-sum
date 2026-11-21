@@ -176,7 +176,9 @@ jobs:
       - name: Replay the document evals from the cassettes
         if: steps.cassettes.outputs.found == 'true'
         # Exit 2 when a cassette is missing or no longer matches its request
-        # (a changed prompt, page, option or schema): re-record, then commit.
+        # (a changed prompt, page, option or schema), or was recorded with
+        # another model build than the latest history entry names:
+        # re-record, then commit.
         run: python -m evals.run --replay --label ci-replay --out "$RUNNER_TEMP/replay"
       - name: Replay the prompt-injection eval from its cassettes
         if: steps.cassettes.outputs.found == 'true'
