@@ -7,6 +7,8 @@ import {
   UNAUTHORIZED_EVENT,
   apiRequest,
   findingsOf,
+  isTransient,
+  pollDelay,
 } from "./request.js";
 
 let sent;
@@ -89,4 +91,24 @@ test("findingsOf reads a 422 review answer's findings, and only those", () => {
   assert.equal(findingsOf(JSON.stringify({ findings: "x" })), null);
   assert.equal(findingsOf("record changed"), null);
   assert.equal(findingsOf(""), null);
+});
+
+test("a background poll says so, and nothing else does", async () => {
+  await apiRequest("/api", "/documents/d/insight", { background: true });
+  await apiRequest("/api", "/documents/d/insight");
+  assert.equal(sent[0].headers.get("X-Medsum-Background"), "1");
+  assert.equal(sent[1].headers.get("X-Medsum-Background"), null);
+});
+
+test("polls slow down to a minute at most", () => {
+  assert.equal(pollDelay(0), 5000);
+  assert.equal(pollDelay(1), 7500);
+  assert.ok(pollDelay(3) > pollDelay(2));
+  assert.equal(pollDelay(20), 60000);
+});
+
+test("a poll carries on through the network or a server error, not a refusal", () => {
+  assert.ok(isTransient(new TypeError("Failed to fetch")));
+  for (const status of [408, 429, 500, 502, 503]) assert.ok(isTransient(new ApiError(status, "x")), status);
+  for (const status of [400, 401, 403, 404]) assert.ok(!isTransient(new ApiError(status, "x")), status);
 });

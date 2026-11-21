@@ -252,6 +252,44 @@ func TestSessionEndsAfterThirtyIdleMinutes(t *testing.T) {
 	}
 }
 
+func TestABackgroundPollIsNotActivity(t *testing.T) {
+	e := newTestEnv(t)
+	_, session := e.login("asha@hospital.test")
+	poll := func(background string) int {
+		req := httptest.NewRequest(http.MethodGet, "/auth/me", nil)
+		req.AddCookie(&http.Cookie{Name: sessionCookie, Value: session})
+		if background != "" {
+			req.Header.Set(backgroundHeader, background)
+		}
+		rec := httptest.NewRecorder()
+		e.server.ServeHTTP(rec, req)
+		return rec.Code
+	}
+
+	// A poll every 5 minutes for 25 minutes: each is answered, none
+	// counts as activity.
+	for i := 0; i < 5; i++ {
+		e.advance(5 * time.Minute)
+		if code := poll("1"); code != http.StatusOK {
+			t.Fatalf("poll %d: %d, want 200", i+1, code)
+		}
+	}
+	// So the session idles out 30 minutes after login, polls or not.
+	e.advance(5 * time.Minute)
+	if code := poll("1"); code != http.StatusUnauthorized {
+		t.Fatalf("after 30 minutes of polls only: %d, want 401", code)
+	}
+
+	// Any other value of the header is a request like any other.
+	_, session = e.login("asha@hospital.test")
+	for i := 0; i < 2; i++ {
+		e.advance(20 * time.Minute)
+		if code := poll("yes"); code != http.StatusOK {
+			t.Fatalf("request %d: %d, want 200", i+1, code)
+		}
+	}
+}
+
 func TestSessionEndsTwelveHoursAfterLogin(t *testing.T) {
 	e := newTestEnv(t)
 	_, session := e.login("asha@hospital.test")
@@ -605,7 +643,8 @@ func TestCORSPreflight(t *testing.T) {
 	h := ok.Header()
 	if ok.Code != http.StatusNoContent || h.Get("Access-Control-Allow-Origin") != testOrigin ||
 		h.Get("Access-Control-Allow-Credentials") != "true" ||
-		!strings.Contains(h.Get("Access-Control-Allow-Headers"), csrfHeader) {
+		!strings.Contains(h.Get("Access-Control-Allow-Headers"), csrfHeader) ||
+		!strings.Contains(h.Get("Access-Control-Allow-Headers"), backgroundHeader) {
 		t.Errorf("allowed origin preflight = %d %v", ok.Code, h)
 	}
 	if h.Get("Vary") != "Origin" {

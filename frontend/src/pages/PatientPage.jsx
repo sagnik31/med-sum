@@ -5,6 +5,8 @@ import {
   deleteDocument,
   fetchPatient,
   fetchPatientDocuments,
+  isTransient,
+  pollDelay,
   updatePatient,
   uploadDocument,
 } from "../api/client.js";
@@ -13,9 +15,6 @@ import { PERM, can } from "../auth/permissions.js";
 import ApiErrorNotice from "../components/ApiErrorNotice.jsx";
 import PatientForm from "../components/PatientForm.jsx";
 import { describePatient } from "../patients.js";
-
-// How often to refresh the list while a document is still being processed.
-const POLL_MS = 5000;
 
 const STATUS_BADGES = {
   not_started: { label: "Not started", className: "bg-slate-100 text-slate-600" },
@@ -69,12 +68,31 @@ function PatientPage() {
     };
   }, [id, loadDocuments]);
 
-  // Refresh quietly while any document is still being processed.
+  // Refresh quietly while any document is still being processed: a
+  // background poll (it doesn't keep the session alive), less often as it
+  // goes on, and kept going through a transient error.
+  const [polls, setPolls] = useState(0);
+  const pending = documents.some(isPending);
   useEffect(() => {
-    if (!documents.some(isPending)) return;
-    const timer = setTimeout(loadDocuments, POLL_MS);
-    return () => clearTimeout(timer);
-  }, [documents, loadDocuments]);
+    if (!pending) return;
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      try {
+        const data = await fetchPatientDocuments(id, { background: true });
+        if (!cancelled) setDocuments(Array.isArray(data) ? data : []);
+      } catch (err) {
+        if (!isTransient(err)) {
+          if (!cancelled) setError(err);
+          return;
+        }
+      }
+      if (!cancelled) setPolls((n) => n + 1);
+    }, pollDelay(polls));
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [id, pending, polls]);
 
   async function handleSave(details) {
     setPatient(await updatePatient(id, details));
@@ -90,6 +108,7 @@ function PatientPage() {
       await uploadDocument(id, file);
       setFile(null);
       e.target.reset();
+      setPolls(0); // a new document: poll often again
       await loadDocuments();
     } catch (err) {
       setError(err);

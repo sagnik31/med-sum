@@ -125,6 +125,15 @@ func sessionLive(sess db.Session, now time.Time) bool {
 	return now.Before(sess.ExpiresAt) && now.Sub(sess.LastSeenAt) < idleTimeout
 }
 
+// backgroundHeader marks a poll the page makes on its own (a document or a
+// summary being processed). Its session is checked as on any request, but
+// the poll is not activity: it doesn't move last_seen_at, so a screen left
+// open on a long job still logs out after the idle timeout. See
+// docs/adr/0010-staff-access-and-security.md.
+const backgroundHeader = "X-Medsum-Background"
+
+func isBackground(r *http.Request) bool { return r.Header.Get(backgroundHeader) == "1" }
+
 func (s *Server) withSession(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		hash := sessionTokenHash(r)
@@ -154,7 +163,7 @@ func (s *Server) withSession(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		lastSeen := sess.LastSeenAt
-		if now.Sub(sess.LastSeenAt) >= touchEvery {
+		if now.Sub(sess.LastSeenAt) >= touchEvery && !isBackground(r) {
 			if err := s.db.TouchSession(ctx, hash, now); err != nil {
 				log.Printf("TouchSession error: %v", err)
 			} else {

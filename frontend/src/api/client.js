@@ -10,11 +10,13 @@ import {
   ReviewFindings,
   apiRequest as requestAt,
   findingsOf,
+  isTransient,
   onSessionExpiry,
   onUnauthorized,
+  pollDelay,
 } from "./request.js";
 
-export { ApiError, ReviewFindings, onSessionExpiry, onUnauthorized };
+export { ApiError, ReviewFindings, isTransient, onSessionExpiry, onUnauthorized, pollDelay };
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
 
@@ -163,8 +165,9 @@ export function updatePatient(id, changes) {
   return apiRequest(`/patients/${enc(id)}`, { method: "PATCH", json: changes });
 }
 
-export function fetchPatientDocuments(patientId) {
-  return apiRequest(`/patients/${enc(patientId)}/documents`);
+// `{ background: true }` for a poll the page makes on its own.
+export function fetchPatientDocuments(patientId, { background = false } = {}) {
+  return apiRequest(`/patients/${enc(patientId)}/documents`, { background });
 }
 
 export function uploadDocument(patientId, file) {
@@ -173,8 +176,9 @@ export function uploadDocument(patientId, file) {
   return apiRequest(`/patients/${enc(patientId)}/documents`, { method: "POST", body: formData });
 }
 
-export function fetchPatientSummary(patientId) {
-  return apiRequest(`/patients/${enc(patientId)}/summary`);
+// `{ background: true }` for a poll the page makes on its own.
+export function fetchPatientSummary(patientId, { background = false } = {}) {
+  return apiRequest(`/patients/${enc(patientId)}/summary`, { background });
 }
 
 // Start (re)building the patient summary in the background; poll
@@ -207,8 +211,9 @@ export function fetchDocumentRecord(id) {
   return apiRequest(`/documents/${enc(id)}/record?view=reviewed`);
 }
 
-export function getInsight(documentId) {
-  return apiRequest(`/documents/${enc(documentId)}/insight`);
+// `{ background: true }` for a poll the page makes on its own.
+export function getInsight(documentId, { background = false } = {}) {
+  return apiRequest(`/documents/${enc(documentId)}/insight`, { background });
 }
 
 // Ask the backend to start insight generation (it checks the organisation

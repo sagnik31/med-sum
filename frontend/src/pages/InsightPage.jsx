@@ -6,6 +6,8 @@ import {
   fetchDocument,
   fetchDocumentRecord,
   getInsight,
+  isTransient,
+  pollDelay,
   reprocessDocument,
   reviewDocument,
   triggerInsightGeneration,
@@ -22,8 +24,6 @@ import RecordView from "../components/RecordView.jsx";
 import { citationFromQuery, reviewedRecordOf } from "../record/recordView.js";
 
 // How often to check a document that is still being processed.
-const POLL_MS = 5000;
-
 function InsightPage() {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
@@ -83,9 +83,18 @@ function InsightPage() {
     setInsight("");
     setStatus("checking");
 
+    // Every check after the first is a background poll: it doesn't keep
+    // the session alive, comes less often as it goes on, and carries on
+    // through a transient error.
+    let polls = 0;
+    const again = () => {
+      timer = setTimeout(() => check(false), pollDelay(polls));
+      polls += 1;
+    };
+
     async function check(isFirstCheck) {
       try {
-        const data = await getInsight(id);
+        const data = await getInsight(id, { background: !isFirstCheck });
         if (cancelled) return;
 
         if (
@@ -105,13 +114,13 @@ function InsightPage() {
           }
           if (cancelled) return;
           setStatus("generating");
-          timer = setTimeout(() => check(false), POLL_MS);
+          again();
         }
       } catch (err) {
         console.error(err);
-        if (!cancelled) {
-          setError(err);
-        }
+        if (cancelled) return;
+        if (!isFirstCheck && isTransient(err)) again();
+        else setError(err);
       } finally {
         if (!cancelled) setLoading(false);
       }

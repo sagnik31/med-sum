@@ -8,6 +8,25 @@
 // protection).
 export const CSRF_HEADER = { "X-Requested-With": "med-sum" };
 
+// Sent on a poll the page makes on its own (a document or a summary being
+// processed): the API checks the session but doesn't count the poll as
+// activity, so an unattended screen still logs out after the idle timeout
+// (docs/adr/0010-staff-access-and-security.md).
+export const BACKGROUND_HEADER = { "X-Medsum-Background": "1" };
+
+// The wait before the next background poll: 5 s, growing by half each time
+// to at most a minute, so a long job isn't asked about every 5 s.
+export function pollDelay(polls) {
+  return Math.min(60000, Math.round(5000 * 1.5 ** Math.max(0, polls)));
+}
+
+// Whether a failed poll is worth trying again: the network, a timeout, a
+// rate limit or a server error. A refusal (401, 403, 404) is not.
+export function isTransient(err) {
+  if (!(err instanceof ApiError)) return true;
+  return err.status === 408 || err.status === 429 || err.status >= 500;
+}
+
 // Fired when the API answers 401, so the app can return to the login page.
 export const UNAUTHORIZED_EVENT = "medsum:unauthorized";
 
@@ -45,13 +64,17 @@ export class ApiError extends Error {
  * - json: a value to send as a JSON body
  * - body: a raw body (FormData for uploads)
  * - signalUnauthorized: fire UNAUTHORIZED_EVENT on a 401 (default true)
+ * - background: a poll the page makes on its own (BACKGROUND_HEADER)
  */
 export async function apiRequest(
   baseUrl,
   path,
-  { method = "GET", json, body, signalUnauthorized = true } = {}
+  { method = "GET", json, body, signalUnauthorized = true, background = false } = {}
 ) {
   const headers = new Headers();
+  if (background) {
+    for (const [k, v] of Object.entries(BACKGROUND_HEADER)) headers.set(k, v);
+  }
   if (method !== "GET" && method !== "HEAD") {
     for (const [k, v] of Object.entries(CSRF_HEADER)) headers.set(k, v);
   }

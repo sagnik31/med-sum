@@ -1,15 +1,18 @@
 // src/pages/PatientSummaryPage.jsx
 import React, { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { fetchPatient, fetchPatientSummary, triggerPatientSummary } from "../api/client.js";
+import {
+  fetchPatient,
+  fetchPatientSummary,
+  isTransient,
+  pollDelay,
+  triggerPatientSummary,
+} from "../api/client.js";
 import { useAuth } from "../auth/context.js";
 import { PERM, can } from "../auth/permissions.js";
 import ApiErrorNotice from "../components/ApiErrorNotice.jsx";
 import HtmlFrame from "../components/HtmlFrame.jsx";
 import { citeLink } from "../record/recordView.js";
-
-// How often to check while the summary is being generated.
-const POLL_MS = 5000;
 
 // One patient's cumulative summary, built from their processed documents.
 function PatientSummaryPage() {
@@ -37,18 +40,38 @@ function PatientSummaryPage() {
     loadSummary();
   }, [id, loadSummary]);
 
-  // Keep checking while a summary is being generated.
+  // Keep checking while a summary is being generated: a background poll (it
+  // doesn't keep the session alive), less often as it goes on, and kept
+  // going through a transient error.
+  const [polls, setPolls] = useState(0);
+  const building = summary?.status === "processing";
   useEffect(() => {
-    if (summary?.status !== "processing") return;
-    const timer = setTimeout(loadSummary, POLL_MS);
-    return () => clearTimeout(timer);
-  }, [summary, loadSummary]);
+    if (!building) return;
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      try {
+        const data = await fetchPatientSummary(id, { background: true });
+        if (!cancelled) setSummary(data);
+      } catch (err) {
+        if (!isTransient(err)) {
+          if (!cancelled) setError(err);
+          return;
+        }
+      }
+      if (!cancelled) setPolls((n) => n + 1);
+    }, pollDelay(polls));
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [id, building, polls]);
 
   async function handleGenerate() {
     setStarting(true);
     setError(null);
     try {
       await triggerPatientSummary(id);
+      setPolls(0); // a new build: poll often again
       await loadSummary();
     } catch (err) {
       setError(err);

@@ -30,7 +30,7 @@ func (s *Server) withOrigins(next http.Handler) http.Handler {
 			h := w.Header()
 			h.Set("Access-Control-Allow-Origin", origin)
 			h.Set("Access-Control-Allow-Credentials", "true")
-			h.Set("Access-Control-Allow-Headers", "Content-Type, "+csrfHeader)
+			h.Set("Access-Control-Allow-Headers", "Content-Type, "+csrfHeader+", "+backgroundHeader)
 			h.Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
 			h.Set("Access-Control-Max-Age", "600")
 			h.Set("Access-Control-Expose-Headers", sessionExpiresHeader)
