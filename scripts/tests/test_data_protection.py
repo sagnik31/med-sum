@@ -174,7 +174,6 @@ def test_a_remote_ollama_host_is_never_sent_a_page_image(model_client, monkeypat
     assert model_client.calls == []
 
 
-
 @pytest.fixture
 def cloud_primary(monkeypatch, model_client):
     monkeypatch.setitem(llm._MODELS, "primary", "gemini-test")
