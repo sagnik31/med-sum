@@ -32,6 +32,7 @@ Insights Generation Service (FastAPI)
 """
 
 import hmac
+import threading
 import logging
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
@@ -127,9 +128,15 @@ def require_internal_token(x_internal_token: str = Header(default="")) -> None:
         raise HTTPException(status_code=401, detail="invalid internal token")
 
 
-# A patient summary job 'processing' this long is treated as abandoned and
-# may be claimed again.
+# A patient summary job 'processing' this long without a heartbeat is
+# treated as abandoned and may be claimed again.
 STALE_PROCESSING_AFTER = "30 minutes"
+
+# How often a summary run renews its claim, so a build that takes longer
+# than STALE_PROCESSING_AFTER (the overview on a slow CPU) is not taken over
+# while it is alive. Same rule as document jobs.
+# See docs/adr/0006-durable-traceable-runs.md.
+SUMMARY_HEARTBEAT_S = document_jobs.HEARTBEAT_S
 
 
 # -------------------------------------------------------------------
@@ -354,9 +361,10 @@ def claim_patient_summary(patient_id: str) -> datetime | None:
     request is not dropped: it sets rerun_requested, and that run builds
     the summary once more when it ends, because it read its inputs before
     this request (a correction or a delete may have changed them).
-    Nothing else writes updated_at while a run is processing, so the
-    timestamp identifies this claim: a takeover sets a new one, at least
-    STALE_PROCESSING_AFTER later.
+    Only the run holding the claim writes updated_at while it is
+    processing (its heartbeat, SummaryHeartbeat), so the timestamp
+    identifies this claim: a takeover sets a new one, at least
+    STALE_PROCESSING_AFTER after the last heartbeat.
     """
     conn = get_db_connection()
     try:
@@ -493,6 +501,67 @@ def _summary_identifiers(cur, patient_id: str) -> list[str]:
     return known
 
 
+# A heartbeat: the claim's updated_at moved on, only while this run holds it.
+_RENEW_SUMMARY = """
+UPDATE patient_summaries SET updated_at = clock_timestamp()
+WHERE patient_id = %(patient_id)s
+  AND status = 'processing'
+  AND updated_at = %(claim)s
+RETURNING updated_at
+"""
+
+
+class SummaryHeartbeat:
+    """
+    Renews a summary run's claim every `every` seconds until stopped. The
+    claim is the row's updated_at, so each renewal moves it: `claim` is the
+    current one, to be read once the heartbeat has stopped. A renewal that
+    finds the claim gone (taken over) stops; the run's final write then
+    finds it gone too. A renewal that fails (the database unreachable) is
+    logged and tried again; the claim lasts STALE_PROCESSING_AFTER from the
+    last one that worked.
+    """
+
+    def __init__(self, patient_id: str, claim: datetime, *, every: float | None = None):
+        self.patient_id, self.claim = patient_id, claim
+        self.every = SUMMARY_HEARTBEAT_S if every is None else every
+        self._stop = threading.Event()
+        self._thread = threading.Thread(target=self._beat, daemon=True)
+
+    def __enter__(self):
+        self._thread.start()
+        return self
+
+    def __exit__(self, *exc):
+        self._stop.set()
+        self._thread.join()
+        return False
+
+    def _beat(self):
+        while not self._stop.wait(self.every):
+            try:
+                conn = get_db_connection()
+                try:
+                    with conn.cursor() as cur:
+                        cur.execute(
+                            _RENEW_SUMMARY,
+                            {"patient_id": self.patient_id, "claim": self.claim},
+                        )
+                        row = cur.fetchone()
+                    conn.commit()
+                finally:
+                    conn.close()
+            except Exception:
+                logger.exception(
+                    "could not renew the patient summary claim",
+                    extra=_obs("summary_claim_not_renewed", patient_id=self.patient_id),
+                )
+                continue
+            if row is None:
+                return  # taken over: the final write will find it gone
+            self.claim = row[0]
+
+
 def _next_claim(row) -> datetime | None:
     """The new claim when the final write kept the summary processing."""
     return row[1] if row is not None and row[0] == "processing" else None
@@ -527,12 +596,14 @@ def _build_patient_summary(patient_id: str, claim: datetime) -> datetime | None:
         "patient summary started", extra=_obs("summary_started", patient_id=patient_id)
     )
     next_claim = None
+    beat = SummaryHeartbeat(patient_id, claim)
     conn = get_db_connection()
     try:
         from summary.build import build_summary, load_inputs
 
-        inputs = load_inputs(conn, patient_id)
-        result = build_summary(inputs, now=datetime.now(timezone.utc))
+        with beat:  # renewed while the summary is built
+            inputs = load_inputs(conn, patient_id)
+            result = build_summary(inputs, now=datetime.now(timezone.utc))
         if result.overview.outcome != "shown":
             check = result.overview.check
             logger.warning(
@@ -550,7 +621,11 @@ def _build_patient_summary(patient_id: str, claim: datetime) -> datetime | None:
         with conn.cursor() as cur:
             cur.execute(
                 _FINISH_SUMMARY,
-                {"html": result.html, "patient_id": patient_id, "claim": claim},
+                {
+                    "html": result.html,
+                    "patient_id": patient_id,
+                    "claim": beat.claim,
+                },  # fmt: skip
             )
             if cur.rowcount == 0:
                 raise LostClaim(
@@ -589,7 +664,7 @@ def _build_patient_summary(patient_id: str, claim: datetime) -> datetime | None:
                 cur.execute(
                     _FAIL_SUMMARY,
                     {"error": redact(str(e) or type(e).__name__, known),
-                     "patient_id": patient_id, "claim": claim},
+                     "patient_id": patient_id, "claim": beat.claim},
                 )  # fmt: skip
                 row = cur.fetchone() if cur.rowcount else None
             conn.commit()

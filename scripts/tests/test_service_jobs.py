@@ -323,6 +323,49 @@ def test_a_run_that_lost_its_claim_does_not_write_its_summary(
     assert line_with(json_log, "summary_claim_lost")["patient_id"] == user
 
 
+def test_a_live_run_s_heartbeat_keeps_its_claim_past_the_stale_time(
+    db, model_client, monkeypatch
+):
+    # ADR 0006: a long build is not taken over while its heartbeat goes on.
+    user = add_user(db)
+    add_processed(db, user, "d09", "2024-09-06 10:00+05:30")
+    model_client.replies[llm.PRIMARY_MODEL] = ["The latest report flags TSH."] * 2
+    monkeypatch.setattr(service, "STALE_PROCESSING_AFTER", "300 milliseconds")
+    monkeypatch.setattr(service, "SUMMARY_HEARTBEAT_S", 0.05)
+    claim = service.claim_patient_summary(user)
+    real_build = service_build()
+    asked = []
+
+    def slow_build(inputs, **kwargs):
+        if not asked:
+            time.sleep(0.8)  # longer than the stale time, heartbeat running
+            asked.append(service.claim_patient_summary(user))
+        return real_build(inputs, **kwargs)
+
+    monkeypatch.setattr("summary.build.build_summary", slow_build)
+
+    service.run_patient_summary(user, claim)
+
+    assert asked == [None]  # not taken over: queued behind the live run
+    html, status, error = summary_row(db, user)
+    assert status == "completed" and html and error is None
+
+
+def test_a_heartbeat_stops_once_the_claim_is_taken_over(db):
+    user = add_user(db)
+    claim = service.claim_patient_summary(user)
+    newer = take_over(db, user)
+    with service.SummaryHeartbeat(user, claim, every=0.02) as beat:
+        beat._thread.join(timeout=2)
+        assert not beat._thread.is_alive()  # stopped by itself
+    assert beat.claim == claim  # never moved the newer run's claim
+    with db.cursor() as cur:
+        cur.execute(
+            "SELECT updated_at FROM patient_summaries WHERE patient_id = %s", (user,)
+        )
+        assert cur.fetchone()[0] == newer
+
+
 def test_a_run_that_lost_its_claim_does_not_mark_the_newer_one_failed(
     db, model_client, json_log
 ):
