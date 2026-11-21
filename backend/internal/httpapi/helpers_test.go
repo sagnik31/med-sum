@@ -479,7 +479,8 @@ func (f *fakeStore) ListAuditEvents(_ context.Context, orgID string, filter db.A
 		switch {
 		case e.OrgID == nil || *e.OrgID != orgID,
 			filter.ActorID != "" && (e.ActorID == nil || *e.ActorID != filter.ActorID),
-			filter.PatientID != "" && (e.PatientID == nil || *e.PatientID != filter.PatientID),
+			filter.PatientID != "" && (e.PatientID == nil || *e.PatientID != filter.PatientID) &&
+				!listsPatient(e.Details, filter.PatientID),
 			filter.From != nil && e.At.Before(*filter.From),
 			filter.To != nil && !e.At.Before(*filter.To),
 			filter.BeforeID > 0 && e.ID >= filter.BeforeID:
@@ -1172,3 +1173,17 @@ var (
 	pngBytes  = []byte("\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00")
 	jpegBytes = []byte("\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x00\x00\x01\x00\x01\x00\x00")
 )
+
+// listsPatient reports whether an event's details list the patient among
+// patient_ids, as ListAuditEvents's patient filter matches them.
+func listsPatient(details map[string]any, patientID string) bool {
+	switch ids := details["patient_ids"].(type) {
+	case []string:
+		for _, id := range ids {
+			if id == patientID {
+				return true
+			}
+		}
+	}
+	return false
+}

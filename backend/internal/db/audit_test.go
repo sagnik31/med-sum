@@ -189,6 +189,29 @@ func TestLogoutAndPasswordSetupNameTheAccount(t *testing.T) {
 	}
 }
 
+func TestAPatientFilterFindsTheListingsThatShowedThem(t *testing.T) {
+	s := store(t)
+	ctx := context.Background()
+	org := mustOrg(t, s)
+	a := mustUser(t, s, "a@hospital.test")
+	p := mustPatient(t, s, org, a.ID, "SH-1")
+	q := mustPatient(t, s, org, a.ID, "SH-2")
+	queue := event(org, a.ID, "review_queue_viewed")
+	queue.Details = map[string]any{"documents": 3, "patient_ids": []string{p.ID}}
+	if err := s.RecordAudit(ctx, *queue); err != nil {
+		t.Fatal(err)
+	}
+	for id, want := range map[string]int{p.ID: 1, q.ID: 0} {
+		got, err := s.ListAuditEvents(ctx, org, AuditFilter{PatientID: id})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(got) != want {
+			t.Errorf("patient %s: %d events, want %d", id, len(got), want)
+		}
+	}
+}
+
 func TestListAuditEventsFiltersAndPages(t *testing.T) {
 	s := store(t)
 	ctx := context.Background()

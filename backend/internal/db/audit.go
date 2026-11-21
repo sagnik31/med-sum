@@ -132,7 +132,11 @@ func (s *Store) ListAuditEvents(ctx context.Context, orgID string, f AuditFilter
 		add("e.actor_id = $%d", f.ActorID)
 	}
 	if f.PatientID != "" {
-		add("e.patient_id = $%d", f.PatientID)
+		// The event's patient, or one of the patients a listing showed
+		// (details.patient_ids, as the review queue writes it).
+		args = append(args, f.PatientID, f.PatientID)
+		where = append(where, fmt.Sprintf(
+			"(e.patient_id = $%d OR e.details->'patient_ids' ? $%d::text)", len(args)-1, len(args)))
 	}
 	if f.From != nil {
 		add("e.at >= $%d", *f.From)

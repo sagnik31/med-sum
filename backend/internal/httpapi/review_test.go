@@ -337,6 +337,14 @@ func TestTheReviewQueueListsTheOrganisationsDocumentsOldestFirst(t *testing.T) {
 	if ev.Action != actReviewQueueViewed || ev.Details["documents"] != 2 {
 		t.Errorf("audit = %+v", ev)
 	}
+	// Both documents are one patient's: listed once, by id, never by name.
+	if ids, _ := ev.Details["patient_ids"].([]string); len(ids) != 1 || ids[0] != re.patient.ID {
+		t.Errorf("patient_ids = %v", ev.Details["patient_ids"])
+	}
+	raw, _ := json.Marshal(ev.Details)
+	if strings.Contains(string(raw), "SH-1") {
+		t.Errorf("audit details hold the MRN: %s", raw)
+	}
 }
 
 func TestTheReviewQueueFailsClosedWhenItCantBeAudited(t *testing.T) {

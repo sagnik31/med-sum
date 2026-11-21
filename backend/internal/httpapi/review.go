@@ -41,8 +41,19 @@ func (s *Server) handleReviewQueue(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
+	// The patients the queue showed (ids only), so the audit log's patient
+	// filter finds that their names were listed. See
+	// docs/adr/0010-staff-access-and-security.md.
+	patients := []string{}
+	seen := map[string]bool{}
+	for _, e := range entries {
+		if !seen[e.PatientID] {
+			seen[e.PatientID] = true
+			patients = append(patients, e.PatientID)
+		}
+	}
 	if !s.recordAudit(w, r, with(s.auditEvent(r, actReviewQueueViewed),
-		map[string]any{"documents": len(entries)})) {
+		map[string]any{"documents": len(entries), "patient_ids": patients})) {
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"documents": entries})
