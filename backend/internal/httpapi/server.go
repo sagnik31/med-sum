@@ -100,6 +100,9 @@ type Config struct {
 	// timeout: it validates the record and rebuilds the page while the
 	// models may be using the same CPU.
 	ReviewApplyTimeout time.Duration
+	// MEDSUM_ENV as the server was started with ("dev" where every
+	// document is synthetic). GET /environment reports it.
+	Environment string
 }
 
 // DefaultReviewApplyTimeout is the review-apply call's timeout unless
@@ -118,6 +121,7 @@ type Server struct {
 	now            func() time.Time
 	httpClient     *http.Client
 	reviewClient   *http.Client // for /internal/review-apply
+	environment    string
 	mux            *http.ServeMux
 	handler        http.Handler
 	authLimiter    *rateLimiter
@@ -136,6 +140,7 @@ func NewServer(store Store, cfg Config) *Server {
 		now:            cfg.Now,
 		httpClient:     &http.Client{Timeout: 10 * time.Second},
 		reviewClient:   &http.Client{Timeout: cfg.ReviewApplyTimeout},
+		environment:    cfg.Environment,
 		mux:            http.NewServeMux(),
 		authLimiter:    newRateLimiter(authAttemptsPerWindow, authWindow),
 	}
@@ -158,6 +163,7 @@ func NewServer(store Store, cfg Config) *Server {
 
 	// Logged in
 	s.mux.HandleFunc("/auth/me", s.withSession(s.handleMe))
+	s.mux.HandleFunc("/environment", s.withSession(s.handleEnvironment))
 	s.mux.HandleFunc("/auth/password", s.withSession(s.handleChangePassword))
 	// /auth/sessions (GET = list mine, DELETE = end all but this one) and
 	// /auth/sessions/{id} (DELETE = end one of mine)
@@ -221,6 +227,23 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte("ok"))
+}
+
+// handleEnvironment says which environment the API runs in, to a logged-in
+// caller: the MCP server asks it before serving, since what its tools return
+// may go to a cloud model, and only a dev API (synthetic documents only) may
+// be served that way. The API's own setting decides, not the client's. See
+// docs/adr/0012-shared-tool-layer.md.
+func (s *Server) handleEnvironment(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+	env := s.environment
+	if env == "" {
+		env = "unset"
+	}
+	writeJSON(w, http.StatusOK, map[string]string{"environment": env})
 }
 
 // ----- Upload: POST /patients/{id}/documents -----

@@ -681,3 +681,18 @@ func TestSetupRejectsBadRequests(t *testing.T) {
 		}
 	}
 }
+
+func TestTheEnvironmentIsReportedToASessionOnly(t *testing.T) {
+	for _, c := range []struct{ set, want string }{{"dev", "dev"}, {"", "unset"}, {"prod", "prod"}} {
+		e := newTestEnv(t)
+		e.server.environment = c.set
+		if rec := e.do(http.MethodGet, "/environment", "", nil, ""); rec.Code != http.StatusUnauthorized {
+			t.Fatalf("without a session: %d", rec.Code)
+		}
+		_, session := e.login("asha@hospital.test")
+		rec := e.do(http.MethodGet, "/environment", session, nil, "")
+		if got := decodeJSON[map[string]string](t, rec)["environment"]; rec.Code != http.StatusOK || got != c.want {
+			t.Errorf("MEDSUM_ENV=%q: %d %q, want %q", c.set, rec.Code, got, c.want)
+		}
+	}
+}

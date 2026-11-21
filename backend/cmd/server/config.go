@@ -26,6 +26,7 @@ type config struct {
 	httpAddress    string
 	// How long a review waits for the AI service (REVIEW_APPLY_TIMEOUT).
 	reviewApplyTimeout time.Duration
+	environment        string // MEDSUM_ENV
 }
 
 // loadConfig reads the configuration and fails when a secret is missing
@@ -45,6 +46,7 @@ func loadConfig(getenv func(string) string) (config, error) {
 		cookieSecure:  get("COOKIE_SECURE", "true") != "false",
 		appURL:        get("MEDSUM_APP_URL", "http://localhost:5173"),
 		httpAddress:   get("HTTP_ADDRESS", ":8080"),
+		environment:   get("MEDSUM_ENV", ""),
 	}
 	var errs []error
 	if c.databaseURL == "" {

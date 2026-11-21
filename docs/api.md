@@ -13,6 +13,7 @@ All backend routes except `/healthz`, `/auth/login`, `/auth/logout` and `/auth/s
 | `POST` | `/auth/login` | Log in with `{email, password}`; sets the session cookie and returns the account |
 | `POST` | `/auth/logout` | End the session |
 | `GET` | `/auth/me` | The logged-in account: id, email, name, roles, permissions, organisation |
+| `GET` | `/environment` | `{environment}`: the API's `MEDSUM_ENV` (`dev`, or `unset`), to a logged-in caller. The MCP server serves only when it is `dev` |
 | `POST` | `/auth/password` | Change the password with `{current_password, new_password}`; ends the account's other sessions |
 | `POST` | `/auth/setup/info` | `{token}` from a setup or reset link: whose account it is for |
 | `POST` | `/auth/setup` | Set a password with `{token, password}` from a setup or reset link |
@@ -57,7 +58,7 @@ A Postman collection is in [`postman/collections/`](../postman/collections/med-s
 
 A local [MCP](https://modelcontextprotocol.io) server lets an MCP client (a desktop assistant, an IDE, an agent) read the records with the same read-only tools the repair step uses. It never connects to the database: it reads through the API, logged in as its own clinician account, so the account's organisation, its permissions and the audit log apply to every call. See [ADR 0012](adr/0012-shared-tool-layer.md).
 
-> **Synthetic data only.** Whatever a tool returns goes to the client's model, and many clients run their model at a cloud provider. Real patient data must never be served to one. The server starts only with `MEDSUM_ENV=dev`, where every document is synthetic (the [synthetic dataset](development.md#synthetic-dataset), loaded with `python -m dataset.load --yes`).
+> **Synthetic data only.** Whatever a tool returns goes to the client's model, and many clients run their model at a cloud provider. Real patient data must never be served to one. The server starts only with `MEDSUM_ENV=dev`, where every document is synthetic (the [synthetic dataset](development.md#synthetic-dataset), loaded with `python -m dataset.load --yes`). It also asks the API (`GET /environment`) and serves only when the API itself runs with `MEDSUM_ENV=dev`.
 
 | Tool | Reads | Answers with |
 |---|---|---|

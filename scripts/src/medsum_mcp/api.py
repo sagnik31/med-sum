@@ -134,6 +134,14 @@ class ApiClient:
         self._session = token
         self.logins += 1
 
+    async def environment(self) -> str:
+        """The API's own MEDSUM_ENV, as GET /environment reports it."""
+        answer = await self.get("/environment", tool="environment_check")
+        env = answer.get("environment") if isinstance(answer, dict) else None
+        if not isinstance(env, str):
+            raise ApiError(200, "the API did not say which environment it runs in")
+        return env
+
     async def get(self, path: str, *, tool: str, params: dict | None = None) -> Any:
         """GET path as the session, labelled with the tool; the JSON answer."""
         if self._session is None:

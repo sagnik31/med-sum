@@ -51,6 +51,7 @@ func main() {
 		Hasher:         hasher,
 
 		ReviewApplyTimeout: cfg.reviewApplyTimeout,
+		Environment:        cfg.environment,
 	})
 
 	api.PurgeExpiredSessions(ctx)

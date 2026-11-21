@@ -18,7 +18,7 @@ An MCP server is also an easy way to leak patient data. A server that connects t
 
 **Every answer carries its citations, and no value is bare.** An answer is `{"citations": [...], "result": {...}}`. Every entry of the result (a patient, a document, an item, a search hit, a range of lines) has its own `cite`, and `citations` lists them all: `patient:<id>`, `document:<id>`, `document:<id>#p2:7-9` for transcription lines, and `document:<id>#text-layer:p3:1-40` for the PDF's own text. An answer with no entries has no citations. The document tools read the record as clinicians reviewed it, with every correction applied, as the patient summary shows it (ADR 0011).
 
-**The server serves synthetic data only.** It starts only under `MEDSUM_ENV=dev`, where every document is synthetic, and the [MCP server docs](../api.md#mcp-server) say so: whatever a tool returns goes to the client's model, and that model may run at a cloud provider. Its log lines go to stderr and hold the tool, the outcome, the status and the time, never an argument or a value (ADR 0008).
+**The server serves synthetic data only.** It starts only under `MEDSUM_ENV=dev`, where every document is synthetic, and its own setting isn't enough: an env file can say dev while pointing at an API that holds real patients, so before serving it asks the API which environment it runs in (`GET /environment`) and serves only when the API says `dev` too, and the [MCP server docs](../api.md#mcp-server) say so: whatever a tool returns goes to the client's model, and that model may run at a cloud provider. Its log lines go to stderr and hold the tool, the outcome, the status and the time, never an argument or a value (ADR 0008).
 
 **It is measured by an eval of a client using it** (`python -m evals.mcp_eval`). Questions about the synthetic patients go to a local model, which can call the tools only over the MCP server, so through the API and its audit. Each answer is scored for whether it cites, whether every citation is one the tools returned, whether its numbers appear in the lines it cites (the patient overview's number check, reused), and whether the model abstains when the records hold no answer.
 
@@ -36,7 +36,7 @@ An MCP server is also an easy way to leak patient data. A server that connects t
 - Each document tool fetches the whole record, pages included, for every call. That is cheap for a local API and a few pages. A long document read many times would want a lighter route.
 - A client's session leaves an audit trail that an admin can filter by actor (the server's account), with the tool on each row.
 - The server can only read what its account's role can. Its account should be a clinician's, so `review.write` is there, but no tool writes.
-- The server can't tell real data from synthetic. The dev-only start and the documented rule are what keep real data from a cloud client.
+- The server can't tell real data from synthetic. The dev-only start, checked against the API's own environment, and the documented rule are what keep real data from a cloud client.
 
 ## What would change it
 

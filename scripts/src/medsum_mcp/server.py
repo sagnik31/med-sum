@@ -9,7 +9,9 @@ Settings come from the environment, then scripts/mcp.env.local (untracked;
 copy scripts/mcp.env.example): MEDSUM_MCP_EMAIL and MEDSUM_MCP_PASSWORD of
 the server's own clinician account, MEDSUM_MCP_API_URL. It starts only under
 MEDSUM_ENV=dev, where every document is synthetic: what a tool returns goes
-to the client's model, which may run at a cloud provider.
+to the client's model, which may run at a cloud provider. Its own setting is
+not enough: before serving it asks the API which environment the API runs in
+(GET /environment), and serves only when that is dev too.
 See docs/adr/0012-shared-tool-layer.md.
 """
 
@@ -26,7 +28,13 @@ from mcp.server import Server
 from mcp.server.stdio import stdio_server
 
 from medsum_mcp import tools
-from medsum_mcp.api import ApiClient, ConfigError, credentials, read_env_file
+from medsum_mcp.api import (
+    ApiClient,
+    ApiError,
+    ConfigError,
+    credentials,
+    read_env_file,
+)
 from observability.logs import configure_logging
 
 log = logging.getLogger("medsum_mcp")
@@ -85,7 +93,30 @@ def settings(environ=None, env_file: Path = ENV_FILE) -> dict[str, str]:
     return values
 
 
+class NotDevApi(RuntimeError):
+    """The API the server would read from does not run with MEDSUM_ENV=dev."""
+
+
+async def require_dev_api(api: ApiClient) -> None:
+    """
+    Raise NotDevApi unless the API itself runs under MEDSUM_ENV=dev: an env
+    file can say dev while pointing at an API that holds real patients.
+    See docs/adr/0012-shared-tool-layer.md.
+    """
+    try:
+        env = await api.environment()
+    except ApiError as e:
+        raise NotDevApi(f"could not ask the API its environment ({e})") from e
+    if env != "dev":
+        raise NotDevApi(f"the API runs with MEDSUM_ENV={env}, not dev")
+
+
 async def serve(api: ApiClient) -> None:
+    try:
+        await require_dev_api(api)
+    except BaseException:
+        await api.aclose()
+        raise
     server = build_server(api)
     try:
         async with stdio_server() as (read_stream, write_stream):
@@ -111,5 +142,13 @@ def main(argv=None, environ=None, env_file: Path = ENV_FILE) -> int:
         print(str(e), file=sys.stderr)
         return 2
     configure_logging(console=True)
-    anyio.run(serve, ApiClient(creds))
+    try:
+        anyio.run(serve, ApiClient(creds))
+    except NotDevApi as e:
+        print(
+            f"medsum_mcp serves only a development API: {e}. What its tools "
+            "return goes to the client's model, so it may only serve synthetic data.",
+            file=sys.stderr,
+        )
+        return 2
     return 0

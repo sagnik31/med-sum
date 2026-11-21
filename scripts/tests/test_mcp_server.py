@@ -42,6 +42,7 @@ class FakeApi:
         self.live = set()
         self.requests = []  # (path, tool label) of every request
         self.audit = []  # one per read answered, as the API writes them
+        self.environment = "dev"  # the API's MEDSUM_ENV
 
     def expire(self):
         self.live.clear()
@@ -75,6 +76,8 @@ class FakeApi:
         return answer
 
     def _read(self, path, params) -> httpx.Response:
+        if path == "/environment":
+            return httpx.Response(200, json={"environment": self.environment})
         if path == "/patients":
             rows = [
                 {"id": PATIENT, "full_name": "Asha Rao", "mrn": "SD-00417",
@@ -463,6 +466,43 @@ def test_the_server_starts_only_in_development(env, capsys, tmp_path):
     }
     assert mcp_server.main(environ=environ, env_file=tmp_path / "none") == 2
     assert "MEDSUM_ENV=dev" in capsys.readouterr().err
+
+
+def api_client(api: FakeApi) -> ApiClient:
+    return ApiClient(
+        Credentials("http://api.test", EMAIL, PASSWORD),
+        transport=httpx.MockTransport(api.handler),
+    )
+
+
+@pytest.mark.parametrize(
+    "env, serves", [("dev", True), ("unset", False), ("prod", False)]
+)
+def test_the_server_serves_only_an_api_that_runs_in_development(fake, env, serves):
+    # ADR 0012: the API's own MEDSUM_ENV decides, not the server's env file.
+    fake.environment = env
+    client = api_client(fake)
+    if serves:
+        anyio.run(mcp_server.require_dev_api, client)
+    else:
+        with pytest.raises(mcp_server.NotDevApi, match=f"MEDSUM_ENV={env}"):
+            anyio.run(mcp_server.require_dev_api, client)
+    assert ("/environment", "environment_check") in fake.requests
+
+
+def test_an_api_that_can_t_say_its_environment_is_not_served(fake, monkeypatch):
+    monkeypatch.setattr(fake, "_read", lambda path, params: httpx.Response(404))
+    with pytest.raises(mcp_server.NotDevApi, match="could not ask"):
+        anyio.run(mcp_server.require_dev_api, api_client(fake))
+
+
+def test_main_refuses_a_production_api(fake, monkeypatch, capsys, tmp_path):
+    fake.environment = "prod"
+    monkeypatch.setattr(mcp_server, "ApiClient", lambda creds: api_client(fake))
+    environ = {"MEDSUM_ENV": "dev", "MEDSUM_MCP_EMAIL": EMAIL,
+               "MEDSUM_MCP_PASSWORD": PASSWORD}  # fmt: skip
+    assert mcp_server.main(environ=environ, env_file=tmp_path / "none") == 2
+    assert "serves only a development API" in capsys.readouterr().err
 
 
 def test_the_server_needs_its_account(capsys, tmp_path):
