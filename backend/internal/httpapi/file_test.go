@@ -46,7 +46,7 @@ func TestOnlyTheFileRouteMayBeFramedAndOnlyByTheApp(t *testing.T) {
 	rec := e.do(http.MethodGet, "/documents/"+doc+"/file", auth, nil, "")
 	csp := rec.Header().Get("Content-Security-Policy")
 	if !strings.Contains(csp, "frame-ancestors 'self' "+testOrigin) || !strings.HasPrefix(csp, "default-src 'none'") ||
-		strings.Contains(csp, "script-src") {
+		strings.Contains(csp, "script-src") || !strings.HasSuffix(csp, "; sandbox") {
 		t.Errorf("CSP = %q", csp)
 	}
 	if rec.Header().Get("X-Frame-Options") != "" || rec.Header().Get("X-Content-Type-Options") != "nosniff" ||

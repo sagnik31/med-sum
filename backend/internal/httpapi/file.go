@@ -68,7 +68,11 @@ func (s *Server) handleGetDocumentFile(w http.ResponseWriter, r *http.Request, d
 	http.ServeContent(w, r, "document"+ext, info.ModTime(), f)
 }
 
-// fileCSP is the policy for a served upload: framed only by the app.
+// fileCSP is the policy for a served upload: framed only by the app, and
+// sandboxed with nothing allowed, so a PDF that carries JavaScript runs it
+// nowhere: in a browser whose viewer would run it, the document has an
+// opaque origin and no scripts. Chromium's PDF viewer still draws a
+// sandboxed PDF in the app's frame, #page included.
 func (s *Server) fileCSP() string {
 	ancestors := []string{"'self'"}
 	for o := range s.allowedOrigins {
@@ -76,7 +80,7 @@ func (s *Server) fileCSP() string {
 	}
 	sort.Strings(ancestors[1:])
 	return "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; object-src 'self'; " +
-		"frame-ancestors " + strings.Join(ancestors, " ")
+		"frame-ancestors " + strings.Join(ancestors, " ") + "; sandbox"
 }
 
 // insideDir reports whether path is inside dir (after cleaning both).
