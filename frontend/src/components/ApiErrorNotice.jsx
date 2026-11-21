@@ -1,6 +1,6 @@
 // src/components/ApiErrorNotice.jsx
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 // How a page shows an API error. A 403 is "not allowed" (the account lacks
 // the permission, or e.g. only the uploader may delete a document); a 404

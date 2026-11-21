@@ -3,7 +3,7 @@
 // Opened from a setup or reset link: /set-password#token=...
 // The token is in the fragment, which browsers never send to a server.
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { fetchSetupInfo, setPasswordWithLink } from "../api/client.js";
 import { tokenFromHash } from "../auth/links.js";
 import { inputClass } from "./LoginPage.jsx";

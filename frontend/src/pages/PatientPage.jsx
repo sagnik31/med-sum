@@ -1,6 +1,6 @@
 // src/pages/PatientPage.jsx
 import React, { useCallback, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router";
 import {
   deleteDocument,
   fetchPatient,

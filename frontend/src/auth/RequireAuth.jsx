@@ -1,6 +1,6 @@
 // src/auth/RequireAuth.jsx
 import React from "react";
-import { Link, Navigate, useLocation } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router";
 import { useAuth } from "./context.js";
 import { can, homePath } from "./permissions.js";
 

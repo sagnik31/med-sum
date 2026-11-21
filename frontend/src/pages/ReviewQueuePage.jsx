@@ -4,7 +4,7 @@
 // first, each with how many of its values await review. Any clinician of
 // the organisation may review any of them. See docs/adr/0011-clinician-review.md.
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { fetchReviewQueue } from "../api/client.js";
 import ApiErrorNotice from "../components/ApiErrorNotice.jsx";
 import { queueLabel, reviewLink } from "../record/review.js";

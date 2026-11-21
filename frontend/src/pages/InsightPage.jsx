@@ -1,6 +1,6 @@
 // src/pages/InsightPage.jsx
 import React, { useEffect, useState } from "react";
-import { useParams, useSearchParams, Link } from "react-router-dom";
+import { useParams, useSearchParams, Link } from "react-router";
 import {
   completeAudit,
   fetchDocument,

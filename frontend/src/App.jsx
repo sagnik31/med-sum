@@ -1,6 +1,6 @@
 // src/App.jsx
 import React from "react";
-import { Routes, Route, Navigate, Link, useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate, Link, useNavigate } from "react-router";
 import LoginPage from "./pages/LoginPage.jsx";
 import SetPasswordPage from "./pages/SetPasswordPage.jsx";
 import AccountPage from "./pages/AccountPage.jsx";

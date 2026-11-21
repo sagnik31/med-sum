@@ -1,6 +1,6 @@
 // src/pages/PatientsPage.jsx
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { createPatient, fetchPatients } from "../api/client.js";
 import { useAuth } from "../auth/context.js";
 import { PERM, can } from "../auth/permissions.js";

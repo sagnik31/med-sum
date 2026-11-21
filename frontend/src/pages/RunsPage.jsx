@@ -4,7 +4,7 @@
 // and, for one run, how each step went. No document, patient or content is
 // shown: the API sends none. See docs/adr/0006-durable-traceable-runs.md.
 import React, { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { fetchRuns } from "../api/client.js";
 import ApiErrorNotice from "../components/ApiErrorNotice.jsx";
 import { codeLine, runLine } from "../record/trace.js";

@@ -4,7 +4,7 @@
 // tokens and the checks that failed it (by name, never their messages),
 // with the command that replays it. See docs/adr/0006-durable-traceable-runs.md.
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router";
 import { fetchRun } from "../api/client.js";
 import ApiErrorNotice from "../components/ApiErrorNotice.jsx";
 import ReplayCommand from "../components/ReplayCommand.jsx";
