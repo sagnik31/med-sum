@@ -14,7 +14,7 @@ import {
 } from "../api/client.js";
 import { useAuth } from "../auth/context.js";
 import { PERM, can } from "../auth/permissions.js";
-import { flaggedCount, isPdfName, reprocessQuestion, reviewOutcome } from "../record/review.js";
+import { auditProgress, flaggedCount, isPdfName, reprocessQuestion, reviewOutcome } from "../record/review.js";
 import OriginalFile from "../components/OriginalFile.jsx";
 import ProcessingPanel from "../components/ProcessingPanel.jsx";
 import TracePanel from "../components/TracePanel.jsx";
@@ -50,11 +50,15 @@ function InsightPage() {
   // True while a review is being saved: every review control waits, so a
   // second save never goes out with the record's old updated_at.
   const [saving, setSaving] = useState(false);
-  // An audit sample (the queue links with &audit=1): a verified document a
-  // clinician checks value by value, then marks finished.
-  const [auditing, setAuditing] = useState(searchParamsHas("audit"));
+  // An audit sample: a verified document a clinician checks value by
+  // value, then marks finished. Audit mode comes from the record's own
+  // audit state (null when no audit is open), so it shows however the
+  // document was opened, and each load says which values are left.
+  const [audit, setAudit] = useState(null);
   const [auditError, setAuditError] = useState(null);
   const [auditDone, setAuditDone] = useState(false);
+  const auditing = audit !== null && !auditDone;
+  const auditLeft = audit?.unreviewed?.length ?? 0;
   // The original upload beside the transcription; always on in review mode.
   const [showOriginal, setShowOriginal] = useState(false);
   // A link from the patient summary names the lines to show (?page=&lines=).
@@ -141,6 +145,8 @@ function InsightPage() {
   useEffect(() => {
     setRecord(null);
     setRecordUpdatedAt(null);
+    setAudit(null);
+    setAuditDone(false);
   }, [id]);
   // A reload after a review keeps the list on screen until the new record
   // arrives, so the scroll position, the selected source and any open
@@ -158,6 +164,7 @@ function InsightPage() {
         if (!view) throw new Error("The record came back without its reviewed values.");
         setRecord(view);
         setRecordUpdatedAt(data.updated_at);
+        setAudit(data.audit ?? null);
       })
       .catch((err) => !cancelled && err?.status !== 404 && setRecordError(err));
     return () => {
@@ -189,7 +196,6 @@ function InsightPage() {
     setAuditError(null);
     try {
       await completeAudit(id);
-      setAuditing(false);
       setAuditDone(true);
     } catch (err) {
       setAuditError(err);
@@ -263,7 +269,8 @@ function InsightPage() {
             <button
               type="button"
               onClick={handleFinishAudit}
-              className="rounded px-3 py-1 border font-medium bg-white text-emerald-700 border-emerald-300"
+              disabled={auditLeft > 0 || saving}
+              className="rounded px-3 py-1 border font-medium bg-white text-emerald-700 border-emerald-300 disabled:opacity-50"
             >
               Finish audit
             </button>
@@ -273,9 +280,10 @@ function InsightPage() {
 
       {auditing && (
         <p className="mb-4 text-sm bg-sky-50 border border-sky-100 rounded-md px-3 py-2 text-sky-800">
-          This verified document was picked at random for an audit. Check every value against the original:
+          This verified document is an audit sample: a share of verified runs is set aside, by a fixed rule
+          on the run, to measure what the checks let through. Check every value against the original:
           confirm each one that matches and correct any that are wrong. The audit can be finished once every
-          value is confirmed or corrected.
+          value is confirmed or corrected. <strong>{auditProgress(audit)}</strong>
         </p>
       )}
       {auditDone && (
@@ -332,6 +340,7 @@ function InsightPage() {
               initialCitation={linkedCitation}
               onReview={reviewing && canReview ? handleReview : undefined}
               saving={saving}
+              audit={auditing ? audit : null}
               sourceSlot={
                 reviewing || showOriginal
                   ? (page) => <OriginalFile documentId={id} isPdf={isPdfName(doc?.original_name)} page={page} />
@@ -380,14 +389,9 @@ function InsightPage() {
   );
 }
 
-// The review queue links here with ?review=1, opening in review mode
-// (and &audit=1 for an audit sample).
+// The review queue links here with ?review=1, opening in review mode.
 function searchParamsHasReview() {
-  return searchParamsHas("review");
-}
-
-function searchParamsHas(name) {
-  return new URLSearchParams(window.location.search).get(name) === "1";
+  return new URLSearchParams(window.location.search).get("review") === "1";
 }
 
 export default InsightPage;

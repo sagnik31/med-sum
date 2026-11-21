@@ -70,6 +70,8 @@ type fakeStore struct {
 	orgSteps   map[string][]db.OrgStep      // run ID -> its steps
 	auditOpen  map[string]bool              // document ID -> an open audit sample
 	auditToGo  map[string]int               // document ID -> values not yet reviewed in its audit
+	auditLeft  map[string][]string          // document ID -> the holders GetOpenAudit names as not yet reviewed
+	auditSince map[string]time.Time         // document ID -> when its open audit sample was taken
 	auditDone  map[string]time.Time         // document ID -> when CompleteAudit finished its audit
 	failWith   error                        // returned by every method when set
 	// audit holds the events written, in order. failAudit fails every
@@ -105,6 +107,8 @@ func newFakeStore() *fakeStore {
 		orgSteps:   map[string][]db.OrgStep{},
 		auditOpen:  map[string]bool{},
 		auditToGo:  map[string]int{},
+		auditLeft:  map[string][]string{},
+		auditSince: map[string]time.Time{},
 	}
 }
 
@@ -781,6 +785,19 @@ func (f *fakeStore) GetDocumentRecord(_ context.Context, docID string) (*db.Docu
 		return &copied, nil
 	}
 	return nil, nil
+}
+
+// GetOpenAudit answers from auditOpen, auditSince and auditLeft.
+func (f *fakeStore) GetOpenAudit(_ context.Context, docID string) (*db.OpenAudit, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return nil, f.failWith
+	}
+	if !f.auditOpen[docID] {
+		return nil, nil
+	}
+	return &db.OpenAudit{SampledAt: f.auditSince[docID], Unreviewed: f.auditLeft[docID]}, nil
 }
 
 // CompleteAudit closes the open audit sample the test set in auditOpen.

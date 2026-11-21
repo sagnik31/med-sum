@@ -105,3 +105,37 @@ func TestAnAuditWithValuesLeftIsNotFinished(t *testing.T) {
 		}
 	}
 }
+
+// The record of an open audit sample says so, with the values not yet
+// reviewed during it, so the review screen opens in audit mode from the
+// document's own state; any other record's audit is null.
+func TestTheRecordNamesItsOpenAudit(t *testing.T) {
+	re := newReviewEnv(t)
+	type auditBody struct {
+		Audit *struct {
+			SampledAt  time.Time `json:"sampled_at"`
+			Unreviewed []string  `json:"unreviewed"`
+		} `json:"audit"`
+	}
+	got := decodeJSON[auditBody](t, re.do(http.MethodGet, "/documents/"+re.doc+"/record", re.auth, nil, ""))
+	if got.Audit != nil {
+		t.Fatalf("a record with no audit: audit = %+v", got.Audit)
+	}
+
+	sampled := recordTime.Add(time.Hour)
+	re.store.auditOpen[re.doc] = true
+	re.store.auditSince[re.doc] = sampled
+	re.store.auditLeft[re.doc] = []string{"document", "obs-1"}
+	got = decodeJSON[auditBody](t, re.do(http.MethodGet, "/documents/"+re.doc+"/record", re.auth, nil, ""))
+	if got.Audit == nil || !got.Audit.SampledAt.Equal(sampled) ||
+		strings.Join(got.Audit.Unreviewed, ",") != "document,obs-1" {
+		t.Fatalf("audit = %+v", got.Audit)
+	}
+
+	// Every value reviewed: still open, with nothing left (a list, never null).
+	re.store.auditLeft[re.doc] = nil
+	rec := re.do(http.MethodGet, "/documents/"+re.doc+"/record", re.auth, nil, "")
+	if !strings.Contains(rec.Body.String(), `"unreviewed":[]`) {
+		t.Errorf("body = %s", rec.Body)
+	}
+}

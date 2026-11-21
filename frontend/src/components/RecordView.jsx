@@ -19,7 +19,13 @@ import {
   sourceShownFor,
   statusLabel,
 } from "../record/recordView.js";
-import { acknowledgementsNeeded, addableDates, correctableFields, headerTarget } from "../record/review.js";
+import {
+  acknowledgementsNeeded,
+  addableDates,
+  auditMark,
+  correctableFields,
+  headerTarget,
+} from "../record/review.js";
 import ReviewControls, { CorrectionList } from "./ReviewControls.jsx";
 import SourcePanel from "./SourcePanel.jsx";
 
@@ -44,6 +50,22 @@ function Status({ status, reasons }) {
         </ul>
       )}
     </div>
+  );
+}
+
+// A value's place in an open audit: still to check, or checked during it.
+function AuditMark({ audit, id }) {
+  const mark = auditMark(audit, id);
+  if (!mark) return null;
+  const toCheck = mark === "to check";
+  return (
+    <span
+      className={`mt-1 mr-1 inline-block rounded px-1.5 py-0.5 text-xs ${
+        toCheck ? "bg-sky-100 text-sky-800" : "bg-emerald-100 text-emerald-800"
+      }`}
+    >
+      Audit: {mark}
+    </span>
   );
 }
 
@@ -90,7 +112,9 @@ function headerFields(values) {
 // review ({action, item_id, field?, value?, note?}) and {acceptFindings},
 // and its promise settles when the review is saved (see ReviewControls).
 // `saving` is true while a review is being saved; every control waits.
-function RecordView({ record, initialCitation, onReview, saving = false, sourceSlot }) {
+// `audit` is the record's open audit, or null: each value is marked as
+// still to check or checked during it.
+function RecordView({ record, initialCitation, onReview, saving = false, sourceSlot, audit = null }) {
   const [selected, setSelected] = useState(() => {
     if (!initialCitation) return null;
     return sourceLines(record.pages, initialCitation).found ? initialCitation : null;
@@ -151,6 +175,7 @@ function RecordView({ record, initialCitation, onReview, saving = false, sourceS
               ].map(([id, holder, values, label]) =>
                 holder && (holder.corrections?.length || holder.provenance?.reviewed_by || onReview) ? (
                   <li key={id} className="px-3 py-2">
+                    {holder.provenance && <AuditMark audit={audit} id={id} />}
                     <Status status={holder.provenance?.status} reasons={holder.provenance?.low_confidence_reasons ?? []} />
                     <CorrectionList holder={holder} />
                     {onReview && holder.provenance && (
@@ -191,6 +216,7 @@ function RecordView({ record, initialCitation, onReview, saving = false, sourceS
                   </div>
                   <Fields fields={it.printed} />
                   <Fields fields={it.derived} derived />
+                  {it.status && <AuditMark audit={audit} id={it.id} />}
                   <Status status={it.status} reasons={it.reasons} />
                   <CorrectionList holder={raw(g.key, it.id)} />
                   {onReview && it.status && (

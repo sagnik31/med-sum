@@ -6,6 +6,8 @@ import { readFileSync } from "node:fs";
 import {
   acknowledgementsNeeded,
   addableDates,
+  auditMark,
+  auditProgress,
   correctableFields,
   correctionsOf,
   currentValue,
@@ -146,9 +148,20 @@ test("the original opens at the cited page", () => {
   assert.ok(isPdfName("Report.PDF") && !isPdfName("scan.png") && !isPdfName(null));
 });
 
-test("an audit sample opens marked as an audit", () => {
+test("every queue entry opens in review mode; an audit comes from the record", () => {
   assert.equal(reviewLink({ document_id: "d1", reason: "needs_review" }), "/insights/d1?review=1");
-  assert.equal(reviewLink({ document_id: "d1", reason: "audit" }), "/insights/d1?review=1&audit=1");
+  assert.equal(reviewLink({ document_id: "d1", reason: "audit" }), "/insights/d1?review=1");
+});
+
+test("an open audit marks each value and counts what is left", () => {
+  const audit = { sampled_at: "2026-11-10T09:00:00Z", unreviewed: ["document", "obs-1"] };
+  assert.equal(auditMark(audit, "obs-1"), "to check");
+  assert.equal(auditMark(audit, "obs-2"), "checked");
+  assert.equal(auditMark(null, "obs-1"), null);
+  assert.equal(auditProgress(audit), "2 values left to check");
+  assert.equal(auditProgress({ ...audit, unreviewed: ["patient"] }), "1 value left to check");
+  assert.match(auditProgress({ ...audit, unreviewed: [] }), /can be finished/);
+  assert.equal(auditProgress(null), null);
 });
 
 test("a saved review gives the next one its record time, and verifies the page", () => {

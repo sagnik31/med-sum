@@ -194,7 +194,14 @@ func (e *AuditIncompleteError) Error() string {
 // unreviewedInAudit is the SQL for how many holders of the record r (the
 // document, the patient and every item with a provenance) have no review
 // made during the open audit sample a.
-const unreviewedInAudit = `(SELECT count(*) FROM (
+const unreviewedInAudit = `(SELECT count(*) FROM (` + holdersWithoutAuditReview + `) c)`
+
+// unreviewedHolders is the SQL for the ids of those holders, in order.
+const unreviewedHolders = `(SELECT array_agg(id ORDER BY id) FROM (` + holdersWithoutAuditReview + `) u)`
+
+// holdersWithoutAuditReview is the SQL for the holders of the record r
+// with no review made during the open audit sample a, one id per row.
+const holdersWithoutAuditReview = `SELECT h.id FROM (
     SELECT 'document' AS id WHERE jsonb_typeof(r.record #> '{document,provenance}') = 'object'
     UNION ALL
     SELECT 'patient' WHERE jsonb_typeof(r.record #> '{patient,provenance}') = 'object'
@@ -204,7 +211,35 @@ const unreviewedInAudit = `(SELECT count(*) FROM (
   ) h
   WHERE NOT EXISTS (SELECT 1 FROM record_reviews rr
     WHERE rr.document_id = a.document_id AND rr.run_id = a.run_id
-      AND rr.item_id = h.id AND rr.audit AND rr.reviewed_at >= a.sampled_at))`
+      AND rr.item_id = h.id AND rr.audit AND rr.reviewed_at >= a.sampled_at)`
+
+// OpenAudit is a document's open audit sample of the run its record is
+// from: when it was sampled, and the holders of the record (the document,
+// the patient and every item with a provenance) not yet confirmed or
+// corrected during it, by the rule CompleteAudit counts with.
+type OpenAudit struct {
+	SampledAt  time.Time
+	Unreviewed []string
+}
+
+// GetOpenAudit returns the open audit of document docID, or (nil, nil)
+// when it has none for the run its record is from. Callers check
+// ownership first, as for GetDocumentRecord.
+func (s *Store) GetOpenAudit(ctx context.Context, docID string) (*OpenAudit, error) {
+	var a OpenAudit
+	err := s.pool.QueryRow(ctx, `
+SELECT a.sampled_at, COALESCE(`+unreviewedHolders+`, '{}')
+FROM audit_samples a
+JOIN document_records r ON r.document_id = a.document_id AND r.run_id = a.run_id
+WHERE a.document_id = $1 AND a.completed_at IS NULL`, docID).Scan(&a.SampledAt, &a.Unreviewed)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &a, nil
+}
 
 // CompleteAudit finishes the open audit of a live document of the
 // organisation, with ev, in one transaction. Every value must have been

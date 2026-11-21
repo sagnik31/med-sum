@@ -28,6 +28,18 @@ type recordResponse struct {
 	// shows it; Record keeps what the model read.
 	Reviewed  json.RawMessage  `json:"reviewed,omitempty"`
 	Citations []citationResult `json:"citations"`
+	// Audit is the document's open audit sample of this record's run, or
+	// null: the review screen opens in audit mode from it and marks each
+	// value it names as still to confirm or correct.
+	Audit *auditState `json:"audit"`
+}
+
+// auditState is an open audit: when the document was sampled, and the
+// holders (document, patient or item ids) not yet reviewed during it.
+// Finishing the audit needs Unreviewed empty.
+type auditState struct {
+	SampledAt  time.Time `json:"sampled_at"`
+	Unreviewed []string  `json:"unreviewed"`
 }
 
 // citationResult is where one printed value is on the page transcriptions,
@@ -99,6 +111,20 @@ func (s *Server) handleGetDocumentRecord(w http.ResponseWriter, r *http.Request,
 		}
 	}
 
+	open, err := s.db.GetOpenAudit(ctx, docID)
+	if err != nil {
+		log.Printf("GetOpenAudit error: %v", err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+	var audit *auditState
+	if open != nil {
+		audit = &auditState{SampledAt: open.SampledAt, Unreviewed: open.Unreviewed}
+		if audit.Unreviewed == nil {
+			audit.Unreviewed = []string{}
+		}
+	}
+
 	if !s.recordAudit(w, r, s.documentEvent(r, actRecordViewed, doc)) {
 		return
 	}
@@ -111,6 +137,7 @@ func (s *Server) handleGetDocumentRecord(w http.ResponseWriter, r *http.Request,
 		Record:        rec.Record,
 		Reviewed:      reviewed,
 		Citations:     citations,
+		Audit:         audit,
 	})
 }
 

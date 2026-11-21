@@ -215,11 +215,28 @@ export function queueLabel(entry) {
   return n === 1 ? "1 value to review" : `${n} values to review`;
 }
 
-// Where a queue entry opens: the document in review mode, marked as an
-// audit for an audit sample.
+// Where a queue entry opens: the document in review mode. An audit sample
+// opens in audit mode from the record's own audit state, not the link.
 export function reviewLink(entry) {
-  const audit = entry.reason === "audit" ? "&audit=1" : "";
-  return `/insights/${encodeURIComponent(entry.document_id)}?review=1${audit}`;
+  return `/insights/${encodeURIComponent(entry.document_id)}?review=1`;
+}
+
+// A holder's place in an open audit (the record response's `audit`, or
+// null): "to check" while the audit still names it as unreviewed,
+// "checked" once it was confirmed or corrected during the audit, and null
+// with no open audit.
+export function auditMark(audit, holderId) {
+  if (!audit) return null;
+  return (audit.unreviewed || []).includes(holderId) ? "to check" : "checked";
+}
+
+// How far an open audit is, in plain words: "3 values left to check", or
+// that it can be finished. Null with no open audit.
+export function auditProgress(audit) {
+  if (!audit) return null;
+  const n = (audit.unreviewed || []).length;
+  if (n === 0) return "Every value is checked: the audit can be finished.";
+  return n === 1 ? "1 value left to check" : `${n} values left to check`;
 }
 
 // The original upload's URL; a PDF opens at `page` when one is given.

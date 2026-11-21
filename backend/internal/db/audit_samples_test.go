@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 	"time"
 )
@@ -74,6 +75,12 @@ VALUES ($1, $2, 'obs-1', 'confirm', true, $3, $4)`, d.ID, run, me.ID, at); err !
 	if !errors.As(err, &incomplete) || incomplete.Unreviewed != 4 {
 		t.Fatalf("an incomplete audit: err = %v", err)
 	}
+	// The open audit names the same values, for the review screen to mark.
+	open, err := s.GetOpenAudit(ctx, d.ID)
+	if err != nil || open == nil || !open.SampledAt.Equal(sampled) ||
+		strings.Join(open.Unreviewed, ",") != "document,med-1,obs-1,patient" {
+		t.Fatalf("open audit = %+v (%v)", open, err)
+	}
 	for _, item := range []string{"document", "patient", "obs-1", "med-1"} {
 		if _, err := s.pool.Exec(ctx, `
 INSERT INTO record_reviews (document_id, run_id, item_id, action, audit, reviewer_id, reviewed_at)
@@ -86,6 +93,9 @@ VALUES ($1, $2, $3, 'confirm', true, $4, $5)`, d.ID, run, item, me.ID, sampled.A
 	}
 	if err := s.CompleteAudit(ctx, me.OrgID, d.ID, me.ID, done, ev(me.OrgID, me.ID, "audit_completed")); !errors.Is(err, ErrNoOpenAudit) {
 		t.Errorf("finished twice: err = %v", err)
+	}
+	if open, err := s.GetOpenAudit(ctx, d.ID); err != nil || open != nil {
+		t.Errorf("a finished audit is still open: %+v (%v)", open, err)
 	}
 	if queue, _ = s.ListReviewQueue(ctx, me.OrgID); len(queue) != 0 {
 		t.Errorf("a finished audit is still queued: %+v", queue)
@@ -121,6 +131,9 @@ func TestAnAuditSampleOfAnOlderRunIsDead(t *testing.T) {
 	}
 	if queue, _ := s.ListReviewQueue(ctx, me.OrgID); len(queue) != 1 || queue[0].Reason != "needs_review" {
 		t.Errorf("a reprocessed document's old sample is queued: %+v", queue)
+	}
+	if open, err := s.GetOpenAudit(ctx, d.ID); err != nil || open != nil {
+		t.Errorf("a reprocessed document's old sample is open: %+v (%v)", open, err)
 	}
 
 	// The new run's flagged value is corrected: a caught error, not an escape.

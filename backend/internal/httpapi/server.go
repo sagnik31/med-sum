@@ -73,6 +73,7 @@ type Store interface {
 	SoftDeleteDocument(ctx context.Context, orgID, docID, deletedBy string, now time.Time, ev *db.AuditEvent) (bool, error)
 	GetInsightByDocumentID(ctx context.Context, docID string) (*db.Insight, error)
 	GetDocumentRecord(ctx context.Context, docID string) (*db.DocumentRecord, error)
+	GetOpenAudit(ctx context.Context, docID string) (*db.OpenAudit, error)
 
 	GetProcessing(ctx context.Context, docID string) (*db.ProcessingRun, error)
 	GetDocumentTrace(ctx context.Context, docID, runID string) (*db.DocumentTrace, bool, error)
