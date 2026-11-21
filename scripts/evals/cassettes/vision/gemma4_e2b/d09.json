@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "30d3a11828da97551b0bfe582c4b132e128ba3494c09eed9db32a8eae0590998",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "1a29ae635321ce59ccb1dbd923d448412c7b59b228f4694f7ccbf092f49d389a",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Sunrise Diagnostics\nPlot 12, Baner Road, Pune 411045\nPatient Name: Ms. Fatima Shaikh\nAge / Sex: 31 Years / Female\nLab ID: SD-24-090512\nRef. By: Dr. Kavita Rao\nCollected On: 05/09/2024 08:30 AM\nReported On: 05/09/2024 04:00 PM\n\nTHYROID PROFILE\n| Test | Result | Flag | Unit | Reference Range |\n|---|---|---|---|---|\n| T3 (Total) | 1.1 | | ng/mL | 0.8 - 2.0 |\n| T4 (Total) | 6.2 | | $\\mu$g/dL | 5.1 - 14.1 |\n| TSH | 8.9 | H | $\\mu$IU/mL | 0.27 - 4.20 |\nNote: TSH values may vary with the time of sample collection.\n\nHAEMOGRAM\n| Test | Result | Flag | Unit | Reference Range |\n|---|---|---|---|---|\n| Haemoglobin | 12.6 | | g/dL | 12.0 - 15.0 |\n| Total WBC Count | 6,400 | | /cumm | 4,000 - 10,000 |\n| Platelet Count | 2,80,000 | | /cumm | 1,50,000 - 4,10,000 |\n\nDr. Neha Joshi, MD (Pathology)\n*** End of Report ***\n\nSynthetic test document: fictional patient, doctors and laboratory.\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1535,
+    "eval_count": 404,
+    "total_duration": 48605569400,
+    "load_duration": 7846300,
+    "prompt_eval_duration": 36190473000,
+    "eval_duration": 12266850000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

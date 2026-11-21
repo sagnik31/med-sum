@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "3e0443f21a0e528f59f53ec2ea0c760c73a39af84765e252a62d3275a0b6d66e",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "b7d56b5be73a52eb1cdb6f01ac55fed30a58aad1e11e07f02de97ad34c916b23",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Dr. Anil Deshpande\nMBBS, MD (General Medicine)\nReg. No.: MMC-2009/04/0001\nSahaj Multispeciality Hospital, Karve Road, Pune\nPatient: Arjun Menon\nAge / Sex: 66 Y / M\nUHID: SH-100234\nMedication card (continue as advised)\n\nRx\n| # | Medicine | Dose | Frequency | Duration | Instructions |\n|---|---|---|---|---|---|\n| 1 | Tab. Rosuvas 10 mg | 1 tab | 0-0-1 | Continue |\n| 2 | Tab. Escoprin 75 mg | 1 tab | 0-1-0 | Continue |\n\nSignature: Dr. Anil Deshpande\n\nSynthetic test document: fictional patient, doctors and laboratory.\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 911,
+    "eval_count": 193,
+    "total_duration": 17453711600,
+    "load_duration": 13604200,
+    "prompt_eval_duration": 11434123000,
+    "eval_duration": 5939685000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

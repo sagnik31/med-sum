@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "fa3dc90b212ceff823e3be1f81287b8a9316a7d997f0cb406c8d19110fb1aa6e",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "5dd9830adc0fbc3778f5cf6b6273db663ecb73a50d700d063e7391a09bfdda65",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "# Kaveri Clinical Laboratory\nKothrud, Pune 411038\nName: Meera Iyer\nAge/Gender: 57 Y/F\nPatient ID: KCL-118842\nReferred By: Dr. Anil Deshpande\nSample Collected: 16-Dec-2024\n\n## HAEMATOLOGY\n\n| Test | Result | Unit | Reference Range |\n| :--- | :--- | :--- | :--- |\n| Haemoglobin | 11.2 L | g/dL | 12.0 - 15.0 |\n| Total Leucocyte Count | 6.8 | 10³/µL | 4.0 - 10.0 |\n| Platelets | 2.31 | lakh/cumm | 1.50 - 4.10 |\n| MCV | 79 L | fL | 83 - 101 |\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 235,
+    "total_duration": 221525311200,
+    "load_duration": 8509800,
+    "prompt_eval_duration": 194480068000,
+    "eval_duration": 26813740000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "30b400b7dbd18bac46257cf650bf8ef6d90555c105741e18eb9c95f6669af6ff",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "ea7100314b4ae68448b509481d0dc12933547c2b85686725ecb3ca8f07d4c83d",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Patient: Meera Iyer | Lab ID: KCL-118842 | Page 2 of 2\n\n## GLYCATED HAEMOGLOBIN\n\n| Test | Result | Unit | Reference Range |\n| :--- | :--- | :--- | :--- |\n| HbA1c | 7.4 H | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |\n\nInterpretation: Reflects average glycaemia over the preceding 8-12 weeks.\n\n## GLUCOSE\n\n| Test | Result | Unit | Reference Range |\n| :--- | :--- | :--- | :--- |\n| Fasting Plasma Glucose | 132 H | mg/dL | 70 - 100 |\n\n## PATHOLOGIST'S REMARKS\n\nSuggest iron studies to evaluate microcytosis.\nDr. Prakash Nair, MD (Pathology)\n*** End of Report ***\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 244,
+    "total_duration": 223579066900,
+    "load_duration": 18676900,
+    "prompt_eval_duration": 195569340000,
+    "eval_duration": 27707162000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

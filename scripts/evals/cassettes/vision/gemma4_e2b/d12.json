@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "47c74ffc12c44626b9969442220e9a9fb75f9ce55fafe6c5776c0d01e8c0f46a",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "c5ae824cbe29422c7ff307010bd4e8df44857c822a725f18619f3fa60f609a42",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Dr. Kavita Rao\nMBBS, DM (Endocrinology)\nReg. No.: MMC-2012/07/0002\nSahaj Multispeciality Hospital, Karve Road, Pune\nDate: 15/03/2025\nPatient: Fatima Shaikh\nAge / Sex: 32 Y / F\nUHID: SH-100233\nVitals: BP 116/74 mmHg, Weight 60 kg\nAllergies: Penicillin - hives\nDiagnosis: Hypothyroidism, Vitamin D deficiency\n\nRx\n| # | Medicine | Dose | Frequency | Duration | Instructions |\n|---|---|---|---|---|---|\n| 1 | Tab. Thyronorm 50 mcg tab | 1-0-0 | 3 months | Empty stomach |\n| 2 | Cap. Uprise-D3 60K | 1 cap | Once a week | 8 weeks | After food |\n\nAdvice: Repeat TSH and vitamin D after 3 months.\nSignature: Dr. Kavita Rao\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 911,
+    "eval_count": 254,
+    "total_duration": 19840986300,
+    "load_duration": 19011200,
+    "prompt_eval_duration": 11420232000,
+    "eval_duration": 8346334999
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

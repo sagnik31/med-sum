@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "c05917e5ffb2c8a7669c926f14ffc8b35d56011a0d476c7af8552b5432398a92",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "7ba241db495ddfe14324fb2c0d7eb887283afa707b858c1096412af3af78a7c3",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Dr. Kavita Rao\nMBBS, DM (Endocrinology)\nReg. No.: MMC-2012/07/0002\nSahaj Multispeciality Hospital, Karve Road, Pune\nDate: 09/09/2024\nPatient: Fatima Shaikh\nAge / Sex: 31 Y / F\nUHID: SH-100233\nVitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\nAllergies: Penicillin - hives\nDiagnosis: Hypothyroidism\nRx\n| # | Medicine | Dose | Frequency | Duration | Instructions |\n|---|---|---|---|---|---|\n| 1 | Tab. Thyronorm | 50 | tatcg | 1-0-0 | 6 weeks | Empty stomach, 30 min before breakfast |\nAdvice: Repeat TSH after 6 weeks.\nSignature: Dr. Kavita Rao\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 911,
+    "eval_count": 240,
+    "total_duration": 19337316000,
+    "load_duration": 6678200,
+    "prompt_eval_duration": 11480985000,
+    "eval_duration": 7789696000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "7f48fc8b9082820ced62402e25447054fc9e14252dd870a95a0b921a161f51f8",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "bc1e2127fa680a4e35dc343fa651af1c094dc9708e853556b10df5c9c074429a",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Sunrise Diagnostics\nPlot 12, Baner Road, Pune 411045\nPatient Name: Mrs. Meera Iyer\nAge / Sex: 58 Years / Female\nLab ID: SD-25-041288\nRef. By: Dr. Kavita Rao\nCollected On: 12/04/2025 07:55 AM\nReported On: 12/04/2025 01:10 PM\n\nCOMPLETE BLOOD COUNT\n| Test | Result | Flag | Unit | Reference Range |\n|---|---|---|---|---|\n| Haemoglobin | 11.9 | L | g/dL | 12.0 - 15.0 |\n| MCV | 81 | L | fL | 83 - 101 |\n| Platelet Count | 2,62,000 | | /cumm | 1,50,000 - 4,10,000 |\n\nIRON STUDIES\n| Test | Result | Flag | Unit | Reference Range |\n|---|---|---|---|---|\n| Serum Iron | 48 | L | µg/dL | 50 - 170 |\n| TIBC | 412 | H | µg/dL | 250 - 400 |\n| Transferrin Saturation | 11.7 | L | % | 20 - 50 |\n| Serum Ferritin | 9.8 | L | ng/mL | 13 - 150 |\n\nComment: Iron deficiency picture.\n\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1535,
+    "eval_count": 380,
+    "total_duration": 48163260700,
+    "load_duration": 14936800,
+    "prompt_eval_duration": 36668345000,
+    "eval_duration": 11344562000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "4b098785838c316a3dab1b479dd40b566e172895b4cd003463b41f919c7bcc6f",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "875abc50686a8a1c69961e90816f3f3b0224aae1d4f3ca9fae39a8843929ddf1",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Patient: Mrs. Meera Iyer | Lab ID: SD-25-041288 | Page 2 of 2\n\nGLYCATED HAEMOGLOBIN\n\n| Test | Result | Flag | Unit | Reference Range |\n|---|---|---|---|---|\n| HbA1c | 7.0 | H | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |\n\nKIDNEY FUNCTION TEST\n\n| Test | Result | Flag | Unit | Reference Range |\n|---|---|---|---|---|\n| Serum Creatinine | 0.9 | | mg/dL | 0.6 - 1.1 |\n\nDr. Neha Joshi, MD (Pathology)\n\n*** End of Report ***\n\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1535,
+    "eval_count": 195,
+    "total_duration": 43456707800,
+    "load_duration": 14627500,
+    "prompt_eval_duration": 36622448000,
+    "eval_duration": 6685674000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

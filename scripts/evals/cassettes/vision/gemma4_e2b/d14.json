@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "ecf4d634dcecdbefb5a4c6d09d69dfa74071b04104c718ab0395cc5fc2242730",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "0b89389db4c7b9ee8b6bbc3602bb2e1a13633dce08f7224037f453089627d76c",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Dr. Anil Deshpande\nMBBS, MD (General Medicine)\nReg. No.: MMC-2009/04/0001\nSahaj Multispeciality Hospital, Karve Road, Pune\nDate: 11/03/2025\nPatient: Arjun Menon\nAge / Sex: 66 Y / M\nUHID: SH-100234\nVitals: BP 130/80 mmHg, Pulse 70 /min, SpO2 97 %\nAllergies: NKDA\nK/C/O: CAD, post PTCA (2019)\nDiagnosis: Dyslipidaemia\n\nRx\n| # | Medicine | Dose | Frequency | Duration | Instructions |\n|---|---|---|---|---|---|\n| 1 | Tab. Rosuvas 10 mg | 1 tab | 0-0-1 | 3 months | At bedtime |\n| 2 | Tab. Ecosprin 75 mg | 1 tab | 0-1-0 | 3 months | After lunch |\n| 3 | Tab. Metformin 500 mg | 1 tab | OD | 3 months | With dinner |\n\nAdvice: Low fat diet; avoid fried food.\nRepeat lipid profile after 3 months.\nSignature: Dr. Anil Deshpande\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 911,
+    "eval_count": 316,
+    "total_duration": 21251738600,
+    "load_duration": 13516200,
+    "prompt_eval_duration": 11348918000,
+    "eval_duration": 9830479000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

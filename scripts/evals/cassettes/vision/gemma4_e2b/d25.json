@@ -1,0 +1,85 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "e63ad0e5770901cd176bd056051fab5d9b9810b419d0e12b8a3c3fdd0b0f58a3",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "632e9cebb5bef04079588167498184be0451d05220574ba2501b933fa66aa937",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Sunrise Diagnostics\nPlot 12, Baner Road, Pune 411045\nPatient Name: Mr. Arjun Menon\nAge / Sex: 66 Years / Male\nLab ID: SD-25-092011\nRef. By: Dr. Anil Deshpande\nCollected On: 20/09/2025 07:50 AM\nReported On: 20/09/2025 04:10 PM\n\nHAEMATOLOGY\n| Test | Result | Flag | Unit | Reference Range |\n|---|---|---|---|---|\n| Haemoglobin | 13.8 | | g/dL | 13.0 - 17.0 |\n| RBC Count | 4.7 | | mill/cumm | 4.5 - 5.5 |\n| PCV | 42.1 | | % | 40.0 - 50.0 |\n| MCV | 89.6 | | fL | 83 - 101 |\n| MCH | 29.4 | | pg | 27.0 - 32.0 |\n| MCHC | 32.8 | | g/dL | 31.5 - 34.5 |\n| RDW-CV | 13.1 | | % | 11.6 - 14.0 |\n| Platelet Count | 2,18,000 | | /cumm | 1,50,000 - 4,10,000 |\n| Total WBC Count | 8,300 | | /cumm | 4,000 - 10,000 |\n| Neutrophils | 61 | | % | 40 - 80 |\n| Lymphocytes | 29 | | % | 20 - 40 |\n| Eosinophils | 5 | | % | 1 - 6 |\n| Monocytes | 4 | | % | 2 - 10 |\n| Basophils | 1 | | % | 0 - 2 |\n| ESR | 12 | | mm/hr | 0 - 15 |\n\nGLUCOSE AND LIPIDS\n| Test | Result | Flag | Unit | Reference Range |\n|---|---|---|---|---|\n| Fasting Plasma Glucose | 108 | H | mg/dL | 70 - 100 |\n| HbA1c | 6.0 | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |\n| Total Cholesterol | 168 | | mg/dL | Desirable: < 200; Borderline: 200 - 239; High: >= 240 |\n| Triglycerides | 142 | | mg/dL | < 150 |\n| HDL Cholesterol | 38 | L | mg/dL | > 40 |\n| LDL Cholesterol | 94 | | mg/dL | Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160 |\n| VLDL Cholesterol | 28.4 | | mg/dL | < 30 |\n\nKIDNEY FUNCTION TEST\n| Test | Result | Flag | Unit | Reference Range |\n|---|---|---|---|---|\n| Blood Urea | 31 | | mg/dL | 15 - 40 |\n| Blood Urea Nitrogen (BUN) | 14.5 | | mg/dL | 7 - 20 |\n| Serum Creatinine | 1.0 | | mg/dL | 0.7 - 1.3 |\n| Uric Acid | 6.1 | | mg/dL | 3.5 - 7.2 |\n| eGFR | 84 | | mL/min/1.73m² | > 60 |\n\nSynthetic test document: fictional patient, doctors and laboratory.\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1535,
+    "eval_count": 950,
+    "total_duration": 63971405600,
+    "load_duration": 15299100,
+    "prompt_eval_duration": 35108296000,
+    "eval_duration": 28692042000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "4cedcd61be507bc20cda0d9a302cdd97473f0d62fa0079f379a4472e63a194aa",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "ae02c05d7ef56e9ccefe96245bb8b0c6a3f1cc493d1f0015e4bd3f30da61e3f5",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Patient: Mr. Arjun Menon | Lab ID: SD-25-092011 | Page 2 of 4\n\n## LIVER FUNCTION TEST\n\n| Test | Result | Flag | Unit | Reference Range |\n|---|---|---|---|---|\n| Total Bilirubin | 0.9 | | mg/dL | 0.3 - 1.2 |\n| Direct Bilirubin | 0.2 | | mg/dL | < 0.3 |\n| Indirect Bilirubin | 0.7 | | mg/dL | 0.2 - 0.8 |\n| SGOT (AST) | 28 | | U/L | < 40 |\n| SGPT (ALT) | 34 | | U/L | < 41 |\n| Alkaline Phosphatase | 88 | | U/L | 40 - 129 |\n| GGT | 31 | | U/L | < 60 |\n| Total Protein | 7.3 | | g/dL | 6.4 - 8.3 |\n| Albumin | 4.4 | | g/dL | 3.5 - 5.2 |\n| Globulin | 2.9 | | g/dL | 2.0 - 3.5 |\n| A/G Ratio | 1.5 | | | 1.1 - 2.5 |\n\n## ELECTROLYTES AND MINERALS\n\n| Test | Result | Flag | Unit | Reference Range |\n|---|---|---|---|---|\n| Sodium | 140 | | mmol/L | 135 - 145 |\n| Potassium | 4.2 | | mmol/L | 3.5 - 5.1 |\n| Chloride | 103 | | mmol/L | 98 - 107 |\n| Magnesium | 2.1 | | mg/dL | 1.6 - 2.6 |\n| Calcium | 9.4 | | mg/dL | 8.6 - 10.2 |\n| Phosphorus | 3.6 | | mg/dL | 2.5 - 4.5 |\n\n## SPECIAL TESTS\n\n| Test | Result | Flag | Unit | Reference Range |\n|---|---|---|---|---|\n| T3 (Total) | 1.2 | | ng/mL | 0.8 - 2.0 |\n| T4 (Total) | 7.8 | | $\\mu$g/dL | 5.1 - 14.1 |\n| TSH | 2.1 | | $\\mu$IU/mL | 0.27 - 4.20 |\n| Serum Iron | 96 | | $\\mu$g/dL | 65 - 175 |\n| TIBC | 318 | | $\\mu$g/dL | 250 - 450 |\n| Transferrin Saturation | 30.2 | | % | 20 - 50 |\n| Serum Ferritin | 142 | | ng/mL | 30 - 400 |\n| Vitamin D (25-OH) | 34.2 | | ng/mL | Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100 |\n| Vitamin B12 | 412 | | pg/mL | 211 - 911 |\n| Total PSA | 1.4 | | ng/mL | < 4.0 |\n\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1535,
+    "eval_count": 828,
+    "total_duration": 60204273200,
+    "load_duration": 17102900,
+    "prompt_eval_duration": 35326191000,
+    "eval_duration": 24723724000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "3a6711973e30fe41d23d7178c923ad5f98c27a49d04840dc9af89714bbf64a3b",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "a72c523f06d720a62c059a2b7851914c610f9d39e5c32cd456833a5157d42cfa",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Patient: Mr. Arjun Menon | Lab ID: SD-25-092011 | Page 3 of 4\n\nURINE ROUTINE\n\n| Test | Result | Flag | Unit | Reference Range |\n|---|---|---|---|---|\n| Colour | Pale yellow | | | |\n| Appearance | Clear | | | |\n| Specific Gravity | 1.015 | | | 1.005 - 1.030 |\n| Protein | Nil | | Nil | |\n| Glucose | Nil | | Nil | |\n| Pus Cells | 1-2 | /hpf | 0 - 5 |\n\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1535,
+    "eval_count": 160,
+    "total_duration": 40687144400,
+    "load_duration": 16387600,
+    "prompt_eval_duration": 35118836000,
+    "eval_duration": 5412999000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "f0ff5b94ebb17fc690e685af1dd0e98ddf3dee20c61bf6994cfdfc4ef6e6aad0",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "c9366f40f58aae3d82686edca239e8aba63952ae7a701c797bff104536068d4b",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Patient: Mr. Arjun Menon | Lab ID: SD-25-092011 | Page 4 of 4\n\n## TEST MENU AND METHODS\n\n| Code | Test | Sample | Vol. | Stability | TAT | Fasting | Runs | Department | Accredited | Rs | Method |\n|---|---|---|---|---|---|---|---|---|---|---|---|\n| HEM-001 | Haemoglobin | EDTA (lavender) 2 mL | 24 h, 2-8 °C | 4 h | No | Daily | Daily | Haematology | Yes | 180 | SLS-haemoglobin photometry |\n| HEM-002 | RBC Count | EDTA (lavender) 2 mL | 24 h, 2-8 °C | 4 h | No | Daily | Daily | Haematology | Yes | 210 | electrical impedance with hydrodynamic focusing |\n| HEM-003 | PCV | EDTA (lavender) 2 mL | 24 h, 2-8 °C | 4 h | No | Daily | Daily | Haematology | Yes | 240 | calculated from the RBC count and the MCV |\n| HEM-004 | MCV | EDTA (lavender) 2 mL | 24 h, 2-8 °C | 4 h | No | Daily | Daily | Haematology | Yes | 270 | electrical impedance |\n| HEM-005 | MCH | EDTA (lavender) 2 mL | 24 h, 2-8 °C | 4 h | No | Daily | Daily | Haematology | Yes | 300 | calculated from haemoglobin and the RBC count |\n| HEM-006 | MCHC | EDTA (lavender) 2 mL | 24 h, 2-8 °C | 4 h | No | Daily | Daily | Haematology | Yes | 330 | calculated from haemoglobin and the PCV |\n| HEM-007 | RDW-CV | EDTA (lavender) 2 mL | 24 h, 2-8 °C | 4 h | No | Daily | Daily | Haematology | Yes | 150 | calculated from the red cell volume histogram |\n| HEM-008 | Platelet Count | EDTA (lavender) 2 mL | 24 h, 2-8 °C | 4 h | No | Daily | Daily | Haematology | Yes | 180 | electrical impedance |\n| HEM-009 | Neutrophils | EDTA (lavender) 2 mL | 24 h, 2-8 °C | 4 h | No | Daily | Daily | Haematology | Yes | 210 | flow cytometry with fluorescent nuclear acid staining |\n| HEM-010 | Total WBC Count | EDTA (lavender) 2 mL | 24 h, 2-8 °C | 4 h | No | Daily | Daily | Haematology | Yes | 240 | flow cytometry (five-part differential); a smear is reviewed when abnormal |\n| HEM-011 | Lymphocytes | EDTA (lavender) 2 mL | 24 h, 2-8 °C | 4 h | No | Daily | Daily | Haematology | Yes | 270 | flow cytometry (five-part differential) |\n| HEM-012 | Eosinophils | EDTA (lavender) 2 mL | 24 h, 2-8 °C | 4 h | No | Daily | Daily | Haematology | Yes | 330 | flow cytometry (five-part differential) |\n| HEM-013 | Monocytes | EDTA (lavender) 2 mL | 24 h, 2-8 °C | 4 h | No | Daily | Daily | Haematology | Yes | 330 | flow cytometry (five-part differential) |\n| HEM-014 | Basophils | EDTA (lavender) 2 mL | 24 h, 2-8 °C | 4 h | No | Daily | Daily | Haematology | Yes | 150 | flow cytometry (five-part differential) |\n| HEM-015 | ESR | EDTA (lavender) 2 mL | 24 h, 2-8 °C | 4 h | No | Daily | Daily | Clinical Biochemistry | Yes | 180 | modified Westergren method |\n| GLU-001 | Fasting Plasma Glucose | Glucose (grey) 2 mL | 24 h, 2-8 °C | Same day | 10-12 h | Daily | Clinical Biochemistry | Yes | 150 | hexokinase |\n| GLU-002 | HbA1c | EDTA (lavender) 2 mL | 24 h, 2-8 °C | Same day | 10-12 h | Daily | Clinical Biochemistry | Yes | 180 | ion-exchange HPLC |\n| GLU-003 | Total Cholesterol | Serum (gold) 3 mL | 7-8 °C | Same day | 10-12 h | Daily | Clinical Biochemistry | Yes | 210 | cholesterol oxidase-peroxidase (CHOD-PAP) |\n| GLU-004 | Triglycerides | Serum (gold) 3 mL | 7-8 °C | Same day | 10-12 h | Daily | Clinical Biochemistry | Yes | 240 | glycerol phosphate oxidase-peroxidase (GPO-PAP) |\n| GLU-005 | HDL Cholesterol | Serum (gold) 3 mL | 7-8 °C | Same day | 10-12 h | Daily | Clinical Biochemistry | Yes | 270 | direct homogeneous enzymatic method |\n| GLU-006 | LDL Cholesterol | Serum (gold) 3 mL | 7-8 °C | Same day | 10-12 h | Daily | Clinical Biochemistry | Yes | 300 | calculated by the Friedewald equation when triglycerides are below 400 mg/dL |\n| KFT-001 | VLDL Cholesterol | Serum (gold) 3 mL | 7-8 °C | Same day | 10-12 h | Daily | Clinical Biochemistry | Yes | 120 | calculated as triglycerides divided by five |\n| KFT-002 | Blood Urea Nitrogen (BUN) | Serum (gold) 3 mL | 7-8 °C | Same day | 10-12 h | Daily | Clinical Biochemistry | Yes | 240 | urea as urea divided by 2.14 |\n| KFT-003 | Serum Creatinine | Serum (gold) 3 mL | 7-8 °C | Same day | 10-12 h | Daily | Clinical Biochemistry | Yes | 270 | modified kinetic method |\n| KFT-004 | Uric Acid | Serum (gold) 3 mL | 7-8 °C | Same day | 10-12 h | Daily | Clinical Biochemistry | Yes | 300 | urase-peroxidase |\n| KFT-005 | eGFR | Serum (gold) 3 mL | 7-8 °C | 6 h | No | Daily | Daily | Clinical Biochemistry | Yes | 330 | calculated by the CKD-EPI 2021 creatinine equation |\n| LFT-001 | Total Bilirubin | Serum (gold) 3 mL | 7-8 °C | 6 h | Preferred | Daily | Daily | Clinical Biochemistry | Yes | 240 | direct method with an accelerator |\n| LFT-002 | Direct Bilirubin | Serum (gold) 3 mL | 7-8 °C | 6 h | Preferred | Daily | Daily | Clinical Biochemistry | Yes | 260 | direct method without an accelerator |\n| LFT-003 | Indirect Bilirubin | Serum (gold) 3 mL | 7-8 °C | 6 h | Preferred | Daily | Daily | Clinical Biochemistry | Yes | 290 | calculated as total minus direct bilirubin |\n| LFT-004 | SGPT (ALT) | Serum (gold) 3 mL | 7-8 °C | 6 h | Preferred | Daily | Daily | Clinical Biochemistry | Yes | 350 | IFCC method without pyridoxal phosphate |\n| LFT-006 | Alkaline Phosphatase | Serum (gold) 3 mL | 7-8 °C | 6 h | Preferred | Daily | Daily | Clinical Biochemistry | Yes | 380 | IFCC method |\n| LFT-007 | GGT | Serum (gold) 3 mL | 7-8 °C | 6 h | Preferred | Daily | Daily | Clinical Biochemistry | Yes | 200 | IFCC method (Szasz) |\n| LFT-008 | Total Protein | Serum (gold) 3 mL | 7-8 °C | 6 h | Preferred | Daily | Daily | Clinical Biochemistry | Yes | 230 | biot method |\n| LFT-010 | Albumin | Serum (gold) 3 mL | 7-8 °C | 6 h | Preferred | Daily | Daily | Clinical Biochemistry | Yes | 260 | bromocresol green |\n| LFT-011 | A/G Ratio | Serum (gold) 3 mL | 7-8 °C | 6 h | Preferred | Daily | Daily | Clinical Biochemistry | Yes | 320 | calculated as albumin divided by globulin |\n| ELM-001 | Sodium | Serum (gold) 3 mL | 7-8 °C | 4 h | No | Daily | Daily | Clinical Biochemistry | Yes | 280 | indirect ion-selective electrode |\n| ELM-002 | Potassium | Serum (gold) 3 mL | 7-8 °C | 4 h | No | Daily | Daily | Clinical Biochemistry | Yes | 310 | indirect ion-selective electrode |\n| ELM-003 | Chloride | Serum (gold) 3 mL | 7-8 °C | 4 h | No | Daily | Daily | Clinical Biochemistry | Yes | 340 | indirect ion-selective electrode |\n| ELM-004 | Magnesium | Serum (gold) 3 mL | 7-8 °C | 4 h | No | Daily | Daily | Clinical Biochemistry | Yes | 400 | xonly blue |\n| ELM-005 | Phosphorus | Serum (gold) 3 mL | 7-8 °C | 4 h | No | Daily | Daily | Clinical Biochemistry | Yes | 480 | phospholybdate |\n| SPL-001 | T3 (Total) | Serum (gold) 3 mL | 7-8 °C | Next day | Mon-Sat | Mon-Sat | Yes | Immunoassay | Yes | 480 | chimiLuminescent immunoassay (CLIA) |\n| SPL-002 | T4 (Total) | Serum (gold) 3 mL | 7-8 °C | Next day | Mon-Sat | Mon-Sat | Yes | Immunoassay | Yes | 510 | chimiLuminescent immunoassay (CLIA) |\n| SPL-003 | TSH | Serum (gold) 3 mL | 7-8 °C | Next day | Mon-Sat | Mon-Sat | Yes | Immunoassay | Yes | 540 | third-generation chimiLuminescent immunoassay (CLIA) |\n| SPL-004 | Free T4 | Serum (gold) 3 mL | 7-8 °C | Next day | Mon-Sat | Mon-Sat | Yes | Immunoassay | Yes | 570 | ferrozyme method |\n| SPL-005 | TBC | Serum (gold) 3 mL | 7-8 °C | Next day | Mon-Sat | Mon-Sat | Yes | Immunoassay | Yes | 600 | direct method with magnesium carbonate adsorption |\n| SPL-006 | Transferrin Saturation | Serum (gold) 3 mL | 7-8 °C | Next day | Mon-Sat | Mon-Sat | Yes | Immunoassay | Yes | 450 | particle-enhanced immunochimunoassay (CLIA) |\n| SPL-007 | Ferritin | Serum (gold) 3 mL | 7-8 °C | Next day | Mon-Sat | Mon-Sat | Yes | Immunoassay | Yes | 480 | chimiLuminescent immunoassay (CLIA) |\n| SPL-008 | Vitamin D (25-OH) | Serum (gold) 3 mL | 7-8 °C | Next day | Mon-Sat | Mon-Sat | Yes | Immunoassay | Yes | 480 | chimiLuminescent immunoassay (CLIA) |\n| SPL-010 | Total PSA | Serum (gold) 3 mL | 7-8 °C | Next day | Mon-Sat | Mon-Sat | Yes | Immunoassay | Yes | 540 | chimiLuminescent immunoassay (CLIA) |\n| URN-001 | Colour | Urine container | As supplied | See note | 2 h | No | Daily | Clinical Pathology | Yes | 160 | visual examination |\n| URN-002 | Urine Protein | Urine container | As supplied | See note | 2 h | No | Daily | Clinical Pathology | Yes | 190 | reagent strip (ion exchange) |\n| URN-003 | Specific Gravity | Urine container | As supplied | See note | 2 h | No | Daily | Clinical Pathology | Yes | 220 | reagent strip |\n| URN-004 | Protein | Urine container | As supplied | See note | 2 h | No | Daily | Clinical Pathology | Yes | 250 | reagent strip (glucose) |\n| URN-005 | Glucose | Urine container | As supplied | See note | 2 h | No | Daily | Clinical Pathology | Yes | 280 | microscopy of the centrifuged deposit |\n| COA-001 | Prothrombin Time (PT/INR) | Citrate (blue) 2.7 mL | 4 h, room temp | 4 h | No | Daily | Daily | Haematology | Yes | 380 | clotting time, photo-optical |\n| COA-002 | Fibrinogen | Citrate (blue) 2.7 mL | 4 h, room temp | 4 h | No | Daily | Daily | Haematology | Yes | 440 | clotting time method |\n| HEM-016 | Blood Group and Rh Type | EDTA (lavender) 2 mL | 24 h, 2-8 °C | 4 h | No | Daily | Daily | Haematology | Yes | 240 | Leishman stain, microscopy |\n| HEM-017 | Peripheral Smear Examination | EDTA (lavender) 2 mL | 24 h, 2-8 °C | 4 h | No | Daily | Daily | Haematology | Yes | 270 | flow cytometry |\n| HEM-018 | Reticulocyte Count | EDTA (lavender) 2 mL | 24 h, 2-8 °C | 4 h | No | Daily | Daily | Haematology | Yes | 200 | reticulocyte count |\n\nAll results relate only to the sample as received. Reference intervals are those of this laboratory for adults and may differ from other laboratories. Results are to be interpreted by a registered medical practitioner, together with the history, the examination and other investigations.\nValues flagged H or L above or below the printed reference interval. Critical values are telephoned to the referring doctor.\n\nDr. Neha Joshi, MD (Pathology)\n\n***\nEnd of Report ***\n\nSynthetic test document: fictional patient, doctors and laboratory\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1535,
+    "eval_count": 3576,
+    "total_duration": 132598335000,
+    "load_duration": 22846400,
+    "prompt_eval_duration": 103815000,
+    "eval_duration": 132268048000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

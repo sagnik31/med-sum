@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "fbfdccc81f74fd3c0878de0a531eed068bbb961b0c19bc7598a48dfb3d4c27e5",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "cd6cd622e8daac48cdf52c35134f3aa0f0490b0e925656e3adc89f51ccec9dde",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "# Heartline Cardiac Clinic\nDr. Farah Khan\nMBBS, MD, DM (Cardiology)\nBaner, Pune 411045 | Reg. No.: MMC-2011/02/0003\nDate: 14 April 2025\nName: Kabir Sethi | Age/Sex: 46/M | UHID: SH-100235\nBP: 132/84 mmHg; HR: 76 bpm\nImpression: Hypertension, better controlled\n\n## Medicines\n| Drug | Strength | Frequency | Duration | Remarks |\n|---|---|---|---|---|\n| Tab. Telma-AM | 40/5 mg | OD | 30 days | Morning |\n| Tab. Rosuvas | 20 mg | OD | 30 days | Night |\n| Tab. Glycomet | 500 mg | BD | 30 days | After food |\n| Cap. Omez | 20 mg | OD | 14 days | Before breakfast |\n\nAdvice: Low-salt diet; walk 30 minutes a day.\nNext visit: 14 May 2025\nThis is a computer-generated prescription.\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1535,
+    "eval_count": 291,
+    "total_duration": 44780427600,
+    "load_duration": 12967700,
+    "prompt_eval_duration": 35277168000,
+    "eval_duration": 9354252000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

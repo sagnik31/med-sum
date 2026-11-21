@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "facf03b891bce23b8bcf4cf9dd2a280750106ea7c139286db270cdbcd880fea7",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "94ed684a4d6cd007224880f4cd5fe3eac2fdfc2fae1de96a244a3a2e90ccc3c0",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "# Kaveri Clinical Laboratory\nKothrud, Pune 411038\nName: Rohan Kulkarni\nAge/Gender: 44 Y/M\nPatient ID: KCL-120051\nReferred By: Dr. Anil Deshpande\nReported: 20-May-2025 11:30 AM\n\n## LIVER FUNCTION TEST\n\n| Test | Result | Unit | Reference Range |\n| :--- | :--- | :--- | :--- |\n| Total Bilirubin | 0.8 | mg/dL | 0.2 - 1.2 |\n| Direct Bilirubin | 0.2 | mg/dL | 0.0 - 0.3 |\n| SGOT (AST) | 32 | U/L | 5 - 40 |\n| SGPT (ALT) | 48 H | U/L | 7 - 45 |\n| Alkaline Phosphatase | 96 | U/L | 40 - 129 |\n| Total Protein | 7.1 | g/dL | 6.4 - 8.3 |\n| Albumin | 4.2 | g/dL | 3.5 - 5.2 |\n\n## THYROID\n\n| Test | Result | Unit | Reference Range |\n| :--- | :--- | :--- | :--- |\n| TSH | 2.4 | µIU/mL | 0.27 - 4.20 |\n\n## INFLAMMATORY MARKERS\n\n| Test | Result | Unit | Reference Range |\n| :--- | :--- | :--- | :--- |\n| CRP | < 0.5 | mg/L | < 5.0 |\n\nDr. Prakash Nair, MD (Pathology)\n*** End of Report ***\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 433,
+    "total_duration": 248383508600,
+    "load_duration": 20376500,
+    "prompt_eval_duration": 198431413000,
+    "eval_duration": 49646820000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

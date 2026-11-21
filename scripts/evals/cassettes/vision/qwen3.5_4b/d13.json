@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "5117e37c4afca25ff6d74bfc68a9a3f792cd0910ced115f09175555035a266b8",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "f1c55eab59de3323d716f6bd504b834edb0126ea830d9e470d5cfead3f8e3641",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "# Sahaj Multispeciality Hospital - Laboratory Services\nKarve Road, Pune 411004\nPatient Name: Mr. Arjun Menon\nAge / Sex: 66 Years / Male\nUHID: SH-100234\nOrdering Physician: Dr. Anil Deshpande\nSample Collected: 04/03/2025 08:45 AM\nReport Date: 04/03/2025 03:30 PM\n\n## LIPID PROFILE\n\n| Test | Result | Flag | Unit | Reference Range |\n| :--- | :--- | :--- | :--- | :--- |\n| Total Cholesterol | 236 | H | mg/dL | Desirable: < 200; Borderline: 200 - 239; High: >= 240 |\n| Triglycerides | 210 | H | mg/dL | < 150 |\n| HDL Cholesterol | 38 | L | mg/dL | > 40 |\n| LDL Cholesterol | 156 | H | mg/dL | Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160 |\n\n## GLYCATED HAEMOGLOBIN\n\n| Test | Result | Flag | Unit | Reference Range |\n| :--- | :--- | :--- | :--- | :--- |\n| HbA1c | 6.2 | | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 408,
+    "total_duration": 241646876400,
+    "load_duration": 14228200,
+    "prompt_eval_duration": 194814888000,
+    "eval_duration": 46575376000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "781d2c6081ecc1e28e15fad690ccef6d26cdd2c936807ee21c8244d78dda7c51",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "45593a08273dc02c104d8a77c338888cb2735bfab35468c14d8808852bcdf262",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Patient: Mr. Arjun Menon | UHID: SH-100234 | Page 2 of 2\n\n## URINE ROUTINE\n\n| Test | Result | Flag | Unit | Reference Range |\n| --- | --- | --- | --- | --- |\n| Urine Sugar | Absent |  |  | Absent |\n| Urine Protein | Trace | * |  | Absent |\n| Pus Cells | 4-6 | H | /hpf | 0 - 5 |\n\n## SERUM PSA\n\n| Test | Result | Flag | Unit | Reference Range |\n| --- | --- | --- | --- | --- |\n| Total PSA | 3.1 |  | ng/mL | < 4.0 |\n\nDr. Neha Joshi, MD (Pathology)\n\n*** End of Report ***\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 201,
+    "total_duration": 219324355800,
+    "load_duration": 12742200,
+    "prompt_eval_duration": 196255699000,
+    "eval_duration": 22810210000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

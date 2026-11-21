@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "df179dd51d20539a2c5db820f6a6d42d18aedb04967a75b68cc39efa9f9a02cb",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "f29a81d932cb77db37d0693b94654629dad0b24545fb37b9df385dff616ad913",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "# Navjeevan Pathology Lab\nShop 4, Aundh Road, Pune 411007\nPatient: Mr. Kabir Sethi | Age: 45 Yrs | Sex: Male\nLab No: NJ/2025/03114 | Ref: Dr. Farah Khan\nSample Date: 03 Mar 2025 | Report Date: 03 Mar 2025\n\n## LIPID PROFILE\nTotal Cholesterol: 238 mg/dL (Ref: Desirable: < 200; Borderline: 200 - 239; High: >= 240)\nTriglycerides: 210 mg/dL (Ref: < 150) High\nHDL Cholesterol: 36 mg/dL (Ref: > 40) Low\nLDL Cholesterol: 160 mg/dL (Ref: Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160) High\n\n## डायबिटीज SCREEN\nFasting Plasma Glucose: 112 mg/dL (Ref: 70 - 100) High\nGlycated Haemoglobin (HbA1c): 6.1 % (Ref: Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5)\nAdvice: Repeat lipid profile after 3 months on treatment.\nDr. Prakash Menon, MD (Pathology)\n-- End of report --\n\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1535,
+    "eval_count": 371,
+    "total_duration": 47247684000,
+    "load_duration": 11374800,
+    "prompt_eval_duration": 36170891000,
+    "eval_duration": 10917731000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

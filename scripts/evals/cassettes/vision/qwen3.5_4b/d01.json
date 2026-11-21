@@ -1,0 +1,65 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "767e8367935e2d5ff469c7a1f79475025ef062528cad1c83b436297cd0da36b6",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "74ca5c9f13d6126c6cdb82a63ced8e2ab18725d37b1ccae522e6c6e50abd7707",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "# Sunrise Diagnostics\nPlot 12, Baner Road, Pune 411045\nPatient Name: Mrs. Meera Iyer\nAge / Sex: 57 Years / Female\nLab ID: SD-24-061407\nRef. By: Dr. Anil Deshpande\nCollected On: 14/06/2024 08:10 AM\nReported On: 14/06/2024 02:45 PM\n\n## COMPLETE BLOOD COUNT\n\n| Test | Result | Flag | Unit | Reference Range |\n| :--- | :--- | :--- | :--- | :--- |\n| Haemoglobin | 10.4 | L | g/dL | 12.0 - 15.0 |\n| RBC Count | 4.1 | | mill/cumm | 3.8 - 4.8 |\n| PCV | 33.2 | L | % | 36.0 - 46.0 |\n| MCV | 76 | L | fL | 83 - 101 |\n| MCH | 25.4 | L | pg | 27.0 - 32.0 |\n| MCHC | 31.3 | L | g/dL | 31.5 - 34.5 |\n| RDW-CV | 16.2 | H | % | 11.6 - 14.0 |\n| Platelet Count | 2,45,000 | | /cumm | 1,50,000 - 4,10,000 |\n| Total WBC Count | 7,200 | | /cumm | 4,000 - 10,000 |\n\nComment: Microcytic hypochromic anaemia.\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 451,
+    "total_duration": 246522103600,
+    "load_duration": 9709097500,
+    "prompt_eval_duration": 184481070000,
+    "eval_duration": 52081067000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "f21a47dacc8437c7dc46a658b5aca0af6c29151857cf1ca3e3988d2bd935259b",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "b38dd6d80f9ac1ccd14e515965dcf469ca397799f8a0582786181ad81bd1d3c4",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Patient: Mrs. Meera Iyer | Lab ID: SD-24-061407 | Page 2 of 3\n\n## GLYCATED HAEMOGLOBIN\n\n| Test | Result | Flag | Unit | Reference Range |\n| :--- | :--- | :--- | :--- | :--- |\n| HbA1c | 8.1 | H | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |\n\nInterpretation: HbA1c reflects average blood glucose over the past 2-3 months.\n\n## GLUCOSE\n\n| Test | Result | Flag | Unit | Reference Range |\n| :--- | :--- | :--- | :--- | :--- |\n| Fasting Blood Sugar | 148 | H | mg/dL | 70 - 100 |\n\nMethod: Hexokinase\n\n## LIPID PROFILE\n\n| Test | Result | Flag | Unit | Reference Range |\n| :--- | :--- | :--- | :--- | :--- |\n| Total Cholesterol | 182 | | mg/dL | Desirable: < 200; Borderline: 200 - 239; High: >= 240 |\n| Triglycerides | 168 | H | mg/dL | < 150 |\n| HDL Cholesterol | 44 | L | mg/dL | > 50 |\n| LDL Cholesterol | 104 | | mg/dL | Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160 |\n| VLDL Cholesterol | 33.6 | H | mg/dL | < 30 |\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 439,
+    "total_duration": 237073165800,
+    "load_duration": 16817600,
+    "prompt_eval_duration": 185901609000,
+    "eval_duration": 50867819000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "7f59447459e206dadd11f6d057d3ecaeae70c5f7c78096c5e9299e4b4bc33150",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "646991d0b12b5f91a107e0a351a02b3ac864006a9b7826ff09e1c57d104b03a5",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Patient: Mrs. Meera Iyer | Lab ID: SD-24-061407 | Page 3 of 3\n\n## KIDNEY FUNCTION TEST\n\n| Test | Result | Flag | Unit | Reference Range |\n| :--- | :--- | :--- | :--- | :--- |\n| Blood Urea | 28 | | mg/dL | 15 - 40 |\n| Blood Urea Nitrogen (BUN) | 13.1 | | mg/dL | 7 - 20 |\n| Serum Creatinine | 0.9 | | mg/dL | 0.6 - 1.1 |\n| Uric Acid | 5.2 | | mg/dL | 2.6 - 6.0 |\n\n## URINE ROUTINE\n\n| Test | Result | Flag | Unit | Reference Range |\n| :--- | :--- | :--- | :--- | :--- |\n| Colour | Pale yellow | | | |\n| Appearance | Clear | | | |\n| Specific Gravity | 1.020 | | | 1.005 - 1.030 |\n| Protein | Nil | | | Nil |\n| Glucose | Trace | * | | Nil |\n| Pus Cells | 2-4 | | /hpf | 0 - 5 |\n\nDr. Neha Joshi, MD (Pathology)\n*** End of Report ***\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 336,
+    "total_duration": 231644707400,
+    "load_duration": 13852200,
+    "prompt_eval_duration": 192863434000,
+    "eval_duration": 38495870000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

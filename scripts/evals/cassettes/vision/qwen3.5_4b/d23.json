@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "d04ceb1026094d4f0f5d9d92bc5a9c6a8daa929624269b01f539e56cc1865ab0",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "af142ea2b10ac0bd20b4e8129bac297aa8bb6f743167ea76eb9d507f80c24d73",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "# Apex Pathology\nKalyani Nagar, Pune 411006\nPatient: Mrs. Nandini Bose | 36 Yrs / F | ID: AP-61930\nRef. Doctor: Dr. Suresh Pillai\nReport Date: 18/06/2025\n\n## HAEMATOLOGY\n\n| Investigation | Observed Value | Flag | Biological Reference Interval | Units |\n| :--- | :--- | :--- | :--- | :--- |\n| Haemoglobin | 11.9 | Low | 12.0 - 15.0 | g/dL |\n| PCV | 36.8 | | 36.0 - 46.0 | % |\n| RBC Count | 4.3 | | 3.8 - 4.8 | mill/cumm |\n| MCV | 82 | Low | 83 - 101 | fL |\n| MCH | 27.6 | | 27.0 - 32.0 | pg |\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 261,
+    "total_duration": 226814657000,
+    "load_duration": 17776100,
+    "prompt_eval_duration": 196893645000,
+    "eval_duration": 29696563000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "9721cefa97aa267e32b86c6dbc48c5593cdbb2950a329e61cfd3ee7e67a092de",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "8a67b7cdeedf6d1dfb5580455d4987f772c7412aee22caea4280269b8d45a5c9",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Apex Pathology | Mrs. Nandini Bose | AP-61930 | Page 2 of 2\n\n## HAEMATOLOGY (contd.)\n\n| Investigation | Observed Value | Flag | Biological Reference Interval | Units |\n|---|---|---|---|---|\n| Total WBC Count | 7,600 | | 4,000 - 10,000 | /cumm |\n| Platelet Count | 2,95,000 | | 1,50,000 - 4,10,000 | /cumm |\n\n## THYROID PROFILE\n\n| Investigation | Observed Value | Flag | Biological Reference Interval | Units |\n|---|---|---|---|---|\n| TSH | 2.9 | | 0.35 - 4.94 | µIU/mL |\n| Vitamin B12 | 180 | Low | 211 - 911 | pg/mL |\n\nDr. Kiran Patwardhan, MD (Pathology)\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 260,
+    "total_duration": 226749867500,
+    "load_duration": 21140400,
+    "prompt_eval_duration": 196681792000,
+    "eval_duration": 29736003000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

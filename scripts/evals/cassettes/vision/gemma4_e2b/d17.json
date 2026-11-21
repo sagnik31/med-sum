@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "2bc7509d6617e626b9dd3250df377b52fd8fba9d1ff8da7c10835738fd3b2f95",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "4dcfd353c876030e6edf89a016c172b8dfa8a5dafc75132247b6fe99039f10c4",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Sahaj Multispeciality Hospital - Department of Radiology\nKarve Road, Pune 411004\nPatient Name: Mr. Arjun Menon\nAge / Sex: 66 Years / Male\nUHID: SH-100234\nDate: 20/04/2025\n\nX-RAY CHEST PA VIEW\nFindings: Both lung fields are clear. Cardiac silhouette is within normal limits. Costophrenic angles are clear. Bony thorax appears normal.\nImpression: No active lung lesion.\nDr. R. Pillai, MD (Radiodiagnosis)\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1535,
+    "eval_count": 150,
+    "total_duration": 41216300000,
+    "load_duration": 5789500,
+    "prompt_eval_duration": 36315957000,
+    "eval_duration": 4764866000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

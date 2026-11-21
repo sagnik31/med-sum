@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "87c6a2b498f4e37f9e2a68a7eb2ff862df27e360b7014875389bdded69b46ba2",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "7c5edba8dd95d684bce2d504ff6978c49f7a963e4eeb156e9493d98e4bcb36f4",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Sahaj Multispeciality Hospital - Laboratory Services\nKarve Road, Pune 411004\nPatient Name: Mr. Rohan Kulkarni\nAge / Sex: 44 Years / Male\nUHID: SH-100232\nOrdering Physician: Dr. Anil Deshpande\nSample Collected: 03/02/2025 09:00 AM\nReport Date: 03/02/2025 01:20 PM\n\nKIDNEY FUNCTION TEST\n| Test | Result | Flag | Unit | Reference Range |\n|---|---|---|---|---|\n| Blood Urea | 46 | H | mg/dL | 15 - 40 |\n| Blood Urea Nitrogen (BUN) | 21.5 | H | mg/dL | 7 - 20 |\n| Serum Creatinine | 1.6 | H | mg/dL | 0.7 - 1.3 |\n| eGFR | 54 | L | mL/min/1.73m² | > 60 |\n| Uric Acid | 7.8 | H | mg/dL | 3.5 - 7.2 |\n\nSERUM ELECTROLYTES\n| Test | Result | Flag | Unit | Reference Range |\n|---|---|---|---|---|\n| Sodium | 138 | | mmol/L | 135 - 145 |\n| Potassium | 4.6 | | mmol/L | 3.5 - 5.1 |\n| Chloride | 101 | | mmol/L | 98 - 107 |\n\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1535,
+    "eval_count": 385,
+    "total_duration": 48276138400,
+    "load_duration": 11076000,
+    "prompt_eval_duration": 36316593000,
+    "eval_duration": 11804844000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "f25ff1dc692c50b9351115bb33ec606bda6dc893c23d062559f6274f85006208",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "37c245d461515f9cffd65627eea6c97c5a859d5718b72514d4d428bf71867054",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Patient: Mr. Rohan Kulkarni | UHID: SH-100232 | Page 2 of 2\n\nGLUCOSE\n\n| Test | Result | Flag | Unit | Reference Range |\n|---|---|---|---|---|\n| Random Blood Sugar | 112 | | mg/dL | 70 - 140 |\n\nREMARKS\nKindly correlate clinically.\nDr. Neha Joshi, MD (Pathology)\n*** End of Report ***\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1535,
+    "eval_count": 123,
+    "total_duration": 40703869900,
+    "load_duration": 9618500,
+    "prompt_eval_duration": 36372316000,
+    "eval_duration": 4175066000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

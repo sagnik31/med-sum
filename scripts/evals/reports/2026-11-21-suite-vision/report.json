@@ -1,0 +1,5401 @@
+{
+  "report_version": 3,
+  "stage": "vision",
+  "label": "suite-vision",
+  "value_recall_gate": {
+    "qwen3.5:4b": true,
+    "gemma4:e2b": true
+  },
+  "generated_at": "2026-11-21T23:05:54+00:00",
+  "dataset": "med-sum synthetic v2",
+  "choice": null,
+  "cases": {
+    "as_needed": [
+      "d04",
+      "d19"
+    ],
+    "bmi_and_height": [
+      "d07"
+    ],
+    "bun_in_kidney_panel": [
+      "d06"
+    ],
+    "classified_other": [
+      "d17"
+    ],
+    "counts_in_other_units": [
+      "d20"
+    ],
+    "date_month_in_words": [
+      "d18",
+      "d24"
+    ],
+    "date_with_dots": [
+      "d21"
+    ],
+    "dense_page_over_output_cap": [
+      "d25"
+    ],
+    "document_remark": [
+      "d06",
+      "d18",
+      "d20"
+    ],
+    "document_remark_after_single_test": [
+      "d03"
+    ],
+    "drug_allergy": [
+      "d07",
+      "d10"
+    ],
+    "duration_in_days": [
+      "d24"
+    ],
+    "duration_in_months": [
+      "d04",
+      "d07"
+    ],
+    "duration_in_weeks": [
+      "d10",
+      "d12",
+      "d21"
+    ],
+    "duration_not_given": [
+      "d15"
+    ],
+    "e_prescription_text_layer": [
+      "d24"
+    ],
+    "flag_as_arrow": [
+      "d22"
+    ],
+    "flag_as_word": [
+      "d18",
+      "d20",
+      "d23"
+    ],
+    "flag_beside_result": [
+      "d03",
+      "d08",
+      "d16"
+    ],
+    "generic_name": [
+      "d14"
+    ],
+    "header_as_table": [
+      "d20"
+    ],
+    "header_fields_on_one_line": [
+      "d18",
+      "d19",
+      "d21",
+      "d22"
+    ],
+    "history": [
+      "d02",
+      "d04",
+      "d14",
+      "d21"
+    ],
+    "image_only_pdf": [
+      "d03",
+      "d08",
+      "d16",
+      "d23"
+    ],
+    "impression": [
+      "d04"
+    ],
+    "indian_digit_grouping": [
+      "d01"
+    ],
+    "iso_date": [
+      "d22"
+    ],
+    "jpeg": [
+      "d04"
+    ],
+    "lab_report_as_image": [
+      "d22"
+    ],
+    "less_than_value": [
+      "d08"
+    ],
+    "medicine_without_strength": [
+      "d02"
+    ],
+    "medicines_as_numbered_lines": [
+      "d19"
+    ],
+    "multi_page": [
+      "d01",
+      "d03",
+      "d05",
+      "d06",
+      "d13",
+      "d23",
+      "d25"
+    ],
+    "multiple_ranges": [
+      "d01",
+      "d03",
+      "d11",
+      "d13",
+      "d18",
+      "d25"
+    ],
+    "named_frequency": [
+      "d24"
+    ],
+    "no_known_allergies": [
+      "d02",
+      "d14",
+      "d19"
+    ],
+    "no_report_date": [
+      "d03"
+    ],
+    "non_numeric_values": [
+      "d01",
+      "d13",
+      "d25"
+    ],
+    "one_sided_range": [
+      "d01",
+      "d06",
+      "d08",
+      "d13",
+      "d18",
+      "d20",
+      "d22"
+    ],
+    "page_parsed_in_parts": [
+      "d25"
+    ],
+    "panel_remark": [
+      "d09"
+    ],
+    "panel_remark_after_last_row": [
+      "d01",
+      "d05"
+    ],
+    "patient_mismatch": [
+      "d16"
+    ],
+    "printed_flag_without_computed_flag": [
+      "d11"
+    ],
+    "provisional_diagnosis": [
+      "d07"
+    ],
+    "range_before_unit": [
+      "d20",
+      "d23"
+    ],
+    "results_as_lines": [
+      "d18"
+    ],
+    "route_given": [
+      "d19"
+    ],
+    "single_creatinine": [
+      "d06"
+    ],
+    "sixty_results": [
+      "d25"
+    ],
+    "statin_without_lipid_panel": [
+      "d07"
+    ],
+    "strength_in_own_column": [
+      "d24"
+    ],
+    "table_continued_on_next_page": [
+      "d23"
+    ],
+    "temperature": [
+      "d10"
+    ],
+    "test_name_variant": [
+      "d18",
+      "d20"
+    ],
+    "test_remark": [
+      "d01",
+      "d03",
+      "d22"
+    ],
+    "trend_two_values": [
+      "d05",
+      "d09",
+      "d11",
+      "d23",
+      "d25"
+    ],
+    "two_column_layout": [
+      "d21"
+    ],
+    "two_diagnoses_one_line": [
+      "d02",
+      "d19"
+    ],
+    "undated": [
+      "d15"
+    ],
+    "unused_complaint_line": [
+      "d02",
+      "d21"
+    ],
+    "unused_date_line": [
+      "d24"
+    ],
+    "uploaded_before_older_documents": [
+      "d04",
+      "d12"
+    ],
+    "vitals": [
+      "d02",
+      "d19",
+      "d24"
+    ],
+    "weekly_frequency": [
+      "d12",
+      "d21"
+    ]
+  },
+  "models": {
+    "qwen3.5:4b": {
+      "seconds_per_document": 231.5728097000101,
+      "summary": {
+        "documents": 0,
+        "types": {
+          "correct": 0,
+          "total": 0,
+          "value": null
+        },
+        "all_fields": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": null,
+          "recall": null,
+          "f1": null
+        },
+        "all_derived": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": null,
+          "recall": null,
+          "f1": null
+        },
+        "fields": {},
+        "derived": {},
+        "items": {},
+        "medicine_recall": null,
+        "citations": {
+          "correct": 0,
+          "total": 0,
+          "value": null
+        },
+        "remark_attribution": {
+          "correct": 0,
+          "total": 0,
+          "value": null
+        },
+        "frequency": {
+          "correct": 0,
+          "total": 0,
+          "value": null
+        },
+        "hallucinated": 0,
+        "missed": 0,
+        "unsafe": 0,
+        "clinical_items": 0,
+        "unsafe_items": 0,
+        "checked_items": 0,
+        "unsafe_rate": null
+      },
+      "transcription": {
+        "documents": 25,
+        "pages_expected": 35,
+        "pages_got": 35,
+        "lines": {
+          "tp": 620,
+          "fp": 68,
+          "fn": 91,
+          "precision": 0.9011627906976745,
+          "recall": 0.8720112517580872,
+          "f1": 0.8863473909935669
+        },
+        "char_edits": 3639,
+        "chars_expected": 33027,
+        "values": {
+          "correct": 1443,
+          "total": 1445,
+          "value": 0.9986159169550173
+        },
+        "layout": {
+          "correct": 601,
+          "total": 618,
+          "value": 0.9724919093851133
+        },
+        "unreadable": 0,
+        "cer": 0.1101825778908166
+      },
+      "cases": {
+        "as_needed": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "bmi_and_height": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "bun_in_kidney_panel": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "classified_other": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": null
+        },
+        "counts_in_other_units": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "date_month_in_words": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "date_with_dots": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "dense_page_over_output_cap": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "document_remark": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "document_remark_after_single_test": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "drug_allergy": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9875
+        },
+        "duration_in_days": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "duration_in_months": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "duration_in_weeks": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9902912621359223
+        },
+        "duration_not_given": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "e_prescription_text_layer": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "flag_as_arrow": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "flag_as_word": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "flag_beside_result": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "generic_name": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9761904761904762
+        },
+        "header_as_table": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "header_fields_on_one_line": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "history": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.994413407821229
+        },
+        "image_only_pdf": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "impression": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "indian_digit_grouping": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "iso_date": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "jpeg": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "lab_report_as_image": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "less_than_value": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "medicine_without_strength": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "medicines_as_numbered_lines": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "multi_page": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "multiple_ranges": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "named_frequency": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "no_known_allergies": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9925925925925926
+        },
+        "no_report_date": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "non_numeric_values": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "one_sided_range": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "page_parsed_in_parts": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "panel_remark": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "panel_remark_after_last_row": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "patient_mismatch": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "printed_flag_without_computed_flag": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "provisional_diagnosis": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "range_before_unit": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "results_as_lines": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "route_given": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "single_creatinine": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "sixty_results": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "statin_without_lipid_panel": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "strength_in_own_column": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "table_continued_on_next_page": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "temperature": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.967741935483871
+        },
+        "test_name_variant": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "test_remark": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "trend_two_values": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "two_column_layout": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "two_diagnoses_one_line": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "undated": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "unused_complaint_line": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "unused_date_line": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "uploaded_before_older_documents": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "vitals": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "weekly_frequency": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        }
+      },
+      "splits": {
+        "dev": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": {
+            "hits": 0,
+            "total": 0,
+            "rate": null,
+            "low": 0.0,
+            "high": 1.0
+          },
+          "value_recall": 1.0
+        },
+        "held_out": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": {
+            "hits": 0,
+            "total": 0,
+            "rate": null,
+            "low": 0.0,
+            "high": 1.0
+          },
+          "value_recall": 1.0
+        },
+        "test": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": {
+            "hits": 0,
+            "total": 0,
+            "rate": null,
+            "low": 0.0,
+            "high": 1.0
+          },
+          "value_recall": 0.9980601357904947
+        }
+      },
+      "routing": null,
+      "documents": [
+        {
+          "document_id": "d01",
+          "record": null,
+          "transcription": {
+            "document_id": "d01",
+            "pages_expected": 3,
+            "pages_got": 3,
+            "lines": {
+              "tp": 56,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 2029,
+            "cer": 0.0,
+            "values": {
+              "correct": 156,
+              "total": 156,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 56,
+              "total": 56,
+              "value": 1.0
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": []
+          },
+          "seconds": 716.5771471000044,
+          "outcome": null
+        },
+        {
+          "document_id": "d02",
+          "record": null,
+          "transcription": {
+            "document_id": "d02",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 22,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 805,
+            "cer": 0.0,
+            "values": {
+              "correct": 45,
+              "total": 45,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 22,
+              "total": 22,
+              "value": 1.0
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": []
+          },
+          "seconds": 78.79294200000004,
+          "outcome": null
+        },
+        {
+          "document_id": "d03",
+          "record": null,
+          "transcription": {
+            "document_id": "d03",
+            "pages_expected": 2,
+            "pages_got": 2,
+            "lines": {
+              "tp": 27,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 944,
+            "cer": 0.0,
+            "values": {
+              "correct": 48,
+              "total": 48,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 27,
+              "total": 27,
+              "value": 1.0
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": []
+          },
+          "seconds": 446.34970390002127,
+          "outcome": null
+        },
+        {
+          "document_id": "d04",
+          "record": null,
+          "transcription": {
+            "document_id": "d04",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 21,
+              "fp": 1,
+              "fn": 1,
+              "precision": 0.9545454545454546,
+              "recall": 0.9545454545454546,
+              "f1": 0.9545454545454546
+            },
+            "char_edits": 1,
+            "chars_expected": 755,
+            "cer": 0.0013245033112582781,
+            "values": {
+              "correct": 53,
+              "total": 53,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 19,
+              "total": 21,
+              "value": 0.9047619047619048
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Dr. Kavita Rao",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "Rx",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 80.02830599999288,
+          "outcome": null
+        },
+        {
+          "document_id": "d05",
+          "record": null,
+          "transcription": {
+            "document_id": "d05",
+            "pages_expected": 2,
+            "pages_got": 2,
+            "lines": {
+              "tp": 31,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 1079,
+            "cer": 0.0,
+            "values": {
+              "correct": 65,
+              "total": 65,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 31,
+              "total": 31,
+              "value": 1.0
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": []
+          },
+          "seconds": 463.82212810000055,
+          "outcome": null
+        },
+        {
+          "document_id": "d06",
+          "record": null,
+          "transcription": {
+            "document_id": "d06",
+            "pages_expected": 2,
+            "pages_got": 2,
+            "lines": {
+              "tp": 30,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 1007,
+            "cer": 0.0,
+            "values": {
+              "correct": 60,
+              "total": 60,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 30,
+              "total": 30,
+              "value": 1.0
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": []
+          },
+          "seconds": 456.33665139999357,
+          "outcome": null
+        },
+        {
+          "document_id": "d07",
+          "record": null,
+          "transcription": {
+            "document_id": "d07",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 22,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 774,
+            "cer": 0.0,
+            "values": {
+              "correct": 49,
+              "total": 49,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 20,
+              "total": 22,
+              "value": 0.9090909090909091
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Dr. Anil Deshpande",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "Rx",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 78.19155909999972,
+          "outcome": null
+        },
+        {
+          "document_id": "d08",
+          "record": null,
+          "transcription": {
+            "document_id": "d08",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 25,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 714,
+            "cer": 0.0,
+            "values": {
+              "correct": 54,
+              "total": 54,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 25,
+              "total": 25,
+              "value": 1.0
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": []
+          },
+          "seconds": 249.12265320000006,
+          "outcome": null
+        },
+        {
+          "document_id": "d09",
+          "record": null,
+          "transcription": {
+            "document_id": "d09",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 22,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 729,
+            "cer": 0.0,
+            "values": {
+              "correct": 42,
+              "total": 42,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 22,
+              "total": 22,
+              "value": 1.0
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": []
+          },
+          "seconds": 248.2882932999928,
+          "outcome": null
+        },
+        {
+          "document_id": "d10",
+          "record": null,
+          "transcription": {
+            "document_id": "d10",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 16,
+              "fp": 1,
+              "fn": 1,
+              "precision": 0.9411764705882353,
+              "recall": 0.9411764705882353,
+              "f1": 0.9411764705882353
+            },
+            "char_edits": 6,
+            "chars_expected": 575,
+            "cer": 0.010434782608695653,
+            "values": {
+              "correct": 30,
+              "total": 31,
+              "value": 0.967741935483871
+            },
+            "layout": {
+              "correct": 14,
+              "total": 16,
+              "value": 0.875
+            },
+            "unreadable": 0,
+            "missing_values": [
+              {
+                "item_id": "med-1",
+                "field": "dose",
+                "text": "1 tab",
+                "page": 1
+              }
+            ],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Dr. Kavita Rao",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "Rx",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 68.57610249999561,
+          "outcome": null
+        },
+        {
+          "document_id": "d11",
+          "record": null,
+          "transcription": {
+            "document_id": "d11",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 17,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 569,
+            "cer": 0.0,
+            "values": {
+              "correct": 22,
+              "total": 22,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 17,
+              "total": 17,
+              "value": 1.0
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": []
+          },
+          "seconds": 233.78159130000859,
+          "outcome": null
+        },
+        {
+          "document_id": "d12",
+          "record": null,
+          "transcription": {
+            "document_id": "d12",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 18,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 617,
+            "cer": 0.0,
+            "values": {
+              "correct": 33,
+              "total": 33,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 16,
+              "total": 18,
+              "value": 0.8888888888888888
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Dr. Kavita Rao",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "Rx",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 69.8998297000071,
+          "outcome": null
+        },
+        {
+          "document_id": "d13",
+          "record": null,
+          "transcription": {
+            "document_id": "d13",
+            "pages_expected": 2,
+            "pages_got": 2,
+            "lines": {
+              "tp": 30,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 1145,
+            "cer": 0.0,
+            "values": {
+              "correct": 65,
+              "total": 65,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 30,
+              "total": 30,
+              "value": 1.0
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": []
+          },
+          "seconds": 461.92804369999794,
+          "outcome": null
+        },
+        {
+          "document_id": "d14",
+          "record": null,
+          "transcription": {
+            "document_id": "d14",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 20,
+              "fp": 1,
+              "fn": 1,
+              "precision": 0.9523809523809523,
+              "recall": 0.9523809523809523,
+              "f1": 0.9523809523809523
+            },
+            "char_edits": 1,
+            "chars_expected": 703,
+            "cer": 0.001422475106685633,
+            "values": {
+              "correct": 41,
+              "total": 42,
+              "value": 0.9761904761904762
+            },
+            "layout": {
+              "correct": 18,
+              "total": 20,
+              "value": 0.9
+            },
+            "unreadable": 0,
+            "missing_values": [
+              {
+                "item_id": "med-1",
+                "field": "name",
+                "text": "Rosuvas",
+                "page": 1
+              }
+            ],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Dr. Anil Deshpande",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "Rx",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 76.46120600000722,
+          "outcome": null
+        },
+        {
+          "document_id": "d15",
+          "record": null,
+          "transcription": {
+            "document_id": "d15",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 14,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 451,
+            "cer": 0.0,
+            "values": {
+              "correct": 18,
+              "total": 18,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 12,
+              "total": 14,
+              "value": 0.8571428571428571
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Dr. Anil Deshpande",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "Rx",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 62.84884300001431,
+          "outcome": null
+        },
+        {
+          "document_id": "d16",
+          "record": null,
+          "transcription": {
+            "document_id": "d16",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 15,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 450,
+            "cer": 0.0,
+            "values": {
+              "correct": 23,
+              "total": 23,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 15,
+              "total": 15,
+              "value": 1.0
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": []
+          },
+          "seconds": 224.6430045000161,
+          "outcome": null
+        },
+        {
+          "document_id": "d17",
+          "record": null,
+          "transcription": {
+            "document_id": "d17",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 5,
+              "fp": 6,
+              "fn": 7,
+              "precision": 0.45454545454545453,
+              "recall": 0.4166666666666667,
+              "f1": 0.43478260869565216
+            },
+            "char_edits": 25,
+            "chars_expected": 469,
+            "cer": 0.053304904051172705,
+            "values": {
+              "correct": 0,
+              "total": 0,
+              "value": null
+            },
+            "layout": {
+              "correct": 5,
+              "total": 5,
+              "value": 1.0
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": []
+          },
+          "seconds": 215.3976285000099,
+          "outcome": null
+        },
+        {
+          "document_id": "d18",
+          "record": null,
+          "transcription": {
+            "document_id": "d18",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 17,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 854,
+            "cer": 0.0,
+            "values": {
+              "correct": 51,
+              "total": 51,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 17,
+              "total": 17,
+              "value": 1.0
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": []
+          },
+          "seconds": 242.6862997999997,
+          "outcome": null
+        },
+        {
+          "document_id": "d19",
+          "record": null,
+          "transcription": {
+            "document_id": "d19",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 17,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 687,
+            "cer": 0.0,
+            "values": {
+              "correct": 48,
+              "total": 48,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 17,
+              "total": 17,
+              "value": 1.0
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": []
+          },
+          "seconds": 74.2822342000145,
+          "outcome": null
+        },
+        {
+          "document_id": "d20",
+          "record": null,
+          "transcription": {
+            "document_id": "d20",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 19,
+              "fp": 1,
+              "fn": 1,
+              "precision": 0.95,
+              "recall": 0.95,
+              "f1": 0.95
+            },
+            "char_edits": 1,
+            "chars_expected": 891,
+            "cer": 0.001122334455667789,
+            "values": {
+              "correct": 49,
+              "total": 49,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 19,
+              "total": 19,
+              "value": 1.0
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": []
+          },
+          "seconds": 251.8302307999984,
+          "outcome": null
+        },
+        {
+          "document_id": "d21",
+          "record": null,
+          "transcription": {
+            "document_id": "d21",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 17,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 124,
+            "chars_expected": 640,
+            "cer": 0.19375,
+            "values": {
+              "correct": 39,
+              "total": 39,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 15,
+              "total": 15,
+              "value": 1.0
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": []
+          },
+          "seconds": 124.16119630000321,
+          "outcome": null
+        },
+        {
+          "document_id": "d22",
+          "record": null,
+          "transcription": {
+            "document_id": "d22",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 20,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 622,
+            "cer": 0.0,
+            "values": {
+              "correct": 45,
+              "total": 45,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 20,
+              "total": 20,
+              "value": 1.0
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": []
+          },
+          "seconds": 132.8593343999819,
+          "outcome": null
+        },
+        {
+          "document_id": "d23",
+          "record": null,
+          "transcription": {
+            "document_id": "d23",
+            "pages_expected": 2,
+            "pages_got": 2,
+            "lines": {
+              "tp": 24,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 930,
+            "cer": 0.0,
+            "values": {
+              "correct": 56,
+              "total": 56,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 24,
+              "total": 24,
+              "value": 1.0
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": []
+          },
+          "seconds": 454.7667895000195,
+          "outcome": null
+        },
+        {
+          "document_id": "d24",
+          "record": null,
+          "transcription": {
+            "document_id": "d24",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 18,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 647,
+            "cer": 0.0,
+            "values": {
+              "correct": 39,
+              "total": 39,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 18,
+              "total": 18,
+              "value": 1.0
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": []
+          },
+          "seconds": 231.5728097000101,
+          "outcome": null
+        },
+        {
+          "document_id": "d25",
+          "record": null,
+          "transcription": {
+            "document_id": "d25",
+            "pages_expected": 4,
+            "pages_got": 4,
+            "lines": {
+              "tp": 97,
+              "fp": 58,
+              "fn": 80,
+              "precision": 0.6258064516129033,
+              "recall": 0.5480225988700564,
+              "f1": 0.5843373493975904
+            },
+            "char_edits": 3481,
+            "chars_expected": 13941,
+            "cer": 0.2496951438203859,
+            "values": {
+              "correct": 312,
+              "total": 312,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 92,
+              "total": 97,
+              "value": 0.9484536082474226
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Sunrise Diagnostics",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 4,
+                "text": "GLU-002 HbA1c EDTA (lavender) 2 mL 24 h, 2-8 °C Same day 10-12 h Daily Clinical Biochemistry Yes 180 ion-exchange HPLC",
+                "expected": "table 12 cells",
+                "got": "table 11 cells"
+              },
+              {
+                "page": 4,
+                "text": "GLU-003 Total Cholesterol Serum (gold) 3 mL 7 d, 2-8 °C Same day 10-12 h Daily Clinical Biochemistry Yes 210 cholesterol oxidase-peroxidase (CHOD-PAP)",
+                "expected": "table 12 cells",
+                "got": "table 11 cells"
+              },
+              {
+                "page": 4,
+                "text": "GLU-004 Triglycerides Serum (gold) 3 mL 7 d, 2-8 °C Same day 10-12 h Daily Clinical Biochemistry Yes 240 glycerol phosphate oxidase-peroxidase (GPO-PAP)",
+                "expected": "table 12 cells",
+                "got": "table 11 cells"
+              },
+              {
+                "page": 4,
+                "text": "GLU-006 LDL Cholesterol Serum (gold) 3 mL 7 d, 2-8 °C Same day 10-12 h Daily Clinical Biochemistry Yes 300 calculated by the Friedewald equation when triglycerides are below 400 mg/dL",
+                "expected": "table 12 cells",
+                "got": "table 11 cells"
+              }
+            ]
+          },
+          "seconds": 1746.8471206999966,
+          "outcome": null
+        }
+      ]
+    },
+    "gemma4:e2b": {
+      "seconds_per_document": 45.32440039998619,
+      "summary": {
+        "documents": 0,
+        "types": {
+          "correct": 0,
+          "total": 0,
+          "value": null
+        },
+        "all_fields": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": null,
+          "recall": null,
+          "f1": null
+        },
+        "all_derived": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": null,
+          "recall": null,
+          "f1": null
+        },
+        "fields": {},
+        "derived": {},
+        "items": {},
+        "medicine_recall": null,
+        "citations": {
+          "correct": 0,
+          "total": 0,
+          "value": null
+        },
+        "remark_attribution": {
+          "correct": 0,
+          "total": 0,
+          "value": null
+        },
+        "frequency": {
+          "correct": 0,
+          "total": 0,
+          "value": null
+        },
+        "hallucinated": 0,
+        "missed": 0,
+        "unsafe": 0,
+        "clinical_items": 0,
+        "unsafe_items": 0,
+        "checked_items": 0,
+        "unsafe_rate": null
+      },
+      "transcription": {
+        "documents": 25,
+        "pages_expected": 35,
+        "pages_got": 35,
+        "lines": {
+          "tp": 597,
+          "fp": 90,
+          "fn": 114,
+          "precision": 0.868995633187773,
+          "recall": 0.8396624472573839,
+          "f1": 0.8540772532188842
+        },
+        "char_edits": 3726,
+        "chars_expected": 33027,
+        "values": {
+          "correct": 1420,
+          "total": 1445,
+          "value": 0.9826989619377162
+        },
+        "layout": {
+          "correct": 515,
+          "total": 596,
+          "value": 0.8640939597315436
+        },
+        "unreadable": 0,
+        "cer": 0.11281678626578254
+      },
+      "cases": {
+        "as_needed": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9801980198019802
+        },
+        "bmi_and_height": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "bun_in_kidney_panel": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "classified_other": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": null
+        },
+        "counts_in_other_units": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9795918367346939
+        },
+        "date_month_in_words": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9777777777777777
+        },
+        "date_with_dots": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9743589743589743
+        },
+        "dense_page_over_output_cap": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9871794871794872
+        },
+        "document_remark": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.98125
+        },
+        "document_remark_after_single_test": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.8958333333333334
+        },
+        "drug_allergy": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.975
+        },
+        "duration_in_days": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "duration_in_months": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9901960784313726
+        },
+        "duration_in_weeks": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9611650485436893
+        },
+        "duration_not_given": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9444444444444444
+        },
+        "e_prescription_text_layer": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "flag_as_arrow": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "flag_as_word": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9743589743589743
+        },
+        "flag_beside_result": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.944
+        },
+        "generic_name": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "header_as_table": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9795918367346939
+        },
+        "header_fields_on_one_line": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9781420765027322
+        },
+        "history": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9888268156424581
+        },
+        "image_only_pdf": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9558011049723757
+        },
+        "impression": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9811320754716981
+        },
+        "indian_digit_grouping": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "iso_date": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "jpeg": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9811320754716981
+        },
+        "lab_report_as_image": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "less_than_value": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9814814814814815
+        },
+        "medicine_without_strength": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "medicines_as_numbered_lines": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9791666666666666
+        },
+        "multi_page": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9868766404199475
+        },
+        "multiple_ranges": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.981651376146789
+        },
+        "named_frequency": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "no_known_allergies": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9925925925925926
+        },
+        "no_report_date": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.8958333333333334
+        },
+        "non_numeric_values": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9924953095684803
+        },
+        "one_sided_range": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9916666666666667
+        },
+        "page_parsed_in_parts": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9871794871794872
+        },
+        "panel_remark": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9523809523809523
+        },
+        "panel_remark_after_last_row": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "patient_mismatch": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9565217391304348
+        },
+        "printed_flag_without_computed_flag": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9545454545454546
+        },
+        "provisional_diagnosis": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "range_before_unit": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9809523809523809
+        },
+        "results_as_lines": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9607843137254902
+        },
+        "route_given": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9791666666666666
+        },
+        "single_creatinine": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "sixty_results": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9871794871794872
+        },
+        "statin_without_lipid_panel": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "strength_in_own_column": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "table_continued_on_next_page": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9821428571428571
+        },
+        "temperature": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9354838709677419
+        },
+        "test_name_variant": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.97
+        },
+        "test_remark": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9799196787148594
+        },
+        "trend_two_values": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9839034205231388
+        },
+        "two_column_layout": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9743589743589743
+        },
+        "two_diagnoses_one_line": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.989247311827957
+        },
+        "undated": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9444444444444444
+        },
+        "unused_complaint_line": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9880952380952381
+        },
+        "unused_date_line": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 1.0
+        },
+        "uploaded_before_older_documents": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9767441860465116
+        },
+        "vitals": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9924242424242424
+        },
+        "weekly_frequency": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": 0,
+          "hallucinated": 0,
+          "missed": 0,
+          "remark_attribution": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "frequency": {
+            "correct": 0,
+            "total": 0,
+            "value": null
+          },
+          "value_recall": 0.9722222222222222
+        }
+      },
+      "splits": {
+        "dev": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": {
+            "hits": 0,
+            "total": 0,
+            "rate": null,
+            "low": 0.0,
+            "high": 1.0
+          },
+          "value_recall": 0.9770114942528736
+        },
+        "held_out": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": {
+            "hits": 0,
+            "total": 0,
+            "rate": null,
+            "low": 0.0,
+            "high": 1.0
+          },
+          "value_recall": 0.981651376146789
+        },
+        "test": {
+          "documents": 0,
+          "field_f1": null,
+          "unsafe": {
+            "hits": 0,
+            "total": 0,
+            "rate": null,
+            "low": 0.0,
+            "high": 1.0
+          },
+          "value_recall": 0.9835111542192047
+        }
+      },
+      "routing": null,
+      "documents": [
+        {
+          "document_id": "d01",
+          "record": null,
+          "transcription": {
+            "document_id": "d01",
+            "pages_expected": 3,
+            "pages_got": 3,
+            "lines": {
+              "tp": 56,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 2029,
+            "cer": 0.0,
+            "values": {
+              "correct": 156,
+              "total": 156,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 46,
+              "total": 56,
+              "value": 0.8214285714285714
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Sunrise Diagnostics",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 2,
+                "text": "GLYCATED HAEMOGLOBIN",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 2,
+                "text": "GLUCOSE",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 2,
+                "text": "LIPID PROFILE",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 3,
+                "text": "KIDNEY FUNCTION TEST",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 3,
+                "text": "URINE ROUTINE",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 3,
+                "text": "Specific Gravity 1.020 1.005 - 1.030",
+                "expected": "table 5 cells",
+                "got": "table 4 cells"
+              },
+              {
+                "page": 3,
+                "text": "Protein Nil Nil",
+                "expected": "table 5 cells",
+                "got": "table 4 cells"
+              },
+              {
+                "page": 3,
+                "text": "Glucose Trace * Nil",
+                "expected": "table 5 cells",
+                "got": "table 4 cells"
+              },
+              {
+                "page": 3,
+                "text": "Pus Cells 2-4 /hpf 0 - 5",
+                "expected": "table 5 cells",
+                "got": "table 4 cells"
+              }
+            ]
+          },
+          "seconds": 148.653877499979,
+          "outcome": null
+        },
+        {
+          "document_id": "d02",
+          "record": null,
+          "transcription": {
+            "document_id": "d02",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 22,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 805,
+            "cer": 0.0,
+            "values": {
+              "correct": 45,
+              "total": 45,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 20,
+              "total": 22,
+              "value": 0.9090909090909091
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Dr. Anil Deshpande",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "Rx",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 22.324065499997232,
+          "outcome": null
+        },
+        {
+          "document_id": "d03",
+          "record": null,
+          "transcription": {
+            "document_id": "d03",
+            "pages_expected": 2,
+            "pages_got": 2,
+            "lines": {
+              "tp": 22,
+              "fp": 5,
+              "fn": 5,
+              "precision": 0.8148148148148148,
+              "recall": 0.8148148148148148,
+              "f1": 0.8148148148148148
+            },
+            "char_edits": 9,
+            "chars_expected": 944,
+            "cer": 0.009533898305084746,
+            "values": {
+              "correct": 43,
+              "total": 48,
+              "value": 0.8958333333333334
+            },
+            "layout": {
+              "correct": 17,
+              "total": 22,
+              "value": 0.7727272727272727
+            },
+            "unreadable": 0,
+            "missing_values": [
+              {
+                "item_id": "obs-1",
+                "field": "flag_printed",
+                "text": "L",
+                "page": 1
+              },
+              {
+                "item_id": "obs-2",
+                "field": "unit",
+                "text": "10³/µL",
+                "page": 1
+              },
+              {
+                "item_id": "obs-4",
+                "field": "flag_printed",
+                "text": "L",
+                "page": 1
+              },
+              {
+                "item_id": "obs-5",
+                "field": "flag_printed",
+                "text": "H",
+                "page": 2
+              },
+              {
+                "item_id": "obs-6",
+                "field": "flag_printed",
+                "text": "H",
+                "page": 2
+              }
+            ],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Kaveri Clinical Laboratory",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "HAEMATOLOGY",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 2,
+                "text": "GLYCATED HAEMOGLOBIN",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 2,
+                "text": "GLUCOSE",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 2,
+                "text": "PATHOLOGIST'S REMARKS",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 88.84530329998233,
+          "outcome": null
+        },
+        {
+          "document_id": "d04",
+          "record": null,
+          "transcription": {
+            "document_id": "d04",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 21,
+              "fp": 1,
+              "fn": 1,
+              "precision": 0.9545454545454546,
+              "recall": 0.9545454545454546,
+              "f1": 0.9545454545454546
+            },
+            "char_edits": 2,
+            "chars_expected": 755,
+            "cer": 0.0026490066225165563,
+            "values": {
+              "correct": 52,
+              "total": 53,
+              "value": 0.9811320754716981
+            },
+            "layout": {
+              "correct": 19,
+              "total": 21,
+              "value": 0.9047619047619048
+            },
+            "unreadable": 0,
+            "missing_values": [
+              {
+                "item_id": "med-1",
+                "field": "name",
+                "text": "Glycomet GP 1",
+                "page": 1
+              }
+            ],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Dr. Kavita Rao",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "Rx",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 22.614322100009304,
+          "outcome": null
+        },
+        {
+          "document_id": "d05",
+          "record": null,
+          "transcription": {
+            "document_id": "d05",
+            "pages_expected": 2,
+            "pages_got": 2,
+            "lines": {
+              "tp": 31,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 1079,
+            "cer": 0.0,
+            "values": {
+              "correct": 65,
+              "total": 65,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 26,
+              "total": 31,
+              "value": 0.8387096774193549
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Sunrise Diagnostics",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "COMPLETE BLOOD COUNT",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "IRON STUDIES",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 2,
+                "text": "GLYCATED HAEMOGLOBIN",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 2,
+                "text": "KIDNEY FUNCTION TEST",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 92.51827920001233,
+          "outcome": null
+        },
+        {
+          "document_id": "d06",
+          "record": null,
+          "transcription": {
+            "document_id": "d06",
+            "pages_expected": 2,
+            "pages_got": 2,
+            "lines": {
+              "tp": 30,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 1007,
+            "cer": 0.0,
+            "values": {
+              "correct": 60,
+              "total": 60,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 25,
+              "total": 30,
+              "value": 0.8333333333333334
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Sahaj Multispeciality Hospital - Laboratory Services",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "KIDNEY FUNCTION TEST",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "SERUM ELECTROLYTES",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 2,
+                "text": "GLUCOSE",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 2,
+                "text": "REMARKS",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 89.85341400001198,
+          "outcome": null
+        },
+        {
+          "document_id": "d07",
+          "record": null,
+          "transcription": {
+            "document_id": "d07",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 22,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 774,
+            "cer": 0.0,
+            "values": {
+              "correct": 49,
+              "total": 49,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 20,
+              "total": 22,
+              "value": 0.9090909090909091
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Dr. Anil Deshpande",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "Rx",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 21.99938750002184,
+          "outcome": null
+        },
+        {
+          "document_id": "d08",
+          "record": null,
+          "transcription": {
+            "document_id": "d08",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 24,
+              "fp": 1,
+              "fn": 1,
+              "precision": 0.96,
+              "recall": 0.96,
+              "f1": 0.96
+            },
+            "char_edits": 2,
+            "chars_expected": 714,
+            "cer": 0.0028011204481792717,
+            "values": {
+              "correct": 53,
+              "total": 54,
+              "value": 0.9814814814814815
+            },
+            "layout": {
+              "correct": 20,
+              "total": 24,
+              "value": 0.8333333333333334
+            },
+            "unreadable": 0,
+            "missing_values": [
+              {
+                "item_id": "obs-4",
+                "field": "flag_printed",
+                "text": "H",
+                "page": 1
+              }
+            ],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Kaveri Clinical Laboratory",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "LIVER FUNCTION TEST",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "THYROID",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "INFLAMMATORY MARKERS",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 49.46039799999562,
+          "outcome": null
+        },
+        {
+          "document_id": "d09",
+          "record": null,
+          "transcription": {
+            "document_id": "d09",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 20,
+              "fp": 2,
+              "fn": 2,
+              "precision": 0.9090909090909091,
+              "recall": 0.9090909090909091,
+              "f1": 0.9090909090909091
+            },
+            "char_edits": 10,
+            "chars_expected": 729,
+            "cer": 0.013717421124828532,
+            "values": {
+              "correct": 40,
+              "total": 42,
+              "value": 0.9523809523809523
+            },
+            "layout": {
+              "correct": 17,
+              "total": 20,
+              "value": 0.85
+            },
+            "unreadable": 0,
+            "missing_values": [
+              {
+                "item_id": "obs-2",
+                "field": "unit",
+                "text": "µg/dL",
+                "page": 1
+              },
+              {
+                "item_id": "obs-3",
+                "field": "unit",
+                "text": "µIU/mL",
+                "page": 1
+              }
+            ],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Sunrise Diagnostics",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "THYROID PROFILE",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "HAEMOGRAM",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 49.222760300006485,
+          "outcome": null
+        },
+        {
+          "document_id": "d10",
+          "record": null,
+          "transcription": {
+            "document_id": "d10",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 16,
+              "fp": 1,
+              "fn": 1,
+              "precision": 0.9411764705882353,
+              "recall": 0.9411764705882353,
+              "f1": 0.9411764705882353
+            },
+            "char_edits": 8,
+            "chars_expected": 575,
+            "cer": 0.01391304347826087,
+            "values": {
+              "correct": 29,
+              "total": 31,
+              "value": 0.9354838709677419
+            },
+            "layout": {
+              "correct": 14,
+              "total": 16,
+              "value": 0.875
+            },
+            "unreadable": 0,
+            "missing_values": [
+              {
+                "item_id": "med-1",
+                "field": "strength",
+                "text": "50 mcg",
+                "page": 1
+              },
+              {
+                "item_id": "med-1",
+                "field": "dose",
+                "text": "1 tab",
+                "page": 1
+              }
+            ],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Dr. Kavita Rao",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "Rx",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 19.769936400000006,
+          "outcome": null
+        },
+        {
+          "document_id": "d11",
+          "record": null,
+          "transcription": {
+            "document_id": "d11",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 16,
+              "fp": 1,
+              "fn": 1,
+              "precision": 0.9411764705882353,
+              "recall": 0.9411764705882353,
+              "f1": 0.9411764705882353
+            },
+            "char_edits": 6,
+            "chars_expected": 569,
+            "cer": 0.01054481546572935,
+            "values": {
+              "correct": 21,
+              "total": 22,
+              "value": 0.9545454545454546
+            },
+            "layout": {
+              "correct": 13,
+              "total": 16,
+              "value": 0.8125
+            },
+            "unreadable": 0,
+            "missing_values": [
+              {
+                "item_id": "obs-1",
+                "field": "unit",
+                "text": "µIU/mL",
+                "page": 1
+              }
+            ],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Sunrise Diagnostics",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "THYROID PROFILE",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "VITAMINS",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 46.57434409999405,
+          "outcome": null
+        },
+        {
+          "document_id": "d12",
+          "record": null,
+          "transcription": {
+            "document_id": "d12",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 17,
+              "fp": 1,
+              "fn": 1,
+              "precision": 0.9444444444444444,
+              "recall": 0.9444444444444444,
+              "f1": 0.9444444444444444
+            },
+            "char_edits": 2,
+            "chars_expected": 617,
+            "cer": 0.0032414910858995136,
+            "values": {
+              "correct": 32,
+              "total": 33,
+              "value": 0.9696969696969697
+            },
+            "layout": {
+              "correct": 15,
+              "total": 17,
+              "value": 0.8823529411764706
+            },
+            "unreadable": 0,
+            "missing_values": [
+              {
+                "item_id": "med-1",
+                "field": "dose",
+                "text": "1 tab",
+                "page": 1
+              }
+            ],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Dr. Kavita Rao",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "Rx",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 20.179167499998584,
+          "outcome": null
+        },
+        {
+          "document_id": "d13",
+          "record": null,
+          "transcription": {
+            "document_id": "d13",
+            "pages_expected": 2,
+            "pages_got": 2,
+            "lines": {
+              "tp": 28,
+              "fp": 2,
+              "fn": 2,
+              "precision": 0.9333333333333333,
+              "recall": 0.9333333333333333,
+              "f1": 0.9333333333333333
+            },
+            "char_edits": 9,
+            "chars_expected": 1145,
+            "cer": 0.007860262008733625,
+            "values": {
+              "correct": 65,
+              "total": 65,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 25,
+              "total": 28,
+              "value": 0.8928571428571429
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Sahaj Multispeciality Hospital - Laboratory Services",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 2,
+                "text": "URINE ROUTINE",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 2,
+                "text": "SERUM PSA",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 91.53756780002732,
+          "outcome": null
+        },
+        {
+          "document_id": "d14",
+          "record": null,
+          "transcription": {
+            "document_id": "d14",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 21,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 703,
+            "cer": 0.0,
+            "values": {
+              "correct": 42,
+              "total": 42,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 19,
+              "total": 21,
+              "value": 0.9047619047619048
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Dr. Anil Deshpande",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "Rx",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 21.585441900009755,
+          "outcome": null
+        },
+        {
+          "document_id": "d15",
+          "record": null,
+          "transcription": {
+            "document_id": "d15",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 13,
+              "fp": 1,
+              "fn": 1,
+              "precision": 0.9285714285714286,
+              "recall": 0.9285714285714286,
+              "f1": 0.9285714285714286
+            },
+            "char_edits": 2,
+            "chars_expected": 451,
+            "cer": 0.004434589800443459,
+            "values": {
+              "correct": 17,
+              "total": 18,
+              "value": 0.9444444444444444
+            },
+            "layout": {
+              "correct": 10,
+              "total": 13,
+              "value": 0.7692307692307693
+            },
+            "unreadable": 0,
+            "missing_values": [
+              {
+                "item_id": "med-2",
+                "field": "name",
+                "text": "Ecosprin",
+                "page": 1
+              }
+            ],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Dr. Anil Deshpande",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "Rx",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "1 Tab. Rosuvas 10 mg 1 tab 0-0-1 Continue",
+                "expected": "table 6 cells",
+                "got": "table 5 cells"
+              }
+            ]
+          },
+          "seconds": 17.77069889998529,
+          "outcome": null
+        },
+        {
+          "document_id": "d16",
+          "record": null,
+          "transcription": {
+            "document_id": "d16",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 14,
+              "fp": 1,
+              "fn": 1,
+              "precision": 0.9333333333333333,
+              "recall": 0.9333333333333333,
+              "f1": 0.9333333333333333
+            },
+            "char_edits": 1,
+            "chars_expected": 450,
+            "cer": 0.0022222222222222222,
+            "values": {
+              "correct": 22,
+              "total": 23,
+              "value": 0.9565217391304348
+            },
+            "layout": {
+              "correct": 12,
+              "total": 14,
+              "value": 0.8571428571428571
+            },
+            "unreadable": 0,
+            "missing_values": [
+              {
+                "item_id": "obs-2",
+                "field": "unit",
+                "text": "10³/µL",
+                "page": 1
+              }
+            ],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Kaveri Clinical Laboratory",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "HAEMATOLOGY",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 44.29918609999004,
+          "outcome": null
+        },
+        {
+          "document_id": "d17",
+          "record": null,
+          "transcription": {
+            "document_id": "d17",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 10,
+              "fp": 1,
+              "fn": 2,
+              "precision": 0.9090909090909091,
+              "recall": 0.8333333333333334,
+              "f1": 0.8695652173913043
+            },
+            "char_edits": 1,
+            "chars_expected": 469,
+            "cer": 0.0021321961620469083,
+            "values": {
+              "correct": 0,
+              "total": 0,
+              "value": null
+            },
+            "layout": {
+              "correct": 8,
+              "total": 10,
+              "value": 0.8
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Sahaj Multispeciality Hospital - Department of Radiology",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "X-RAY CHEST PA VIEW",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 41.73862829999416,
+          "outcome": null
+        },
+        {
+          "document_id": "d18",
+          "record": null,
+          "transcription": {
+            "document_id": "d18",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 16,
+              "fp": 1,
+              "fn": 1,
+              "precision": 0.9411764705882353,
+              "recall": 0.9411764705882353,
+              "f1": 0.9411764705882353
+            },
+            "char_edits": 8,
+            "chars_expected": 854,
+            "cer": 0.00936768149882904,
+            "values": {
+              "correct": 49,
+              "total": 51,
+              "value": 0.9607843137254902
+            },
+            "layout": {
+              "correct": 16,
+              "total": 16,
+              "value": 1.0
+            },
+            "unreadable": 0,
+            "missing_values": [
+              {
+                "item_id": "obs-5",
+                "field": "panel",
+                "text": "DIABETES SCREEN",
+                "page": 1
+              },
+              {
+                "item_id": "obs-6",
+                "field": "panel",
+                "text": "DIABETES SCREEN",
+                "page": 1
+              }
+            ],
+            "layout_differences": []
+          },
+          "seconds": 47.801161100011086,
+          "outcome": null
+        },
+        {
+          "document_id": "d19",
+          "record": null,
+          "transcription": {
+            "document_id": "d19",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 16,
+              "fp": 1,
+              "fn": 1,
+              "precision": 0.9411764705882353,
+              "recall": 0.9411764705882353,
+              "f1": 0.9411764705882353
+            },
+            "char_edits": 11,
+            "chars_expected": 687,
+            "cer": 0.01601164483260553,
+            "values": {
+              "correct": 47,
+              "total": 48,
+              "value": 0.9791666666666666
+            },
+            "layout": {
+              "correct": 15,
+              "total": 16,
+              "value": 0.9375
+            },
+            "unreadable": 0,
+            "missing_values": [
+              {
+                "item_id": "document",
+                "field": "facility",
+                "text": "Heartline Cardiac Clinic",
+                "page": 1
+              }
+            ],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Rx",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 21.375573400000576,
+          "outcome": null
+        },
+        {
+          "document_id": "d20",
+          "record": null,
+          "transcription": {
+            "document_id": "d20",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 17,
+              "fp": 2,
+              "fn": 3,
+              "precision": 0.8947368421052632,
+              "recall": 0.85,
+              "f1": 0.8717948717948718
+            },
+            "char_edits": 2,
+            "chars_expected": 891,
+            "cer": 0.002244668911335578,
+            "values": {
+              "correct": 48,
+              "total": 49,
+              "value": 0.9795918367346939
+            },
+            "layout": {
+              "correct": 10,
+              "total": 17,
+              "value": 0.5882352941176471
+            },
+            "unreadable": 0,
+            "missing_values": [
+              {
+                "item_id": "obs-6",
+                "field": "unit",
+                "text": "10³/µL",
+                "page": 1
+              }
+            ],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Medilink Diagnostics",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "Patient Name Ms. Nandini Bose Sample ID MD-250412-077",
+                "expected": "table 4 cells",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "Age / Gender 36 Years / Female Referred By Dr. Suresh Pillai",
+                "expected": "table 4 cells",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "Collected 12/04/2025 09:05 Reported 12/04/2025 17:40",
+                "expected": "table 4 cells",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "THYROID FUNCTION TEST",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "COMPLETE BLOOD COUNT",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "INTERPRETATION",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 50.4532479000045,
+          "outcome": null
+        },
+        {
+          "document_id": "d21",
+          "record": null,
+          "transcription": {
+            "document_id": "d21",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 16,
+              "fp": 1,
+              "fn": 1,
+              "precision": 0.9411764705882353,
+              "recall": 0.9411764705882353,
+              "f1": 0.9411764705882353
+            },
+            "char_edits": 123,
+            "chars_expected": 640,
+            "cer": 0.1921875,
+            "values": {
+              "correct": 38,
+              "total": 39,
+              "value": 0.9743589743589743
+            },
+            "layout": {
+              "correct": 12,
+              "total": 15,
+              "value": 0.8
+            },
+            "unreadable": 0,
+            "missing_values": [
+              {
+                "item_id": "rem-1",
+                "field": "text",
+                "text": "Repeat TSH after 8 weeks.",
+                "page": 1
+              }
+            ],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Pillai Family Clinic",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "Clinical notes",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "Rx",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 39.61814890001551,
+          "outcome": null
+        },
+        {
+          "document_id": "d22",
+          "record": null,
+          "transcription": {
+            "document_id": "d22",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 20,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 622,
+            "cer": 0.0,
+            "values": {
+              "correct": 45,
+              "total": 45,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 19,
+              "total": 20,
+              "value": 0.95
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "CityCare Labs",
+                "expected": "heading 1",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 39.7786189999897,
+          "outcome": null
+        },
+        {
+          "document_id": "d23",
+          "record": null,
+          "transcription": {
+            "document_id": "d23",
+            "pages_expected": 2,
+            "pages_got": 2,
+            "lines": {
+              "tp": 23,
+              "fp": 1,
+              "fn": 1,
+              "precision": 0.9583333333333334,
+              "recall": 0.9583333333333334,
+              "f1": 0.9583333333333334
+            },
+            "char_edits": 5,
+            "chars_expected": 930,
+            "cer": 0.005376344086021506,
+            "values": {
+              "correct": 55,
+              "total": 56,
+              "value": 0.9821428571428571
+            },
+            "layout": {
+              "correct": 19,
+              "total": 23,
+              "value": 0.8260869565217391
+            },
+            "unreadable": 0,
+            "missing_values": [
+              {
+                "item_id": "obs-8",
+                "field": "unit",
+                "text": "µIU/mL",
+                "page": 2
+              }
+            ],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Apex Pathology",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "HAEMATOLOGY",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 2,
+                "text": "HAEMATOLOGY (contd.)",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 2,
+                "text": "THYROID PROFILE",
+                "expected": "heading 2",
+                "got": "text"
+              }
+            ]
+          },
+          "seconds": 87.3755516000092,
+          "outcome": null
+        },
+        {
+          "document_id": "d24",
+          "record": null,
+          "transcription": {
+            "document_id": "d24",
+            "pages_expected": 1,
+            "pages_got": 1,
+            "lines": {
+              "tp": 18,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "char_edits": 0,
+            "chars_expected": 647,
+            "cer": 0.0,
+            "values": {
+              "correct": 39,
+              "total": 39,
+              "value": 1.0
+            },
+            "layout": {
+              "correct": 18,
+              "total": 18,
+              "value": 1.0
+            },
+            "unreadable": 0,
+            "missing_values": [],
+            "layout_differences": []
+          },
+          "seconds": 45.32440039998619,
+          "outcome": null
+        },
+        {
+          "document_id": "d25",
+          "record": null,
+          "transcription": {
+            "document_id": "d25",
+            "pages_expected": 4,
+            "pages_got": 4,
+            "lines": {
+              "tp": 88,
+              "fp": 67,
+              "fn": 89,
+              "precision": 0.567741935483871,
+              "recall": 0.4971751412429379,
+              "f1": 0.5301204819277109
+            },
+            "char_edits": 3525,
+            "chars_expected": 13941,
+            "cer": 0.2528513019152141,
+            "values": {
+              "correct": 308,
+              "total": 312,
+              "value": 0.9871794871794872
+            },
+            "layout": {
+              "correct": 80,
+              "total": 88,
+              "value": 0.9090909090909091
+            },
+            "unreadable": 0,
+            "missing_values": [
+              {
+                "item_id": "obs-46",
+                "field": "unit",
+                "text": "µg/dL",
+                "page": 2
+              },
+              {
+                "item_id": "obs-47",
+                "field": "unit",
+                "text": "µIU/mL",
+                "page": 2
+              },
+              {
+                "item_id": "obs-48",
+                "field": "unit",
+                "text": "µg/dL",
+                "page": 2
+              },
+              {
+                "item_id": "obs-49",
+                "field": "unit",
+                "text": "µg/dL",
+                "page": 2
+              }
+            ],
+            "layout_differences": [
+              {
+                "page": 1,
+                "text": "Sunrise Diagnostics",
+                "expected": "heading 1",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "HAEMATOLOGY",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "GLUCOSE AND LIPIDS",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 1,
+                "text": "HbA1c 6.0 % Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5",
+                "expected": "table 5 cells",
+                "got": "table 4 cells"
+              },
+              {
+                "page": 1,
+                "text": "KIDNEY FUNCTION TEST",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 3,
+                "text": "URINE ROUTINE",
+                "expected": "heading 2",
+                "got": "text"
+              },
+              {
+                "page": 3,
+                "text": "Pus Cells 1-2 /hpf 0 - 5",
+                "expected": "table 5 cells",
+                "got": "table 4 cells"
+              },
+              {
+                "page": 4,
+                "text": "GLU-002 HbA1c EDTA (lavender) 2 mL 24 h, 2-8 °C Same day 10-12 h Daily Clinical Biochemistry Yes 180 ion-exchange HPLC",
+                "expected": "table 12 cells",
+                "got": "table 11 cells"
+              }
+            ]
+          },
+          "seconds": 299.3461987999908,
+          "outcome": null
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "c44a7d0a11b56d1138a9bae2c6166bcc9567195a14b9c063bdaebf81a6d7c5b1",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "654e60dcfb369c03dd89b436e8ebaadf00767a18f22d556d730e4b1c6b10590b",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "# Dr. Anil Deshpande\nMBBS, MD (General Medicine)\nReg. No.: MMC-2009/04/0001\nSahaj Multispeciality Hospital, Karve Road, Pune\nDate: 20/06/2024\nPatient: Meera Iyer\nAge / Sex: 57 Y / F\nUHID: SH-100231\nVitals: BP 142/88 mmHg, Pulse 82 /min, Weight 68 kg, SpO2 98 %\nAllergies: NKDA\nC/O: Fatigue and increased thirst for 2 months\nK/C/O: Hypertension\nDiagnosis: Type 2 diabetes mellitus, Microcytic anaemia\n\n## Rx\n\n| # | Medicine | Dose | Frequency | Duration | Instructions |\n|---|---|---|---|---|---|\n| 1 | Tab. Glycomet 500 mg | 1 tab | 1-0-1 | 30 days | After food |\n| 2 | Tab. Telma 40 mg | 1 tab | 1-0-0 | 30 days | Before breakfast |\n| 3 | Tab. Livogen | 1 tab | 0-1-0 | 30 days | After lunch |\n\nAdvice: Diet control and 30 minutes of brisk walking daily.\nReview after 3 months with HbA1c and FBS.\nSignature: Dr. Anil Deshpande\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1499,
+    "eval_count": 363,
+    "total_duration": 78348717900,
+    "load_duration": 4696500,
+    "prompt_eval_duration": 40632459000,
+    "eval_duration": 37604395000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

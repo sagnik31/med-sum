@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "2854446fbef8483b6984ca89f8d3e34cb40572b88a242d103b5fa1e9ecbaa49f",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "99d736d497124aff76ec32189bffafa9d9ac29d3aa4aaf8700d2aa4c19442a38",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Dr. Kavita Rao\nMBBS, DM (Endocrinology)\nReg. No.: MMC-2012/07/0002\nSahaj Multispeciality Hospital, Karve Road, Pune\nDate: 10/01/2025\nPatient: Meera Iyer\nAge / Sex: 57 Y / F\nUHID: SH-100231\nVitals: BP 136/84 mmHg, Pulse 76 /min, Weight 66.5 kg\nAllergies: NKDA\nK/C/O: T2DM, HTN\nImpression: Iron deficiency anaemia\n\nRx\n| # | Medicine | Dose | Frequency | Duration | Instructions |\n|---|---|---|---|---|---|\n| 1 | Tab. Glycomet GP | 1 tab | 1-0-1 | 3 months | Before food |\n| 2 | Tab. Telma 40 mg | 1 tab | 1-0-0 | 3 months | |\n| 3 | Tab. Orofer XT | 1 tab | BD | 3 months | After food |\n| 4 | Tab. Pan 40 mg | 1 tab | 1-0-0 | 15 days | Before breakfast |\n| 5 | Tab. Dolo 650 mg | 1 tab | SOS | 5 days | For fever |\n\nAdvice: Repeat CBC, iron studies and HbA1c after 3 months.\nSignature: Dr. Kavita Rao\nSynthetic test document: fictional patient, doctors and laboratory.\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 911,
+    "eval_count": 359,
+    "total_duration": 22295685500,
+    "load_duration": 15777800,
+    "prompt_eval_duration": 11400710000,
+    "eval_duration": 10795294000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

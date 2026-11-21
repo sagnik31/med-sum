@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "32aba9310a5d19014bc5cc89663d17151e89c87e74b52c00d8c57ba02c69b52f",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "7e55744cd45cb858ab555a2dd4cd2775634d47f688b90e2730fcbcbd4fa17dae",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "CityCare Labs\nWakad, Pune 411057\nName: Mr. Kabir Sethi | Age/Sex: 46Y/M\nReg. No: CC-88412 | Referred by: Dr. Farah Khan\nCollected: 2025-03-20 | Reported: 2025-03-20\n\n## RENAL FUNCTION\n\n| Parameter | Result | Units | Normal Range |\n|---|---|---|---|\n| Blood Urea | 44 ↑ | mg/dL | 15 - 40 |\n| Serum Creatinine | 1.4 ↑ | mg/dL | 0.7 - 1.3 |\n\n## eGFR\n\n| Parameter | Result | Units | Normal Range |\n|---|---|---|---|\n| eGFR | 62 ↓ | mL/min/1.73m² | > 90 |\n\nNote: Calculated by the CKD-EPI 2021 equation.\n\n## ELECTROLYTES\n\n| Parameter | Result | Units | Normal Range |\n|---|---|---|---|\n| Sodium | 139 | mmol/L | 135 - 145 |\n| Potassium | 4.6 | mmol/L | 3.5 - 5.1 |\n| Chloride | 101 | mmol/L | 98 - 107 |\n\nDr. Imran Shaikh, DCP\n\nSynthetic test document: fictional patient, doctors and laboratory.\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1405,
+    "eval_count": 334,
+    "total_duration": 39475504900,
+    "load_duration": 14391900,
+    "prompt_eval_duration": 28942311000,
+    "eval_duration": 10409518000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

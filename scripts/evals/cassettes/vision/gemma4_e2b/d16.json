@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "a2912d6decbbcd92b6e15c989ce24b0e363d534ecf296b72034637cd2d1c993b",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "8688202504a1702031e258728feea8fa2222f2ad3f07115fe9521d8b928527ab",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Kaveri Clinical Laboratory\nKothrud, Pune 411038\nName: Arjun Mehta\nAge/Gender: 41 Y/M\nPatient ID: KCL-120377\nReferred By: Dr. S. Kulkarni\nReported: 02-Apr-2025 10:05 AM\n\nHAEMATOLOGY\n\n| Test | Result | Unit | Reference Range |\n|---|---|---|---|\n| Haemoglobin | 14.8 | g/dL | 13.0 - 17.0 |\n| Total Leucocyte Count | 7.9 | 10^3/µL | 4.0 - 10.0 |\n| Platelets | 2.65 | lakh/cumm | 1.50 - 4.10 |\n\nDr. Prakash Nair, MD (Pathology)\n*** End of Report ***\n\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1535,
+    "eval_count": 227,
+    "total_duration": 43613837900,
+    "load_duration": 14640600,
+    "prompt_eval_duration": 36375831000,
+    "eval_duration": 7091609000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

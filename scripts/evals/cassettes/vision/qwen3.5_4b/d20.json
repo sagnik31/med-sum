@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "0fc4667de7bb13beae1eeac9aed505729a02736cd89da90006fd57c769820bed",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "76e6a9bc8312724cbd40ff9c5810e1c3686a6ef9d7ff92c2480e853b0ab47b9c",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "# Medilink Diagnostics\nFC Road, Shivajnagar, Pune 411005\n\n| Patient Name | Ms. Nandini Bose | Sample ID | MD-250412-077 |\n| :--- | :--- | :--- | :--- |\n| Age / Gender | 36 Years / Female | Referred By | Dr. Suresh Pillai |\n| Collected | 12/04/2025 09:05 | Reported | 12/04/2025 17:40 |\n\n## THYROID FUNCTION TEST\n\n| Investigation | Observed Value | Flag | Biological Reference Interval | Units |\n| :--- | :--- | :--- | :--- | :--- |\n| Free T4 | 0.82 | | 0.70 - 1.48 | ng/dL |\n| TSH (Ultrasensitive) | 6.8 | High | 0.35 - 4.94 | µIU/mL |\n| Anti-TPO Antibodies | 142 | High | < 34 | IU/mL |\n\n## COMPLETE BLOOD COUNT\n\n| Investigation | Observed Value | Flag | Biological Reference Interval | Units |\n| :--- | :--- | :--- | :--- | :--- |\n| Haemoglobin | 11.1 | Low | 12.0 - 15.0 | g/dL |\n| MCV | 78 | Low | 83 - 101 | fL |\n| Total Leucocyte Count | 8.2 | | 4.0 - 10.0 | 10³/µL |\n| Platelets | 3.10 | | 1.50 - 4.10 | lakh/cumm |\n\n## INTERPRETATION\n\nRaised TSH with positive anti-TPO antibodies suggests autoimmune thyroiditis; clinical correlation advised.\nDr. Ritu Saxena, MD (Pathology)\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 467,
+    "total_duration": 251143396100,
+    "load_duration": 14541700,
+    "prompt_eval_duration": 196970272000,
+    "eval_duration": 53873330000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

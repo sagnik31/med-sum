@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "1be507607c1b3eec52d5d6081cedccd5cd9be47272b79adff2c9aebf3bd2ca3e",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "5c4232d3af7f9cfb16170843af92aad465303c24c6ad942bbe1e592791725445",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "# Heartline Cardiac Clinic\n\nDr. Farah Khan\nMBBS, MD, DM (Cardiology)\nBaner, Pune 411045 | Reg. No.: MMC-2011/02/0003\nDate: 05-03-2025\n\nName: Kabir Sethi | Age/Sex: 45/M | UHID: SH-100235\nBP: 148/94 mmHg | Pulse: 88/min | SpO2: 97%\nDx: Essential hypertension; Dyslipidaemia\nAllergy: None known\n\n## Rx\n\n1. Tab. Telma 40 mg — 1 tab — 1-0-0 — x 30 days — After breakfast\n2. Tab. Rosuvas 10 mg — 1 tab — 0-0-1 — x 30 days — After dinner\n3. Tab. Ecosprin 75 mg — 1 tab — 0-1-0 — x 30 days — After lunch\n4. Tab. Sorbitrate 5 mg (sublingual) — 1 tab — SOS — If chest pain\n\nAdvice: Review after 4 weeks with lipid profile.\n\nSignature: Dr. Farah Khan\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1499,
+    "eval_count": 305,
+    "total_duration": 73945448100,
+    "load_duration": 13229900,
+    "prompt_eval_duration": 41507958000,
+    "eval_duration": 32163786000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

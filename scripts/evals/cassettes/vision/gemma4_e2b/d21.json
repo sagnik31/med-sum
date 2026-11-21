@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "6f8cd9a46736acff973e0e1ee89a9234ddbb264ddcb6ed27560ef1de9e0b98be",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "c9b922c4fb6711e7e32ab36c101d3d1f8eec166611f558143ab54342b0d6cc0b",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Pillai Family Clinic\nDr. Suresh Pillai\nMBBS, MD (Medicine)\nModel Colony, Pune 411016 | Reg. No.: MMC-2007/11/0004\nPatient: Mrs. Nandini Bose, 36 F, UHID SH-100236 | Date: 15.04.2025\n\nClinical notes\nC/O: tiredness, weight gain x 3 months\nBP: 122/80 mmHg | Pulse: 64/min | Wt: 71 kg\nH/o: PCOS\nDiagnosis: Hashimoto's thyroiditis\nAdvice: Repeat TSH after 8 weeks\nSignature: Dr. Suresh Pillai\n\nRx\n1. Tab. Thyronorm 25 mcg — 1 tab — 1-0-0 — 8 weeks — Empty stomach\n2. Sachet Calcirol 60,000 IU — 1 sachet — Once a week — 8 weeks — With milk\n3. Tab. Folvite 5 mg — 1 tab — 0-1-0 — 8 weeks\n\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1405,
+    "eval_count": 272,
+    "total_duration": 39171635600,
+    "load_duration": 11897500,
+    "prompt_eval_duration": 29922859000,
+    "eval_duration": 9108364000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

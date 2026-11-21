@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "c17faf4005b8be9acc6943d43ea99fd569c04346ec090469b6acc038fbb78f64",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "559efde4742959621de5817a101a291499e773b548a9e98cb5adf0e9607d846a",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Sunrise Diagnostics\nPlot 12, Baner Road, Pune 411045\nPatient Name: Ms. Fatima Shaikh\nAge / Sex: 31 Years / Female\nLab ID: SD-25-010733\nRef. By: Dr. Kavita Rao\nCollected On: 08/01/2025 08:20 AM\nReported On: 08/01/2025 06:15 PM\n\nTHYROID PROFILE\n| Test | Result | Flag | Unit | Reference Range |\n|---|---|---|---|---|\n| TSH | 3.1 | | \\u03bcU/mL | 0.27 - 4.20 |\n\nVITAMINS\n| Test | Result | Flag | Unit | Reference Range |\n|---|---|---|---|---|\n| Vitamin D (25-OH) | 18.4 | L | ng/mL | Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100 |\n\nDr. Neha Joshi, MD (Pathology)\n*** End of Report ***\n\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1535,
+    "eval_count": 282,
+    "total_duration": 45948209000,
+    "load_duration": 6033800,
+    "prompt_eval_duration": 36558101000,
+    "eval_duration": 9244422000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

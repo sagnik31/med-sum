@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "43c5b2f2f63e439fde5deec2439187a4ae42de85983872f4a7558decdaae592f",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "fc5c7ae226dfab400627feab8ab2aea2116457beda3c42db03c49eadc7a9fd2b",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Dr. Anil Deshpande\nMBBS, MD (General Medicine)\nReg. No.: MMC-2009/04/0001\nSahaj Multispeciality Hospital, Karve Road, Pune\nDate: 10/02/2025\nPatient: Rohan Kulkarni\nAge / Sex: 44 Y / M\nUHID: SH-100232\nVitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²\nDrug Allergy: Sulfa drugs (rash)\nC/O: Occasional headache\nDiagnosis: Hypertension\nProvisional Diagnosis: Chronic kidney disease, to be evaluated\n\nRx\n| # | Medicine | Dose | Frequency | Duration | Instructions |\n|---|---|---|---|---|---|\n| 1 | Tab. Amlong 5 mg | 1 tab | 1-0-0 | 1 month | |\n| 2 | Tab. Atorva 20 mg | 1 tab | 0-0-1 | 1 month | At bedtime |\n| 3 | Tab. Pantocid 40 mg | 1 tab | 1-0-0 | 14 days | Before breakfast |\n\nAdvice: Low salt diet.\nRepeat KFT after 4 weeks.\nSignature: Dr. Anil Deshpande\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 911,
+    "eval_count": 335,
+    "total_duration": 21590827800,
+    "load_duration": 5255700,
+    "prompt_eval_duration": 11439538000,
+    "eval_duration": 10093067000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}
