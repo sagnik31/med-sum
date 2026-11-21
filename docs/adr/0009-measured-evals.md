@@ -1,6 +1,6 @@
 # 0009. Evals measure the safety net, on a committed synthetic dataset, with honest uncertainty
 
-- **Status:** Accepted, 2026-11-07 to 2026-11-12; resumable runs 2026-11-21; stages 2026-11-22. Built; the live runs over the dataset on both models are not made yet.
+- **Status:** Accepted, 2026-11-07 to 2026-11-12; resumable runs 2026-11-21; stages and the overview eval 2026-11-22. Built; the live runs over the dataset on both models are not made yet.
 
 ## Context
 
@@ -24,6 +24,8 @@ The design rests on "deterministic checks catch what the model gets wrong". That
 
 **Each stage is measured on its own** (added 2026-11-22). A miss in an end-to-end record can be a misread page or a misparsed one, and the report can't tell which. So `evals.run --stage` runs one part of the same graph: `vision` reads the pages and stops (scored on transcription only, no record, no routing), and `reasoning` starts from the expected transcriptions and runs the rest (scored on the record and routing, with no reading error possible). `e2e`, the default, is the whole graph. Each stage keeps its own cassettes, its report says its stage, and `evals.compare` refuses runs of different stages. So that the stages don't cost a second full run, a live `e2e` run answers every request the vision and reasoning runs recorded (same model, prompt, input, options and model build): each page's reading, and, for a document the model read exactly as expected, its classify and parse too, which are then the reasoning run's requests. The model is called only where the e2e run differs from the stages, which is where a reading error carries on; the recorded model time of the reused replies is added to the document's time, so timings stay comparable. A vision report chooses no model (it says which pass the value-recall gate); a reasoning report's choice leaves that gate to the vision report; the e2e report applies the whole gate.
 
+**The patient overview is measured apart, and judged** (added 2026-11-22, `python -m evals.overview`). The overview is the one place a model writes free text a clinician reads, and the check that decides whether it is shown only knows numbers and claim words. Each patient's facts are built by code from the answer keys (so no reading or parsing error reaches them), each model writes the overview as the service does, and code scores whether it was shown, how many replies it took and how many of the tests listed for attention it names. Whether each sentence follows from the facts, what a clinician needs and is left out, and whether the whole misleads are left to a judge: the run writes each shown overview beside its facts (`judge.json`) with a rubric (`judge.md`), a separate session that reads only those files judges them, and `--verdicts` checks the verdicts answer every item in the rubric's format before adding their counts, with intervals, to the report. The judge is not a model call of the service, so it doesn't go through `llm.py`; it only ever sees the synthetic dataset's facts. Its verdicts are reported, never gated on: what is shown stays the deterministic check's decision.
+
 ## Alternatives rejected
 
 - **Real or public documents.** Privacy and licensing.
@@ -32,6 +34,8 @@ The design rests on "deterministic checks catch what the model gets wrong". That
 - **Results in a gitignored folder.** Nobody could see how the numbers moved.
 - **Scoring a document that failed on an outage.** The miss says nothing about the model; stopping and resuming keeps the run whole.
 - **Only an end-to-end run.** Its misses don't say which step made them, and every change pays for reading every page again.
+- **A judge for the record's fields too.** The answer keys hold the exact record, so code scores it exactly and the same way every time; a judge would only add noise.
+- **A judge that gates.** Its verdicts vary between judges and runs; a gate on them would move with the judge, not the model.
 - **Only the stages.** How a reading error carries into the record and its routing is what reaches a doctor, so the end-to-end run stays; reusing the readings keeps it cheap.
 
 ## Consequences

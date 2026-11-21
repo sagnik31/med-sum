@@ -63,7 +63,7 @@ Measured on a committed synthetic dataset of 25 documents for 6 fictional patien
 | Dropped lab results caught | 161/167 |
 | Value misreads in the transcription caught | 110/130 (all 20 missed were on pages without a text layer) |
 
-The live evals (field precision and recall per model, unsafe errors inside `verified` documents, repair, prompt injection and an MCP client) are built and have not been run yet; their reports will be committed to [`scripts/evals/reports/`](scripts/evals/reports/README.md). What each eval measures is in [Development](docs/development.md#evals).
+The live evals (reading, parsing and the whole pipeline measured apart per model, unsafe errors inside `verified` documents, the patient overview with a judge, repair, prompt injection and an MCP client) are built and have not been run yet; their reports will be committed to [`scripts/evals/reports/`](scripts/evals/reports/README.md). What each eval measures is in [Development](docs/development.md#evals).
 
 ## Design trade-offs
 
