@@ -416,3 +416,37 @@ def test_unsafe_errors_add_up_in_the_summary():
     assert total.unsafe == 1 and total.clinical_items == 26 + 4
     assert total.unsafe_rate == pytest.approx(1 / 30)
     assert json.loads(json.dumps(total.as_dict()))["unsafe"] == 1
+
+
+def test_a_wrong_test_name_on_a_paired_result_is_unsafe():
+    pred = key("d01")
+    hb = by_test(pred, "Haemoglobin")
+    hb.printed.test_name = "Haemoglobins"  # still pairs (>= 90% alike)
+    s = score(pred, "d01")
+    assert [(u.field, u.got) for u in s.unsafe] == [("test_name", "Haemoglobins")]
+
+
+@pytest.mark.parametrize(
+    "doc_id, name", [("d01", "report_date"), ("d02", "prescription_date")]
+)
+def test_a_wrong_document_date_is_unsafe_and_a_missing_one_is_not(doc_id, name):
+    pred, k = key(doc_id), key(doc_id)
+    printed = getattr(k.document.printed, name)
+    assert printed is not None
+    getattr(pred.document.printed, name).text = "01/01/1999"
+    s = score(pred, doc_id)
+    assert [(u.group, u.field) for u in s.unsafe] == [("document", name)]
+    setattr(pred.document.printed, name, None)
+    assert score(pred, doc_id).unsafe == []
+
+
+def test_unsafe_items_never_exceed_the_items_checked():
+    pred = key("d02")
+    for m in pred.medications:  # every field of every medicine wrong
+        m.printed.strength, m.printed.dose = "999 mg", "9 tabs"
+        m.printed.frequency = "9-9-9"
+    s = score(pred, "d02")
+    assert len(s.unsafe) > s.clinical_items
+    assert s.unsafe_items == len(pred.medications) <= s.checked_items
+    total = summarise([s])
+    assert total.unsafe_items <= total.checked_items

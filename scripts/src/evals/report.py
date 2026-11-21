@@ -122,7 +122,9 @@ def _cases(manifest: dict) -> dict[str, set[str]]:
 
 
 def _unsafe(total) -> dict:
-    return wilson(total.unsafe, total.clinical_items).as_dict()
+    """Items with an unsafe error, of the items checked: a share that can't
+    pass 100%, unlike errors per clinical item (two errors in one item)."""
+    return wilson(total.unsafe_items, total.checked_items).as_dict()
 
 
 def _split_of(entries: dict[str, dict], doc_id: str) -> str:
@@ -342,9 +344,9 @@ def _overview_rows(models: dict, names: list[str]) -> list[list[str]]:
         row("Remark attribution", lambda m: _ratio(s(m)["remark_attribution"])),
         row("Frequency exactness", lambda m: _ratio(s(m)["frequency"])),
         row(
-            "Unsafe errors",
+            "Items with an unsafe error",
             lambda m: _interval(
-                wilson(s(m)["unsafe"], s(m)["clinical_items"]).as_dict()
+                wilson(s(m)["unsafe_items"], s(m)["checked_items"]).as_dict()
             ),
         ),
         row("Invented items", lambda m: str(s(m)["hallucinated"])),
@@ -374,7 +376,10 @@ def _routing_rows(models: dict, names: list[str]) -> list[list[str]]:
         row("End state right", lambda r: _interval(r["end_state_right"])),
         row("Signals as expected", lambda r: _interval(r["signals_right"])),
         row("Auto-verified", lambda r: _interval(r["auto_verified"])),
-        row("Unsafe errors in verified", lambda r: _interval(r["unsafe_in_verified"])),
+        row(
+            "Items with an unsafe error, verified",
+            lambda r: _interval(r["unsafe_in_verified"]),
+        ),
         row("Records by the fallback", lambda r: str(r["fallback_records"])),
         row("Failed runs", lambda r: str(r["failed"])),
     ]

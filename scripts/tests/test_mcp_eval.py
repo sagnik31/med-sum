@@ -39,9 +39,10 @@ LINE = f"document:{DOC}#p1:8"
 
 
 def session(*cites, text=("| Haemoglobin | 10.4 L | g/dL | 12.0 - 15.0 |",)):
+    """A session in which a tool returned each cite with the text as its entry."""
     s = Session(names={DOC: "cbc.pdf"})
     for c in cites:
-        s.add({"citations": [c], "result": {}}, "")
+        s.add({"citations": [c], "result": {"cite": c, "line": " ".join(text)}}, "")
     s.text.extend(text)
     return s
 
@@ -106,6 +107,38 @@ def test_a_citation_inside_a_returned_range_is_grounded():
     assert s.grounded and s.located
 
 
+def test_a_value_inside_a_longer_number_is_not_correct():
+    key = Question(**{**HB.__dict__, "expected": "132"})
+    s = score(key, f"It was 1132 ({LINE}).", session(LINE, text=("| Na | 1132 |",)))
+    assert not s.correct and not s.passed("value")
+
+
+def test_a_wide_citation_does_not_locate_the_value():
+    wide = f"document:{DOC}#p1:1-40"
+    s = score(HB, f"Haemoglobin was 10.4 ({wide}).", session(wide))
+    assert s.grounded and not s.located and not s.passed("value")
+
+
+def test_the_value_must_be_in_what_a_tool_returned_for_the_cited_lines():
+    other = f"document:{DOC}#p1:20"
+    s = Session(names={DOC: "cbc.pdf"})
+    s.add(
+        {"citations": [LINE], "result": {"cite": LINE, "line": "Haemoglobin 9.9"}}, ""
+    )
+    s.add({"citations": [other], "result": {"cite": other, "line": "MCV 10.4"}}, "")
+    s.text.extend(["Haemoglobin 9.9", "MCV 10.4"])
+    got = score(HB, f"Haemoglobin was 10.4 ({LINE}).", s)
+    assert got.located and not got.correct
+
+
+def test_whole_word_matching():
+    from evals.mcp_eval import whole_word
+
+    assert whole_word("10.4", "was 10.4.") and whole_word("1-0-1", "take 1-0-1 daily")
+    assert not whole_word("132", "1132") and not whole_word("13.2", "13.25")
+    assert not whole_word("5", "0.5")
+
+
 def test_a_number_the_tools_never_returned_fails_the_number_check():
     s = score(HB, f"Haemoglobin was 10.4, up from 9.1 ({LINE}).", session(LINE))
     assert not s.numbers and s.unknown_numbers == ["9.1"]
@@ -113,7 +146,8 @@ def test_a_number_the_tools_never_returned_fails_the_number_check():
 
 def test_an_uncited_answer_fails_even_when_right():
     s = score(HB, "Haemoglobin was 10.4 g/dL.", session(LINE))
-    assert s.correct and not s.cited and not s.passed("value")
+    # Correct only counts a value read from the lines the answer cites.
+    assert not s.correct and not s.cited and not s.passed("value")
 
 
 def test_the_wrong_document_is_not_located():

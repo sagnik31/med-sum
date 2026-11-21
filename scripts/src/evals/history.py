@@ -80,6 +80,14 @@ def metrics(model: dict) -> dict:
     return out
 
 
+def document_ids(report: dict) -> dict[str, list[str]]:
+    """The documents each model of a report ran, sorted."""
+    return {
+        name: sorted(d["record"]["document_id"] for d in m.get("documents", []))
+        for name, m in report["models"].items()
+    }
+
+
 def entry(
     report: dict,
     *,
@@ -101,6 +109,7 @@ def entry(
         "generation_options": dict(llm.GENERATION_OPTIONS),
         "choice": (report.get("choice") or {}).get("model"),
         "report": report_path,
+        "documents": document_ids(report),
         "models": {name: metrics(m) for name, m in report["models"].items()},
     }
 
@@ -150,6 +159,7 @@ def read(path: Path) -> dict:
             "generation_options": {},
             "choice": (data.get("choice") or {}).get("model"),
             "report": None,
+            "documents": document_ids(data),
             "models": {n: metrics(m) for n, m in data["models"].items()},
         }
     raise ValueError(f"{path} is neither a history entry nor a report")

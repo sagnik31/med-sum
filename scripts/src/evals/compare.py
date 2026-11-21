@@ -9,7 +9,12 @@ the wrong way by at most its tolerance. Unsafe errors may never rise,
 whether over all clinical items or inside the auto-verified documents.
 Prints a table of every metric and exits 1 when any check fails.
 
-Tolerances are defaults, chosen for a 17-document dataset where one item
+Only like runs are compared: the same dataset, the same models, and each
+model on the same documents (so the same split). Otherwise the command
+says what differs and exits 2 without a table, since a change in the
+documents moves every number for a reason that is not the change tested.
+
+Tolerances are defaults, chosen for a small dataset where one item
 moves field F1 by about half a point; tighten them as the dataset grows.
 """
 
@@ -65,6 +70,29 @@ def _values(m: dict) -> dict:
     }
 
 
+def unlike(a: dict, b: dict) -> list[str]:
+    """Why runs `a` and `b` can't be compared; empty when they can."""
+    why = []
+    if a.get("dataset") != b.get("dataset"):
+        why.append(f"dataset {a.get('dataset')!r} vs {b.get('dataset')!r}")
+    if set(a["models"]) != set(b["models"]):
+        why.append(f"models {sorted(a['models'])} vs {sorted(b['models'])}")
+    docs_a, docs_b = a.get("documents"), b.get("documents")
+    if docs_a is None or docs_b is None:
+        why.append("one run does not list its documents")
+    else:
+        for model in sorted(set(a["models"]) & set(b["models"])):
+            x, y = docs_a.get(model), docs_b.get(model)
+            if x != y:
+                only_a = sorted(set(x or ()) - set(y or ()))
+                only_b = sorted(set(y or ()) - set(x or ()))
+                why.append(
+                    f"{model}: documents differ (only in A: {only_a or '-'}; "
+                    f"only in B: {only_b or '-'})"
+                )
+    return why
+
+
 def compare(a: dict, b: dict) -> list[Check]:
     checks = []
     for model, before_m in a["models"].items():
@@ -115,6 +143,10 @@ def main(argv: list[str] | None = None) -> int:
         print("usage: python -m evals.compare A B", file=sys.stderr)
         return 2
     a, b = read(Path(argv[0])), read(Path(argv[1]))
+    why = unlike(a, b)
+    if why:
+        print("not comparable: " + "; ".join(why), file=sys.stderr)
+        return 2
     checks = compare(a, b)
     sys.stdout.write(render(a, b, checks))
     return 0 if all(c.ok for c in checks) else 1

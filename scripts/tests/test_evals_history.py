@@ -45,7 +45,8 @@ def test_an_entry_holds_counts_not_content(entry):
     m = entry["models"][selfcheck.LABEL]
     assert (m["field_f1"], m["unsafe"], m["clinical_items"]) == (1.0, 0, 204)
     assert m["routing"]["auto_verified"] == {"hits": 22, "total": 25}
-    assert m["routing"]["unsafe_in_verified"] == {"hits": 0, "total": 199}
+    # 199 clinical items and the headers (dates) of the 22 verified documents
+    assert m["routing"]["unsafe_in_verified"] == {"hits": 0, "total": 221}
     assert set(m["splits"]) == {"dev", "held_out", "test"}
     text = json.dumps(entry)
     assert "Fatima" not in text and "TSH" not in text
@@ -145,3 +146,29 @@ def test_the_command_prints_the_table_and_exits_by_the_gate(entry, tmp_path, cap
     assert compare.main([str(a), str(b)]) == 1
     out = capsys.readouterr().out
     assert "**FAIL**" in out and "| unsafe | 0 | 2 | +2 |" in out
+
+
+def test_runs_on_other_documents_are_not_comparable(entry, tmp_path, capsys):
+    fewer = copy.deepcopy(entry)
+    fewer["documents"][selfcheck.LABEL] = fewer["documents"][selfcheck.LABEL][1:]
+    (why,) = compare.unlike(entry, fewer)
+    assert "documents differ" in why and "only in A" in why
+    a = history.write_entry(entry, tmp_path / "a")
+    b = history.write_entry(fewer, tmp_path / "b")
+    assert compare.main([str(a), str(b)]) == 2
+    assert "not comparable" in capsys.readouterr().err
+
+
+def test_runs_of_another_dataset_or_model_set_are_not_comparable(entry):
+    other = copy.deepcopy(entry)
+    other["dataset"] = "something else"
+    assert any("dataset" in w for w in compare.unlike(entry, other))
+    more = copy.deepcopy(entry)
+    more["models"]["another"] = _model(more)
+    more["documents"]["another"] = more["documents"][selfcheck.LABEL]
+    assert any("models" in w for w in compare.unlike(entry, more))
+
+
+def test_an_entry_lists_each_models_documents(entry, report):
+    docs = entry["documents"][selfcheck.LABEL]
+    assert docs == sorted(docs) and len(docs) == _model(entry)["documents"]

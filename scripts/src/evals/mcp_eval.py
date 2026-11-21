@@ -25,9 +25,12 @@ Each answer is scored on:
   this exchange (a model can't invent one);
 - **numbers**: every number in it (citations aside) appears in the text the
   tools returned, the patient overview's check of numbers reused;
-- **located**: (value) a citation points at the page and lines of the key's
-  item, in the document of that file name;
-- **correct**: (value) the key's value is in the answer;
+- **located**: (value) a narrow citation (no more than NARROW_SLACK lines
+  wider than the key's) points at the page and lines of the key's item, in
+  the document of that file name;
+- **correct**: (value) the key's value is in the answer as a whole word
+  ("132" is not in "1132"), and in what a tool returned for the lines the
+  answer cites, not merely somewhere in the exchange;
 - **abstained**: it says the records hold no answer and cites nothing.
 
 A value question passes when it is cited, grounded, numbers-checked,
@@ -220,13 +223,47 @@ def citations_in(text: str) -> list[Cite]:
     return [Cite.parse(m) for m in CITATION.finditer(text)]
 
 
+# How many lines wider than the key's item a citation may be and still
+# locate it: a citation of a whole page or table says nothing about where
+# the value is.
+NARROW_SLACK = 2
+
+
+def _has_cite(value: Any) -> bool:
+    if isinstance(value, dict):
+        return "cite" in value or any(_has_cite(v) for v in value.values())
+    if isinstance(value, list):
+        return any(_has_cite(v) for v in value)
+    return False
+
+
+def _cited_entries(value: Any) -> list[tuple["Cite", str]]:
+    """Each result entry with its own `cite`, and the text of that entry
+    alone (entries nested in it, with cites of their own, left out)."""
+    out: list[tuple[Cite, str]] = []
+    if isinstance(value, dict):
+        if isinstance(value.get("cite"), str):
+            own = {k: v for k, v in value.items() if k != "cite" and not _has_cite(v)}
+            text = json.dumps(own, ensure_ascii=False)
+            out.extend((c, text) for c in citations_in(value["cite"]))
+        for k, v in value.items():
+            if k != "cite":
+                out.extend(_cited_entries(v))
+    elif isinstance(value, list):
+        for v in value:
+            out.extend(_cited_entries(v))
+    return out
+
+
 @dataclass
 class Session:
-    """What the tools returned in one exchange: citations, text, file names."""
+    """What the tools returned in one exchange: citations, text, file names,
+    and each cited entry's own text."""
 
     cites: list[Cite] = field(default_factory=list)
     text: list[str] = field(default_factory=list)
     names: dict[str, str] = field(default_factory=dict)  # document id -> file name
+    entries: list[tuple[Cite, str]] = field(default_factory=list)
 
     def add(self, structured: dict | None, raw: str) -> None:
         self.text.append(raw)
@@ -234,8 +271,27 @@ class Session:
             return
         for c in structured.get("citations", []):
             self.cites.extend(citations_in(c))
-        for d in structured.get("result", {}).get("documents", []):
+        result = structured.get("result", {})
+        for d in result.get("documents", []):
             self.names[d["document_id"].lower()] = d["original_name"]
+        self.entries.extend(_cited_entries(result))
+
+
+def _overlaps(a: Cite, b: Cite) -> bool:
+    return (
+        (a.kind, a.target, a.layer, a.page) == (b.kind, b.target, b.layer, b.page)
+        and a.first is not None
+        and b.first is not None
+        and a.first <= b.last
+        and b.first <= a.last
+    )
+
+
+def whole_word(value: str, text: str) -> bool:
+    """Whether `value` is in `text` as a whole word or number: not inside a
+    longer number or word ("132" is not in "1132" or "13.2" in "13.25")."""
+    pattern = r"(?<![\w.])" + re.escape(_norm(value)) + r"(?![\w]|\.\d)"
+    return re.search(pattern, _norm(text)) is not None
 
 
 @dataclass
@@ -270,17 +326,24 @@ def score(question: Question, answer: str, session: Session) -> Score:
         unknown_numbers=unknown,
     )
     if question.kind == "value":
-        s.correct = _norm(question.expected) in _norm(bare)
         first, last = question.lines
-        s.located = any(
-            q.kind == "document"
+        locating = [
+            q
+            for q in quoted
+            if q.kind == "document"
             and not q.layer
             and q.page == question.page
             and q.first is not None
             and q.first <= last
             and first <= q.last
+            and (q.last - q.first) <= (last - first) + NARROW_SLACK
             and session.names.get(q.target) == question.file
-            for q in quoted
+        ]
+        s.located = bool(locating)
+        s.correct = whole_word(question.expected, bare) and any(
+            _overlaps(q, cite) and whole_word(question.expected, text)
+            for q in locating
+            for cite, text in session.entries
         )
     return s
 

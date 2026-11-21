@@ -32,8 +32,14 @@ Citations are judged by quote, not line number: same page, and the quotes
 Unsafe errors are what a clinician could act on wrongly, counted apart
 for the model choice (choose.py): an invented lab result, medicine or
 allergy (UNSAFE_ITEMS), or a wrong or invented value in a clinical field
-of a paired item (UNSAFE_FIELDS). A missing value is not unsafe here;
-recall covers it. The rate is unsafe errors per clinical item in the key.
+of a paired item (UNSAFE_FIELDS: a result's test name, value, unit and
+flag, a medicine's name, strength, dose and frequency, an allergy's
+substance, and the document's printed dates). A missing value is not
+unsafe here; recall covers it. The rate is unsafe errors per clinical item
+in the key. Its interval counts items instead (unsafe_items of
+checked_items): an item with two wrong fields is one item in doubt, and an
+invented item or the document's own dates count as items checked, so the
+count can never exceed what it is a share of.
 """
 
 import re
@@ -53,9 +59,10 @@ CITATION_MATCH = 0.9
 
 UNSAFE_ITEMS = ("observations", "medications", "allergies")
 UNSAFE_FIELDS = {
-    "observations": ("value_text", "unit", "flag_printed"),
+    "observations": ("test_name", "value_text", "unit", "flag_printed"),
     "medications": ("name", "strength", "dose", "frequency"),
     "allergies": ("substance",),
+    "document": ("report_date", "collection_date", "prescription_date"),
 }
 INVENTED = "(invented item)"  # FieldError.field of an unsafe invented item
 
@@ -147,10 +154,18 @@ class DocumentScore:
     errors: list[FieldError] = field(default_factory=list)
     unsafe: list[FieldError] = field(default_factory=list)
     clinical_items: int = 0  # key items in UNSAFE_ITEMS groups
+    # Items an unsafe error could be in: the key's clinical items, the
+    # invented ones, and the document's header (its dates).
+    checked_items: int = 0
 
     @property
     def unsafe_rate(self) -> float | None:
         return _div(len(self.unsafe), self.clinical_items)
+
+    @property
+    def unsafe_items(self) -> int:
+        """Items with at least one unsafe error (never above checked_items)."""
+        return len({(e.group, e.key_id or e.pred_id) for e in self.unsafe})
 
     @property
     def type_correct(self) -> bool:
@@ -187,6 +202,8 @@ class DocumentScore:
             "errors": [_jsonable(asdict(e)) for e in self.errors],
             "unsafe": [_jsonable(asdict(e)) for e in self.unsafe],
             "clinical_items": self.clinical_items,
+            "unsafe_items": self.unsafe_items,
+            "checked_items": self.checked_items,
             "unsafe_rate": self.unsafe_rate,
         }
 
@@ -207,6 +224,8 @@ class Summary:
     missed: int = 0
     unsafe: int = 0
     clinical_items: int = 0
+    unsafe_items: int = 0
+    checked_items: int = 0
 
     @property
     def unsafe_rate(self) -> float | None:
@@ -241,6 +260,8 @@ class Summary:
             "missed": self.missed,
             "unsafe": self.unsafe,
             "clinical_items": self.clinical_items,
+            "unsafe_items": self.unsafe_items,
+            "checked_items": self.checked_items,
             "unsafe_rate": self.unsafe_rate,
         }
 
@@ -261,6 +282,8 @@ def summarise(scores: Iterable[DocumentScore]) -> Summary:
         s.missed += len(d.missed)
         s.unsafe += len(d.unsafe)
         s.clinical_items += d.clinical_items
+        s.unsafe_items += d.unsafe_items
+        s.checked_items += d.checked_items
     return s
 
 
@@ -448,6 +471,7 @@ def _score_group(group, pred_items, key_items, pairs, score: DocumentScore) -> N
     unsafe_fields = UNSAFE_FIELDS.get(group, ())
     if group in UNSAFE_ITEMS:
         score.clinical_items += len(key_items)
+        score.checked_items += len(key_items) + len(pred_items) - len(pairs)
     for i, j in pairs:
         p, k = pred_items[i], key_items[j]
         for name in spec.fields:
@@ -521,6 +545,7 @@ def _score_header(pred: DocumentRecord | None, key: DocumentRecord, score) -> No
     pd = pred.document.printed if pred is not None else None
     kd = key.document.printed
     document = Counts()
+    score.checked_items += 1  # the header, for its dates
     for name in DOCUMENT_FIELDS:
         _header_field("document", name, getattr(pd, name, None), getattr(kd, name),
                       document, score)  # fmt: skip
@@ -546,7 +571,10 @@ def _header_field(group, name, pred: PrintedText | None, key: PrintedText | None
                   counts: Counts, score: DocumentScore) -> None:  # fmt: skip
     e, g = _value(key), _value(pred)
     if not _compare(e, g, counts):
-        score.errors.append(FieldError(group, group, group, name, e, g))
+        error = FieldError(group, group, group, name, e, g)
+        score.errors.append(error)
+        if name in UNSAFE_FIELDS.get(group, ()) and g is not None:
+            score.unsafe.append(error)
     if pred is not None and key is not None:
         score.citations.add(citation_matches(pred.citation, key.citation))
 
