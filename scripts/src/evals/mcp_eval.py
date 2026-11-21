@@ -4,6 +4,10 @@ local model that can only read the records through the MCP server (so
 through the Go API, its organisation scope and its audit log).
 
     python -m evals.mcp_eval --live [--model-role primary] [--split test] [--out DIR]
+                             [--label NAME | --resume NAME]
+
+A run saves its progress after each question and carries on with
+--resume <name>; an outage of the model stops it (evals/progress.py).
 
 Before a run: the synthetic dataset loaded into the development database
 (python -m dataset.load --yes) and processed, the API running, and
@@ -53,7 +57,7 @@ from pathlib import Path
 from typing import Any
 
 import llm
-from evals import keys
+from evals import keys, progress
 from evals.stats import wilson
 from summary.overview import numbers
 
@@ -398,6 +402,7 @@ async def ask(
         try:
             turn = chat(messages, tools=specs, max_tokens=MAX_TOKENS, model_role=role)
         except llm.ModelOutputError as e:
+            progress.stop_if_infrastructure(e)
             outcome.error = type(e).__name__
             break
         outcome.turns += 1
@@ -476,12 +481,38 @@ def server_parameters(environ=os.environ):
     )
 
 
-async def run_all(questions: list[Question], role: llm.ModelRole) -> list[Outcome]:
+async def run_all(
+    questions: list[Question], role: llm.ModelRole, on_unit=None
+) -> list[Outcome]:
+    """Each question in turn; `on_unit(question_id, outcome)` keeps each."""
     from mcp import Client
 
+    outcomes = []
     async with Client(server_parameters()) as client:
         specs = tool_specs(await client.list_tools())
-        return [await ask(client, q, specs, role) for q in questions]
+        for q in questions:
+            outcomes.append(await ask(client, q, specs, role))
+            if on_unit is not None:
+                on_unit(q.id, outcomes[-1])
+    return outcomes
+
+
+def stop_of(error: BaseException) -> "progress.RunStopped | None":
+    """The RunStopped in an error, also inside the exception group that the
+    MCP client's task group wraps it in."""
+    if isinstance(error, progress.RunStopped):
+        return error
+    for inner in getattr(error, "exceptions", ()):
+        found = stop_of(inner)
+        if found is not None:
+            return found
+    return None
+
+
+def outcome_of(data: dict) -> Outcome:
+    """An outcome as its progress file kept it."""
+    score = Score(**data["score"]) if data.get("score") is not None else None
+    return Outcome(**{**data, "score": score})
 
 
 def main(argv=None, environ=os.environ) -> int:
@@ -496,6 +527,9 @@ def main(argv=None, environ=os.environ) -> int:
         "--split", default="test", help="dataset split; 'all' for every document"
     )
     parser.add_argument("--out", type=Path, default=None)
+    names = parser.add_mutually_exclusive_group()
+    names.add_argument("--label", help="the run's name (default: date-mcp)")
+    names.add_argument("--resume", metavar="NAME", help="carry on the named run")
     args = parser.parse_args(argv)
     questions = build_questions(None if args.split == "all" else args.split)
     if not args.live:
@@ -511,9 +545,47 @@ def main(argv=None, environ=os.environ) -> int:
         return 2
     import anyio
 
-    outcomes = anyio.run(run_all, questions, args.model_role)
+    label = args.resume or args.label or f"{date.today().isoformat()}-mcp"
+    model = llm.model_for(args.model_role)
+    digests = progress.installed_digests(llm._client, [model])
+    if digests[model] is None:
+        print(f"no installed digest for {model}; is Ollama running?", file=sys.stderr)
+        return 2
+    try:
+        run_progress = progress.Progress.open(
+            label,
+            progress.fingerprint(
+                kind="mcp",
+                models=[model],
+                units=[q.id for q in questions],
+                dataset=progress.json_hash([asdict(q) for q in questions]),
+                digests=digests,
+                selection={"split": args.split},
+            ),  # fmt: skip
+            resume=args.resume is not None,
+        )
+    except progress.ResumeRefused as e:
+        print(f"FAIL: {e}", file=sys.stderr)
+        return 2
+
+    def keep(question_id: str, outcome: Outcome) -> None:
+        end = outcome.error or ("passed" if outcome.passed else "failed")
+        run_progress.save(
+            question_id, asdict(outcome), seconds=outcome.seconds, end=end
+        )
+
+    todo = [q for q in questions if run_progress.load(q.id) is None]
+    try:
+        anyio.run(run_all, todo, args.model_role, keep)
+    except Exception as e:
+        stop = stop_of(e)
+        if stop is None:
+            raise
+        print(f"STOPPED: {stop}. Carry on with --resume {label}", file=sys.stderr)
+        return 3
+    outcomes = [outcome_of(run_progress.load(q.id)) for q in questions]
     print(report(outcomes))
-    out = args.out or RESULTS_DIR / f"{date.today().isoformat()}-mcp"
+    out = args.out or RESULTS_DIR / label
     out.mkdir(parents=True, exist_ok=True)
     (out / "results.json").write_text(
         json.dumps(
@@ -525,6 +597,7 @@ def main(argv=None, environ=os.environ) -> int:
         ),
         encoding="utf-8",
     )
+    run_progress.finish()
     return 0
 
 

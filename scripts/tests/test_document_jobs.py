@@ -401,7 +401,7 @@ def test_a_job_that_fails_stores_the_error_on_the_job_and_the_document(
     jobs.process(job, "A")
 
     row = job_row(db, doc)
-    assert row["status"] == "failed" and "No model produced" in row["error"]
+    assert row["status"] == "failed" and "No model could be reached" in row["error"]
     status, _, error = insight_row(db, doc)
     assert status == "failed" and error == row["error"]
     with db.cursor() as cur:

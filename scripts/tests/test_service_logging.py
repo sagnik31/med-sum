@@ -135,7 +135,7 @@ def test_a_failed_document_job_logs_the_error_type_and_stores_the_message(
 
     failed = line_with(json_log, "job_failed")
     assert failed["level"] == "ERROR"
-    assert failed["exc_type"] == "ModelOutputError"
+    assert failed["exc_type"] == "ModelsDownError"
     assert failed["document_id"] == doc
     assert SECRET not in json_log.getvalue()
     with db.cursor() as cur:

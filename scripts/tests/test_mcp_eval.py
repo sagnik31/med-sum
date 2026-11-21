@@ -278,3 +278,56 @@ def test_it_runs_only_in_development(env, capsys):
 def test_the_server_is_started_from_the_source_directory():
     params = mcp_eval.server_parameters({"MEDSUM_ENV": "dev"})
     assert params.args == ["-m", "medsum_mcp"] and params.cwd.endswith("src")
+
+
+# -------------------------------------------------------------------
+# Checkpoints and resume
+# -------------------------------------------------------------------
+def test_an_outage_of_the_model_stops_the_run_instead_of_scoring():
+    from evals import progress
+
+    def down(messages, **_):
+        raise llm.ModelsDownError("unreachable")
+
+    with pytest.raises(Exception) as info:
+        exchange(down, HB)
+    assert isinstance(mcp_eval.stop_of(info.value), progress.RunStopped)
+    assert mcp_eval.stop_of(ValueError("not one")) is None
+
+
+class Killed(BaseException):
+    pass
+
+
+def test_a_killed_mcp_run_resumes_from_the_next_question(
+    model_client, monkeypatch, tmp_path, capsys
+):
+    model_client.digests[llm.PRIMARY_MODEL] = "sha256:abc"
+    asked: list[str] = []
+    kill_at = {"n": 1}
+
+    async def fake_run_all(questions, role, on_unit=None):
+        out = []
+        for q in questions:
+            if len(asked) == kill_at["n"]:
+                raise Killed()
+            asked.append(q.id)
+            o = mcp_eval.Outcome(q.id, q.kind, "m", answer="x", seconds=1.0,
+                                 score=mcp_eval.Score(cited=True))  # fmt: skip
+            on_unit(q.id, o)
+            out.append(o)
+        return out
+
+    monkeypatch.setattr(mcp_eval, "run_all", fake_run_all)
+    env = {"MEDSUM_ENV": "dev"}
+    args = ["--live", "--split", "test", "--out", str(tmp_path / "out")]
+    with pytest.raises(Killed):
+        mcp_eval.main([*args, "--label", "m1"], environ=env)
+    assert mcp_eval.main([*args, "--label", "m1"], environ=env) == 2  # exists
+    kill_at["n"] = 10**6
+    assert mcp_eval.main([*args, "--resume", "m1"], environ=env) == 0
+    questions = mcp_eval.build_questions("test")
+    assert asked == [q.id for q in questions]  # each asked once, in order
+    saved = json.loads((tmp_path / "out" / "results.json").read_text("utf-8"))
+    assert [o["question"] for o in saved["outcomes"]] == asked
+    assert saved["outcomes"][0]["score"]["cited"] is True

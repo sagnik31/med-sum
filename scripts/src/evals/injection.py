@@ -7,6 +7,9 @@ document's answer key.
     python -m evals.injection --live   [--model M ...] [--ids d11-instruction,...]
     python -m evals.injection --replay [--model M ...] [--ids ...]
 
+A run saves its progress after each document and carries on with
+`--resume <label>`; an outage of every model stops it (evals/progress.py).
+
 --live calls Ollama and records cassettes under
 scripts/evals/cassettes/injection/<model>/<id>.json (ask before a live run:
 six documents per model take most of an hour on a CPU); --replay answers
@@ -46,7 +49,7 @@ from pathlib import Path
 
 import llm
 from dataset.injection import INJECTION_DIR, SPLIT
-from evals import history
+from evals import history, progress
 from evals import run as runner
 from evals.cassettes import Cassette, CassetteMiss, RecordingClient, ReplayClient
 from evals.keys import answer_key
@@ -274,32 +277,45 @@ def write_report(report: dict, out_dir: Path) -> tuple[Path, Path]:
 # -------------------------------------------------------------------
 # Running
 # -------------------------------------------------------------------
+def unit_data(final: dict | None, outcome, seconds: float) -> dict:
+    """What a finished injection document keeps: the record, its outcome and
+    the page the run built (built here from the record when it has none)."""
+    final = final or {}
+    page = final.get("insight_html")
+    if page is None and final.get("record") is not None:
+        page = document_html(final["record"], parsed=final.get("record_parsed", False))
+    return runner.unit_data(final, outcome, seconds, page=page)
+
+
+def row_of(doc_id: str, data: dict, directory: Path = INJECTION_DIR) -> dict:
+    """A document's report row from what its unit kept."""
+    record = DocumentRecord.model_validate(data["record"]) if data["record"] else None
+    return judge(record, answer_key(doc_id, directory), entries(directory)[doc_id],
+                 runner.Outcome(**data["outcome"]), data["page"])  # fmt: skip
+
+
 def run_model(model: str, ids: list[str], *, user_id: str, client_for,
-              after_document=lambda doc_id: None,
+              after_document=lambda doc_id: None, on_unit=None,
               directory: Path = INJECTION_DIR) -> list[dict]:  # fmt: skip
-    """Every injection document with `model` as the primary; one row each."""
-    finals: dict[str, dict | None] = {}
-    _, outcomes = runner.run_model(
+    """Every injection document with `model` as the primary; one row each.
+    `on_unit(doc_id, data)` gets each finished document's unit data."""
+    kept: dict[str, dict] = {}
+
+    def keep(doc_id, final, outcome, seconds):
+        kept[doc_id] = unit_data(final, outcome, seconds)
+        if on_unit is not None:
+            on_unit(doc_id, kept[doc_id])
+
+    runner.run_model(
         model,
         ids,
         user_id=user_id,
         client_for=client_for,
         dataset_dir=directory,
         after_document=after_document,
-        on_final=finals.__setitem__,
+        on_unit=keep,
     )
-    found = entries(directory)
-    rows = []
-    for i in ids:
-        final = finals[i] or {}
-        page = final.get("insight_html")
-        if page is None and final.get("record") is not None:
-            page = document_html(
-                final["record"], parsed=final.get("record_parsed", False)
-            )
-        rows.append(judge(final.get("record"), answer_key(i, directory), found[i],
-                          outcomes[i], page))  # fmt: skip
-    return rows
+    return [row_of(i, kept[i], directory) for i in ids]
 
 
 def select(ids: str | None, directory: Path = INJECTION_DIR) -> list[str]:
@@ -318,7 +334,7 @@ def main(argv: list[str] | None = None) -> int:
     mode.add_argument("--replay", action="store_true", help="answer from cassettes")
     parser.add_argument("--model", action="append", dest="models")
     parser.add_argument("--ids", help="comma-separated ids, e.g. d11-instruction")
-    parser.add_argument("--label")
+    runner.add_resume_arguments(parser)
     parser.add_argument("--out", type=Path)
     parser.add_argument("--cassettes", type=Path, default=CASSETTE_DIR)
     parser.add_argument("--no-keep", action="store_true",
@@ -328,9 +344,23 @@ def main(argv: list[str] | None = None) -> int:
     models = args.models or [llm.PRIMARY_MODEL, llm.FALLBACK_MODEL]
     ids = select(args.ids)
     mode_name = "live" if args.live else "replay"
-    label = args.label or f"{time.strftime('%Y-%m-%d')}-injection-{mode_name}"
+    label = (
+        args.resume
+        or args.label
+        or f"{time.strftime('%Y-%m-%d')}-injection-{mode_name}"
+    )
     live_client = llm._client
-    results: dict[str, list[dict]] = {}
+    installed = runner.live_digests(live_client, models, args.live)
+    if installed is None:
+        return 2
+    run_progress = runner.open_progress(
+        "injection", label, args.resume is not None, models=models,
+        units=[progress.unit_id(m, i) for m in models for i in ids],
+        dataset=progress.json_hash(manifest()), digests=installed,
+        selection={"mode": mode_name},
+    )  # fmt: skip
+    if run_progress is None:
+        return 2
     with runner.EvalDatabase() as db:
         for model in models:
             cassettes: dict[str, Cassette] = {}
@@ -349,20 +379,35 @@ def main(argv: list[str] | None = None) -> int:
                     path = runner.cassette_path(model, doc_id, args.cassettes)
                     cassettes[doc_id].save(path)
 
+            def keep(doc_id, data, model=model):
+                run_progress.save(progress.unit_id(model, doc_id), data,
+                                  seconds=data["seconds"],
+                                  end=data["outcome"]["end_state"])  # fmt: skip
+
+            todo = [
+                i for i in ids if run_progress.load(progress.unit_id(model, i)) is None
+            ]
             try:
-                results[model] = run_model(model, ids, user_id=db.user_id,
-                                           client_for=client_for, after_document=save)  # fmt: skip
+                run_model(model, todo, user_id=db.user_id, client_for=client_for,
+                          after_document=save, on_unit=keep)  # fmt: skip
             except CassetteMiss as e:
                 print(f"FAIL replay: {e}", file=sys.stderr)
                 return 2
-            print(f"{model}: {len(results[model])} documents")
+            except progress.RunStopped as e:
+                return runner.stopped(e, label)
+            print(f"{model}: {len(ids)} documents")
 
+    results = {
+        model: [row_of(i, run_progress.load(progress.unit_id(model, i))) for i in ids]
+        for model in models
+    }
     report = build_report(label, results)
     kept = args.live and not args.no_keep
     name = history.run_name(label, report["generated_at"])
     out_dir = args.out or (history.REPORTS_DIR / name if kept else RESULTS_DIR / label)
     json_path, md_path = write_report(report, out_dir)
     print(f"wrote {json_path} and {md_path}")
+    run_progress.finish()
     return 0
 
 

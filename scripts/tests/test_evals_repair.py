@@ -207,6 +207,7 @@ def test_a_live_run_records_and_a_replay_gives_the_same_report(
 def test_a_fault_the_model_keeps_uses_the_attempts_and_is_not_repaired(
     test_database, model_client, tmp_path
 ):
+    model_client.digests[PRIMARY] = "sha256:abc"
     model_client.replies[PRIMARY] = [wrong_reply(), wrong_reply()]
     out = tmp_path / "r"
     assert repair.main([
@@ -217,3 +218,54 @@ def test_a_fault_the_model_keeps_uses_the_attempts_and_is_not_repaired(
     assert case["repaired"] is False and case["repairs"] == 2
     assert case["stopped_at"] == "fallback"  # where the graph would go next
     assert case["errors_after"] == case["errors_before"] > 0
+
+
+class Killed(BaseException):
+    """Stands in for the process being killed mid-case."""
+
+
+def _results(path) -> list[dict]:
+    report = json.loads((path / "report.json").read_text(encoding="utf-8"))
+    out = []
+    for c in report["results"]:
+        c = {k: v for k, v in c.items() if k != "seconds"}
+        c["log"] = [{k: v for k, v in x.items() if k != "seconds"} for x in c["log"]]
+        out.append(c)
+    return out
+
+
+@pytest.mark.db
+def test_a_killed_repair_run_resumes_to_the_same_results(
+    test_database, model_client, tmp_path, capsys
+):
+    model_client.digests[PRIMARY] = "sha256:abc"
+    two = f"{CASE},d04-strength_shift-1"
+
+    def args(out, *more):
+        return ["--live", "--model", PRIMARY, "--cases", two, "--variant", "fixed",
+                "--cassettes", str(tmp_path / "c"), "--out", str(tmp_path / out),
+                "--no-history", *more]  # fmt: skip
+
+    model_client.replies[PRIMARY] = [clean_reply(), clean_reply()]
+    assert repair.main(args("whole", "--label", "whole")) == 0
+    model_client.replies[PRIMARY] = [clean_reply(), Killed()]
+    with pytest.raises(Killed):
+        repair.main(args("cut", "--label", "cut"))
+    model_client.replies[PRIMARY] = [clean_reply()]
+    assert repair.main(args("cut", "--resume", "cut")) == 0
+    assert "resuming cut: 1 of 2 units done" in capsys.readouterr().out
+    assert _results(tmp_path / "cut") == _results(tmp_path / "whole")
+
+
+@pytest.mark.db
+def test_an_outage_stops_the_repair_run(test_database, model_client, tmp_path, capsys):
+    model_client.digests[PRIMARY] = "sha256:abc"
+    model_client.replies[PRIMARY] = [ConnectionError("refused")]
+    model_client.replies[llm.FALLBACK_MODEL] = [ConnectionError("refused")]
+    code = repair.main([
+        "--live", "--model", PRIMARY, "--cases", CASE, "--variant", "fixed",
+        "--cassettes", str(tmp_path / "c"), "--out", str(tmp_path / "r"),
+        "--no-history",
+    ])  # fmt: skip
+    assert code == 3 and "STOPPED" in capsys.readouterr().err
+    assert not (tmp_path / "r").exists()

@@ -140,6 +140,14 @@ def fresh_model_health():
 
 
 @pytest.fixture(autouse=True)
+def eval_progress_dir(tmp_path, monkeypatch):
+    """Eval runs keep their progress under the test's own directory."""
+    from evals import progress
+
+    monkeypatch.setattr(progress, "RESULTS_DIR", tmp_path / "progress-results")
+
+
+@pytest.fixture(autouse=True)
 def model_client(monkeypatch) -> FakeModelClient:
     fake = FakeModelClient()
     monkeypatch.setattr(llm, "_client", fake)

@@ -303,7 +303,7 @@ def test_both_models_failing_fails_the_transcribe_step(db, run, model_client):
     with pytest.raises(llm.ModelOutputError):
         nodes.transcribe(opened("d02"))
     [row] = step_rows(db, run)
-    assert row["status"] == "failed" and "ModelOutputError" in row["error"]
+    assert row["status"] == "failed" and "ModelsDownError" in row["error"]
 
 
 CUT = ("cut off", "length")  # a reply that hit the token cap
@@ -485,7 +485,7 @@ def test_classify_reads_a_capped_amount_of_text(db, run, model_client):
     [
         (["not json"], LAB, "ValidationError"),
         (['{"document_type": "discharge_summary"}'], LAB, "ValidationError"),
-        ([ConnectionError("down"), ConnectionError("down")], LAB, "ModelOutputError"),
+        ([ConnectionError("down"), ConnectionError("down")], LAB, "ModelsDownError"),
     ],
     ids=["not-json", "label-off-the-list", "no-model"],
 )

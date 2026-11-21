@@ -109,7 +109,7 @@ def test_calling_a_tool_when_none_is_needed_fails(model_client):
 def test_a_model_error_ends_the_case(model_client):
     model_client.replies[llm.PRIMARY_MODEL] = [ConnectionError("down")]
     result = toolprobe.run_case(toolprobe.CASES[0], "primary")
-    assert result.error == "ModelOutputError" and not result.passed
+    assert result.error == "ModelsDownError" and not result.passed
 
 
 def test_no_probe_line_with_a_value_is_a_dataset_transcription_line():

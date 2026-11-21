@@ -15,7 +15,8 @@ and pixel sizes). Never the prompt, the reply or the image bytes.
 Each model has a circuit breaker (model_health): a model that keeps
 failing with errors or timeouts is skipped for a cool-down, so the request
 goes straight to the fallback; with every usable model skipped the call
-raises ModelUnavailableError at once.
+raises ModelUnavailableError at once. When every model tried failed with an
+outage and none replied, the call raises ModelsDownError.
 
 A caller can start at the fallback (`model_role="fallback"`), e.g. when the
 graph re-runs a parse the primary kept getting wrong; there is then no
@@ -146,6 +147,15 @@ class OutputCappedError(ModelOutputError):
     """
 
 
+class ModelsDownError(ModelOutputError):
+    """
+    Every model the call tried failed with an outage (a server error, a
+    timeout, a refused or dropped connection) and none replied: the server
+    is at fault, not the request or the content. An eval run stops on it
+    instead of scoring the document as failed.
+    """
+
+
 class ModelUnavailableError(ModelOutputError):
     """
     Every model the call could use is disabled by its circuit breaker
@@ -202,6 +212,7 @@ def chat(
     failures = []
     capped = False
     tried = False
+    only_outages = True  # every model tried failed with an outage
     for role in roles:
         model = _MODELS[role]
         refused = cloud_refusal(messages) if is_cloud(model) else None
@@ -234,6 +245,7 @@ def chat(
                 model_health.abandoned(model)
                 raise
             if not is_outage(e):
+                only_outages = False
                 model_health.abandoned(model)
             elif model_health.failed(model, role, e):
                 _breaker_switched("model_disabled", model, role)
@@ -248,6 +260,7 @@ def chat(
             )  # fmt: skip
             continue
         text, complete = _report(attempt, model, role, request, sizes, stop_marker)
+        only_outages = False
         if model_health.succeeded(model, role):  # it answered, capped or not
             _breaker_switched("model_restored", model, role)
         if complete:
@@ -270,6 +283,8 @@ def chat(
         )  # fmt: skip
     if not tried:
         raise ModelUnavailableError("No model available. " + "; ".join(failures))
+    if only_outages:
+        raise ModelsDownError("No model could be reached. " + "; ".join(failures))
     error = OutputCappedError if capped else ModelOutputError
     raise error("No model produced complete output. " + "; ".join(failures))
 
@@ -352,9 +367,10 @@ def chat_with_tools(
             raise
         if not is_outage(e):
             model_health.abandoned(model)
-        elif model_health.failed(model, model_role, e):
+            raise ModelOutputError(f"{model}: {type(e).__name__}") from e
+        if model_health.failed(model, model_role, e):
             _breaker_switched("model_disabled", model, model_role)
-        raise ModelOutputError(f"{model}: {type(e).__name__}") from e
+        raise ModelsDownError(f"{model}: {type(e).__name__}") from e
     text, complete = _report(attempt, model, model_role, request, sizes)
     if model_health.succeeded(model, model_role):
         _breaker_switched("model_restored", model, model_role)

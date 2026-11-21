@@ -24,6 +24,10 @@ over the per-turn limit, and whether the fix came in a reading turn.
 repair only if it repairs at least as many cases, leaves no more unsafe
 errors and is not slower per repair. It never changes the default.
 
+A run saves its progress after each (model, variant, case) and carries on
+with `--resume <label>`; an outage of every model stops it instead of being
+scored as an unrepaired case (evals/progress.py).
+
 Like evals.run, a live run records cassettes (cassettes/repair/<variant>/
 <model>/<case>.json) and is kept: its report goes to the committed
 reports/<name>/; a replay, or --no-history, goes to the gitignored
@@ -45,11 +49,19 @@ from pathlib import Path
 import llm
 import model_health
 from dataset.build import DATASET_DIR
-from evals import history, repair_cases
+from evals import history, progress, repair_cases
 from evals.cassettes import Cassette, CassetteMiss, RecordingClient, ReplayClient
 from evals.faultcheck import TODAY
 from evals.keys import answer_key, split_parse
-from evals.run import RESULTS_DIR, EvalDatabase, insert_document
+from evals.run import (
+    RESULTS_DIR,
+    EvalDatabase,
+    add_resume_arguments,
+    insert_document,
+    live_digests,
+    open_progress,
+    stopped,
+)
 from evals.score import score_document
 from evals.stats import wilson
 from observability import start_run
@@ -143,6 +155,7 @@ def repair_case(rc, case, document_id: str, model: str, variant: str) -> CaseRes
         except CassetteMiss:
             raise
         except Exception as e:  # the case failed: nothing repaired
+            progress.stop_if_infrastructure(e)
             result.error = type(e).__name__
         result.stopped_at = step
         result.repairs = state.get("repairs", 0)
@@ -193,7 +206,10 @@ def run_cases(
     user_id: str,
     client_for,
     after_case=lambda case_id: None,
+    on_unit=lambda case_id, result: None,
 ) -> list[CaseResult]:
+    """Each case with `model` and `variant`; `after_case` saves its cassette,
+    then `on_unit` keeps its result."""
     results = []
     with _as_primary(model, variant):
         for rc in cases:
@@ -204,6 +220,7 @@ def run_cases(
             document_id = insert_document(user_id, case.doc_id)
             results.append(repair_case(rc, case, document_id, model, variant))
             after_case(rc.id)
+            on_unit(rc.id, results[-1])
     return results
 
 
@@ -424,7 +441,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--variant", choices=[*VARIANTS, "both"], default="both")
     parser.add_argument("--subset", choices=repair_cases.SUBSETS, default="core")
     parser.add_argument("--cases", help="comma-separated case ids")
-    parser.add_argument("--label")
+    add_resume_arguments(parser)
     parser.add_argument("--out", type=Path)
     parser.add_argument("--cassettes", type=Path, default=CASSETTE_DIR)
     parser.add_argument("--no-history", action="store_true")
@@ -434,9 +451,23 @@ def main(argv: list[str] | None = None) -> int:
     variants = list(VARIANTS) if args.variant == "both" else [args.variant]
     cases = select(args.subset, args.cases)
     mode = "live" if args.live else "replay"
-    label = args.label or f"{time.strftime('%Y-%m-%d')}-repair-{mode}"
+    label = args.resume or args.label or f"{time.strftime('%Y-%m-%d')}-repair-{mode}"
     live_client = llm._client
-    results: list[CaseResult] = []
+    installed = live_digests(live_client, models, args.live)
+    if installed is None:
+        return 2
+
+    def unit(model, variant, case_id):
+        return progress.unit_id(model, variant, case_id)
+
+    run_progress = open_progress(
+        "repair", label, args.resume is not None, models=models,
+        units=[unit(m, v, c.id) for m in models for v in variants for c in cases],
+        dataset=progress.json_hash([asdict(c) for c in cases]), digests=installed,
+        selection={"mode": mode, "variants": variants},
+    )  # fmt: skip
+    if run_progress is None:
+        return 2
     with EvalDatabase() as db:
         for model in models:
             for variant in variants:
@@ -459,25 +490,46 @@ def main(argv: list[str] | None = None) -> int:
                             cassette_path(variant, model, case_id, args.cassettes)
                         )
 
+                def keep(case_id, result, model=model, variant=variant):
+                    end = "repaired" if result.repaired else "not repaired"
+                    run_progress.save(unit(model, variant, case_id), asdict(result),
+                                      seconds=result.seconds, end=end)  # fmt: skip
+
+                todo = [
+                    c for c in cases
+                    if run_progress.load(unit(model, variant, c.id)) is None
+                ]  # fmt: skip
                 try:
-                    out = run_cases(
-                        cases, model=model, variant=variant, user_id=db.user_id,
-                        client_for=client_for, after_case=save,
+                    run_cases(
+                        todo, model=model, variant=variant, user_id=db.user_id,
+                        client_for=client_for, after_case=save, on_unit=keep,
                     )  # fmt: skip
                 except CassetteMiss as e:
                     print(f"FAIL replay: {e}", file=sys.stderr)
                     return 2
-                results += out
+                except progress.RunStopped as e:
+                    return stopped(e, label)
+                out = [
+                    CaseResult(**run_progress.load(unit(model, variant, c.id)))
+                    for c in cases
+                ]
                 print(
                     f"{model} {variant}: {sum(r.repaired for r in out)}/{len(out)} repaired"
                 )
 
+    results = [
+        CaseResult(**run_progress.load(unit(m, v, c.id)))
+        for m in models
+        for v in variants
+        for c in cases
+    ]
     report = build_report(label, results)
     kept = args.live and not args.no_history
     name = history.run_name(label, report["generated_at"])
     out_dir = args.out or (history.REPORTS_DIR / name if kept else RESULTS_DIR / label)
     json_path, md_path = write_report(report, out_dir)
     print(f"wrote {json_path} and {md_path}")
+    run_progress.finish()
     return 0
 
 

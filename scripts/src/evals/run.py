@@ -19,6 +19,12 @@ report can tell. Every run uses its own fresh database
 server of MEDSUM_EVAL_ADMIN_URL), never med_sum, and validator 7's today
 is fixed (faultcheck.TODAY) so live and replay agree.
 
+A run saves its progress after each document and can be resumed
+(`--resume <label>`) from the last finished one, refusing if the code,
+prompts, model digests or options changed; an outage of every model, a lost
+database or a full disk stops it instead of being scored (evals/progress.py).
+Progress lines show each document's time and end state, and the time left.
+
 A live run is kept: its full report (report.json and report.md, every
 document's scores and field errors) goes to the committed
 scripts/evals/reports/<name>/, and one small entry with its counts to the
@@ -43,7 +49,7 @@ import model_health
 import reset_db
 import settings
 from dataset.build import DATASET_DIR
-from evals import history
+from evals import history, progress
 from evals.cassettes import Cassette, CassetteMiss, RecordingClient, ReplayClient
 from evals.faultcheck import TODAY
 from evals.keys import answer_key, documents, expected_patient, manifest
@@ -52,6 +58,7 @@ from evals.score import score_document
 from evals.transcription import score_transcription
 from pipeline import checkpoints, graph, nodes
 from pipeline.state import initial_state
+from record.document import DocumentRecord
 
 RESULTS_DIR = DATASET_DIR.parent / "results"
 CASSETTE_DIR = DATASET_DIR.parent / "cassettes"
@@ -119,6 +126,34 @@ def run_one(doc_id: str, user_id: str, dataset_dir: Path = DATASET_DIR):
     return graph.run_document(state)
 
 
+def unit_data(final: dict | None, outcome: Outcome, seconds: float, **extra) -> dict:
+    """What a finished document keeps in its progress file: the record (the
+    scores are worked out from it again), its outcome and its time."""
+    record = final.get("record") if final else None
+    return {
+        "record": record.model_dump(mode="json") if record is not None else None,
+        "outcome": dict(outcome.__dict__),
+        "seconds": seconds,
+        **extra,
+    }
+
+
+def result_of(
+    doc_id: str, data: dict, dataset_dir: Path = DATASET_DIR
+) -> tuple[DocumentResult, Outcome]:
+    """A document's result and outcome from its progress file."""
+    key = answer_key(doc_id, dataset_dir)
+    record = DocumentRecord.model_validate(data["record"]) if data["record"] else None
+    pages = (record.pages or None) if record is not None else None
+    result = DocumentResult(
+        doc_id,
+        score_document(record, key),
+        score_transcription(pages, key),
+        data["seconds"],
+    )
+    return result, Outcome(**data["outcome"])
+
+
 def run_model(
     model: str,
     doc_ids: list[str],
@@ -128,15 +163,18 @@ def run_model(
     dataset_dir: Path = DATASET_DIR,
     after_document: Callable[[str], None] = lambda doc_id: None,
     on_final: Callable[[str, dict | None], None] = lambda doc_id, final: None,
+    on_unit: Callable[[str, dict | None, Outcome, float], None] | None = None,
 ) -> tuple[ModelRun, dict[str, Outcome]]:
     """
     Every document with `model` as the primary. `client_for(doc_id)` gives
     the model client for that document (recording or replay);
     `after_document(doc_id)` runs after each, e.g. to save its cassette;
     `on_final(doc_id, final)` gets the graph's final state (None when the
-    run failed), for evals that look at the record itself. A
+    run failed), for evals that look at the record itself; `on_unit(doc_id,
+    final, outcome, seconds)` runs last, to keep the finished document. A
     CassetteMiss is raised at once: a replay that can't answer is not a
-    result.
+    result. An infrastructure error (evals.progress) raises RunStopped
+    before anything of the document is kept.
     """
     other = llm.FALLBACK_MODEL if model != llm.FALLBACK_MODEL else llm.PRIMARY_MODEL
     saved_models, saved_client, saved_today = (
@@ -159,6 +197,7 @@ def run_model(
             except CassetteMiss:
                 raise
             except Exception as e:  # the run failed: everything is missed
+                progress.stop_if_infrastructure(e)
                 seconds = time.monotonic() - start
                 run.documents.append(
                     DocumentResult(
@@ -171,6 +210,8 @@ def run_model(
                 outcomes[doc_id] = Outcome("failed", [], None, type(e).__name__)
                 on_final(doc_id, None)
                 after_document(doc_id)
+                if on_unit is not None:
+                    on_unit(doc_id, None, outcomes[doc_id], seconds)
                 continue
             seconds = time.monotonic() - start
             record = final["record"]
@@ -187,6 +228,8 @@ def run_model(
             outcomes[doc_id] = Outcome(final["end_state"], routing, role)
             on_final(doc_id, final)
             after_document(doc_id)
+            if on_unit is not None:
+                on_unit(doc_id, final, outcomes[doc_id], seconds)
     finally:
         llm._MODELS.clear()
         llm._MODELS.update(saved_models)
@@ -265,6 +308,48 @@ def select(docs: str | None, split: str | None, dataset_dir: Path = DATASET_DIR)
     return [d for d in ids if split is None or entries[d]["split"] == split]
 
 
+def add_resume_arguments(parser: argparse.ArgumentParser) -> None:
+    names = parser.add_mutually_exclusive_group()
+    names.add_argument("--label", help="the run's name (default: date and mode)")
+    names.add_argument(
+        "--resume", metavar="NAME", help="carry on the named run where it stopped"
+    )
+
+
+def open_progress(kind: str, label: str, resume: bool, **fingerprint):
+    """The run's Progress, or None after printing why it can't start."""
+    try:
+        return progress.Progress.open(
+            label, progress.fingerprint(kind=kind, **fingerprint), resume=resume
+        )
+    except progress.ResumeRefused as e:
+        print(f"FAIL: {e}", file=sys.stderr)
+        return None
+
+
+def live_digests(client, models: list[str], live: bool) -> dict | None:
+    """The installed digests; None (after saying why) when a live run can't
+    read them, since a live run needs Ollama and its fingerprint needs them."""
+    digests = progress.installed_digests(client, models)
+    missing = [m for m, d in digests.items() if d is None]
+    if live and missing:
+        print(
+            f"FAIL: no installed digest for {', '.join(missing)}; is Ollama "
+            "running and the model pulled?",
+            file=sys.stderr,
+        )
+        return None
+    return digests
+
+
+def stopped(e: progress.RunStopped, label: str) -> int:
+    print(
+        f"STOPPED: {e}. Finished units are kept; carry on with --resume {label}",
+        file=sys.stderr,
+    )
+    return 3
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="python -m evals.run")
     mode = parser.add_mutually_exclusive_group(required=True)
@@ -273,7 +358,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--model", action="append", dest="models")
     parser.add_argument("--docs", help="comma-separated ids, e.g. d02,d09")
     parser.add_argument("--split", choices=["dev", "test", "held_out"])
-    parser.add_argument("--label")
+    add_resume_arguments(parser)
     parser.add_argument("--out", type=Path)
     parser.add_argument("--cassettes", type=Path, default=CASSETTE_DIR)
     parser.add_argument("--no-history", action="store_true")
@@ -282,9 +367,19 @@ def main(argv: list[str] | None = None) -> int:
     models = args.models or [llm.PRIMARY_MODEL, llm.FALLBACK_MODEL]
     doc_ids = select(args.docs, args.split)
     mode = "live" if args.live else "replay"
-    label = args.label or f"{time.strftime('%Y-%m-%d')}-{mode}"
-    runs, outcomes, digests = [], {}, {}
+    label = args.resume or args.label or f"{time.strftime('%Y-%m-%d')}-{mode}"
     live_client = llm._client
+    installed = live_digests(live_client, models, args.live)
+    if installed is None:
+        return 2
+    units = [progress.unit_id(m, d) for m in models for d in doc_ids]
+    run_progress = open_progress(
+        "run", label, args.resume is not None, models=models, units=units,
+        dataset=progress.json_hash(manifest()),
+        digests=installed, selection={"mode": mode, "split": args.split},
+    )  # fmt: skip
+    if run_progress is None:
+        return 2
     with EvalDatabase() as db:
         for model in models:
             cassettes: dict[str, Cassette] = {}
@@ -301,23 +396,48 @@ def main(argv: list[str] | None = None) -> int:
             def save(doc_id: str, model=model, cassettes=cassettes):
                 if args.live:
                     cassettes[doc_id].save(cassette_path(model, doc_id, args.cassettes))
-                    digests.update(cassettes[doc_id].digests())
 
+            def keep(doc_id, final, outcome, seconds, model=model, cassettes=cassettes):
+                digests = cassettes[doc_id].digests() if doc_id in cassettes else {}
+                run_progress.save(
+                    progress.unit_id(model, doc_id),
+                    unit_data(final, outcome, seconds, digests=digests),
+                    seconds=seconds,
+                    end=outcome.end_state,
+                )
+
+            todo = [
+                d for d in doc_ids
+                if run_progress.load(progress.unit_id(model, d)) is None
+            ]  # fmt: skip
             try:
-                run, out = run_model(
+                run_model(
                     model,
-                    doc_ids,
+                    todo,
                     user_id=db.user_id,
                     client_for=client_for,
                     after_document=save,
+                    on_unit=keep,
                 )
             except CassetteMiss as e:
                 print(f"FAIL replay: {e}", file=sys.stderr)
                 return 2
-            runs.append(run)
-            outcomes[model] = out
-            print(f"{model}: {len(run.documents)} documents")
+            except progress.RunStopped as e:
+                return stopped(e, label)
+            print(f"{model}: {len(doc_ids)} documents")
 
+    # The report is built from the progress files, so a resumed run's report
+    # is the one an uninterrupted run would have written.
+    runs, outcomes, digests = [], {}, {}
+    for model in models:
+        run, out = ModelRun(model), {}
+        for doc_id in doc_ids:
+            data = run_progress.load(progress.unit_id(model, doc_id))
+            result, out[doc_id] = result_of(doc_id, data)
+            run.documents.append(result)
+            digests.update(data.get("digests") or {})
+        runs.append(run)
+        outcomes[model] = out
     report = build_report(label, runs, manifest(), outcomes=_as_dicts(outcomes))
     kept = args.live and not args.no_history
     name = history.run_name(label, report["generated_at"])
@@ -329,6 +449,7 @@ def main(argv: list[str] | None = None) -> int:
             report, mode=mode, digests=digests, report_path=_relative(out_dir)
         )
         print(f"history: {history.write_entry(data, history.HISTORY_DIR)}")
+    run_progress.finish()
     return 0
 
 

@@ -393,3 +393,47 @@ def test_repair_problems_that_quote_the_document_are_fenced():
     assert fenced == f"<problems>\n{quoted}\n</problems>"
     # A repair stored before the fence replays as it ran.
     assert repair_request("Problems:\n", [quoted]) == "Problems:\n" + quoted
+
+
+class Killed(BaseException):
+    """Stands in for the process being killed mid-document."""
+
+
+@pytest.mark.db
+def test_a_killed_injection_run_resumes_to_the_same_rows(
+    db, model_client, tmp_path, monkeypatch, capsys
+):
+    user = add_account(db)
+
+    class TestDatabase:
+        user_id = user
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            pass
+
+    monkeypatch.setattr(ev.runner, "EvalDatabase", TestDatabase)
+    model_client.digests[MODEL] = "sha256:abc"
+    ids = ["d12-remote-content", "d13-remote-content"]
+    replies = {i: _replies(i, parse_of(key(i.split("-")[0]))) for i in ids}
+
+    def args(out, *more):
+        return ["--live", "--model", MODEL, "--ids", ",".join(ids),
+                "--cassettes", str(tmp_path / "c"), "--out", str(tmp_path / out),
+                *more]  # fmt: skip
+
+    def rows(out):
+        report = json.loads((tmp_path / out / "report.json").read_text("utf-8"))
+        return report["models"][MODEL]
+
+    model_client.replies[MODEL] = replies[ids[0]] + replies[ids[1]]
+    assert ev.main(args("whole", "--label", "whole")) == 0
+    model_client.replies[MODEL] = replies[ids[0]] + [Killed()]
+    with pytest.raises(Killed):
+        ev.main(args("cut", "--label", "cut"))
+    model_client.replies[MODEL] = list(replies[ids[1]])
+    assert ev.main(args("cut", "--resume", "cut")) == 0
+    assert "resuming cut: 1 of 2 units done" in capsys.readouterr().out
+    assert rows("cut") == rows("whole")

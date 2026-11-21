@@ -173,10 +173,13 @@ def no_model_run(tmp_path, monkeypatch):
     moved to tmp_path, so its report and history land there."""
     from evals import history, selfcheck
 
-    def fake_run_model(model, doc_ids, **_):
+    def fake_run_model(model, doc_ids, *, on_unit, **_):
         outcomes = {d: runner.Outcome(**o) for d, o in selfcheck.selfcheck_outcomes().items()}  # fmt: skip
+        for d in doc_ids:
+            on_unit(d, {"record": key(d)}, outcomes[d], 1.0)
         return selfcheck.selfcheck_run(), outcomes
 
+    llm._client.digests.update({MODEL: "sha256:q", llm.FALLBACK_MODEL: "sha256:g"})
     monkeypatch.setattr(runner, "EvalDatabase", NoDatabase)
     monkeypatch.setattr(runner, "run_model", fake_run_model)
     monkeypatch.setattr(runner, "DATASET_DIR", tmp_path / "dataset")
@@ -226,3 +229,126 @@ def test_the_held_out_split_can_be_chosen(monkeypatch):
     monkeypatch.setattr(runner, "select", select)
     with pytest.raises(Chosen, match="held_out"):
         runner.main(["--replay", "--split", "held_out"])
+
+
+# -------------------------------------------------------------------
+# Checkpoints and resume (evals/progress.py)
+# -------------------------------------------------------------------
+class Killed(BaseException):
+    """Stands in for the process being killed mid-document."""
+
+
+@pytest.fixture
+def eval_db(db, monkeypatch):
+    class TestDatabase:
+        user_id = add_account(db)
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            pass
+
+    monkeypatch.setattr(runner, "EvalDatabase", TestDatabase)
+
+
+def live_args(tmp_path, label, *more):
+    return ["--live", "--model", MODEL, "--docs", "d09,d02",
+            "--cassettes", str(tmp_path / "c"), "--out", str(tmp_path / label),
+            "--no-history", *more]  # fmt: skip
+
+
+def comparable(path) -> dict:
+    """A report without what differs between two runs of the same units."""
+    report = json.loads((path / "report.json").read_text(encoding="utf-8"))
+    report.pop("generated_at")
+    report.pop("label")
+    for m in report["models"].values():
+        m.pop("seconds_per_document")
+        for d in m["documents"]:
+            d.pop("seconds")
+    return report
+
+
+def both_documents():
+    return replies_for("d09", "lab_report") + replies_for("d02", "prescription")
+
+
+@pytest.mark.db
+def test_a_killed_run_resumes_to_the_report_of_an_uninterrupted_one(
+    eval_db, model_client, tmp_path, capsys
+):
+    from evals import progress
+
+    model_client.digests[MODEL] = "sha256:abc"
+    model_client.digests[llm.FALLBACK_MODEL] = "sha256:def"
+    model_client.replies[MODEL] = both_documents()
+    assert runner.main(live_args(tmp_path, "whole", "--label", "whole")) == 0
+    whole = comparable(tmp_path / "whole")
+    assert not (progress.RESULTS_DIR / "whole").exists()  # removed once reported
+
+    # Killed during the second document: the first is kept, the second not.
+    model_client.replies[MODEL] = replies_for("d09", "lab_report") + [Killed()]
+    with pytest.raises(Killed):
+        runner.main(live_args(tmp_path, "cut", "--label", "cut"))
+    units = progress.RESULTS_DIR / "cut" / "progress" / "units"
+    assert [p.name for p in units.iterdir()] == [f"{MODEL.replace(':', '_')}_d09.json"]
+    out = capsys.readouterr().out
+    assert "d09: " in out and "1 units left" in out
+
+    # A new start under the same name is refused; --resume carries on.
+    model_client.replies[MODEL] = replies_for("d02", "prescription")
+    assert runner.main(live_args(tmp_path, "cut", "--label", "cut")) == 2
+    assert "already has progress" in capsys.readouterr().err
+    calls = len(model_client.calls)
+    assert runner.main(live_args(tmp_path, "cut", "--resume", "cut")) == 0
+    assert len(model_client.calls) - calls == len(replies_for("d02", "prescription"))
+    assert "resuming cut: 1 of 2 units done" in capsys.readouterr().out
+    assert comparable(tmp_path / "cut") == whole
+
+
+@pytest.mark.db
+def test_a_resume_is_refused_when_a_prompt_or_option_changed(
+    eval_db, model_client, tmp_path, monkeypatch, capsys
+):
+    from evals import history
+
+    model_client.digests.update({MODEL: "sha256:abc", llm.FALLBACK_MODEL: "sha256:d"})
+    model_client.replies[MODEL] = replies_for("d09", "lab_report") + [Killed()]
+    with pytest.raises(Killed):
+        runner.main(live_args(tmp_path, "r", "--label", "r"))
+    hashes = history.prompt_hashes()
+    changed = {**hashes, "extract_page": "0" * 64}
+    monkeypatch.setattr(history, "prompt_hashes", lambda: changed)
+    assert runner.main(live_args(tmp_path, "r", "--resume", "r")) == 2
+    err = capsys.readouterr().err
+    assert "can't be resumed" in err and "the prompts (extract_page)" in err
+    monkeypatch.setattr(history, "prompt_hashes", lambda: hashes)
+    monkeypatch.setitem(llm.GENERATION_OPTIONS, "seed", 1)
+    assert runner.main(live_args(tmp_path, "r", "--resume", "r")) == 2
+    assert "the generation options" in capsys.readouterr().err
+    assert model_client.calls[-1]["options"]["seed"] == 0  # nothing more was run
+
+
+@pytest.mark.db
+def test_an_outage_of_both_models_stops_the_run_and_keeps_no_unit(
+    eval_db, model_client, tmp_path, capsys
+):
+    from evals import progress
+
+    model_client.digests.update({MODEL: "sha256:abc", llm.FALLBACK_MODEL: "sha256:d"})
+    model_client.replies[MODEL] = [ConnectionError("refused")]
+    model_client.replies[llm.FALLBACK_MODEL] = [ConnectionError("refused")]
+    assert runner.main(live_args(tmp_path, "down", "--label", "down")) == 3
+    err = capsys.readouterr().err
+    assert "STOPPED" in err and "--resume down" in err
+    progress_dir = progress.RESULTS_DIR / "down" / "progress"
+    assert (progress_dir / "run.json").exists()
+    assert not (progress_dir / "units").exists()
+    assert not runner.cassette_path(MODEL, "d09", tmp_path / "c").exists()
+    assert not (tmp_path / "down").exists()  # no report
+
+
+def test_a_live_run_needs_the_installed_digests(model_client, capsys):
+    assert runner.main(["--live", "--model", MODEL, "--docs", "d09"]) == 2
+    assert "no installed digest" in capsys.readouterr().err

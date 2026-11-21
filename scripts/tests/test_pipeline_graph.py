@@ -506,7 +506,7 @@ def test_no_model_answering_fails_the_run_with_the_error(db, document, model_cli
         run(state)
 
     row = run_row(db, state["document_id"])
-    assert row["end_state"] == "failed" and "ModelOutputError" in row["error"]
+    assert row["end_state"] == "failed" and "ModelsDownError" in row["error"]
     assert saved(db, state["document_id"]) is None
 
 
