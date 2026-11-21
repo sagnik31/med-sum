@@ -28,7 +28,7 @@ from observability import is_traced, start_run
 from pipeline import nodes, parts
 from pipeline import pages as page_files
 from pipeline import store
-from pipeline.classify import Decision, decide, keyword_check
+from pipeline.classify import Decision, decide, disagree, keyword_check
 from pipeline.prompts import (
     END_MARKER,
     FILES,
@@ -445,6 +445,22 @@ def test_the_rule_combining_model_and_keywords(model, keywords, expected):
     decision = decide(model, keywords)
     assert isinstance(decision, Decision) and decision.type is expected
     assert decision.rule
+
+
+@pytest.mark.parametrize(
+    "model, keywords, expected",
+    [
+        (OTHER, RX, True),  # the keywords win, but one reading is wrong
+        (OTHER, LAB, True),
+        (LAB, RX, True),
+        (LAB, LAB, False),
+        (OTHER, None, False),  # keywords with no opinion
+        (None, LAB, False),  # no usable label
+    ],
+)
+def test_a_disagreement_is_any_two_different_answers(model, keywords, expected):
+    # ADR 0002: the model's `other` against a keyword type raises LC-15 too.
+    assert disagree(model, keywords) is expected
 
 
 # -------------------------------------------------------------------
