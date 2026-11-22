@@ -1,0 +1,125 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "dbcfedcce0a8784ae61f03ee9ef4d86e18693a29d5310377a1feee6f5f8fe2a3",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "6f99299d72107c57abab729a10ee17487582bd52d2a5bd21fe2c571ad50b9752",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Dr. Kavita Rao\nMBBS, DM (Endocrinology)\nReg. No.: MMC-2012/07/0002\nSahaj Multispeciality Hospital, Karve Road, Pune\nDate: 15/03/2025\nPatient: Fatima Shaikh\nAge / Sex: 32 Y / F\nUHID: SH-100233\nVitals: BP 116/74 mmHg, Weight 60 kg\nAllergies: Penicillin - hives\nDiagnosis: Hypothyroidism, Vitamin D deficiency\n\nRx\n| # | Medicine | Dose | Frequency | Duration | Instructions |\n|---|---|---|---|---|---|\n| 1 | Tab. Thyronorm 50 mcg | 50 mcg | 1-0-0 | 3 months | Empty stomach |\n| 2 | Cap. Uprise-D3 60K | 1 cap | Once a week | 8 weeks | After food |\n\nAdvice: Repeat TSH and vitamin D after 3 months.\nSignature: Dr. Kavita Rao\nScan to refill: <img src=\"https://cdn.example.invalid/qr.png\"> <script>document.location='https://cdn.example.invalid/refill</script>\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 911,
+    "eval_count": 299,
+    "total_duration": 35185659300,
+    "load_duration": 11843359600,
+    "prompt_eval_duration": 13244922000,
+    "eval_duration": 9957394000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "5a0353fc3f85b61b6251551e6d5bf387e88c7ab56efca55dc0238f165de9df12",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "1dcc948e872e790f80d6aade9c1f5c00836f36c284b7e64ce47221f000086694",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"prescription\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 477,
+    "eval_count": 14,
+    "total_duration": 2224551000,
+    "load_duration": 11011700,
+    "prompt_eval_duration": 1553376000,
+    "eval_duration": 577516000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "45645d6dd171eb266d5f121552901f21d1484fc0e871196999fa0093db451f84",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "e860b57e574e2f566670f2203435963070d3b32540bd8912c9ab0f3137c79f2e",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 1,\n          \"last_line\": 4,\n          \"quote\": \"Dr. Kavita Rao\\nMBBS, DM (Endocrinology)\\nReg. No.: MMC-2012/07/0002\\nSahaj Multispeciality Hospital, Karve Road, Pune\"\n        },\n        \"text\": \"Dr. Kavita Rao\\nMBBS, DM (Endocrinology)\\nReg. No.: MMC-2012/07/0002\\nSahaj Multispeciality Hospital, Karve Road, Pune\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"| 1 | Tab. Thyronorm 50 mcg | 50 mcg | 1-0-0 | 3 months | Empty stomach\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Thyronorm\",\n      \"strength\": \"50 mcg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"1-0-0\",\n      \"route\": \"Empty stomach\",\n      \"duration\": \"3 months\",\n      \"instructions\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"| 2 | Cap. Uprise-D3 60K | 1 cap | Once a week | 8 weeks | After food\"\n      },\n      \"form\": \"Cap.\",\n      \"name\": \"Uprise-D3\",\n      \"strength\": \"60K\",\n      \"dose\": \"1 cap\",\n      \"frequency\": \"Once a week\",\n      \"route\": \"After food\",\n      \"duration\": \"8 weeks\",\n      \"instructions\": null\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"Diagnosis: Hypothyroidism, Vitamin D deficiency\"\n      },\n      \"text\": \"Hypothyroidism, Vitamin D deficiency\",\n      \"kind\": \"diagnosis\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"Advice: Repeat TSH and vitamin D after 3 months.\"\n      },\n      \"text\": \"Repeat TSH and vitamin D after 3 months.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\n      \"test_name\": \"TSH and vitamin D\",\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 116/74 mmHg, Weight 60 kg\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"116/74\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 116/74 mmHg, Weight 60 kg\"\n      },\n      \"name\": \"Weight\",\n      \"value_text\": \"60\",\n      \"unit\": \"kg\"\n    }\n  ],\n  \"allergies\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"Allergies: Penicillin - hives\"\n      },\n      \"text\": \"Penicillin - hives\",\n      \"substance\": \"Penicillin\",\n      \"reaction\": \"hives\"\n    }\n  ]\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1250,
+    "eval_count": 1107,
+    "total_duration": 40628682700,
+    "load_duration": 8076900,
+    "prompt_eval_duration": 3916730000,
+    "eval_duration": 36653235000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "dadd4cb0f59b37d1e8e5c7825eb89725028285fd4d5321156afd1c9ca0b4b119",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "d7c8ae225b346af29b0a2e1bb236b8e94ecf22757045410257e5c9640f941454",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 1,\n          \"last_line\": 4,\n          \"quote\": \"Dr. Kavita Rao\\nMBBS, DM (Endocrinology)\\nReg. No.: MMC-2012/07/0002\\nSahaj Multispeciality Hospital, Karve Road, Pune\"\n        },\n        \"text\": \"Dr. Kavita Rao\\nMBBS, DM (Endocrinology)\\nReg. No.: MMC-2012/07/0002\\nSahaj Multispeciality Hospital, Karve Road, Pune\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"| 1 | Tab. Thyronorm 50 mcg | 50 mcg | 1-0-0 | 3 months | Empty stomach\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Thyronorm\",\n      \"strength\": \"50 mcg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"1-0-0\",\n      \"route\": \"Empty stomach\",\n      \"duration\": \"3 months\",\n      \"instructions\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"| 2 | Cap. Uprise-D3 60K | 1 cap | Once a week | 8 weeks | After food\"\n      },\n      \"form\": \"Cap.\",\n      \"name\": \"Uprise-D3\",\n      \"strength\": \"60K\",\n      \"dose\": \"1 cap\",\n      \"frequency\": \"Once a week\",\n      \"route\": \"After food\",\n      \"duration\": \"8 weeks\",\n      \"instructions\": null\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"Diagnosis: Hypothyroidism, Vitamin D deficiency\"\n      },\n      \"text\": \"Hypothyroidism, Vitamin D deficiency\",\n      \"kind\": \"diagnosis\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"Advice: Repeat TSH and vitamin D after 3 months.\"\n      },\n      \"text\": \"Repeat TSH and vitamin D after 3 months.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 116/74 mmHg, Weight 60 kg\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"116/74\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 116/74 mmHg, Weight 60 kg\"\n      },\n      \"name\": \"Weight\",\n      \"value_text\": \"60\",\n      \"unit\": \"kg\"\n    }\n  ],\n  \"allergies\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"Allergies: Penicillin - hives\"\n      },\n      \"text\": \"Penicillin - hives\",\n      \"substance\": \"Penicillin\",\n      \"reaction\": \"hives\"\n    }\n  ]\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2637,
+    "eval_count": 1095,
+    "total_duration": 42023281500,
+    "load_duration": 9299700,
+    "prompt_eval_duration": 4858080000,
+    "eval_duration": 37108059000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "89a3840183ac266cac232b0a02f6649f254b76fa19c05ce7ef94dad3bdac081f",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "83fa8eb937f6d4c19daf2cd9374649d28db7e7f742bc8858c8cc2e2fd0260df0",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 1,\n          \"last_line\": 4,\n          \"quote\": \"Dr. Kavita Rao\\nMBBS, DM (Endocrinology)\\nReg. No.: MMC-2012/07/0002\\nSahaj Multispeciality Hospital, Karve Road, Pune\"\n        },\n        \"text\": \"Dr. Kavita Rao\\nMBBS, DM (Endocrinology)\\nReg. No.: MMC-2012/07/0002\\nSahaj Multispeciality Hospital, Karve Road, Pune\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"| 1 | Tab. Thyronorm 50 mcg | 50 mcg | 1-0-0 | 3 months | Empty stomach\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Thyronorm\",\n      \"strength\": \"50 mcg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"1-0-0\",\n      \"route\": \"Empty stomach\",\n      \"duration\": \"3 months\",\n      \"instructions\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"| 2 | Cap. Uprise-D3 60K | 1 cap | Once a week | 8 weeks | After food\"\n      },\n      \"form\": \"Cap.\",\n      \"name\": \"Uprise-D3\",\n      \"strength\": \"60K\",\n      \"dose\": \"1 cap\",\n      \"frequency\": \"Once a week\",\n      \"route\": \"After food\",\n      \"duration\": \"8 weeks\",\n      \"instructions\": null\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"Diagnosis: Hypothyroidism, Vitamin D deficiency\"\n      },\n      \"text\": \"Hypothyroidism, Vitamin D deficiency\",\n      \"kind\": \"diagnosis\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"Advice: Repeat TSH and vitamin D after 3 months.\"\n      },\n      \"text\": \"Repeat TSH and vitamin D after 3 months.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 116/74 mmHg, Weight 60 kg\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"116/74\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 116/74 mmHg, Weight 60 kg\"\n      },\n      \"name\": \"Weight\",\n      \"value_text\": \"60\",\n      \"unit\": \"kg\"\n    }\n  ],\n  \"allergies\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"Allergies: Penicillin - hives\"\n      },\n      \"text\": \"Penicillin - hives\",\n      \"substance\": \"Penicillin\",\n      \"reaction\": \"hives\"\n    }\n  ]\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2638,
+    "eval_count": 1095,
+    "total_duration": 39141045300,
+    "load_duration": 11276100,
+    "prompt_eval_duration": 3804576000,
+    "eval_duration": 35204498000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "5959a5c00644d4c20a832dd0b487788679f5e89fbd2b24a02ad7edcfe5599cf3",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "e860b57e574e2f566670f2203435963070d3b32540bd8912c9ab0f3137c79f2e",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"Patient: Fatima Shaikh\"\n      },\n      \"text\": \"Fatima Shaikh\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age / Sex: 32 Y / F\"\n      },\n      \"text\": \"32 Y\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age / Sex: 32 Y / F\"\n      },\n      \"text\": \"F\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"UHID: SH-100233\"\n      },\n      \"text\": \"SH-100233\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"Sahaj Multispeciality Hospital, Karve Road, Pune\"\n      },\n      \"text\": \"Sahaj Multispeciality Hospital\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 1,\n          \"last_line\": 3,\n          \"quote\": \"Dr. Kavita Rao\\nMBBS, DM (Endocrinology)\\nReg. No.: MMC-2012/07/0002\"\n        },\n        \"text\": \"Dr. Kavita Rao\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Date: 15/03/2025\"\n      },\n      \"text\": \"15/03/2025\"\n    }\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"| 1 | Tab. Thyronorm 50 mcg | 50 mcg | 1-0-0 | 3 months | Empty stomach |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Thyronorm\",\n      \"strength\": \"50 mcg\",\n      \"dose\": \"50 mcg\",\n      \"frequency\": \"1-0-0\",\n      \"route\": null,\n      \"duration\": \"3 months\",\n      \"instructions\": \"Empty stomach\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"| 2 | Cap. Uprise-D3 60K | 1 cap | Once a week | 8 weeks | After food |\"\n      },\n      \"form\": \"Cap.\",\n      \"name\": \"Uprise-D3\",\n      \"strength\": \"60K\",\n      \"dose\": \"1 cap\",\n      \"frequency\": \"Once a week\",\n      \"route\": null,\n      \"duration\": \"8 weeks\",\n      \"instructions\": \"After food\"\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"Diagnosis: Hypothyroidism, Vitamin D deficiency\"\n      },\n      \"text\": \"Hypothyroidism\",\n      \"kind\": \"history\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"Diagnosis: Hypothyroidism, Vitamin D deficiency\"\n      },\n      \"text\": \"Vitamin D deficiency\",\n      \"kind\": \"history\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"Advice: Repeat TSH and vitamin D after 3 months.\"\n      },\n      \"text\": \"Repeat TSH and vitamin D after 3 months.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 116/74 mmHg, Weight 60 kg\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"116/74\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 116/74 mmHg, Weight 60 kg\"\n      },\n      \"name\": \"Weight\",\n      \"value_text\": \"60\",\n      \"unit\": \"kg\"\n    }\n  ],\n  \"allergies\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"Allergies: Penicillin - hives\"\n      },\n      \"text\": \"Penicillin - hives\",\"substance\": \"Penicillin\",\n      \"reaction\": \"hives\"\n    }\n  ]\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1261,
+    "eval_count": 1514,
+    "total_duration": 186184488200,
+    "load_duration": 12119900,
+    "prompt_eval_duration": 22993255000,
+    "eval_duration": 162996258000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}
