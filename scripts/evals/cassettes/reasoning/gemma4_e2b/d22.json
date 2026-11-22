@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "959518153de6fcd615677dd43bf6e8462e5c5fcc8057d4923ad665ae1623c411",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "5080107295454b557ff36c0729382bbde7e060b8eba415a691b82182f4318ee4",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"lab_report\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 525,
+    "eval_count": 16,
+    "total_duration": 2483382800,
+    "load_duration": 7996000,
+    "prompt_eval_duration": 1855313000,
+    "eval_duration": 567488000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "3afc7b832ac9caefe8bec7f815d537f16decd4dbaa2069a3fa5706bfe4da6e13",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "068a7f8a4d4c649f662385e23af6d2589b4487590ce2d80e62aed4b2e604113d",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 7,\n          \"first_line\": 7,\n          \"last_line\": 7,\n          \"quote\": \"Referred by: Dr. Farah Khan\"\n        },\n        \"text\": \"Referred by: Dr. Farah Khan\"\n      },\n      {\n        \"citation\": {\n          \"page\": 34,\n          \"first_line\": 34,\n          \"last_line\": 34,\n          \"quote\": \"Dr. Imran Shaikh, DCP\"\n        },\n        \"text\": \"Dr. Imran Shaikh, DCP\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 15,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Blood Urea | 44 ↑ | mg/dL | 15 - 40\"\n      },\n      \"panel\": \"RENAL FUNCTION\",\n      \"test_name\": \"Blood Urea\",\n      \"value_text\": \"44 ↑\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"15 - 40\"\n      ],\n      \"flag_printed\": \"↑\"\n    },\n    {\n      \"citation\": {\n        \"page\": 16,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"| Serum Creatinine | 1.4 ↑ | mg/dL | 0.7 - 1.3\"\n      },\n      \"panel\": \"RENAL FUNCTION\",\n      \"test_name\": \"Serum Creatinine\",\n      \"value_text\": \"1.4 ↑\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"0.7 - 1.3\"\n      ],\n      \"flag_printed\": \"↑\"\n    },\n    {\n      \"citation\": {\n        \"page\": 22,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"| eGFR | 62 ↓ | mL/min/1.73m² | > 90\"\n      },\n      \"panel\": \"eGFR\",\n      \"test_name\": \"eGFR\",\n      \"value_text\": \"62 ↓\",\n      \"unit\": \"mL/min/1.73m²\",\n      \"reference_ranges\": [\n        \"> 90\"\n      ],\n      \"flag_printed\": \"↓\"\n    },\n    {\n      \"citation\": {\n        \"page\": 30,\n        \"first_line\": 30,\n        \"last_line\": 30,\n        \"quote\": \"| Sodium | 139 | mmol/L | 135 - 145\"\n      },\n      \"panel\": \"ELECTROLYTES\",\n      \"test_name\": \"Sodium\",\n      \"value_text\": \"139\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"135 - 145\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 31,\n        \"first_line\": 31,\n        \"last_line\": 31,\n        \"quote\": \"| Potassium | 4.6 | mmol/L | 3.5 - 5.1\"\n      },\n      \"panel\": \"ELECTROLYTES\",\n      \"test_name\": \"Potassium\",\n      \"value_text\": \"4.6\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"3.5 - 5.1\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 32,\n        \"first_line\": 32,\n        \"last_line\": 32,\n        \"quote\": \"| Chloride | 101 | mmol/L | 98 - 107\"\n      },\n      \"panel\": \"ELECTROLYTES\",\n      \"test_name\": \"Chloride\",\n      \"value_text\": \"101\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"98 - 107\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 24,\n        \"first_line\": 24,\n        \"last_line\": 24,\n        \"quote\": \"Note: Calculated by the CKD-EPI 2021 equation.\"\n      },\n      \"text\": \"Calculated by the CKD-EPI 2021 equation.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1533,
+    "eval_count": 1321,
+    "total_duration": 45749269300,
+    "load_duration": 8367400,
+    "prompt_eval_duration": 3253983000,
+    "eval_duration": 42399061000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "82b16b0bb5c157ceeb06bb9164bc2bbefbdaee07cd8c756644a4308aafac4882",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "3ab06c6e115737c0e48219db782787f207aa73378ec63c1073902c542c4d6ab6",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 7,\n          \"first_line\": 7,\n          \"last_line\": 7,\n          \"quote\": \"Referred by: Dr. Farah Khan\"\n        },\n        \"text\": \"Referred by: Dr. Farah Khan\"\n      },\n      {\n        \"citation\": {\n          \"page\": 34,\n          \"first_line\": 34,\n          \"last_line\": 34,\n          \"quote\": \"Dr. Imran Shaikh, DCP\"\n        },\n        \"text\": \"Dr. Imran Shaikh, DCP\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 15,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Blood Urea | 44 ↑ | mg/dL | 15 - 40\"\n      },\n      \"panel\": \"RENAL FUNCTION\",\n      \"test_name\": \"Blood Urea\",\n      \"value_text\": \"44 ↑\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"15 - 40\"\n      ],\n      \"flag_printed\": \"↑\"\n    },\n    {\n      \"citation\": {\n        \"page\": 16,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"| Serum Creatinine | 1.4 ↑ | mg/dL | 0.7 - 1.3\"\n      },\n      \"panel\": \"RENAL FUNCTION\",\n      \"test_name\": \"Serum Creatinine\",\n      \"value_text\": \"1.4 ↑\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"0.7 - 1.3\"\n      ],\n      \"flag_printed\": \"↑\"\n    },\n    {\n      \"citation\": {\n        \"page\": 22,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"| eGFR | 62 ↓ | mL/min/1.73m² | > 90\"\n      },\n      \"panel\": \"eGFR\",\n      \"test_name\": \"eGFR\",\n      \"value_text\": \"62 ↓\",\n      \"unit\": \"mL/min/1.73m²\",\n      \"reference_ranges\": [\n        \"> 90\"\n      ],\n      \"flag_printed\": \"↓\"\n    },\n    {\n      \"citation\": {\n        \"page\": 30,\n        \"first_line\": 30,\n        \"last_line\": 30,\n        \"quote\": \"| Sodium | 139 | mmol/L | 135 - 145\"\n      },\n      \"panel\": \"ELECTROLYTES\",\n      \"test_name\": \"Sodium\",\n      \"value_text\": \"139\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"135 - 145\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 31,\n        \"first_line\": 31,\n        \"last_line\": 31,\n        \"quote\": \"| Potassium | 4.6 | mmol/L | 3.5 - 5.1\"\n      },\n      \"panel\": \"ELECTROLYTES\",\n      \"test_name\": \"Potassium\",\n      \"value_text\": \"4.6\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"3.5 - 5.1\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 32,\n        \"first_line\": 32,\n        \"last_line\": 32,\n        \"quote\": \"| Chloride | 101 | mmol/L | 98 - 107\"\n      },\n      \"panel\": \"ELECTROLYTES\",\n      \"test_name\": \"Chloride\",\n      \"value_text\": \"101\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"98 - 107\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 24,\n        \"first_line\": 24,\n        \"last_line\": 24,\n        \"quote\": \"Note: Calculated by the CKD-EPI 2021 equation.\"\n      },\n      \"text\": \"Calculated by the CKD-EPI 2021 equation.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3542,
+    "eval_count": 1304,
+    "total_duration": 49358305200,
+    "load_duration": 8760200,
+    "prompt_eval_duration": 7279785000,
+    "eval_duration": 42025585000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "82b16b0bb5c157ceeb06bb9164bc2bbefbdaee07cd8c756644a4308aafac4882",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "3ab06c6e115737c0e48219db782787f207aa73378ec63c1073902c542c4d6ab6",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 7,\n          \"first_line\": 7,\n          \"last_line\": 7,\n          \"quote\": \"Referred by: Dr. Farah Khan\"\n        },\n        \"text\": \"Referred by: Dr. Farah Khan\"\n      },\n      {\n        \"citation\": {\n          \"page\": 34,\n          \"first_line\": 34,\n          \"last_line\": 34,\n          \"quote\": \"Dr. Imran Shaikh, DCP\"\n        },\n        \"text\": \"Dr. Imran Shaikh, DCP\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 15,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Blood Urea | 44 ↑ | mg/dL | 15 - 40\"\n      },\n      \"panel\": \"RENAL FUNCTION\",\n      \"test_name\": \"Blood Urea\",\n      \"value_text\": \"44 ↑\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"15 - 40\"\n      ],\n      \"flag_printed\": \"↑\"\n    },\n    {\n      \"citation\": {\n        \"page\": 16,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"| Serum Creatinine | 1.4 ↑ | mg/dL | 0.7 - 1.3\"\n      },\n      \"panel\": \"RENAL FUNCTION\",\n      \"test_name\": \"Serum Creatinine\",\n      \"value_text\": \"1.4 ↑\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"0.7 - 1.3\"\n      ],\n      \"flag_printed\": \"↑\"\n    },\n    {\n      \"citation\": {\n        \"page\": 22,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"| eGFR | 62 ↓ | mL/min/1.73m² | > 90\"\n      },\n      \"panel\": \"eGFR\",\n      \"test_name\": \"eGFR\",\n      \"value_text\": \"62 ↓\",\n      \"unit\": \"mL/min/1.73m²\",\n      \"reference_ranges\": [\n        \"> 90\"\n      ],\n      \"flag_printed\": \"↓\"\n    },\n    {\n      \"citation\": {\n        \"page\": 30,\n        \"first_line\": 30,\n        \"last_line\": 30,\n        \"quote\": \"| Sodium | 139 | mmol/L | 135 - 145\"\n      },\n      \"panel\": \"ELECTROLYTES\",\n      \"test_name\": \"Sodium\",\n      \"value_text\": \"139\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"135 - 145\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 31,\n        \"first_line\": 31,\n        \"last_line\": 31,\n        \"quote\": \"| Potassium | 4.6 | mmol/L | 3.5 - 5.1\"\n      },\n      \"panel\": \"ELECTROLYTES\",\n      \"test_name\": \"Potassium\",\n      \"value_text\": \"4.6\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"3.5 - 5.1\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 32,\n        \"first_line\": 32,\n        \"last_line\": 32,\n        \"quote\": \"| Chloride | 101 | mmol/L | 98 - 107\"\n      },\n      \"panel\": \"ELECTROLYTES\",\n      \"test_name\": \"Chloride\",\n      \"value_text\": \"101\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"98 - 107\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 24,\n        \"first_line\": 24,\n        \"last_line\": 24,\n        \"quote\": \"Note: Calculated by the CKD-EPI 2021 equation.\"\n      },\n      \"text\": \"Calculated by the CKD-EPI 2021 equation.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3542,
+    "eval_count": 1304,
+    "total_duration": 42020707600,
+    "load_duration": 7329800,
+    "prompt_eval_duration": 148343000,
+    "eval_duration": 41826605000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "7a95cc56face630e36ef344aa1b43556f95ad54fc1e01154a582e182e6bd495c",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "068a7f8a4d4c649f662385e23af6d2589b4487590ce2d80e62aed4b2e604113d",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Name: Mr. Kabir Sethi | Age/Sex: 46Y/M\"\n      },\n      \"text\": \"Mr. Kabir Sethi\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Name: Mr. Kabir Sethi | Age/Sex: 46Y/M\"\n      },\n      \"text\": \"46Y\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Name: Mr. Kabir Sethi | Age/Sex: 46Y/M\"\n      },\n      \"text\": \"M\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Reg. No: CC-88412 | Referred by: Dr. Farah Khan\"\n      },\n      \"text\": \"CC-88412\"\n    }\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 7,\n          \"last_line\": 7,\n          \"quote\": \"Reg. No: CC-88412 | Referred by: Dr. Farah Khan\"\n        },\n        \"text\": \"Dr. Farah Khan\"\n      },\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 34,\n          \"last_line\": 34,\n          \"quote\": \"Dr. Imran Shaikh, DCP\"\n        },\n        \"text\": \"Dr. Imran Shaikh\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Collected: 2025-03-20 | Reported: 2025-03-20\"\n      },\n      \"text\": \"2025-03-20\"\n    },\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Collected: 2025-03-20 | Reported: 2025-03-20\"\n      },\n      \"text\": \"2025-03-20\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Blood Urea | 44 ↑ | mg/dL | 15 - 40 |\"\n      },\n      \"panel\": \"RENAL FUNCTION\",\n      \"test_name\": \"Blood Urea\",\n      \"value_text\": \"44\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"15 - 40\"\n      ],\n      \"flag_printed\": \"↑\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"| Serum Creatinine | 1.4 ↑ | mg/dL | 0.7 - 1.3 |\"\n      },\n      \"panel\": \"RENAL FUNCTION\",\n      \"test_name\": \"Serum Creatinine\",\n      \"value_text\": \"1.4\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"0.7 - 1.3\"\n      ],\n      \"flag_printed\": \"↑\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"| eGFR | 62 ↓ | mL/min/1.73m² | > 90 |\"\n      },\n      \"panel\": \"eGFR\",\n      \"test_name\": \"eGFR\",\n      \"value_text\": \"62\",\n      \"unit\": \"mL/min/1.73m²\",\n      \"reference_ranges\": [\n        \"> 90\"\n      ],\n      \"flag_printed\": \"↓\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 30,\n        \"last_line\": 30,\n        \"quote\": \"| Sodium | 139 | mmol/L | 135 - 145 |\"\n      },\n      \"panel\": \"ELECTROLYTES\",\n      \"test_name\": \"Sodium\",\n      \"value_text\": \"139\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"135 - 145\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 31,\n        \"last_line\": 31,\n        \"quote\": \"| Potassium | 4.6 | mmol/L | 3.5 - 5.1 |\"\n      },\n      \"panel\": \"ELECTROLYTES\",\n      \"test_name\": \"Potassium\",\n      \"value_text\": \"4.6\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"3.5 - 5.1\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 32,\n        \"last_line\": 32,\n        \"quote\": \"| Chloride | 101 | mmol/L | 98 - 107 |\"\n      },\n      \"panel\": \"ELECTROLYTES\",\n      \"test_name\": \"Chloride\",\n      \"value_text\": \"101\",\n      \"unit\": \"mmol/L\",\n      \"reference_ranges\": [\n        \"98 - 107\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 24,\n        \"last_line\": 24,\n        \"quote\": \"Note: Calculated by the CKD-EPI 2021 equation.\"\n      },\n      \"text\": \"Calculated by the CKD-EPI 2021 equation.\",\n      \"kind\": \"comment\",\n      \"scope\": \"panel\",\n      \"test_name\": null,\n      \"panel\": \"eGFR\"\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1524,
+    "eval_count": 1776,
+    "total_duration": 201722002900,
+    "load_duration": 11209100,
+    "prompt_eval_duration": 16011804000,
+    "eval_duration": 185075447000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

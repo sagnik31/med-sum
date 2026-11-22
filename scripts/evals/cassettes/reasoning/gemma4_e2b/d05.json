@@ -1,0 +1,185 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "a0165fbb2d3467689dd3cc8d750de080dbc4e83df708e9135d99fc5fade8599f",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "3f03ae8844a1611d6cdfd87ad04b87d2800a37f33e5b1a9a3d09a05417553fd2",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"lab_report\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 772,
+    "eval_count": 16,
+    "total_duration": 2993672600,
+    "load_duration": 11135000,
+    "prompt_eval_duration": 2338118000,
+    "eval_duration": 615073000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "1c1c3d05a6c3fddb80af903ef3117f19de29e233f453fd6cb113df85663c74c2",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "97bcc5e462e7590a7260ab20181cb6efd546f86629ace94edfffd2a001ea0033",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Ref. By: Dr. Kavita Rao\"\n        },\n        \"text\": \"Ref. By: Dr. Kavita Rao\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Collected On: 12/04/2025 07:55 AM\"\n      },\n      \"text\": \"12/04/2025 07:55 AM\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"Haemoglobin | 11.9 | L | g/dL | 12.0 - 15.0\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"11.9\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"12.0 - 15.0\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"MCV | 81 | L | fL | 83 - 101\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"MCV\",\n      \"value_text\": \"81\",\n      \"unit\": \"fL\",\n      \"reference_ranges\": [\n        \"83 - 101\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 23,\n        \"last_line\": 23,\n        \"quote\": \"Platelet Count | 2,62,000 |  | /cumm | 1,50,000 - 4,10,000\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"Platelet Count\",\n      \"value_text\": \"2,62,000\",\n      \"unit\": \"/cumm\",\n      \"reference_ranges\": [\n        \"1,50,000 - 4,10,000\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 29,\n        \"last_line\": 29,\n        \"quote\": \"Serum Iron | 48 | L | µg/dL | 50 - 170\"\n      },\n      \"panel\": \"IRON STUDIES\",\n      \"test_name\": \"Serum Iron\",\n      \"value_text\": \"48\",\n      \"unit\": \"µg/dL\",\n      \"reference_ranges\": [\n        \"50 - 170\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 30,\n        \"last_line\": 30,\n        \"quote\": \"TIBC | 412 | H | µg/dL | 250 - 400\"\n      },\n      \"panel\": \"IRON STUDIES\",\n      \"test_name\": \"TIBC\",\n      \"value_text\": \"412\",\n      \"unit\": \"µg/dL\",\n      \"reference_ranges\": [\n        \"250 - 400\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 31,\n        \"last_line\": 31,\n        \"quote\": \"Transferrin Saturation | 11.7 | L | % | 20 - 50\"\n      },\n      \"panel\": \"IRON STUDIES\",\n      \"test_name\": \"Transferrin Saturation\",\n      \"value_text\": \"11.7\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"20 - 50\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 32,\n        \"last_line\": 32,\n        \"quote\": \"Serum Ferritin | 9.8 | L | ng/mL | 13 - 150\"\n      },\n      \"panel\": \"IRON STUDIES\",\n      \"test_name\": \"Serum Ferritin\",\n      \"value_text\": \"9.8\",\n      \"unit\": \"ng/mL\",\n      \"reference_ranges\": [\n        \"13 - 150\"\n      ],\n      \"flag_printed\": \"L\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 34,\n        \"last_line\": 34,\n        \"quote\": \"Comment: Iron deficiency picture.\"\n      },\n      \"text\": \"Iron deficiency picture.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1579,
+    "eval_count": 1514,
+    "total_duration": 52300165400,
+    "load_duration": 8228400,
+    "prompt_eval_duration": 5118636000,
+    "eval_duration": 47131882000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "61b6c2c92c3455d0dd2d4b9e65f6776c5e37ce12235c1889e84f1a089e009450",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "8bcda2e0e0a4a9f7df6a4d3412f505a4aa56af05fda9b9fbd5079312e049ffb2",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 15,\n          \"last_line\": 15,\n          \"quote\": \"Dr. Neha Joshi, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Neha Joshi, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"HbA1c 7.0 H % Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5\"\n      },\n      \"panel\": \"GLYCATED HAEMOGLOBIN\",\n      \"test_name\": \"HbA1c\",\n      \"value_text\": \"7.0\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Serum Creatinine 0.9 mg/dL 0.6 - 1.1\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Serum Creatinine\",\n      \"value_text\": \"0.9\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"0.6 - 1.1\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [],\n  \"conditions\": [],\"vitals\": [],\"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1330,
+    "eval_count": 562,
+    "total_duration": 21170791300,
+    "load_duration": 10373400,
+    "prompt_eval_duration": 2812825000,
+    "eval_duration": 18315037000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "f126568f0542478985525600267289c9d649703a147501614eaf75b1c2c46958",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "43845264f8f27d42b74ec5eb7743ce948e4940a5a215edd6856f2cc13d1dc45c",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Ref. By: Dr. Kavita Rao\"\n        },\n        \"text\": \"Ref. By: Dr. Kavita Rao\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Collected On: 12/04/2025 07:55 AM\"\n      },\n      \"text\": \"12/04/2025 07:55 AM\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"Haemoglobin | 11.9 | L | g/dL | 12.0 - 15.0\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"11.9\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"12.0 - 15.0\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"MCV | 81 | L | fL | 83 - 101\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"MCV\",\n      \"value_text\": \"81\",\n      \"unit\": \"fL\",\n      \"reference_ranges\": [\n        \"83 - 101\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 23,\n        \"last_line\": 23,\n        \"quote\": \"Platelet Count | 2,62,000 |  | /cumm | 1,50,000 - 4,10,000\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"Platelet Count\",\n      \"value_text\": \"2,62,000\",\n      \"unit\": \"/cumm\",\n      \"reference_ranges\": [\n        \"1,50,000 - 4,10,000\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 29,\n        \"last_line\": 29,\n        \"quote\": \"Serum Iron | 48 | L | µg/dL | 50 - 170\"\n      },\n      \"panel\": \"IRON STUDIES\",\n      \"test_name\": \"Serum Iron\",\n      \"value_text\": \"48\",\n      \"unit\": \"µg/dL\",\n      \"reference_ranges\": [\n        \"50 - 170\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 30,\n        \"last_line\": 30,\n        \"quote\": \"TIBC | 412 | H | µg/dL | 250 - 400\"\n      },\n      \"panel\": \"IRON STUDIES\",\n      \"test_name\": \"TIBC\",\n      \"value_text\": \"412\",\n      \"unit\": \"µg/dL\",\n      \"reference_ranges\": [\n        \"250 - 400\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 31,\n        \"last_line\": 31,\n        \"quote\": \"Transferrin Saturation | 11.7 | L | % | 20 - 50\"\n      },\n      \"panel\": \"IRON STUDIES\",\n      \"test_name\": \"Transferrin Saturation\",\n      \"value_text\": \"11.7\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"20 - 50\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 32,\n        \"last_line\": 32,\n        \"quote\": \"Serum Ferritin | 9.8 | L | ng/mL | 13 - 150\"\n      },\n      \"panel\": \"IRON STUDIES\",\n      \"test_name\": \"Serum Ferritin\",\n      \"value_text\": \"9.8\",\n      \"unit\": \"ng/mL\",\n      \"reference_ranges\": [\n        \"13 - 150\"\n      ],\n      \"flag_printed\": \"L\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 34,\n        \"last_line\": 34,\n        \"quote\": \"Comment: Iron deficiency picture.\"\n      },\n      \"text\": \"Iron deficiency picture.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3399,
+    "eval_count": 1492,
+    "total_duration": 55070799100,
+    "load_duration": 7361500,
+    "prompt_eval_duration": 8029141000,
+    "eval_duration": 46997307000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "a32092c080570413bb4237b790ef3b660d7b52c06ca17d0192864b6686488643",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "16b8ed7a8ff842660e0ef7e37ea49e5d6578fe64bf6eb7163465c18e4628dffb",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 2,\n          \"first_line\": 15,\n          \"last_line\": 15,\n          \"quote\": \"Dr. Neha Joshi, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Neha Joshi, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"HbA1c 7.0 H % Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5\"\n      },\n      \"panel\": \"GLYCATED HAEMOGLOBIN\",\n      \"test_name\": \"HbA1c\",\n      \"value_text\": \"7.0\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Serum Creatinine 0.9 mg/dL 0.6 - 1.1\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Serum Creatinine\",\n      \"value_text\": \"0.9\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"0.6 - 1.1\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2193,
+    "eval_count": 558,
+    "total_duration": 21607167100,
+    "load_duration": 12066000,
+    "prompt_eval_duration": 5328932000,
+    "eval_duration": 16227595000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "7ad10fffbb0aa1f0c520bec48c4611e299793ed580b8efd2f211f9a03edb2157",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "7a43b3b2906e4ad2c6bd7c57a4337118ab0c331b12ec68dfc8afb05ccc5be000",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 2,\n          \"first_line\": 15,\n          \"last_line\": 15,\n          \"quote\": \"Dr. Neha Joshi, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Neha Joshi, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"HbA1c 7.0 H % Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5\"\n      },\n      \"panel\": \"GLYCATED HAEMOGLOBIN\",\n      \"test_name\": \"HbA1c\",\n      \"value_text\": \"7.0\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Serum Creatinine 0.9 mg/dL 0.6 - 1.1\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Serum Creatinine\",\n      \"value_text\": \"0.9\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"0.6 - 1.1\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2197,
+    "eval_count": 558,
+    "total_duration": 19892601000,
+    "load_duration": 9353100,
+    "prompt_eval_duration": 3411151000,
+    "eval_duration": 16442653999
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "b67036e5ce8c12fc60deeddb5b7b7676c8d1d738cee376bb8c92862a9697c721",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "97bcc5e462e7590a7260ab20181cb6efd546f86629ace94edfffd2a001ea0033",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Mrs. Meera Iyer\"\n      },\n      \"text\": \"Mrs. Meera Iyer\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"58 Years / Female\"\n      },\n      \"text\": \"58 Years\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"58 Years / Female\"\n      },\n      \"text\": \"Female\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"SD-25-041288\"\n      },\n      \"text\": \"SD-25-041288\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 4,\n        \"quote\": \"# Sunrise Diagnostics\\n\\nPlot 12, Baner Road, Pune 411045\"\n      },\n      \"text\": \"Sunrise Diagnostics\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Ref. By: Dr. Kavita Rao\"\n        },\n        \"text\": \"Dr. Kavita Rao\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"12/04/2025 01:10 PM\"\n      },\n      \"text\": \"12/04/2025 01:10 PM\"\n    },\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"12/04/2025 07:55 AM\"\n      },\n      \"text\": \"12/04/2025 07:55 AM\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 22,\n        \"quote\": \"| Haemoglobin | 11.9 | L | g/dL | 12.0 - 15.0 |\\n| MCV | 81 | L | fL | 83 - 101 |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"11.9\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"12.0 - 15.0\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 22,\n        \"quote\": \"| Haemoglobin | 11.9 | L | g/dL | 12.0 - 15.0 |\\n| MCV | 81 | L | fL | 83 - 101 |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"MCV\",\n      \"value_text\": \"81\",\n      \"unit\": \"fL\",\n      \"reference_ranges\": [\n        \"83 - 101\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 22,\n        \"quote\": \"| Haemoglobin | 11.9 | L | g/dL | 12.0 - 15.0 |\\n| MCV | 81 | L | fL | 83 - 101 |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"Platelet Count\",\n      \"value_text\": \"2,62,000\",\n      \"unit\": \"/cumm\",\n      \"reference_ranges\": [\n        \"1,50,000 - 4,10,000\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 27,\n        \"last_line\": 28,\n        \"quote\": \"| Serum Iron | 48 | L | µg/dL | 50 - 170 |\\n| TIBC | 412 | H | µg/dL | 250 - 400 |\\n| Transferrin Saturation | 11.7 | L | % | 20 - 50 |\\n| Serum Ferritin | 9.8 | L | ng/mL | 13 - 150 |\"\n      },\n      \"panel\": \"IRON STUDIES\",\n      \"test_name\": \"Serum Iron\",\n      \"value_text\": \"48\",\n      \"unit\": \"µg/dL\",\n      \"reference_ranges\": [\n        \"50 - 170\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 27,\n        \"last_line\": 28,\n        \"quote\": \"| Serum Iron | 48 | L | µg/dL | 50 - 170 |\\n| TIBC | 412 | H | µg/dL | 250 - 400 |\\n| Transferrin Saturation | 11.7 | L | % | 20 - 50 |\\n| Serum Ferritin | 9.8 | L | ng/mL | 13 - 150 |\"\n      },\n      \"panel\": \"IRON STUDIES\",\n      \"test_name\": \"TIBC\",\n      \"value_text\": \"412\",\n      \"unit\": \"µg/dL\",\n      \"reference_ranges\": [\n        \"250 - 400\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 27,\n        \"last_line\": 28,\n        \"quote\": \"| Serum Iron | 48 | L | µg/dL | 50 - 170 |\\n| TIBC | 412 | H | µg/dL | 250 - 400 |\\n| Transferrin Saturation | 11.7 | L | % | 20 - 50 |\\n| Serum Ferritin | 9.8 | L | ng/mL | 13 - 150 |\"\n      },\n      \"panel\": \"IRON STUDIES\",\n      \"test_name\": \"Transferrin Saturation\",\n      \"value_text\": \"11.7\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"20 - 50\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 27,\n        \"last_line\": 28,\n        \"quote\": \"| Serum Iron | 48 | L | µg/dL | 50 - 170 |\\n| TIBC | 412 | H | µg/dL | 250 - 400 |\\n| Transferrin Saturation | 11.7 | L | % | 20 - 50 |\\n| Serum Ferritin | 9.8 | L | ng/mL | 13 - 150 |\"\n      },\n      \"panel\": \"IRON STUDIES\",\n      \"test_name\": \"Serum Ferritin\",\n      \"value_text\": \"9.8\",\n      \"unit\": \"ng/mL\",\n      \"reference_ranges\": [\n        \"13 - 150\"\n      ],\n      \"flag_printed\": \"L\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 34,\n        \"last_line\": 34,\n        \"quote\": \"Comment: Iron deficiency picture.\"\n      },\n      \"text\": \"Iron deficiency picture.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1567,
+    "eval_count": 2248,
+    "total_duration": 262653713400,
+    "load_duration": 7155905900,
+    "prompt_eval_duration": 24855855000,
+    "eval_duration": 230623115000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "b3d38e6cb38eb14678224d704ff34d1083fe13152b65be0011449cb9d17d9785",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "8bcda2e0e0a4a9f7df6a4d3412f505a4aa56af05fda9b9fbd5079312e049ffb2",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 1,\n        \"last_line\": 1,\n        \"quote\": \"Patient: Mrs. Meera Iyer\"\n      },\n      \"text\": \"Mrs. Meera Iyer\"\n    },\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 1,\n        \"last_line\": 1,\n        \"quote\": \"Lab ID: SD-25-041288\"\n      },\n      \"text\": \"SD-25-041288\"\n    }\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 2,\n          \"first_line\": 15,\n          \"last_line\": 15,\n          \"quote\": \"Dr. Neha Joshi, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Neha Joshi, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"| HbA1c | 7.0 | H | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |\"\n      },\n      \"panel\": \"GLYCATED HAEMOGLOBIN\",\n      \"test_name\": \"HbA1c\",\n      \"value_text\": \"7.0\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"| Serum Creatinine | 0.9 |  | mg/dL | 0.6 - 1.1 |\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Serum Creatinine\",\n      \"value_text\": \"0.9\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"0.6 - 1.1\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1319,
+    "eval_count": 699,
+    "total_duration": 82456095800,
+    "load_duration": 13438600,
+    "prompt_eval_duration": 12956558000,
+    "eval_duration": 69422826000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "81ce3bf3297ee51012132a0783b1ab7b8ebeab55545627b021c1db0fc541a103",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "0a9d3481a911481a73f44df6c7738c34a92a8613aad3f24eee62f2d39a3074b3",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Mrs. Meera Iyer\"\n      },\n      \"text\": \"Mrs. Meera Iyer\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"58 Years / Female\"\n      },\n      \"text\": \"58 Years\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"58 Years / Female\"\n      },\n      \"text\": \"Female\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"SD-25-041288\"\n      },\n      \"text\": \"SD-25-041288\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 4,\n        \"quote\": \"# Sunrise Diagnostics\\n\\nPlot 12, Baner Road, Pune 411045\"\n      },\n      \"text\": \"Sunrise Diagnostics\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Ref. By: Dr. Kavita Rao\"\n        },\n        \"text\": \"Dr. Kavita Rao\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"12/04/2025 01:10 PM\"\n      },\n      \"text\": \"12/04/2025 01:10 PM\"\n    },\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"12/04/2025 07:55 AM\"\n      },\n      \"text\": \"12/04/2025 07:55 AM\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"| Haemoglobin | 11.9 | L | g/dL | 12.0 - 15.0 |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"11.9\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"12.0 - 15.0\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"| MCV | 81 | L | fL | 83 - 101 |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"MCV\",\n      \"value_text\": \"81\",\n      \"unit\": \"fL\",\n      \"reference_ranges\": [\n        \"83 - 101\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 23,\n        \"last_line\": 23,\n        \"quote\": \"| Platelet Count | 2,62,000 |  | /cumm | 1,50,000 - 4,10,000 |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"Platelet Count\",\n      \"value_text\": \"2,62,000\",\n      \"unit\": \"/cumm\",\n      \"reference_ranges\": [\n        \"1,50,000 - 4,10,000\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 29,\n        \"last_line\": 29,\n        \"quote\": \"| Serum Iron | 48 | L | µg/dL | 50 - 170 |\"\n      },\n      \"panel\": \"IRON STUDIES\",\n      \"test_name\": \"Serum Iron\",\n      \"value_text\": \"48\",\n      \"unit\": \"µg/dL\",\n      \"reference_ranges\": [\n        \"50 - 170\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 30,\n        \"last_line\": 30,\n        \"quote\": \"| TIBC | 412 | H | µg/dL | 250 - 400 |\"\n      },\n      \"panel\": \"IRON STUDIES\",\n      \"test_name\": \"TIBC\",\n      \"value_text\": \"412\",\n      \"unit\": \"µg/dL\",\n      \"reference_ranges\": [\n        \"250 - 400\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 31,\n        \"last_line\": 31,\n        \"quote\": \"| Transferrin Saturation | 11.7 | L | % | 20 - 50 |\"\n      },\n      \"panel\": \"IRON STUDIES\",\n      \"test_name\": \"Transferrin Saturation\",\n      \"value_text\": \"11.7\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"20 - 50\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 32,\n        \"last_line\": 32,\n        \"quote\": \"| Serum Ferritin | 9.8 | L | ng/mL | 13 - 150 |\"\n      },\n      \"panel\": \"IRON STUDIES\",\n      \"test_name\": \"Serum Ferritin\",\n      \"value_text\": \"9.8\",\n      \"unit\": \"ng/mL\",\n      \"reference_ranges\": [\n        \"13 - 150\"\n      ],\n      \"flag_printed\": \"L\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 34,\n        \"last_line\": 34,\n        \"quote\": \"Comment: Iron deficiency picture.\"\n      },\n      \"text\": \"Iron deficiency picture.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 5179,
+    "eval_count": 1873,
+    "total_duration": 303607297700,
+    "load_duration": 9323700,
+    "prompt_eval_duration": 79222348000,
+    "eval_duration": 224334759000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

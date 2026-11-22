@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "b55deff6980f8ac38a04e04afd087fe33cd77442c46415870cbfb3a64e7f44ec",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "4aced2a1654642e68ca9828f36c64d3cd4abbbf6a6c5b7cbd2a107b670f9051a",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"other\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 331,
+    "eval_count": 14,
+    "total_duration": 1611700500,
+    "load_duration": 9630200,
+    "prompt_eval_duration": 1081231000,
+    "eval_duration": 495053000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

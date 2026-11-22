@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "b80b971ce334464c4c460997627429863783cdf5ba9c57ea06d83593bf3ce075",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "6192ea98336e76af7f17aa38f572461a14888020a35eb56047a0f41658a7c1f8",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"lab_report\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 573,
+    "eval_count": 14,
+    "total_duration": 10668074200,
+    "load_duration": 10221500,
+    "prompt_eval_duration": 9317151000,
+    "eval_duration": 1327625000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "30764fff9630d17547434b6a90de039fa0fcabe30ecb019b1a9939fe3a80afe6",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "dae0546678ccd9740227ec229e6c109036afa223b2b6b9520163c5df1e3c8be3",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Patient: Mr. Kabir Sethi | Age: 45 Yrs | Sex: Male\"\n      },\n      \"text\": \"Mr. Kabir Sethi\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Patient: Mr. Kabir Sethi | Age: 45 Yrs | Sex: Male\"\n      },\n      \"text\": \"45 Yrs\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Patient: Mr. Kabir Sethi | Age: 45 Yrs | Sex: Male\"\n      },\n      \"text\": \"Male\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Lab No: NJ/2025/03114 | Ref: Dr. Farah Khan\"\n      },\n      \"text\": \"NJ/2025/03114\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 1,\n        \"quote\": \"# Navjeevan Pathology Lab\"\n      },\n      \"text\": \"Navjeevan Pathology Lab\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 7,\n          \"last_line\": 7,\n          \"quote\": \"Lab No: NJ/2025/03114 | Ref: Dr. Farah Khan\"\n        },\n        \"text\": \"Dr. Farah Khan\"\n      },\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 29,\n          \"last_line\": 29,\n          \"quote\": \"Dr. Prakash Menon, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Prakash Menon\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Sample Date: 03 Mar 2025 | Report Date: 03 Mar 2025\"\n      },\n      \"text\": \"03 Mar 2025\"\n    },\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Sample Date: 03 Mar 2025 | Report Date: 03 Mar 2025\"\n      },\n      \"text\": \"03 Mar 2025\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Total Cholesterol: 238 mg/dL (Ref: Desirable: < 200; Borderline: 200 - 239; High: >= 240)\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"Total Cholesterol\",\n      \"value_text\": \"238\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"< 200\",\n        \"200 - 239\",\n        \">= 240\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"Triglycerides: 210 mg/dL (Ref: < 150) High\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"Triglycerides\",\n      \"value_text\": \"210\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"< 150\"\n      ],\n      \"flag_printed\": \"High\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"HDL Cholesterol: 36 mg/dL (Ref: > 40) Low\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"HDL Cholesterol\",\n      \"value_text\": \"36\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"> 40\"\n      ],\n      \"flag_printed\": \"Low\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"LDL Cholesterol: 160 mg/dL (Ref: Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160) High\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"LDL Cholesterol\",\n      \"value_text\": \"160\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"< 100\",\n        \"100 - 129\",\n        \"130 - 159\",\n        \">= 160\"\n      ],\n      \"flag_printed\": \"High\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 23,\n        \"last_line\": 23,\n        \"quote\": \"Fasting Plasma Glucose: 112 mg/dL (Ref: 70 - 100) High\"\n      },\n      \"panel\": \"DIABETES SCREEN\",\n      \"test_name\": \"Fasting Plasma Glucose\",\n      \"value_text\": \"112\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"70 - 100\"\n      ],\n      \"flag_printed\": \"High\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 25,\n        \"last_line\": 25,\n        \"quote\": \"Glycated Haemoglobin (HbA1c): 6.1 % (Ref: Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5)\"\n      },\n      \"panel\": \"DIABETES SCREEN\",\n      \"test_name\": \"Glycated Haemoglobin (HbA1c)\",\n      \"value_text\": \"6.1\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"< 5.7\",\n        \"5.7 - 6.4\",\n        \">= 6.5\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 27,\n        \"last_line\": 27,\n        \"quote\": \"Advice: Repeat lipid profile after 3 months on treatment.\"\n      },\n      \"text\": \"Repeat lipid profile after 3 months on treatment.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1548,
+    "eval_count": 1978,
+    "total_duration": 231411974100,
+    "load_duration": 14306600,
+    "prompt_eval_duration": 15998860000,
+    "eval_duration": 215343863000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

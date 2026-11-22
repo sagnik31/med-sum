@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "559128df290236bb79feebaa6f3eb00ede6d20895c08598d0f4aaae661a2db66",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "4aced2a1654642e68ca9828f36c64d3cd4abbbf6a6c5b7cbd2a107b670f9051a",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"other\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 341,
+    "eval_count": 13,
+    "total_duration": 6796482300,
+    "load_duration": 8573400,
+    "prompt_eval_duration": 5511758000,
+    "eval_duration": 1215990000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

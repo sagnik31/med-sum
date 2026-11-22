@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "dd117567ffa3058f8ef80ddb153e088973415a0b0b1010729b6073016ea960cd",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "728ea75fffb53012dcce985575f85708baa7b4488ec82f9bee78c357cd604c2f",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"lab_report\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 628,
+    "eval_count": 16,
+    "total_duration": 14161892500,
+    "load_duration": 11374896600,
+    "prompt_eval_duration": 2132458999,
+    "eval_duration": 590636000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "9bbaef161ebe6edee782792ebbdf83b6bc760b0676bf051f32ce9b511c4d7207",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "ec3fec06edb0568a114378c137b53ace033560a3afdc936c07529f3d4ba9d9d3",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 7,\n          \"last_line\": 7,\n          \"quote\": \"Referred By | Dr. Suresh Pillai\"\n        },\n        \"text\": \"Dr. Suresh Pillai\"\n      },\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 31,\n          \"last_line\": 31,\n          \"quote\": \"Dr. Ritu Saxena, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Ritu Saxena, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"Free T4 | 0.82 |  | 0.70 - 1.48 | ng/dL\"\n      },\n      \"panel\": \"THYROID FUNCTION TEST\",\n      \"test_name\": \"Free T4\",\n      \"value_text\": \"0.82\",\n      \"unit\": \"ng/dL\",\n      \"reference_ranges\": [\n        \"0.70 - 1.48\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"TSH (Ultrasensitive) | 6.8 | High | 0.35 - 4.94 | µIU/mL\"\n      },\n      \"panel\": \"THYROID FUNCTION TEST\",\n      \"test_name\": \"TSH (Ultrasensitive)\",\n      \"value_text\": \"6.8\",\n      \"unit\": \"µIU/mL\",\n      \"reference_ranges\": [\n        \"0.35 - 4.94\"\n      ],\n      \"flag_printed\": \"High\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"Anti-TPO Antibodies | 142 | High | < 34 | IU/mL\"\n      },\n      \"panel\": \"THYROID FUNCTION TEST\",\n      \"test_name\": \"Anti-TPO Antibodies\",\n      \"value_text\": \"142\",\n      \"unit\": \"IU/mL\",\n      \"reference_ranges\": [\n        \"< 34\"\n      ],\n      \"flag_printed\": \"High\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"Haemoglobin | 11.1 | Low | 12.0 - 15.0 | g/dL\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"11.1\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"12.0 - 15.0\"\n      ],\n      \"flag_printed\": \"Low\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 23,\n        \"last_line\": 23,\n        \"quote\": \"MCV | 78 | Low | 83 - 101 | fL\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"MCV\",\n      \"value_text\": \"78\",\n      \"unit\": \"fL\",\n      \"reference_ranges\": [\n        \"83 - 101\"\n      ],\n      \"flag_printed\": \"Low\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 24,\n        \"last_line\": 24,\n        \"quote\": \"Total Leucocyte Count | 8.2 |  | 4.0 - 10.0 | 10³/µL\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"Total Leucocyte Count\",\n      \"value_text\": \"8.2\",\n      \"unit\": \"10³/µL\",\n      \"reference_ranges\": [\n        \"4.0 - 10.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 25,\n        \"last_line\": 25,\n        \"quote\": \"Platelets | 3.10 |  | 1.50 - 4.10 | lakh/cumm\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"Platelets\",\n      \"value_text\": \"3.10\",\n      \"unit\": \"lakh/cumm\",\n      \"reference_ranges\": [\n        \"1.50 - 4.10\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 29,\n        \"last_line\": 29,\n        \"quote\": \"Raised TSH with positive anti-TPO antibodies suggests autoimmune thyroiditis; clinical correlation advised.\"\n      },\n      \"text\": \"Raised TSH with positive anti-TPO antibodies suggests autoimmune thyroiditis; clinical correlation advised.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 29,\n        \"last_line\": 29,\n        \"quote\": \"Raised TSH with positive anti-TPO antibodies suggests autoimmune thyroiditis; clinical correlation advised.\"\n      },\n      \"text\": \"autoimmune thyroiditis\",\n      \"kind\": \"impression\"\n    }\n  ],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1621,
+    "eval_count": 1635,
+    "total_duration": 57304116100,
+    "load_duration": 9939800,
+    "prompt_eval_duration": 5446615000,
+    "eval_duration": 51778794000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

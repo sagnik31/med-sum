@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "91ccf8b93fef7ca6ea01ef6fb73d9044c3b54987b38e0b379d95284ae7fcd7fe",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "b522d391826b3be3eb4622895e0fda5912d1d9a876009fd35634f3fbfb97ecde",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"lab_report\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 596,
+    "eval_count": 16,
+    "total_duration": 4025883000,
+    "load_duration": 23663900,
+    "prompt_eval_duration": 3110292000,
+    "eval_duration": 778893000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "189f626b5b1177db8cbcbf3dbf28687e84d80fe581bde9db66d458ddd68ad514",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "ea34f99b0a25f428f34a2a095d57b6b41c5b8b80e757668770b94b4a3bcb6b8c",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Ref. By: Dr. Kavita Rao\"\n        },\n        \"text\": \"Ref. By: Dr. Kavita Rao\"\n      },\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 35,\n          \"last_line\": 35,\n          \"quote\": \"Dr. Neha Joshi, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Neha Joshi, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"| T3 (Total) | 1.1 |  | ng/mL | 0.8 - 2.0\"\n      },\n      \"panel\": \"THYROID PROFILE\",\n      \"test_name\": \"T3 (Total)\",\n      \"value_text\": \"1.1\",\n      \"unit\": \"ng/mL\",\n      \"reference_ranges\": [\n        \"0.8 - 2.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"| T4 (Total) | 6.2 |  | µg/dL | 5.1 - 14.1\"\n      },\n      \"panel\": \"THYROID PROFILE\",\n      \"test_name\": \"T4 (Total)\",\n      \"value_text\": \"6.2\",\n      \"unit\": \"µg/dL\",\n      \"reference_ranges\": [\n        \"5.1 - 14.1\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 23,\n        \"last_line\": 23,\n        \"quote\": \"| TSH | 8.9 | H | µIU/mL | 0.27 - 4.20\"\n      },\n      \"panel\": \"THYROID PROFILE\",\n      \"test_name\": \"TSH\",\n      \"value_text\": \"8.9\",\n      \"unit\": \"µIU/mL\",\n      \"reference_ranges\": [\n        \"0.27 - 4.20\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 31,\n        \"last_line\": 31,\n        \"quote\": \"| Haemoglobin | 12.6 |  | g/dL | 12.0 - 15.0\"\n      },\n      \"panel\": \"HAEMOGRAM\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"12.6\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"12.0 - 15.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 32,\n        \"last_line\": 32,\n        \"quote\": \"| Total WBC Count | 6,400 |  | /cumm | 4,000 - 10,000\"\n      },\n      \"panel\": \"HAEMOGRAM\",\n      \"test_name\": \"Total WBC Count\",\n      \"value_text\": \"6,400\",\n      \"unit\": \"/cumm\",\n      \"reference_ranges\": [\n        \"4,000 - 10,000\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 33,\n        \"last_line\": 33,\n        \"quote\": \"| Platelet Count | 2,80,000 |  | /cumm | 1,50,000 - 4,10,000\"\n      },\n      \"panel\": \"HAEMOGRAM\",\n      \"test_name\": \"Platelet Count\",\n      \"value_text\": \"2,80,000\",\n      \"unit\": \"/cumm\",\n      \"reference_ranges\": [\n        \"1,50,000 - 4,10,000\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 25,\n        \"last_line\": 25,\n        \"quote\": \"Note: TSH values may vary with the time of sample collection.\"\n      },\n      \"text\": \"TSH values may vary with the time of sample collection.\",\n      \"kind\": \"comment\",\n      \"scope\": \"test\",\n      \"test_name\": \"TSH\",\n      \"panel\": \"THYROID PROFILE\"\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1616,
+    "eval_count": 1413,
+    "total_duration": 50491710200,
+    "load_duration": 14528500,
+    "prompt_eval_duration": 6049998000,
+    "eval_duration": 44301934000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

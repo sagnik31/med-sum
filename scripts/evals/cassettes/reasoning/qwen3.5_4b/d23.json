@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "235f1aabbc80bf220f3aeb72f249584095b18a74f3a85e95216d729a77f22495",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "c0951f4b400bee2a1fd6d85c6ff932c07c0de6b3bbbc5a28e872b690667f070c",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"lab_report\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 700,
+    "eval_count": 14,
+    "total_duration": 13204557800,
+    "load_duration": 7604000,
+    "prompt_eval_duration": 11768930000,
+    "eval_duration": 1307316000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "f986efbb221461ce295dfdc70b69f14729ac1bb4099158e36024864ecf90a4f1",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "fac147eb17cad7f08208a8ea41439c8469d87fa19b06ebce11ab36958e7a21ae",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Mrs. Nandini Bose | 36 Yrs / F | ID: AP-61930\"\n      },\n      \"text\": \"Mrs. Nandini Bose\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Mrs. Nandini Bose | 36 Yrs / F | ID: AP-61930\"\n      },\n      \"text\": \"36 Y\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Mrs. Nandini Bose | 36 Yrs / F | ID: AP-61930\"\n      },\n      \"text\": \"F\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Mrs. Nandini Bose | 36 Yrs / F | ID: AP-61930\"\n      },\n      \"text\": \"AP-61930\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 4,\n        \"quote\": \"# Apex Pathology\\n\\nKalyani Nagar, Pune 411006\\n\\n\"\n      },\n      \"text\": \"Apex Pathology\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 7,\n          \"last_line\": 7,\n          \"quote\": \"Ref. Doctor: Dr. Suresh Pillai\"\n        },\n        \"text\": \"Dr. Suresh Pillai\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Report Date: 18/06/2025\"\n      },\n      \"text\": \"18/06/2025\"\n    },\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Haemoglobin | 11.9 | Low | 12.0 - 15.0 | g/dL |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"11.9\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"12.0 - 15.0\"\n      ],\n      \"flag_printed\": \"Low\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Haemoglobin | 11.9 | Low | 12.0 - 15.0 | g/dL |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"PCV\",\n      \"value_text\": \"36.8\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"36.0 - 46.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Haemoglobin | 11.9 | Low | 12.0 - 15.0 | g/dL |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"RBC Count\",\n      \"value_text\": \"4.3\",\n      \"unit\": \"mill/cumm\",\n      \"reference_ranges\": [\n        \"3.8 - 4.8\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Haemoglobin | 11.9 | Low | 12.0 - 15.0 | g/dL |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"MCV\",\n      \"value_text\": \"82\",\n      \"unit\": \"fL\",\n      \"reference_ranges\": [\n        \"83 - 101\"\n      ],\n      \"flag_printed\": \"Low\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Haemoglobin | 11.9 | Low | 12.0 - 15.0 | g/dL |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"MCH\",\n      \"value_text\": \"27.6\",\n      \"unit\": \"pg\",\n      \"reference_ranges\": [\n        \"27.0 - 32.0\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"Synthetic test document: fictional patient, doctors and laboratory.\"\n      },\n      \"text\": \"Synthetic test document: fictional patient, doctors and laboratory.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1375,
+    "eval_count": 1546,
+    "total_duration": 179917253100,
+    "load_duration": 8842300,
+    "prompt_eval_duration": 13340705000,
+    "eval_duration": 166370592000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "b2f95af5b66f123dfaed43b707a01ca60712d8429f48a4239451d3370281b73d",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "4de41bda5bd89f31c2857c3db23eb90f5a66bb47d0f87fbb07a350ff93927f96",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 2,\n          \"first_line\": 17,\n          \"last_line\": 17,\n          \"quote\": \"Dr. Kiran Patwardhan, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Kiran Patwardhan, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"| Total WBC Count | 7,600 |  | 4,000 - 10,000 | /cumm |\"\n      },\n      \"panel\": \"HAEMATOLOGY (contd.)\",\n      \"test_name\": \"Total WBC Count\",\n      \"value_text\": \"7,600\",\n      \"unit\": \"/cumm\",\n      \"reference_ranges\": [\n        \"4,000 - 10,000\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"| Platelet Count | 2,95,000 |  | 1,50,000 - 4,10,000 | /cumm |\"\n      },\n      \"panel\": \"HAEMATOLOGY (contd.)\",\n      \"test_name\": \"Platelet Count\",\n      \"value_text\": \"2,95,000\",\n      \"unit\": \"/cumm\",\n      \"reference_ranges\": [\n        \"1,50,000 - 4,10,000\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"| TSH | 2.9 |  | 0.35 - 4.94 | µIU/mL |\"\n      },\n      \"panel\": \"THYROID PROFILE\",\n      \"test_name\": \"TSH\",\n      \"value_text\": \"2.9\",\n      \"unit\": \"µIU/mL\",\n      \"reference_ranges\": [\n        \"0.35 - 4.94\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Vitamin B12 | 180 | Low | 211 - 911 | pg/mL |\"\n      },\n      \"panel\": \"THYROID PROFILE\",\n      \"test_name\": \"Vitamin B12\",\n      \"value_text\": \"180\",\n      \"unit\": \"pg/mL\",\n      \"reference_ranges\": [\n        \"211 - 911\"\n      ],\n      \"flag_printed\": \"Low\"\n    }\n  ],\n  \"remarks\": [],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1371,
+    "eval_count": 863,
+    "total_duration": 105992014700,
+    "load_duration": 10030900,
+    "prompt_eval_duration": 13220232000,
+    "eval_duration": 92712371000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "2cfc25a58142bbb734a44e0116f9103eabef7a1d71c0c49509ce96bd10a6d83c",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "ab4b9a20ea1b2fd70d53609bdc8fe1822b9144889fc63486b21237c03b109f3c",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Mrs. Nandini Bose | 36 Yrs / F | ID: AP-61930\"\n      },\n      \"text\": \"Mrs. Nandini Bose\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Mrs. Nandini Bose | 36 Yrs / F | ID: AP-61930\"\n      },\n      \"text\": \"36 Y\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Mrs. Nandini Bose | 36 Yrs / F | ID: AP-61930\"\n      },\n      \"text\": \"F\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Mrs. Nandini Bose | 36 Yrs / F | ID: AP-61930\"\n      },\n      \"text\": \"AP-61930\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 4,\n        \"quote\": \"# Apex Pathology\\n\\nKalyani Nagar, Pune 411006\\n\\n\"\n      },\n      \"text\": \"Apex Pathology\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 7,\n          \"last_line\": 7,\n          \"quote\": \"Ref. Doctor: Dr. Suresh Pillai\"\n        },\n        \"text\": \"Dr. Suresh Pillai\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Report Date: 18/06/2025\"\n      },\n      \"text\": \"18/06/2025\"\n    },\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Haemoglobin | 11.9 | Low | 12.0 - 15.0 | g/dL |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"11.9\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"12.0 - 15.0\"\n      ],\n      \"flag_printed\": \"Low\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"| PCV | 36.8 |  | 36.0 - 46.0 | % |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"PCV\",\n      \"value_text\": \"36.8\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"36.0 - 46.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"| RBC Count | 4.3 |  | 3.8 - 4.8 | mill/cumm |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"RBC Count\",\n      \"value_text\": \"4.3\",\n      \"unit\": \"mill/cumm\",\n      \"reference_ranges\": [\n        \"3.8 - 4.8\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 18,\n        \"last_line\": 18,\n        \"quote\": \"| MCV | 82 | Low | 83 - 101 | fL |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"MCV\",\n      \"value_text\": \"82\",\n      \"unit\": \"fL\",\n      \"reference_ranges\": [\n        \"83 - 101\"\n      ],\n      \"flag_printed\": \"Low\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"| MCH | 27.6 |  | 27.0 - 32.0 | pg |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"MCH\",\n      \"value_text\": \"27.6\",\n      \"unit\": \"pg\",\n      \"reference_ranges\": [\n        \"27.0 - 32.0\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"Synthetic test document: fictional patient, doctors and laboratory.\"\n      },\n      \"text\": \"Synthetic test document: fictional patient, doctors and laboratory.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3779,
+    "eval_count": 1530,
+    "total_duration": 236175639800,
+    "load_duration": 7417700,
+    "prompt_eval_duration": 54929894000,
+    "eval_duration": 181176350000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "3aaeb3d3c71eefd2ce9d55e1d9d3df37d68bfa374eb039f8e106508eebf6eb76",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "6ee872a27ffa0c50a03efb610875905684f37ddb5f9954eb8285507b4f8ce33a",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Mrs. Nandini Bose | 36 Yrs / F | ID: AP-61930\"\n      },\n      \"text\": \"Mrs. Nandini Bose\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Mrs. Nandini Bose | 36 Yrs / F | ID: AP-61930\"\n      },\n      \"text\": \"36 Yrs\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Mrs. Nandini Bose | 36 Yrs / F | ID: AP-61930\"\n      },\n      \"text\": \"F\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Mrs. Nandini Bose | 36 Yrs / F | ID: AP-61930\"\n      },\n      \"text\": \"AP-61930\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 4,\n        \"quote\": \"# Apex Pathology\\n\\nKalyani Nagar, Pune 411006\\n\\n\"\n      },\n      \"text\": \"Apex Pathology\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 7,\n          \"last_line\": 7,\n          \"quote\": \"Ref. Doctor: Dr. Suresh Pillai\"\n        },\n        \"text\": \"Dr. Suresh Pillai\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Report Date: 18/06/2025\"\n      },\n      \"text\": \"18/06/2025\"\n    },\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Haemoglobin | 11.9 | Low | 12.0 - 15.0 | g/dL |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"11.9\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"12.0 - 15.0\"\n      ],\n      \"flag_printed\": \"Low\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"| PCV | 36.8 |  | 36.0 - 46.0 | % |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"PCV\",\n      \"value_text\": \"36.8\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"36.0 - 46.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"| RBC Count | 4.3 |  | 3.8 - 4.8 | mill/cumm |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"RBC Count\",\n      \"value_text\": \"4.3\",\n      \"unit\": \"mill/cumm\",\n      \"reference_ranges\": [\n        \"3.8 - 4.8\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 18,\n        \"last_line\": 18,\n        \"quote\": \"| MCV | 82 | Low | 83 - 101 | fL |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"MCV\",\n      \"value_text\": \"82\",\n      \"unit\": \"fL\",\n      \"reference_ranges\": [\n        \"83 - 101\"\n      ],\n      \"flag_printed\": \"Low\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"| MCH | 27.6 |  | 27.0 - 32.0 | pg |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"MCH\",\n      \"value_text\": \"27.6\",\n      \"unit\": \"pg\",\n      \"reference_ranges\": [\n        \"27.0 - 32.0\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"Synthetic test document: fictional patient, doctors and laboratory.\"\n      },\n      \"text\": \"Synthetic test document: fictional patient, doctors and laboratory.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3197,
+    "eval_count": 1531,
+    "total_duration": 220599249800,
+    "load_duration": 7763000,
+    "prompt_eval_duration": 44690521000,
+    "eval_duration": 175828233000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "e25bb7f788a8545a8cb0a1a31b39375d73859064f70a3ba54cac605373549594",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "a7b9b56fbfaa47c724d845adb04b307b8d9ab02728038585b001e53178984a93",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"prescription\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 557,
+    "eval_count": 14,
+    "total_duration": 11719560800,
+    "load_duration": 8386100,
+    "prompt_eval_duration": 9922267000,
+    "eval_duration": 1372429000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "4d81d1c2ab14226221e13b2c1cb068f60160400bdb68809cf41fdb3f8a77db1c",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "c3a59249dc2458d86bfd315c51f99e9e64d3570b1dd64290b50450bf158ba838",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"Patient: Meera Iyer\"\n      },\n      \"text\": \"Meera Iyer\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Age / Sex: 57 Y / F\"\n      },\n      \"text\": \"57 Y\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Age / Sex: 57 Y / F\"\n      },\n      \"text\": \"F\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"UHID: SH-100231\"\n      },\n      \"text\": \"SH-100231\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Sahaj Multispeciality Hospital, Karve Road, Pune\"\n      },\n      \"text\": \"Sahaj Multispeciality Hospital\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 1,\n          \"last_line\": 1,\n          \"quote\": \"Dr. Kavita Rao\"\n        },\n        \"text\": \"Dr. Kavita Rao\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Date: 10/01/2025\"\n      },\n      \"text\": \"10/01/2025\"\n    }\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 29,\n        \"last_line\": 29,\n        \"quote\": \"| 1 | Tab. Glycomet GP 1 | 1 tab | 1-0-1 | 3 months | Before food |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Glycomet GP 1\",\n      \"strength\": null,\n      \"dose\": \"1 tab\",\n      \"frequency\": \"1-0-1\",\n      \"route\": null,\n      \"duration\": \"3 months\",\n      \"instructions\": \"Before food\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 30,\n        \"last_line\": 30,\n        \"quote\": \"| 2 | Tab. Telma 40 mg | 1 tab | 1-0-0 | 3 months |  |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Telma 40 mg\",\n      \"strength\": null,\n      \"dose\": \"1 tab\",\n      \"frequency\": \"1-0-0\",\n      \"route\": null,\n      \"duration\": \"3 months\",\n      \"instructions\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 31,\n        \"last_line\": 31,\n        \"quote\": \"| 3 | Tab. Orofer XT | 1 tab | BD | 3 months | After food |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Orofer XT\",\n      \"strength\": null,\n      \"dose\": \"1 tab\",\n      \"frequency\": \"BD\",\n      \"route\": null,\n      \"duration\": \"3 months\",\n      \"instructions\": \"After food\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 32,\n        \"last_line\": 32,\n        \"quote\": \"| 4 | Tab. Pan 40 mg | 1 tab | 1-0-0 | 15 days | Before breakfast |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Pan 40 mg\",\n      \"strength\": null,\n      \"dose\": \"1 tab\",\n      \"frequency\": \"1-0-0\",\n      \"route\": null,\n      \"duration\": \"15 days\",\n      \"instructions\": \"Before breakfast\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 33,\n        \"last_line\": 33,\n        \"quote\": \"| 5 | Tab. Dolo 650 mg | 1 tab | SOS | 5 days | For fever |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Dolo 650 mg\",\n      \"strength\": null,\n      \"dose\": \"1 tab\",\n      \"frequency\": \"SOS\",\n      \"route\": null,\n      \"duration\": \"5 days\",\n      \"instructions\": \"For fever\"\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"K/C/O: T2DM, HTN\"\n      },\n      \"text\": \"T2DM\",\n      \"kind\": \"history\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"K/C/O: T2DM, HTN\"\n      },\n      \"text\": \"HTN\",\n      \"kind\": \"history\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 23,\n        \"last_line\": 23,\n        \"quote\": \"Impression: Iron deficiency anaemia\"\n      },\n      \"text\": \"Iron deficiency anaemia\",\n      \"kind\": \"impression\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 35,\n        \"last_line\": 35,\n        \"quote\": \"Advice: Repeat CBC, iron studies and HbA1c after 3 months.\"\n      },\n      \"text\": \"Repeat CBC, iron studies and HbA1c after 3 months.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\"test_name\": null,\"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"Vitals: BP 136/84 mmHg, Pulse 76 /min, Weight 66.5 kg\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"136/84\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"Vitals: BP 136/84 mmHg, Pulse 76 /min, Weight 66.5 kg\"\n      },\n      \"name\": \"Pulse\",\n      \"value_text\": \"76\",\n      \"unit\": \"/min\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"Vitals: BP 136/84 mmHg, Pulse 76 /min, Weight 66.5 kg\"\n      },\n      \"name\": \"Weight\",\n      \"value_text\": \"66.5\",\n      \"unit\": \"kg\"\n    }\n  ],\n  \"allergies\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"Allergies: NKDA\"\n      },\n      \"text\": \"NKDA\",\"substance\": null,\"reaction\": null\n    }\n  ]\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1392,
+    "eval_count": 2117,
+    "total_duration": 243248963600,
+    "load_duration": 10042200,
+    "prompt_eval_duration": 17031957999,
+    "eval_duration": 225935491000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

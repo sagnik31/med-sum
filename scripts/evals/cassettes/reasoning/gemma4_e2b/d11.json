@@ -1,0 +1,145 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "14ed2dc9f4068d720f387ab69a29681d60d83c144807b0070cb706efbfac86fb",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "b36c51c0fde5266832a87e647eca9a6ca99695a0c94a2a794c8f6b7935d04619",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"lab_report\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 470,
+    "eval_count": 16,
+    "total_duration": 2030726400,
+    "load_duration": 4571400,
+    "prompt_eval_duration": 1454932000,
+    "eval_duration": 548649000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "951faa52c212cbf14c6bd70bb87cf0f9e961d9e4fc569d992f4dcdb32539e98c",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "a5dabf2cb9dff93d9bd5e7d676c609dd0674e590b4e5370debed39312f0056fa",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Ref. By: Dr. Kavita Rao\"\n        },\n        \"text\": \"Ref. By: Dr. Kavita Rao\"\n      },\n      {\n        \"citation\": {\n          \"page\": 2,\n          \"first_line\": 29,\n          \"last_line\": 29,\n          \"quote\": \"Dr. Neha Joshi, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Neha Joshi, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"| TSH | 3.1 | | µIU/mL | 0.27 - 4.20\"\n      },\n      \"panel\": \"THYROID PROFILE\",\n      \"test_name\": \"TSH\",\n      \"value_text\": \"3.1\",\n      \"unit\": \"µIU/mL\",\n      \"reference_ranges\": [\n        \"0.27 - 4.20\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 27,\n        \"last_line\": 27,\n        \"quote\": \"| Vitamin D (25-OH) | 18.4 | L | ng/mL | Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100\"\n      },\n      \"panel\": \"VITAMINS\",\n      \"test_name\": \"Vitamin D (25-OH)\",\n      \"value_text\": \"18.4\",\n      \"unit\": \"ng/mL\",\n      \"reference_ranges\": [\n        \"Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100\"\n      ],\n      \"flag_printed\": \"L\"\n    }\n  ],\n  \"remarks\": [],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1470,
+    "eval_count": 670,
+    "total_duration": 24950758300,
+    "load_duration": 8825100,
+    "prompt_eval_duration": 2995348000,
+    "eval_duration": 21910760000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "cca502ff9b61dbcb6fb3e06b84e299ea0c9ee19b0472c04f840b9443b136fecf",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "b95bd6a9672c48cd6b385614d46c93fe13fc655cb9634a03f045173d2cc2b8d5",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Ref. By: Dr. Kavita Rao\"\n        },\n        \"text\": \"Ref. By: Dr. Kavita Rao\"\n      },\n      {\n        \"citation\": {\n          \"page\": 2,\n          \"first_line\": 29,\n          \"last_line\": 29,\n          \"quote\": \"Dr. Neha Joshi, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Neha Joshi, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"| TSH | 3.1 | | µIU/mL | 0.27 - 4.20\"\n      },\n      \"panel\": \"THYROID PROFILE\",\n      \"test_name\": \"TSH\",\n      \"value_text\": \"3.1\",\n      \"unit\": \"µIU/mL\",\n      \"reference_ranges\": [\n        \"0.27 - 4.20\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 27,\n        \"last_line\": 27,\n        \"quote\": \"| Vitamin D (25-OH) | 18.4 | L | ng/mL | Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100\"\n      },\n      \"panel\": \"VITAMINS\",\n      \"test_name\": \"Vitamin D (25-OH)\",\n      \"value_text\": \"18.4\",\n      \"unit\": \"ng/mL\",\n      \"reference_ranges\": [\n        \"Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100\"\n      ],\n      \"flag_printed\": \"L\"\n    }\n  ],\n  \"remarks\": [],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2431,
+    "eval_count": 659,
+    "total_duration": 23003173800,
+    "load_duration": 15870800,
+    "prompt_eval_duration": 3255346000,
+    "eval_duration": 19697949000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "cca502ff9b61dbcb6fb3e06b84e299ea0c9ee19b0472c04f840b9443b136fecf",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "b95bd6a9672c48cd6b385614d46c93fe13fc655cb9634a03f045173d2cc2b8d5",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Ref. By: Dr. Kavita Rao\"\n        },\n        \"text\": \"Ref. By: Dr. Kavita Rao\"\n      },\n      {\n        \"citation\": {\n          \"page\": 2,\n          \"first_line\": 29,\n          \"last_line\": 29,\n          \"quote\": \"Dr. Neha Joshi, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Neha Joshi, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"| TSH | 3.1 | | µIU/mL | 0.27 - 4.20\"\n      },\n      \"panel\": \"THYROID PROFILE\",\n      \"test_name\": \"TSH\",\n      \"value_text\": \"3.1\",\n      \"unit\": \"µIU/mL\",\n      \"reference_ranges\": [\n        \"0.27 - 4.20\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 27,\n        \"last_line\": 27,\n        \"quote\": \"| Vitamin D (25-OH) | 18.4 | L | ng/mL | Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100\"\n      },\n      \"panel\": \"VITAMINS\",\n      \"test_name\": \"Vitamin D (25-OH)\",\n      \"value_text\": \"18.4\",\n      \"unit\": \"ng/mL\",\n      \"reference_ranges\": [\n        \"Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100\"\n      ],\n      \"flag_printed\": \"L\"\n    }\n  ],\n  \"remarks\": [],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2431,
+    "eval_count": 659,
+    "total_duration": 19757088800,
+    "load_duration": 8827500,
+    "prompt_eval_duration": 110559000,
+    "eval_duration": 19610700000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "298dd49e83d6b023cb0d249a067d3e49a036f6b50bf1ef2397b86dcfbd17482d",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "a5dabf2cb9dff93d9bd5e7d676c609dd0674e590b4e5370debed39312f0056fa",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Ms. Fatima Shaikh\"\n      },\n      \"text\": \"Ms. Fatima Shaikh\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age / Sex: 31 Years / Female\"\n      },\n      \"text\": \"31 Years\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age / Sex: 31 Years / Female\"\n      },\n      \"text\": \"Female\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Lab ID: SD-25-010733\"\n      },\n      \"text\": \"SD-25-010733\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 4,\n        \"quote\": \"# Sunrise Diagnostics\\n\\nPlot 12, Baner Road, Pune 411045\\n\\n\"\n      },\n      \"text\": \"Sunrise Diagnostics\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Ref. By: Dr. Kavita Rao\"\n        },\n        \"text\": \"Dr. Kavita Rao\"\n      },\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 29,\n          \"last_line\": 29,\n          \"quote\": \"Dr. Neha Joshi, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Neha Joshi, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"Reported On: 08/01/2025 06:15 PM\"\n      },\n      \"text\": \"08/01/2025 06:15 PM\"\n    },\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Collected On: 08/01/2025 08:20 AM\"\n      },\n      \"text\": \"08/01/2025 08:20 AM\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 22,\n        \"quote\": \"| Test | Result | Flag | Unit | Reference Range |\\n| --- | --- | --- | --- | --- |\\n| | TSH | 3.1 |  | µIU/mL | 0.27 - 4.20 |\\n\"\n      },\n      \"panel\": \"THYROID PROFILE\",\n      \"test_name\": \"TSH\",\n      \"value_text\": \"3.1\",\n      \"unit\": \"µIU/mL\",\n      \"reference_ranges\": [\n        \"0.27 - 4.20\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 25,\n        \"last_line\": 28,\n        \"quote\": \"| Test | Result | Flag | Unit | Reference Range |\\n| --- | --- | --- | --- | --- |\\n| | Vitamin D (25-OH) | 18.4 | L | ng/mL | Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100 |\\n\"\n      },\n      \"panel\": \"VITAMINS\",\n      \"test_name\": \"Vitamin D (25-OH)\",\n      \"value_text\": \"18.4\",\n      \"unit\": \"ng/mL\",\n      \"reference_ranges\": [\n        \"Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100\"\n      ],\n      \"flag_printed\": \"L\"\n    }\n  ],\n  \"remarks\": [],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1454,
+    "eval_count": 1225,
+    "total_duration": 144296450700,
+    "load_duration": 22355600,
+    "prompt_eval_duration": 17820627000,
+    "eval_duration": 125961265000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "94da3005fa6931f482569ac2f0b7c3df40964ad3842b360c78b7308c0a385045",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "2af48b0937b06778195231a3b2d3045a5371563c76e7fa9729acd64249c295c6",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Ms. Fatima Shaikh\"\n      },\n      \"text\": \"Ms. Fatima Shaikh\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age / Sex: 31 Years / Female\"\n      },\n      \"text\": \"31 Years\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age / Sex: 31 Years / Female\"\n      },\n      \"text\": \"Female\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Lab ID: SD-25-010733\"\n      },\n      \"text\": \"SD-25-010733\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 4,\n        \"quote\": \"# Sunrise Diagnostics\\n\\nPlot 12, Baner Road, Pune 411045\\n\\n\"\n      },\n      \"text\": \"Sunrise Diagnostics\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Ref. By: Dr. Kavita Rao\"\n        },\n        \"text\": \"Dr. Kavita Rao\"\n      },\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 29,\n          \"last_line\": 29,\n          \"quote\": \"Dr. Neha Joshi, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Neha Joshi, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"Reported On: 08/01/2025 06:15 PM\"\n      },\n      \"text\": \"08/01/2025 06:15 PM\"\n    },\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Collected On: 08/01/2025 08:20 AM\"\n      },\n      \"text\": \"08/01/2025 08:20 AM\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 22,\n        \"quote\": \"| Test | Result | Flag | Unit | Reference Range |\\n| --- | --- | --- | --- | --- |\\n| | TSH | 3.1 |  | µIU/mL | 0.27 - 4.20 |\\n\"\n      },\n      \"panel\": \"THYROID PROFILE\",\n      \"test_name\": \"TSH\",\n      \"value_text\": \"3.1\",\n      \"unit\": \"µIU/mL\",\n      \"reference_ranges\": [\n        \"0.27 - 4.20\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 25,\n        \"last_line\": 28,\n        \"quote\": \"| Test | Result | Flag | Unit | Reference Range |\\n| --- | --- | --- | --- | --- |\\n| | Vitamin D (25-OH) | 18.4 | L | ng/mL | Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100 |\\n\"\n      },\n      \"panel\": \"VITAMINS\",\n      \"test_name\": \"Vitamin D (25-OH)\",\n      \"value_text\": \"18.4\",\n      \"unit\": \"ng/mL\",\n      \"reference_ranges\": [\n        \"Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100\"\n      ],\n      \"flag_printed\": \"L\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 31,\n        \"last_line\": 31,\n        \"quote\": \"*** End of Report ***\"\n      },\n      \"text\": \"*** End of Report ***\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3013,
+    "eval_count": 1322,
+    "total_duration": 171532051300,
+    "load_duration": 7088100,
+    "prompt_eval_duration": 27939722000,
+    "eval_duration": 143486245000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "f4a18b798433372d93e3528420068ea2a1c8211ae6e5624cc81b5aed92d60caa",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "19442734e64bf43b4c688aa17f1825dc9b6b46ee9cc460e1208eb64d0e331bc8",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Ms. Fatima Shaikh\"\n      },\n      \"text\": \"Ms. Fatima Shaikh\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age / Sex: 31 Years / Female\"\n      },\n      \"text\": \"31 Years\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age / Sex: 31 Years / Female\"\n      },\n      \"text\": \"Female\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Lab ID: SD-25-010733\"\n      },\n      \"text\": \"SD-25-010733\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 4,\n        \"quote\": \"# Sunrise Diagnostics\\n\\nPlot 12, Baner Road, Pune 411045\\n\\n\"\n      },\n      \"text\": \"Sunrise Diagnostics\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Ref. By: Dr. Kavita Rao\"\n        },\n        \"text\": \"Dr. Kavita Rao\"\n      },\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 29,\n          \"last_line\": 29,\n          \"quote\": \"Dr. Neha Joshi, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Neha Joshi, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"Reported On: 08/01/2025 06:15 PM\"\n      },\n      \"text\": \"08/01/2025 06:15 PM\"\n    },\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Collected On: 08/01/2025 08:20 AM\"\n      },\n      \"text\": \"08/01/2025 08:20 AM\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 22,\n        \"quote\": \"| Test | Result | Flag | Unit | Reference Range |\\n| --- | --- | --- | --- | --- |\\n| | TSH | 3.1 |  | µIU/mL | 0.27 - 4.20 |\\n\"\n      },\n      \"panel\": \"THYROID PROFILE\",\n      \"test_name\": \"TSH\",\n      \"value_text\": \"3.1\",\n      \"unit\": \"µIU/mL\",\n      \"reference_ranges\": [\n        \"0.27 - 4.20\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 25,\n        \"last_line\": 28,\n        \"quote\": \"| Test | Result | Flag | Unit | Reference Range |\\n| --- | --- | --- | --- | --- |\\n| | Vitamin D (25-OH) | 18.4 | L | ng/mL | Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100 |\\n\"\n      },\n      \"panel\": \"VITAMINS\",\n      \"test_name\": \"Vitamin D (25-OH)\",\n      \"value_text\": \"18.4\",\n      \"unit\": \"ng/mL\",\n      \"reference_ranges\": [\n        \"Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100\"\n      ],\n      \"flag_printed\": \"L\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 31,\n        \"last_line\": 31,\n        \"quote\": \"*** End of Report ***\"\n      },\n      \"text\": \"*** End of Report ***\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3111,
+    "eval_count": 1322,
+    "total_duration": 163074574700,
+    "load_duration": 16292700,
+    "prompt_eval_duration": 19868760000,
+    "eval_duration": 143161717000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "de442484d886c19fa8b7f3f4447269c173bc61633f22254b753caa333da92a80",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "4631aefd90cc4209bd9f5069af90016c980725434684fc3dd6dec355afc18217",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"lab_report\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 604,
+    "eval_count": 14,
+    "total_duration": 11129211500,
+    "load_duration": 4459900,
+    "prompt_eval_duration": 9735682000,
+    "eval_duration": 1317794000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "bdc182f6edc28863203f1df2fcee597a71a5958640d47d3d65a51957677d2551",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "54e54d97afe8f7c4f267d91098bbcbbc827e45e16de9e4870f5d8a1fcd06b256",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Name: Rohan Kulkarni\"\n      },\n      \"text\": \"Rohan Kulkarni\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age/Gender: 44 Y/M\"\n      },\n      \"text\": \"44 Y\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age/Gender: 44 Y/M\"\n      },\n      \"text\": \"M\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Patient ID: KCL-120051\"\n      },\n      \"text\": \"KCL-120051\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 4,\n        \"quote\": \"# Kaveri Clinical Laboratory\\n\\nKothrud, Pune 411038\"\n      },\n      \"text\": \"Kaveri Clinical Laboratory\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Referred By: Dr. Anil Deshpande\"\n        },\n        \"text\": \"Dr. Anil Deshpande\"\n      },\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 39,\n          \"last_line\": 39,\n          \"quote\": \"Dr. Prakash Nair, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Prakash Nair\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Reported: 20-May-2025 11:30 AM\"\n      },\n      \"text\": \"20-May-2025 11:30 AM\"\n    },\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"| Total Bilirubin | 0.8 | mg/dL | 0.2 - 1.2 |\"\n      },\n      \"panel\": \"LIVER FUNCTION TEST\",\n      \"test_name\": \"Total Bilirubin\",\n      \"value_text\": \"0.8\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"0.2 - 1.2\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 20,\n        \"last_line\": 20,\n        \"quote\": \"| Direct Bilirubin | 0.2 | mg/dL | 0.0 - 0.3 |\"\n      },\n      \"panel\": \"LIVER FUNCTION TEST\",\n      \"test_name\": \"Direct Bilirubin\",\n      \"value_text\": \"0.2\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"0.0 - 0.3\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"| SGOT (AST) | 32 | U/L | 5 - 40 |\"\n      },\n      \"panel\": \"LIVER FUNCTION TEST\",\n      \"test_name\": \"SGOT (AST)\",\n      \"value_text\": \"32\",\n      \"unit\": \"U/L\",\n      \"reference_ranges\": [\n        \"5 - 40\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"| SGPT (ALT) | 48 H | U/L | 7 - 45 |\"\n      },\n      \"panel\": \"LIVER FUNCTION TEST\",\n      \"test_name\": \"SGPT (ALT)\",\n      \"value_text\": \"48\",\n      \"unit\": \"U/L\",\n      \"reference_ranges\": [\n        \"7 - 45\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 23,\n        \"last_line\": 23,\n        \"quote\": \"| Alkaline Phosphatase | 96 | U/L | 40 - 129 |\"\n      },\n      \"panel\": \"LIVER FUNCTION TEST\",\n      \"test_name\": \"Alkaline Phosphatase\",\n      \"value_text\": \"96\",\n      \"unit\": \"U/L\",\n      \"reference_ranges\": [\n        \"40 - 129\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 24,\n        \"last_line\": 24,\n        \"quote\": \"| Total Protein | 7.1 | g/dL | 6.4 - 8.3 |\"\n      },\n      \"panel\": \"LIVER FUNCTION TEST\",\n      \"test_name\": \"Total Protein\",\n      \"value_text\": \"7.1\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"6.4 - 8.3\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 25,\n        \"last_line\": 25,\n        \"quote\": \"| Albumin | 4.2 | g/dL | 3.5 - 5.2 |\"\n      },\n      \"panel\": \"LIVER FUNCTION TEST\",\n      \"test_name\": \"Albumin\",\n      \"value_text\": \"4.2\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"3.5 - 5.2\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 31,\n        \"last_line\": 31,\n        \"quote\": \"| TSH | 2.4 | µIU/mL | 0.27 - 4.20 |\"\n      },\n      \"panel\": \"THYROID\",\n      \"test_name\": \"TSH\",\n      \"value_text\": \"2.4\",\n      \"unit\": \"µIU/mL\",\n      \"reference_ranges\": [\n        \"0.27 - 4.20\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 37,\n        \"last_line\": 37,\n        \"quote\": \"| CRP | < 0.5 | mg/L | < 5.0 |\"\n      },\n      \"panel\": \"INFLAMMATORY MARKERS\",\n      \"test_name\": \"CRP\",\n      \"value_text\": \"< 0.5\",\n      \"unit\": \"mg/L\",\n      \"reference_ranges\": [\n        \"< 5.0\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1610,
+    "eval_count": 2008,
+    "total_duration": 235110681400,
+    "load_duration": 9603500,
+    "prompt_eval_duration": 17444848000,
+    "eval_duration": 217603453000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

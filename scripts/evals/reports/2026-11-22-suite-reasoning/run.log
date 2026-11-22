@@ -1,0 +1,153 @@
+used the fallback model gemma4:e2b
+used the fallback model gemma4:e2b
+used the fallback model gemma4:e2b
+used the fallback model gemma4:e2b
+used the fallback model gemma4:e2b
+used the fallback model gemma4:e2b
+used the fallback model gemma4:e2b
+used the fallback model gemma4:e2b
+used the fallback model gemma4:e2b
+step ended: repair failed
+step ended: parse failed
+used the fallback model gemma4:e2b
+used the fallback model gemma4:e2b
+used the fallback model gemma4:e2b
+used the fallback model gemma4:e2b
+step ended: parse failed
+used the fallback model gemma4:e2b
+used the fallback model gemma4:e2b
+used the fallback model gemma4:e2b
+used the fallback model gemma4:e2b
+used the fallback model gemma4:e2b
+used the fallback model gemma4:e2b
+model gemma4:e2b hit the 8192-token cap
+step ended: parse failed
+model gemma4:e2b hit the 8192-token cap
+step ended: repair failed
+model gemma4:e2b hit the 8192-token cap
+step ended: repair failed
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+step ended: parse failed
+step ended: repair failed
+step ended: repair failed
+used the fallback model qwen3.5:4b
+step ended: parse failed
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+step ended: repair failed
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+step ended: parse failed
+step ended: repair failed
+step ended: repair failed
+used the fallback model qwen3.5:4b
+step ended: parse failed
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+step ended: parse failed
+step ended: repair failed
+step ended: repair failed
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+model gemma4:e2b hit the 8192-token cap
+used the fallback model qwen3.5:4b
+model gemma4:e2b hit the 8192-token cap
+used the fallback model qwen3.5:4b
+model gemma4:e2b hit the 8192-token cap
+model qwen3.5:4b hit the 8192-token cap
+step ended: repair failed
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+used the fallback model qwen3.5:4b
+qwen3.5:4b/d01: 2020 s, needs_review; 49 units left, about 27 h 30 min left
+qwen3.5:4b/d02: 547 s, verified; 48 units left, about 17 h 07 min left
+qwen3.5:4b/d03: 880 s, needs_review; 47 units left, about 15 h 00 min left
+qwen3.5:4b/d04: 255 s, verified; 46 units left, about 11 h 50 min left
+qwen3.5:4b/d05: 321 s, verified; 45 units left, about 10 h 04 min left
+qwen3.5:4b/d06: 801 s, needs_review; 44 units left, about 9 h 50 min left
+qwen3.5:4b/d07: 558 s, verified; 43 units left, about 9 h 11 min left
+qwen3.5:4b/d08: 247 s, verified; 42 units left, about 8 h 13 min left
+qwen3.5:4b/d09: 549 s, verified; 41 units left, about 7 h 49 min left
+qwen3.5:4b/d10: 185 s, verified; 40 units left, about 7 h 04 min left
+qwen3.5:4b/d11: 147 s, verified; 39 units left, about 6 h 25 min left
+qwen3.5:4b/d12: 388 s, verified; 38 units left, about 6 h 04 min left
+qwen3.5:4b/d13: 314 s, verified; 37 units left, about 5 h 42 min left
+qwen3.5:4b/d14: 235 s, verified; 36 units left, about 5 h 19 min left
+qwen3.5:4b/d15: 110 s, needs_review; 35 units left, about 4 h 54 min left
+qwen3.5:4b/d16: 147 s, needs_review; 34 units left, about 4 h 33 min left
+qwen3.5:4b/d17: 7 s, needs_review; 33 units left, about 4 h 10 min left
+qwen3.5:4b/d18: 243 s, verified; 32 units left, about 3 h 56 min left
+qwen3.5:4b/d19: 493 s, verified; 31 units left, about 3 h 50 min left
+qwen3.5:4b/d20: 875 s, needs_review; 30 units left, about 3 h 53 min left
+qwen3.5:4b/d21: 189 s, verified; 29 units left, about 3 h 39 min left
+qwen3.5:4b/d22: 224 s, verified; 28 units left, about 3 h 27 min left
+qwen3.5:4b/d23: 757 s, verified; 27 units left, about 3 h 25 min left
+qwen3.5:4b/d24: 431 s, verified; 26 units left, about 3 h 17 min left
+qwen3.5:4b/d25: 6064 s, needs_review; 25 units left, about 4 h 43 min left
+qwen3.5:4b: 25 documents
+gemma4:e2b/d01: 1972 s, needs_review; 24 units left, about 4 h 52 min left
+gemma4:e2b/d02: 789 s, verified; 23 units left, about 4 h 40 min left
+gemma4:e2b/d03: 587 s, needs_review; 22 units left, about 4 h 26 min left
+gemma4:e2b/d04: 226 s, needs_review; 21 units left, about 4 h 08 min left
+gemma4:e2b/d05: 823 s, verified; 20 units left, about 3 h 58 min left
+gemma4:e2b/d06: 1248 s, needs_review; 19 units left, about 3 h 51 min left
+gemma4:e2b/d07: 755 s, verified; 18 units left, about 3 h 39 min left
+gemma4:e2b/d08: 419 s, verified; 17 units left, about 3 h 24 min left
+gemma4:e2b/d09: 55 s, needs_review; 16 units left, about 3 h 07 min left
+gemma4:e2b/d10: 96 s, needs_review; 15 units left, about 2 h 51 min left
+gemma4:e2b/d11: 550 s, needs_review; 14 units left, about 2 h 39 min left
+gemma4:e2b/d12: 560 s, verified; 13 units left, about 2 h 27 min left
+gemma4:e2b/d13: 476 s, verified; 12 units left, about 2 h 14 min left
+gemma4:e2b/d14: 416 s, verified; 11 units left, about 2 h 02 min left
+gemma4:e2b/d15: 191 s, needs_review; 10 units left, about 1 h 49 min left
+gemma4:e2b/d16: 31 s, needs_review; 9 units left, about 1 h 36 min left
+gemma4:e2b/d17: 2 s, needs_review; 8 units left, about 1 h 23 min left
+gemma4:e2b/d18: 379 s, verified; 7 units left, about 1 h 12 min left
+gemma4:e2b/d19: 628 s, verified; 6 units left, about 1 h 02 min left
+gemma4:e2b/d20: 72 s, needs_review; 5 units left, about 50 min left
+gemma4:e2b/d21: 327 s, verified; 4 units left, about 40 min left
+gemma4:e2b/d22: 342 s, verified; 3 units left, about 30 min left
+gemma4:e2b/d23: 491 s, verified; 2 units left, about 20 min left
+gemma4:e2b/d24: 765 s, verified; 1 units left, about 10 min left
+gemma4:e2b/d25: 8466 s, needs_review; 0 units left
+gemma4:e2b: 25 documents
+wrote D:\Project\med-sum\scripts\evals\reports\2026-11-22-suite-reasoning\report.json and D:\Project\med-sum\scripts\evals\reports\2026-11-22-suite-reasoning\report.md
+history: D:\Project\med-sum\scripts\evals\history\2026-11-22-suite-reasoning.json

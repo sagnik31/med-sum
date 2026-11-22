@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "d9d10bf598c5b70b605963f04a024ff6161f264ed30d0913f73d209418ca5686",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "428cbc6c272c125424a2876bc9e03f658025203006dae0c029809c72318b6d3f",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"lab_report\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 417,
+    "eval_count": 14,
+    "total_duration": 8152778900,
+    "load_duration": 6530400,
+    "prompt_eval_duration": 6795872000,
+    "eval_duration": 1298435000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "6adefe4dc2d084b9e66af1edba658e4201a5c5f40606432cce423dd105b7ab57",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "a3d689777297e5b7a5bd0bd1f84a54d97b6eb38fc5fc3863374dcd9372b9feaa",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Name: Arjun Mehta\"\n      },\n      \"text\": \"Arjun Mehta\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age/Gender: 41 Y/M\"\n      },\n      \"text\": \"41 Y\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age/Gender: 41 Y/M\"\n      },\n      \"text\": \"M\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Patient ID: KCL-120377\"\n      },\n      \"text\": \"KCL-120377\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 4,\n        \"quote\": \"# Kaveri Clinical Laboratory\\n\\nKothrud, Pune 411038\"\n      },\n      \"text\": \"Kaveri Clinical Laboratory\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Referred By: Dr. S. Kulkarni\"\n        },\n        \"text\": \"Dr. S. Kulkarni\"\n      },\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 23,\n          \"last_line\": 23,\n          \"quote\": \"Dr. Prakash Nair, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Prakash Nair, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Reported: 02-Apr-2025 10:05 AM\"\n      },\n      \"text\": \"02-Apr-2025 10:05 AM\"\n    },\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"| Haemoglobin | 14.8 | g/dL | 13.0 - 17.0 |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"14.8\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"13.0 - 17.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 20,\n        \"last_line\": 20,\n        \"quote\": \"| Total Leucocyte Count | 7.9 | 10³/µL | 4.0 - 10.0 |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Total Leucocyte Count\",\n      \"value_text\": \"7.9\",\n      \"unit\": \"10³/µL\",\n      \"reference_ranges\": [\n        \"4.0 - 10.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"| Platelets | 2.65 | lakh/cumm | 1.50 - 4.10 |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Platelets\",\n      \"value_text\": \"2.65\",\n      \"unit\": \"lakh/cumm\",\n      \"reference_ranges\": [\n        \"1.50 - 4.10\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1371,
+    "eval_count": 1174,
+    "total_duration": 138427538100,
+    "load_duration": 10737500,
+    "prompt_eval_duration": 13000660000,
+    "eval_duration": 125364440000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

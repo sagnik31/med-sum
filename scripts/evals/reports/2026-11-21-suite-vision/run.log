@@ -1,0 +1,56 @@
+model qwen3.5:4b hit the 4096-token cap
+used the fallback model gemma4:e2b
+qwen3.5:4b/d01: 717 s, -; 49 units left, about 9 h 45 min left
+qwen3.5:4b/d02: 79 s, -; 48 units left, about 5 h 18 min left
+qwen3.5:4b/d03: 446 s, -; 47 units left, about 5 h 24 min left
+qwen3.5:4b/d04: 80 s, -; 46 units left, about 4 h 13 min left
+qwen3.5:4b/d05: 464 s, -; 45 units left, about 4 h 28 min left
+qwen3.5:4b/d06: 456 s, -; 44 units left, about 4 h 34 min left
+qwen3.5:4b/d07: 78 s, -; 43 units left, about 3 h 58 min left
+qwen3.5:4b/d08: 249 s, -; 42 units left, about 3 h 45 min left
+qwen3.5:4b/d09: 248 s, -; 41 units left, about 3 h 34 min left
+qwen3.5:4b/d10: 69 s, -; 40 units left, about 3 h 12 min left
+qwen3.5:4b/d11: 234 s, -; 39 units left, about 3 h 04 min left
+qwen3.5:4b/d12: 70 s, -; 38 units left, about 2 h 48 min left
+qwen3.5:4b/d13: 462 s, -; 37 units left, about 2 h 53 min left
+qwen3.5:4b/d14: 76 s, -; 36 units left, about 2 h 40 min left
+qwen3.5:4b/d15: 63 s, -; 35 units left, about 2 h 27 min left
+qwen3.5:4b/d16: 225 s, -; 34 units left, about 2 h 22 min left
+qwen3.5:4b/d17: 215 s, -; 33 units left, about 2 h 17 min left
+qwen3.5:4b/d18: 243 s, -; 32 units left, about 2 h 13 min left
+qwen3.5:4b/d19: 74 s, -; 31 units left, about 2 h 04 min left
+qwen3.5:4b/d20: 252 s, -; 30 units left, about 2 h 00 min left
+qwen3.5:4b/d21: 124 s, -; 29 units left, about 1 h 53 min left
+qwen3.5:4b/d22: 133 s, -; 28 units left, about 1 h 47 min left
+qwen3.5:4b/d23: 455 s, -; 27 units left, about 1 h 48 min left
+qwen3.5:4b/d24: 232 s, -; 26 units left, about 1 h 44 min left
+qwen3.5:4b/d25: 1747 s, -; 25 units left, about 2 h 05 min left
+qwen3.5:4b: 25 documents
+gemma4:e2b/d01: 149 s, -; 24 units left, about 1 h 58 min left
+gemma4:e2b/d02: 22 s, -; 23 units left, about 1 h 49 min left
+gemma4:e2b/d03: 89 s, -; 22 units left, about 1 h 41 min left
+gemma4:e2b/d04: 23 s, -; 21 units left, about 1 h 34 min left
+gemma4:e2b/d05: 93 s, -; 20 units left, about 1 h 27 min left
+gemma4:e2b/d06: 90 s, -; 19 units left, about 1 h 21 min left
+gemma4:e2b/d07: 22 s, -; 18 units left, about 1 h 15 min left
+gemma4:e2b/d08: 49 s, -; 17 units left, about 1 h 09 min left
+gemma4:e2b/d09: 49 s, -; 16 units left, about 1 h 03 min left
+gemma4:e2b/d10: 20 s, -; 15 units left, about 58 min left
+gemma4:e2b/d11: 47 s, -; 14 units left, about 53 min left
+gemma4:e2b/d12: 20 s, -; 13 units left, about 48 min left
+gemma4:e2b/d13: 92 s, -; 12 units left, about 43 min left
+gemma4:e2b/d14: 22 s, -; 11 units left, about 39 min left
+gemma4:e2b/d15: 18 s, -; 10 units left, about 35 min left
+gemma4:e2b/d16: 44 s, -; 9 units left, about 31 min left
+gemma4:e2b/d17: 42 s, -; 8 units left, about 27 min left
+gemma4:e2b/d18: 48 s, -; 7 units left, about 23 min left
+gemma4:e2b/d19: 21 s, -; 6 units left, about 19 min left
+gemma4:e2b/d20: 50 s, -; 5 units left, about 16 min left
+gemma4:e2b/d21: 40 s, -; 4 units left, about 12 min left
+gemma4:e2b/d22: 40 s, -; 3 units left, about 9 min left
+gemma4:e2b/d23: 87 s, -; 2 units left, about 6 min left
+gemma4:e2b/d24: 45 s, -; 1 units left, about 3 min left
+gemma4:e2b/d25: 299 s, -; 0 units left
+gemma4:e2b: 25 documents
+wrote D:\Project\med-sum\scripts\evals\reports\2026-11-21-suite-vision\report.json and D:\Project\med-sum\scripts\evals\reports\2026-11-21-suite-vision\report.md
+history: D:\Project\med-sum\scripts\evals\history\2026-11-21-suite-vision.json

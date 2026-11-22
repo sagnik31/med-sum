@@ -1,0 +1,205 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "c4cd47037b5a981583e255792c368d35d87a6054b7917dbf74feb96c05060cec",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "a288752cda95b67324021cc40ad52adc94e018571fdc3222b76843141cdf7aff",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"lab_report\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 645,
+    "eval_count": 14,
+    "total_duration": 11829874200,
+    "load_duration": 5709500,
+    "prompt_eval_duration": 10461798000,
+    "eval_duration": 1293303000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "b7333534f28582d45c995d2d6baf5815eeb8bb5f953981bc4f041f1c0189ed31",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "a3dc8318cf2b93f93606e21c4af0ffb7264acf19d1e98dfade2a7143d71c33cb",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Name: Meera Iyer\"\n      },\n      \"text\": \"Meera Iyer\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age/Gender: 57 Y/F\"\n      },\n      \"text\": \"57 Y\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age/Gender: 57 Y/F\"\n      },\n      \"text\": \"F\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Patient ID: KCL-118842\"\n      },\n      \"text\": \"KCL-118842\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 1,\n        \"quote\": \"# Kaveri Clinical Laboratory\"\n      },\n      \"text\": \"Kaveri Clinical Laboratory\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Referred By: Dr. Anil Deshpande\"\n        },\n        \"text\": \"Dr. Anil Deshpande\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Sample Collected: 16-Dec-2024\"\n      },\n      \"text\": \"16-Dec-2024\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 21,\n        \"quote\": \"| Haemoglobin | 11.2 L | g/dL | 12.0 - 15.0 |\\n| Total Leucocyte Count | 6.8 | 10³/µL | 4.0 - 10.0 |\\n| Platelets | 2.31 | lakh/cumm | 1.50 - 4.10 |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"11.2 L\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"12.0 - 15.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 21,\n        \"quote\": \"| Haemoglobin | 11.2 L | g/dL | 12.0 - 15.0 |\\n| Total Leucocyte Count | 6.8 | 10³/µL | 4.0 - 10.0 |\\n| Platelets | 2.31 | lakh/cumm | 1.50 - 4.10 |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Total Leucocyte Count\",\n      \"value_text\": \"6.8\",\n      \"unit\": \"10³/µL\",\n      \"reference_ranges\": [\n        \"4.0 - 10.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 21,\n        \"quote\": \"| Haemoglobin | 11.2 L | g/dL | 12.0 - 15.0 |\\n| Total Leucocyte Count | 6.8 | 10³/µL | 4.0 - 10.0 |\\n| Platelets | 2.31 | lakh/cumm | 1.50 - 4.10 |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Platelets\",\n      \"value_text\": \"2.31\",\n      \"unit\": \"lakh/cumm\",\n      \"reference_ranges\": [\n        \"1.50 - 4.10\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 21,\n        \"quote\": \"| Haemoglobin | 11.2 L | g/dL | 12.0 - 15.0 |\\n| Total Leucocyte Count | 6.8 | 10³/µL | 4.0 - 10.0 |\\n| Platelets | 2.31 | lakh/cumm | 1.50 - 4.10 |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"MCV\",\n      \"value_text\": \"79 L\",\n      \"unit\": \"fL\",\n      \"reference_ranges\": [\n        \"83 - 101\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 24,\n        \"last_line\": 24,\n        \"quote\": \"Synthetic test document: fictional patient, doctors and laboratory.\"\n      },\n      \"text\": \"Synthetic test document: fictional patient, doctors and laboratory.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1358,
+    "eval_count": 1575,
+    "total_duration": 186686314700,
+    "load_duration": 8292000,
+    "prompt_eval_duration": 21683512000,
+    "eval_duration": 164951728000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "7d7f2780457cef99d9737a95af7b7bfc1b755bdee6aae1ae840e597bde516350",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "175157062faeeb2724af26054595735f0208cb74df840d83ba8efc000241c654",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 1,\n        \"last_line\": 1,\n        \"quote\": \"Patient: Meera Iyer | Lab ID: KCL-118842 | Page 2 of 2\"\n      },\n      \"text\": \"KCL-118842\"\n    }\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 2,\n          \"first_line\": 21,\n          \"last_line\": 21,\n          \"quote\": \"Dr. Prakash Nair, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Prakash Nair, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"| HbA1c | 7.4 H | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |\"\n      },\n      \"panel\": \"GLYCATED HAEMOGLOBIN\",\n      \"test_name\": \"HbA1c\",\n      \"value_text\": \"7.4\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Fasting Plasma Glucose | 132 H | mg/dL | 70 - 100 |\"\n      },\n      \"panel\": \"GLUCOSE\",\n      \"test_name\": \"Fasting Plasma Glucose\",\n      \"value_text\": \"132\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"70 - 100\"\n      ],\n      \"flag_printed\": \"H\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Interpretation: Reflects average glycaemia over the preceding 8-12 weeks.\"\n      },\n      \"text\": \"Reflects average glycaemia over the preceding 8-12 weeks.\",\n      \"kind\": \"comment\",\n      \"scope\": \"test\",\n      \"test_name\": \"HbA1c\",\n      \"panel\": \"GLYCATED HAEMOGLOBIN\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"Suggest iron studies to evaluate microcytosis.\"\n      },\n      \"text\": \"Suggest iron studies to evaluate microcytosis.\",\n      \"kind\": \"advice\",\n      \"scope\": \"panel\",\n      \"test_name\": null,\n      \"panel\": \"PATHOLOGIST'S REMARKS\"\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1366,
+    "eval_count": 901,
+    "total_duration": 110133586100,
+    "load_duration": 7893600,
+    "prompt_eval_duration": 16546666000,
+    "eval_duration": 93526962000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "d5ccfeaa37d515900b5957cad799796a9a89aaf61d6b71b6bee9f962098cd0bc",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "d7b1f6dc99a5caf573b5618d8c19a82bf5ba634e9f9ccc5c75ff1acaf2ac4328",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Name: Meera Iyer\"\n      },\n      \"text\": \"Meera Iyer\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age/Gender: 57 Y/F\"\n      },\n      \"text\": \"57 Y\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age/Gender: 57 Y/F\"\n      },\n      \"text\": \"F\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Patient ID: KCL-118842\"\n      },\n      \"text\": \"KCL-118842\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 1,\n        \"quote\": \"# Kaveri Clinical Laboratory\"\n      },\n      \"text\": \"Kaveri Clinical Laboratory\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Referred By: Dr. Anil Deshpande\"\n        },\n        \"text\": \"Dr. Anil Deshpande\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Sample Collected: 16-Dec-2024\"\n      },\n      \"text\": \"16-Dec-2024\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"| Haemoglobin | 11.2 L | g/dL | 12.0 - 15.0 |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"11.2 L\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"12.0 - 15.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 20,\n        \"last_line\": 20,\n        \"quote\": \"| Total Leucocyte Count | 6.8 | 10³/µL | 4.0 - 10.0 |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Total Leucocyte Count\",\n      \"value_text\": \"6.8\",\n      \"unit\": \"10³/µL\",\n      \"reference_ranges\": [\n        \"4.0 - 10.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"| Platelets | 2.31 | lakh/cumm | 1.50 - 4.10 |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Platelets\",\n      \"value_text\": \"2.31\",\n      \"unit\": \"lakh/cumm\",\n      \"reference_ranges\": [\n        \"1.50 - 4.10\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"| MCV | 79 L | fL | 83 - 101 |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"MCV\",\n      \"value_text\": \"79 L\",\n      \"unit\": \"fL\",\n      \"reference_ranges\": [\n        \"83 - 101\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 24,\n        \"last_line\": 24,\n        \"quote\": \"Synthetic test document: fictional patient, doctors and laboratory.\"\n      },\n      \"text\": \"Synthetic test document: fictional patient, doctors and laboratory.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3567,
+    "eval_count": 1320,
+    "total_duration": 202355915300,
+    "load_duration": 10043800,
+    "prompt_eval_duration": 53360942000,
+    "eval_duration": 148933570000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "9d4c30dd40d7bbfac360d34255718e00086bdfc2da65f7dd9529d70e6d8da82b",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "ecb5a7494b80ae0a5daf125cfd6a4d0a68df9636c9f089b9f1787532a24fef3c",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 1,\n        \"last_line\": 1,\n        \"quote\": \"Patient: Meera Iyer | Lab ID: KCL-118842 | Page 2 of 2\"\n      },\n      \"text\": \"KCL-118842\"\n    }\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 2,\n          \"first_line\": 21,\n          \"last_line\": 21,\n          \"quote\": \"Dr. Prakash Nair, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Prakash Nair, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"| HbA1c | 7.4 H | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |\"\n      },\n      \"panel\": \"GLYCATED HAEMOGLOBIN\",\n      \"test_name\": \"HbA1c\",\n      \"value_text\": \"7.4\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Fasting Plasma Glucose | 132 H | mg/dL | 70 - 100 |\"\n      },\n      \"panel\": \"GLUCOSE\",\n      \"test_name\": \"Fasting Plasma Glucose\",\n      \"value_text\": \"132\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"70 - 100\"\n      ],\n      \"flag_printed\": \"H\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Interpretation: Reflects average glycaemia over the preceding 8-12 weeks.\"\n      },\n      \"text\": \"Reflects average glycaemia over the preceding 8-12 weeks.\",\n      \"kind\": \"comment\",\n      \"scope\": \"test\",\n      \"test_name\": \"HbA1c\",\n      \"panel\": \"GLYCATED HAEMOGLOBIN\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"Suggest iron studies to evaluate microcytosis.\"\n      },\n      \"text\": \"Suggest iron studies to evaluate microcytosis.\",\n      \"kind\": \"advice\",\n      \"scope\": \"panel\",\n      \"test_name\": null,\n      \"panel\": \"PATHOLOGIST'S REMARKS\"\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2560,
+    "eval_count": 895,
+    "total_duration": 116964570100,
+    "load_duration": 8353100,
+    "prompt_eval_duration": 20357848000,
+    "eval_duration": 96507989000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "9d4c30dd40d7bbfac360d34255718e00086bdfc2da65f7dd9529d70e6d8da82b",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "ecb5a7494b80ae0a5daf125cfd6a4d0a68df9636c9f089b9f1787532a24fef3c",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 1,\n        \"last_line\": 1,\n        \"quote\": \"Patient: Meera Iyer | Lab ID: KCL-118842 | Page 2 of 2\"\n      },\n      \"text\": \"KCL-118842\"\n    }\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 2,\n          \"first_line\": 21,\n          \"last_line\": 21,\n          \"quote\": \"Dr. Prakash Nair, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Prakash Nair, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"| HbA1c | 7.4 H | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |\"\n      },\n      \"panel\": \"GLYCATED HAEMOGLOBIN\",\n      \"test_name\": \"HbA1c\",\n      \"value_text\": \"7.4\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Fasting Plasma Glucose | 132 H | mg/dL | 70 - 100 |\"\n      },\n      \"panel\": \"GLUCOSE\",\n      \"test_name\": \"Fasting Plasma Glucose\",\n      \"value_text\": \"132\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"70 - 100\"\n      ],\n      \"flag_printed\": \"H\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Interpretation: Reflects average glycaemia over the preceding 8-12 weeks.\"\n      },\n      \"text\": \"Reflects average glycaemia over the preceding 8-12 weeks.\",\n      \"kind\": \"comment\",\n      \"scope\": \"test\",\n      \"test_name\": \"HbA1c\",\n      \"panel\": \"GLYCATED HAEMOGLOBIN\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"Suggest iron studies to evaluate microcytosis.\"\n      },\n      \"text\": \"Suggest iron studies to evaluate microcytosis.\",\n      \"kind\": \"advice\",\n      \"scope\": \"panel\",\n      \"test_name\": null,\n      \"panel\": \"PATHOLOGIST'S REMARKS\"\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2560,
+    "eval_count": 895,
+    "total_duration": 96635256900,
+    "load_duration": 11547500,
+    "prompt_eval_duration": 204683000,
+    "eval_duration": 96395322000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "303fc447530e2281ce888dd17e437f78ec384453a771c59e4a52228488a3f029",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "a3dc8318cf2b93f93606e21c4af0ffb7264acf19d1e98dfade2a7143d71c33cb",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Referred By: Dr. Anil Deshpande\"\n        },\"text\": \"Referred By: Dr. Anil Deshpande\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Sample Collected: 16-Dec-2024\"\n      },\n      \"text\": \"16-Dec-2024\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"Haemoglobin | 11.2 L | g/dL | 12.0 - 15.0\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"11.2 L\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"12.0 - 15.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 20,\n        \"last_line\": 20,\n        \"quote\": \"Total Leucocyte Count | 6.8 | 10³/µL | 4.0 - 10.0\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Total Leucocyte Count\",\n      \"value_text\": \"6.8\",\n      \"unit\": \"10³/µL\",\n      \"reference_ranges\": [\n        \"4.0 - 10.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"Platelets | 2.31 | lakh/cumm | 1.50 - 4.10\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Platelets\",\n      \"value_text\": \"2.31\",\n      \"unit\": \"lakh/cumm\",\n      \"reference_ranges\": [\n        \"1.50 - 4.10\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"MCV | 79 L | fL | 83 - 101\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"MCV\",\n      \"value_text\": \"79 L\",\n      \"unit\": \"fL\",\n      \"reference_ranges\": [\n        \"83 - 101\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [],\n  \"conditions\": [],\"vitals\": [],\"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1370,
+    "eval_count": 922,
+    "total_duration": 50671250400,
+    "load_duration": 14678204100,
+    "prompt_eval_duration": 5296367000,
+    "eval_duration": 30514553000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "5751eeb4a0f31ffc3652b55257924840d52b4009a218b2b49888e462eb155e02",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "175157062faeeb2724af26054595735f0208cb74df840d83ba8efc000241c654",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 2,\n          \"first_line\": 21,\n          \"last_line\": 21,\n          \"quote\": \"Dr. Prakash Nair, MD (Pathology)\"\n        },\"text\": \"Dr. Prakash Nair, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"HbA1c | 7.4 H | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5\"\n      },\n      \"panel\": \"GLYCATED HAEMOGLOBIN\",\n      \"test_name\": \"HbA1c\",\n      \"value_text\": \"7.4\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"Fasting Plasma Glucose | 132 H | mg/dL | 70 - 100\"\n      },\n      \"panel\": \"GLUCOSE\",\n      \"test_name\": \"Fasting Plasma Glucose\",\n      \"value_text\": \"132\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"70 - 100\"\n      ],\n      \"flag_printed\": \"H\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Interpretation: Reflects average glycaemia over the preceding 8-12 weeks.\"\n      },\n      \"text\": \"Reflects average glycaemia over the preceding 8-12 weeks.\",\"kind\": \"comment\",\n      \"scope\": \"test\",\n      \"test_name\": \"HbA1c\",\n      \"panel\": \"GLYCATED HAEMOGLOBIN\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"Suggest iron studies to evaluate microcytosis.\"\n      },\n      \"text\": \"Suggest iron studies to evaluate microcytosis.\", \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1377,
+    "eval_count": 811,
+    "total_duration": 29895667800,
+    "load_duration": 28709800,
+    "prompt_eval_duration": 3350947000,
+    "eval_duration": 26400080000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "9a372682732cd6a2634018f4276e3b32be10fb3bcb7f6bc79c46fb47de22e525",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "faf5f5b0f7e4b4ce4f2a07a8f17696fd3531313b8c33b6896a98f68b10721ec4",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Referred By: Dr. Anil Deshpande\"\n        },\"text\": \"Referred By: Dr. Anil Deshpande\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Sample Collected: 16-Dec-2024\"\n      },\n      \"text\": \"16-Dec-2024\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"Haemoglobin | 11.2 L | g/dL | 12.0 - 15.0\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"11.2 L\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"12.0 - 15.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 20,\n        \"last_line\": 20,\n        \"quote\": \"Total Leucocyte Count | 6.8 | 10³/µL | 4.0 - 10.0\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Total Leucocyte Count\",\n      \"value_text\": \"6.8\",\n      \"unit\": \"10³/µL\",\n      \"reference_ranges\": [\n        \"4.0 - 10.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"Platelets | 2.31 | lakh/cumm | 1.50 - 4.10\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Platelets\",\n      \"value_text\": \"2.31\",\n      \"unit\": \"lakh/cumm\",\n      \"reference_ranges\": [\n        \"1.50 - 4.10\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"MCV | 79 L | fL | 83 - 101\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"MCV\",\n      \"value_text\": \"79 L\",\n      \"unit\": \"fL\",\n      \"reference_ranges\": [\n        \"83 - 101\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 24,\n        \"last_line\": 24,\n        \"quote\": \"Synthetic test document: fictional patient, doctors and laboratory.\"\n      },\n      \"text\": \"Synthetic test document: fictional patient, doctors and laboratory.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2599,
+    "eval_count": 1028,
+    "total_duration": 37382274800,
+    "load_duration": 15855700,
+    "prompt_eval_duration": 4321685000,
+    "eval_duration": 32972568000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "67d29916ac1d71958ac25697d15ef39f3508295ca4263c06c7ac53e3fa2bb67c",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "641f1944a1c3cc8b9473156515af6913e24df3c085f507d33fd72c3e205c3eb3",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Referred By: Dr. Anil Deshpande\"\n        },\n        \"text\": \"Referred By: Dr. Anil Deshpande\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Sample Collected: 16-Dec-2024\"\n      },\n      \"text\": \"16-Dec-2024\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"Haemoglobin | 11.2 L | g/dL | 12.0 - 15.0\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"11.2 L\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"12.0 - 15.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 20,\n        \"last_line\": 20,\n        \"quote\": \"Total Leucocyte Count | 6.8 | 10³/µL | 4.0 - 10.0\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Total Leucocyte Count\",\n      \"value_text\": \"6.8\",\n      \"unit\": \"10³/µL\",\n      \"reference_ranges\": [\n        \"4.0 - 10.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"Platelets | 2.31 | lakh/cumm | 1.50 - 4.10\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Platelets\",\n      \"value_text\": \"2.31\",\n      \"unit\": \"lakh/cumm\",\n      \"reference_ranges\": [\n        \"1.50 - 4.10\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"MCV | 79 L | fL | 83 - 101\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"MCV\",\n      \"value_text\": \"79 L\",\n      \"unit\": \"fL\",\n      \"reference_ranges\": [\n        \"83 - 101\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 24,\n        \"last_line\": 24,\n        \"quote\": \"Synthetic test document: fictional patient, doctors and laboratory.\"\n      },\n      \"text\": \"Synthetic test document: fictional patient, doctors and laboratory.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2716,
+    "eval_count": 1029,
+    "total_duration": 36163172900,
+    "load_duration": 13513900,
+    "prompt_eval_duration": 4062250000,
+    "eval_duration": 32054365000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "45e45a0e5391650478bd09104969c306911b4ade178bfc810825d9e86730d84c",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "eb6c262d6c56530665180fbe871000d4016892f8be777b54d0f7b052229a485c",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"prescription\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 443,
+    "eval_count": 14,
+    "total_duration": 8694877300,
+    "load_duration": 9230000,
+    "prompt_eval_duration": 7303677000,
+    "eval_duration": 1301849000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "c4c62b988585abf7e3818c7e7d48178869817e0c5aba0f6b59769513759b0631",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "e1a8e15bd2c33825b30fa229008e4a2665643fe9a5e04ee674b8e654bb7e22d1",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"Patient: Fatima Shaikh\"\n      },\n      \"text\": \"Fatima Shaikh\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Age / Sex: 31 Y / F\"\n      },\n      \"text\": \"31 Y\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Age / Sex: 31 Y / F\"\n      },\n      \"text\": \"F\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"UHID: SH-100233\"\n      },\n      \"text\": \"SH-100233\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Sahaj Multispeciality Hospital, Karve Road, Pune\"\n      },\n      \"text\": \"Sahaj Multispeciality Hospital\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 1,\n          \"last_line\": 1,\n          \"quote\": \"# Dr. Kavita Rao\"\n        },\n        \"text\": \"Dr. Kavita Rao\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Date: 09/09/2024\"\n      },\n      \"text\": \"09/09/2024\"\n    }\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 27,\n        \"last_line\": 27,\n        \"quote\": \"| 1 | Tab. Thyronorm 50 mcg | 1 tab | 1-0-0 | 6 weeks | Empty stomach, 30 min before breakfast |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Thyronorm\",\n      \"strength\": \"50 mcg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"1-0-0\",\n      \"route\": null,\n      \"duration\": \"6 weeks\",\n      \"instructions\": \"Empty stomach, 30 min before breakfast\"\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"Diagnosis: Hypothyroidism\"\n      },\n      \"text\": \"Hypothyroidism\",\n      \"kind\": \"history\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 29,\n        \"last_line\": 29,\n        \"quote\": \"Advice: Repeat TSH after 6 weeks.\"\n      },\n      \"text\": \"Repeat TSH after 6 weeks.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"118/76\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"Pulse\",\n      \"value_text\": \"72\",\n      \"unit\": \"/min\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"Weight\",\n      \"value_text\": \"61\",\n      \"unit\": \"kg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"Temp\",\n      \"value_text\": \"98.4\",\n      \"unit\": \"°F\"\n    }\n  ],\n  \"allergies\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"Allergies: Penicillin - hives\"\n      },\n      \"text\": \"Penicillin - hives\",\"substance\": \"Penicillin\",\n      \"reaction\": \"hives\"\n    }\n  ]\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1258,
+    "eval_count": 1523,
+    "total_duration": 176171857600,
+    "load_duration": 10036300,
+    "prompt_eval_duration": 14654708000,
+    "eval_duration": 161446373000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}
