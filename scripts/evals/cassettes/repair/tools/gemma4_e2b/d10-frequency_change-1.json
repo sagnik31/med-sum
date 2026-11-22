@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "c528f3a081b260b02e95a174446af1f11fbccda481099a9e23d04a53a6203d8b",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "62f923418fbf0838bfe6f080713e83e6092318627d7996872be1d9999d86bb35",
+   "options": "3b64b24dcf543af91f040aef877d3dd005d3486d15ac9c21b874f5d0f4708a92",
+   "reply": "```json\n{\n  \"patient\": {\n    \"name\": \"Fatima Shaikh\",\n    \"text\": \"Fatima Shaikh\"\n  },\n  \"details\": {\n    \"facility\": \"Sahaj Multispeciality Hospital\",\n    \"clinicians\": [\n      {\n        \"name\": \"Dr. Kavita Rao\",\n        \"text\": \"Dr. Kavita Rao\"\n      }\n    ],\n    \"prescription_date\": \"09/09/2024\"\n  },\n  \"medicines\": [\n    {\n      \"form\": \"Tab.\",\n      \"name\": \"Thyronorm\",\n      \"strength\": \"50 mcg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"1-0-0\",\n      \"route\": null,\n      \"duration\": \"6 weeks\",\n      \"instructions\": \"Empty stomach, 30 min before breakfast\"\n    }\n  ],\n  \"conditions\": [\n    {\n      \"condition\": \"Hypothyroidism\",\n      \"kind\": \"diagnosis\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"advice\": \"Repeat TSH after 6 weeks.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\"\n    }\n  ],\n  \"vitals\": [\n    {\n      \"name\": \"BP\",\n      \"value_text\": \"118/76\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"name\": \"Pulse\",\n      \"value_text\": \"72\",\n      \"unit\": \"/min\"\n    },\n    {\n      \"name\": \"Weight\",\n      \"value_text\": \"61\",\n      \"unit\": \"kg\"\n    },\n    {\n      \"name\": \"Temp\",\n      \"value_text\": \"98.4\",\n      \"unit\": \"°F\"\n    }\n  ],\n  \"allergies\": [\n    {\n      \"substance\": \"Penicillin\",\n      \"reaction\": \"hives\"\n    }\n  ]\n}\n```",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2943,
+    "eval_count": 477,
+    "total_duration": 25060874200,
+    "load_duration": 4635000,
+    "prompt_eval_duration": 9483593000,
+    "eval_duration": 15540338000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "40d0216dbea59f36168c6b1acf1a83bb7ed1560203cf20f8c4ce6d9ae728a463",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "9bdc71aff7fb0f7b02e11adbdf5deee3b796163d7b48f2dbcb955d187879a697",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\"patient\":{\"name\":{\"citation\":{\"page\":1,\"first_line\":11,\"last_line\":11,\"quote\":\"Patient: Fatima Shaikh\"},\"text\":\"Fatima Shaikh\"},\"age\":{\"citation\":{\"page\":1,\"first_line\":13,\"last_line\":13,\"quote\":\"Age / Sex: 31 Y / F\"},\"text\":\"31 Y\"},\"sex\":{\"citation\":{\"page\":1,\"first_line\":13,\"last_line\":13,\"quote\":\"Age / Sex: 31 Y / F\"},\"text\":\"F\"},\"date_of_birth\":null,\"patient_id\":{\"citation\":{\"page\":1,\"first_line\":15,\"last_line\":15,\"quote\":\"UHID: SH-100233\"},\"text\":\"SH-100233\"}},\"details\":{\"facility\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Sahaj Multispeciality Hospital, Karve Road, Pune\"},\"text\":\"Sahaj Multispeciality Hospital\"},\"clinicians\":[{\"citation\":{\"page\":1,\"first_line\":1,\"last_line\":1,\"quote\":\"# Dr. Kavita Rao\"},\"text\":\"Dr. Kavita Rao\"}],\"report_date\":null,\"collection_date\":null,\"prescription_date\":{\"citation\":{\"page\":1,\"first_line\":9,\"last_line\":9,\"quote\":\"Date: 09/09/2024\"},\"text\":\"09/09/2024\"}},\"medicines\":[{\"citation\":{\"page\":1,\"first_line\":27,\"last_line\":27,\"quote\":\"| 1 | Tab. Thyronorm 50 mcg | 1 tab | 1-0-0 | 6 weeks | Empty stomach, 30 min before breakfast |\"},\"form\":\"Tab.\",\"name\":\"Thyronorm\",\"strength\":\"50 mcg\",\"dose\":\"1 tab\",\"frequency\":\"1-0-0\",\"route\":null,\"duration\":\"6 weeks\",\"instructions\":\"Empty stomach, 30 min before breakfast\"}],\"conditions\":[{\"citation\":{\"page\":1,\"first_line\":21,\"last_line\":21,\"quote\":\"Diagnosis: Hypothyroidism\"},\"text\":\"Hypothyroidism\",\"kind\":\"diagnosis\"}],\"remarks\":[{\"citation\":{\"page\":1,\"first_line\":29,\"last_line\":29,\"quote\":\"Advice: Repeat TSH after 6 weeks.\"},\"text\":\"Repeat TSH after 6 weeks.\",\"kind\":\"advice\",\"scope\":\"document\",\"test_name\":null,\"panel\":null}],\"vitals\":[{\"citation\":{\"page\":1,\"first_line\":17,\"last_line\":17,\"quote\":\"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"},\"name\":\"BP\",\"value_text\":\"118/76\",\"unit\":\"mmHg\"},{\"citation\":{\"page\":1,\"first_line\":17,\"last_line\":17,\"quote\":\"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"},\"name\":\"Pulse\",\"value_text\":\"72\",\"unit\":\"/min\"},{\"citation\":{\"page\":1,\"first_line\":17,\"last_line\":17,\"quote\":\"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"},\"name\":\"Weight\",\"value_text\":\"61\",\"unit\":\"kg\"},{\"citation\":{\"page\":1,\"first_line\":17,\"last_line\":17,\"quote\":\"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"},\"name\":\"Temp\",\"value_text\":\"98.4\",\"unit\":\"°F\"}],\"allergies\":[{\"citation\":{\"page\":1,\"first_line\":19,\"last_line\":19,\"quote\":\"Allergies: Penicillin - hives\"},\"text\":\"Penicillin - hives\",\"substance\":\"Penicillin\",\"reaction\":\"hives\"}]}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2498,
+    "eval_count": 920,
+    "total_duration": 37685970800,
+    "load_duration": 6403200,
+    "prompt_eval_duration": 8179257000,
+    "eval_duration": 29463954000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

@@ -1,0 +1,79 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "30d08a62ab6353eef6899e6317e5d493ad3c2f602d843c7e987cee87324995e9",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "c9ed944e4d41f2c3fc2798fce92c7ee8d62bd1cbc6c79c8a3bc21e7236711080",
+   "options": "9291cd10795858a97353300cd4f3ebf9cdc383b6b5a8b5e6f59fc72220df025b",
+   "reply": "",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3729,
+    "eval_count": 28,
+    "total_duration": 68290482800,
+    "load_duration": 5025100,
+    "prompt_eval_duration": 64842940000,
+    "eval_duration": 3084863000
+   },
+   "tool_calls": [
+    {
+     "name": "get_item",
+     "arguments": {
+      "item_id": "obs-1"
+     }
+    }
+   ],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "0506a3e9637442cfa1f5db32b70109e628828ffb45b8300a0d8aa911debbf680",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "c0fcf74dcba901871ee9d1161a032ae13b4bc0ec97739115d65ea6b84accdf15",
+   "options": "9291cd10795858a97353300cd4f3ebf9cdc383b6b5a8b5e6f59fc72220df025b",
+   "reply": "",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3970,
+    "eval_count": 28,
+    "total_duration": 8080078700,
+    "load_duration": 10061400,
+    "prompt_eval_duration": 4892163000,
+    "eval_duration": 3138899000
+   },
+   "tool_calls": [
+    {
+     "name": "get_item",
+     "arguments": {
+      "item_id": "obs-2"
+     }
+    }
+   ],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "00ea269a0e901f5f3bcdba4307bc3bdee8b98b145beb87589e75bf8fc6200b2f",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "216fe9480d624583ab7711c4789b95bc5d8d006d604ebe69cb1f4afea70bc69a",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\"patient\":{\"name\":{\"citation\":{\"page\":1,\"first_line\":5,\"last_line\":5,\"quote\":\"Patient Name: Mrs. Meera Iyer\"},\"text\":\"Mrs. Meera Iyer\"},\"age\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age / Sex: 58 Years / Female\"},\"text\":\"58 Years\"},\"sex\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age / Sex: 58 Years / Female\"},\"text\":\"Female\"},\"date_of_birth\":null,\"patient_id\":{\"citation\":{\"page\":1,\"first_line\":9,\"last_line\":9,\"quote\":\"Lab ID: SD-25-041288\"},\"text\":\"SD-25-041288\"}},\"details\":{\"facility\":{\"citation\":{\"page\":1,\"first_line\":1,\"last_line\":1,\"quote\":\"# Sunrise Diagnostics\"},\"text\":\"Sunrise Diagnostics\"},\"clinicians\":[{\"citation\":{\"page\":1,\"first_line\":11,\"last_line\":11,\"quote\":\"Ref. By: Dr. Kavita Rao\"},\"text\":\"Ref. By: Dr. Kavita Rao\"}],\"report_date\":{\"citation\":{\"page\":1,\"first_line\":15,\"last_line\":15,\"quote\":\"Reported On: 12/04/2025 01:10 PM\"},\"text\":\"12/04/2025 01:10 PM\"},\"collection_date\":{\"citation\":{\"page\":1,\"first_line\":13,\"last_line\":13,\"quote\":\"Collected On: 12/04/2025 07:55 AM\"},\"text\":\"12/04/2025 07:55 AM\"},\"prescription_date\":null},\"results\":[{\"citation\":{\"page\":1,\"first_line\":21,\"last_line\":21,\"quote\":\"| Haemoglobin | 11.9 | L | g/dL | 12.0 - 15.0 |\"},\"panel\":\"COMPLETE BLOOD COUNT\",\"test_name\":\"Haemoglobin\",\"value_text\":\"11.9\",\"unit\":\"g/dL\",\"reference_ranges\":[\"12.0 - 15.0\"],\"flag_printed\":\"L\"},{\"citation\":{\"page\":1,\"first_line\":22,\"last_line\":22,\"quote\":\"| MCV | 81 | L | fL | 83 - 101 |\"},\"panel\":\"COMPLETE BLOOD COUNT\",\"test_name\":\"MCV\",\"value_text\":\"81\",\"unit\":\"fL\",\"reference_ranges\":[\"83 - 101\"],\"flag_printed\":\"L\"},{\"citation\":{\"page\":1,\"first_line\":23,\"last_line\":23,\"quote\":\"| Platelet Count | 2,62,000 |  | /cumm | 1,50,000 - 4,10,000 |\"},\"panel\":\"COMPLETE BLOOD COUNT\",\"test_name\":\"Platelet Count\",\"value_text\":\"2,62,000\",\"unit\":\"/cumm\",\"reference_ranges\":[\"1,50,000 - 4,10,000\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":29,\"last_line\":29,\"quote\":\"| Serum Iron | 48 | L | µg/dL | 50 - 170 |\"},\"panel\":\"IRON STUDIES\",\"test_name\":\"Serum Iron\",\"value_text\":\"48\",\"unit\":\"µg/dL\",\"reference_ranges\":[\"50 - 170\"],\"flag_printed\":\"L\"},{\"citation\":{\"page\":1,\"first_line\":30,\"last_line\":30,\"quote\":\"| TIBC | 412 | H | µg/dL | 250 - 400 |\"},\"panel\":\"IRON STUDIES\",\"test_name\":\"TIBC\",\"value_text\":\"412\",\"unit\":\"µg/dL\",\"reference_ranges\":[\"250 - 400\"],\"flag_printed\":\"H\"},{\"citation\":{\"page\":1,\"first_line\":31,\"last_line\":31,\"quote\":\"| Transferrin Saturation | 11.7 | L | % | 20 - 50 |\"},\"panel\":\"IRON STUDIES\",\"test_name\":\"Transferrin Saturation\",\"value_text\":\"11.7\",\"unit\":\"%\",\"reference_ranges\":[\"20 - 50\"],\"flag_printed\":\"L\"},{\"citation\":{\"page\":1,\"first_line\":32,\"last_line\":32,\"quote\":\"| Serum Ferritin | 9.8 | L | ng/mL | 13 - 150 |\"},\"panel\":\"IRON STUDIES\",\"test_name\":\"Serum Ferritin\",\"value_text\":\"9.8\",\"unit\":\"ng/mL\",\"reference_ranges\":[\"13 - 150\"],\"flag_printed\":\"L\"}],\"remarks\":[{\"citation\":{\"page\":1,\"first_line\":34,\"last_line\":34,\"quote\":\"Comment: Iron deficiency picture.\"},\"text\":\"Iron deficiency picture.\",\"kind\":\"comment\",\"scope\":\"panel\",\"test_name\":null,\"panel\":\"IRON STUDIES\"}],\"conditions\":[],\"vitals\":[],\"allergies\":[]}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3456,
+    "eval_count": 1121,
+    "total_duration": 190330408900,
+    "load_duration": 11414300,
+    "prompt_eval_duration": 59445928000,
+    "eval_duration": 130743244000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

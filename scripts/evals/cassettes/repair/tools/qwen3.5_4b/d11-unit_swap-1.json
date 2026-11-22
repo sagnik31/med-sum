@@ -1,0 +1,81 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "a51949e586abcd184c218fa5c2f16c2f6968ccafd32ba7e057d9c65608abccda",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "6c610d32650a098861efb459ca776094efe12b1aa8ef596bb9a64a054b602a1e",
+   "options": "9291cd10795858a97353300cd4f3ebf9cdc383b6b5a8b5e6f59fc72220df025b",
+   "reply": "",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3293,
+    "eval_count": 28,
+    "total_duration": 31664106200,
+    "load_duration": 4064400,
+    "prompt_eval_duration": 28394112000,
+    "eval_duration": 3039505000
+   },
+   "tool_calls": [
+    {
+     "name": "get_item",
+     "arguments": {
+      "item_id": "obs-1"
+     }
+    }
+   ],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "225600a27d45b35754fbd76afa0b527e6134638fd0fb9c29de4fe1b50085587d",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "a3cb853327f9549a56eaf13b00cff138779b16f08c11300e08bdf8e63377c23b",
+   "options": "9291cd10795858a97353300cd4f3ebf9cdc383b6b5a8b5e6f59fc72220df025b",
+   "reply": "",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3548,
+    "eval_count": 52,
+    "total_duration": 10810042700,
+    "load_duration": 8517600,
+    "prompt_eval_duration": 4974061000,
+    "eval_duration": 5801700000
+   },
+   "tool_calls": [
+    {
+     "name": "get_lines",
+     "arguments": {
+      "page": 1,
+      "first": 21,
+      "last": 21
+     }
+    }
+   ],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "99de06a3ef2f97452b32b269f4675527aa893b6b6b7d1507c822f62e5ca04523",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "96c4d1f5a54fe64add7dc967743e96d8789c23eff277197083ff7a7d465cc46f",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\"patient\":{\"name\":{\"citation\":{\"page\":1,\"first_line\":5,\"last_line\":5,\"quote\":\"Patient Name: Ms. Fatima Shaikh\"},\"text\":\"Ms. Fatima Shaikh\"},\"age\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age / Sex: 31 Years / Female\"},\"text\":\"31 Years\"},\"sex\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age / Sex: 31 Years / Female\"},\"text\":\"Female\"},\"date_of_birth\":null,\"patient_id\":{\"citation\":{\"page\":1,\"first_line\":9,\"last_line\":9,\"quote\":\"Lab ID: SD-25-010733\"},\"text\":\"SD-25-010733\"}},\"details\":{\"facility\":{\"citation\":{\"page\":1,\"first_line\":1,\"last_line\":1,\"quote\":\"# Sunrise Diagnostics\"},\"text\":\"Sunrise Diagnostics\"},\"clinicians\":[{\"citation\":{\"page\":1,\"first_line\":11,\"last_line\":11,\"quote\":\"Ref. By: Dr. Kavita Rao\"},\"text\":\"Ref. By: Dr. Kavita Rao\"},{\"citation\":{\"page\":1,\"first_line\":29,\"last_line\":29,\"quote\":\"Dr. Neha Joshi, MD (Pathology)\"},\"text\":\"Dr. Neha Joshi, MD (Pathology)\"}],\"report_date\":{\"citation\":{\"page\":1,\"first_line\":15,\"last_line\":15,\"quote\":\"Reported On: 08/01/2025 06:15 PM\"},\"text\":\"08/01/2025 06:15 PM\"},\"collection_date\":{\"citation\":{\"page\":1,\"first_line\":13,\"last_line\":13,\"quote\":\"Collected On: 08/01/2025 08:20 AM\"},\"text\":\"08/01/2025 08:20 AM\"},\"prescription_date\":null},\"results\":[{\"citation\":{\"page\":1,\"first_line\":21,\"last_line\":21,\"quote\":\"| TSH | 3.1 |  | µIU/mL | 0.27 - 4.20 |\"},\"panel\":\"THYROID PROFILE\",\"test_name\":\"TSH\",\"value_text\":\"3.1\",\"unit\":\"µIU/mL\",\"reference_ranges\":[\"0.27 - 4.20\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":27,\"last_line\":27,\"quote\":\"| Vitamin D (25-OH) | 18.4 | L | ng/mL | Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100 |\"},\"panel\":\"VITAMINS\",\"test_name\":\"Vitamin D (25-OH)\",\"value_text\":\"18.4\",\"unit\":\"ng/mL\",\"reference_ranges\":[\"Deficiency: < 20\",\"Insufficiency: 20 - 30\",\"Sufficiency: 30 - 100\"],\"flag_printed\":\"L\"}],\"remarks\":[],\"conditions\":[],\"vitals\":[],\"allergies\":[]}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2836,
+    "eval_count": 698,
+    "total_duration": 114031135600,
+    "load_duration": 8057900,
+    "prompt_eval_duration": 34613195000,
+    "eval_duration": 79201274000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

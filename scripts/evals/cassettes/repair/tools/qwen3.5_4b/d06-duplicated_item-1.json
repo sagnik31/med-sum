@@ -1,0 +1,79 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "1fda3f6e997f69c39e1ca518f859ce498949bda7b4da1540811eb6f4e61ef13a",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "fb867ce4e581f3125bce98463d858dad135f52f11f1afc3fc1e7e2c1ebbac99a",
+   "options": "9291cd10795858a97353300cd4f3ebf9cdc383b6b5a8b5e6f59fc72220df025b",
+   "reply": "",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2734,
+    "eval_count": 29,
+    "total_duration": 50048782800,
+    "load_duration": 4418900,
+    "prompt_eval_duration": 46846603000,
+    "eval_duration": 3093975000
+   },
+   "tool_calls": [
+    {
+     "name": "get_item",
+     "arguments": {
+      "item_id": "obs-10"
+     }
+    }
+   ],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "d599bc8644c07878bfad92d1171c9433a05fa38b1871c5c677244e7610b201a2",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "6e49e6ef803a2b81f259b717d1277c889b5a2f2bbe732b8cd4c719aa9e3abc82",
+   "options": "9291cd10795858a97353300cd4f3ebf9cdc383b6b5a8b5e6f59fc72220df025b",
+   "reply": "",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2984,
+    "eval_count": 28,
+    "total_duration": 7798725400,
+    "load_duration": 11739000,
+    "prompt_eval_duration": 4749449000,
+    "eval_duration": 3005024000
+   },
+   "tool_calls": [
+    {
+     "name": "get_item",
+     "arguments": {
+      "item_id": "obs-9"
+     }
+    }
+   ],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "5a485e69d91341f5e31d99c9b41be4d0ae19afff0c10a47c937e4696b5479cd6",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "fda623d9bc2a3a1913fecad7a57795c10ef39346b831dcc784165a43a0661fdb",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\"patient\":{\"name\":null,\"age\":null,\"sex\":null,\"date_of_birth\":null,\"patient_id\":null},\"details\":{\"facility\":null,\"clinicians\":[{\"citation\":{\"page\":2,\"first_line\":13,\"last_line\":13,\"quote\":\"Dr. Neha Joshi, MD (Pathology)\"},\"text\":\"Dr. Neha Joshi, MD (Pathology)\"}],\"report_date\":null,\"collection_date\":null,\"prescription_date\":null},\"results\":[{\"citation\":{\"page\":2,\"first_line\":7,\"last_line\":7,\"quote\":\"| Random Blood Sugar | 112 |  | mg/dL | 70 - 140 |\"},\"panel\":\"GLUCOSE\",\"test_name\":\"Random Blood Sugar\",\"value_text\":\"112\",\"unit\":\"mg/dL\",\"reference_ranges\":[\"70 - 140\"],\"flag_printed\":null}],\"remarks\":[{\"citation\":{\"page\":2,\"first_line\":11,\"last_line\":11,\"quote\":\"Kindly correlate clinically.\"},\"text\":\"Kindly correlate clinically.\",\"kind\":\"comment\",\"scope\":\"document\",\"test_name\":null,\"panel\":null}],\"conditions\":[],\"vitals\":[],\"allergies\":[]}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2398,
+    "eval_count": 256,
+    "total_duration": 54615177600,
+    "load_duration": 11292500,
+    "prompt_eval_duration": 26471168000,
+    "eval_duration": 27927512000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

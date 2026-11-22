@@ -1,0 +1,85 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "190f68572def003262cc53016ad86b77df6e71d30aea1127f3772ae152d86952",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "6af0b5426f9f5e76bb3d1c9c80669b10884a983115cbb5329e2746aa8885bbe9",
+   "options": "3b64b24dcf543af91f040aef877d3dd005d3486d15ac9c21b874f5d0f4708a92",
+   "reply": "",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3200,
+    "eval_count": 56,
+    "total_duration": 61977321000,
+    "load_duration": 5177700,
+    "prompt_eval_duration": 55447157000,
+    "eval_duration": 6211456000
+   },
+   "tool_calls": [
+    {
+     "name": "get_item",
+     "arguments": {
+      "item_id": "obs-1"
+     }
+    },
+    {
+     "name": "get_item",
+     "arguments": {
+      "item_id": "obs-2"
+     }
+    }
+   ],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "1398d4322dc52bc1a3c7be8fe598fc356a17a3e855ba23d011f023e8314e713a",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "ebdfb90ae1adba9ccc47aeaccb1d3aa0ace49e7d627726d7c7d8dbc22e96ded9",
+   "options": "3b64b24dcf543af91f040aef877d3dd005d3486d15ac9c21b874f5d0f4708a92",
+   "reply": "",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3876,
+    "eval_count": 28,
+    "total_duration": 16219850300,
+    "load_duration": 11994800,
+    "prompt_eval_duration": 13076042000,
+    "eval_duration": 3088277000
+   },
+   "tool_calls": [
+    {
+     "name": "get_item",
+     "arguments": {
+      "item_id": "obs-3"
+     }
+    }
+   ],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "2f3bc4411172398f72155428e0feabacc81b8ff2323ad082cd964423e6a185a5",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "8943ec425ffea09d761b3db960fa100445f041eb8beddea93583ceb32a77bff7",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\"patient\":{\"name\":{\"citation\":{\"page\":1,\"first_line\":5,\"last_line\":5,\"quote\":\"Name: Arjun Mehta\"},\"text\":\"Arjun Mehta\"},\"age\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age/Gender: 41 Y/M\"},\"text\":\"41 Y\"},\"sex\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age/Gender: 41 Y/M\"},\"text\":\"M\"},\"date_of_birth\":null,\"patient_id\":{\"citation\":{\"page\":1,\"first_line\":9,\"last_line\":9,\"quote\":\"Patient ID: KCL-120377\"},\"text\":\"KCL-120377\"}},\"details\":{\"facility\":{\"citation\":{\"page\":1,\"first_line\":1,\"last_line\":1,\"quote\":\"# Kaveri Clinical Laboratory\"},\"text\":\"Kaveri Clinical Laboratory\"},\"clinicians\":[{\"citation\":{\"page\":1,\"first_line\":11,\"last_line\":11,\"quote\":\"Referred By: Dr. S. Kulkarni\"},\"text\":\"Referred By: Dr. S. Kulkarni\"},{\"citation\":{\"page\":1,\"first_line\":23,\"last_line\":23,\"quote\":\"Dr. Prakash Nair, MD (Pathology)\"},\"text\":\"Dr. Prakash Nair, MD (Pathology)\"}],\"report_date\":{\"citation\":{\"page\":1,\"first_line\":13,\"last_line\":13,\"quote\":\"Reported: 02-Apr-2025 10:05 AM\"},\"text\":\"02-Apr-2025 10:05 AM\"},\"collection_date\":null,\"prescription_date\":null},\"results\":[{\"citation\":{\"page\":1,\"first_line\":19,\"last_line\":19,\"quote\":\"| Haemoglobin | 14.8 | g/dL | 13.0 - 17.0 |\"},\"panel\":\"HAEMATOLOGY\",\"test_name\":\"Haemoglobin\",\"value_text\":\"14.8\",\"unit\":\"g/dL\",\"reference_ranges\":[\"13.0 - 17.0\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":20,\"last_line\":20,\"quote\":\"| Total Leucocyte Count | 7.9 | 10³/µL | 4.0 - 10.0 |\"},\"panel\":\"HAEMATOLOGY\",\"test_name\":\"Total Leucocyte Count\",\"value_text\":\"7.9\",\"unit\":\"10³/µL\",\"reference_ranges\":[\"4.0 - 10.0\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":21,\"last_line\":21,\"quote\":\"| Platelets | 2.65 | lakh/cumm | 1.50 - 4.10 |\"},\"panel\":\"HAEMATOLOGY\",\"test_name\":\"Platelets\",\"value_text\":\"2.65\",\"unit\":\"lakh/cumm\",\"reference_ranges\":[\"1.50 - 4.10\"],\"flag_printed\":null}],\"remarks\":[],\"conditions\":[],\"vitals\":[],\"allergies\":[]}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3466,
+    "eval_count": 682,
+    "total_duration": 139467867500,
+    "load_duration": 10154000,
+    "prompt_eval_duration": 60499868000,
+    "eval_duration": 78853857000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

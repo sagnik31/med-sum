@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "a789e388e5b320fa0c50083922010a4109ec5e332c7360a4ef7015422f0c3e81",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "e815a9557c23730d75a7a85217b86444fa2189158b083a2c55d426f26450a775",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\"patient\":{\"name\":{\"citation\":{\"page\":1,\"first_line\":5,\"last_line\":5,\"quote\":\"Patient Name: Mrs. Meera Iyer\"},\"text\":\"Mrs. Meera Iyer\"},\"age\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age / Sex: 57 Years / Female\"},\"text\":\"57 Years\"},\"sex\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age / Sex: 57 Years / Female\"},\"text\":\"Female\"},\"date_of_birth\":null,\"patient_id\":{\"citation\":{\"page\":1,\"first_line\":9,\"last_line\":9,\"quote\":\"Lab ID: SD-24-061407\"},\"text\":\"SD-24-061407\"}},\"details\":{\"facility\":{\"citation\":{\"page\":1,\"first_line\":1,\"last_line\":1,\"quote\":\"# Sunrise Diagnostics\"},\"text\":\"Sunrise Diagnostics\"},\"clinicians\":[{\"citation\":{\"page\":1,\"first_line\":11,\"last_line\":11,\"quote\":\"Ref. By: Dr. Anil Deshpande\"},\"text\":\"Ref. By: Dr. Anil Deshpande\"}],\"report_date\":{\"citation\":{\"page\":1,\"first_line\":15,\"last_line\":15,\"quote\":\"Reported On: 14/06/2024 02:45 PM\"},\"text\":\"14/06/2024 02:45 PM\"},\"collection_date\":{\"citation\":{\"page\":1,\"first_line\":13,\"last_line\":13,\"quote\":\"Collected On: 14/06/2024 08:10 AM\"},\"text\":\"14/06/2024 08:10 AM\"},\"prescription_date\":null},\"results\":[{\"citation\":{\"page\":1,\"first_line\":21,\"last_line\":21,\"quote\":\"| Haemoglobin | 10.4 | L | g/dL | 12.0 - 15.0 |\"},\"panel\":\"COMPLETE BLOOD COUNT\",\"test_name\":\"Haemoglobin\",\"value_text\":\"10.4\",\"unit\":\"g/dL\",\"reference_ranges\":[\"12.0 - 15.0\"],\"flag_printed\":\"L\"},{\"citation\":{\"page\":1,\"first_line\":22,\"last_line\":22,\"quote\":\"| RBC Count | 4.1 |  | mill/cumm | 3.8 - 4.8 |\"},\"panel\":\"COMPLETE BLOOD COUNT\",\"test_name\":\"RBC Count\",\"value_text\":\"4.1\",\"unit\":\"mill/cumm\",\"reference_ranges\":[\"3.8 - 4.8\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":23,\"last_line\":23,\"quote\":\"| PCV | 33.2 | L | % | 36.0 - 46.0 |\"},\"panel\":\"COMPLETE BLOOD COUNT\",\"test_name\":\"PCV\",\"value_text\":\"33.2\",\"unit\":\"%\",\"reference_ranges\":[\"36.0 - 46.0\"],\"flag_printed\":\"L\"},{\"citation\":{\"page\":1,\"first_line\":24,\"last_line\":24,\"quote\":\"| MCV | 76 | L | fL | 83 - 101 |\"},\"panel\":\"COMPLETE BLOOD COUNT\",\"test_name\":\"MCV\",\"value_text\":\"76\",\"unit\":\"fL\",\"reference_ranges\":[\"83 - 101\"],\"flag_printed\":\"L\"},{\"citation\":{\"page\":1,\"first_line\":25,\"last_line\":25,\"quote\":\"| MCH | 25.4 | L | pg | 27.0 - 32.0 |\"},\"panel\":\"COMPLETE BLOOD COUNT\",\"test_name\":\"MCH\",\"value_text\":\"25.4\",\"unit\":\"pg\",\"reference_ranges\":[\"27.0 - 32.0\"],\"flag_printed\":\"L\"},{\"citation\":{\"page\":1,\"first_line\":26,\"last_line\":26,\"quote\":\"| MCHC | 31.3 | L | g/dL | 31.5 - 34.5 |\"},\"panel\":\"COMPLETE BLOOD COUNT\",\"test_name\":\"MCHC\",\"value_text\":\"31.3\",\"unit\":\"g/dL\",\"reference_ranges\":[\"31.5 - 34.5\"],\"flag_printed\":\"L\"},{\"citation\":{\"page\":1,\"first_line\":27,\"last_line\":27,\"quote\":\"| RDW-CV | 16.2 | H | % | 11.6 - 14.0 |\"},\"panel\":\"COMPLETE BLOOD COUNT\",\"test_name\":\"RDW-CV\",\"value_text\":\"16.2\",\"unit\":\"%\",\"reference_ranges\":[\"11.6 - 14.0\"],\"flag_printed\":\"H\"},{\"citation\":{\"page\":1,\"first_line\":28,\"last_line\":28,\"quote\":\"| Platelet Count | 2,45,000 |  | /cumm | 1,50,000 - 4,10,000 |\"},\"panel\":\"COMPLETE BLOOD COUNT\",\"test_name\":\"Platelet Count\",\"value_text\":\"2,45,000\",\"unit\":\"/cumm\",\"reference_ranges\":[\"1,50,000 - 4,10,000\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":29,\"last_line\":29,\"quote\":\"| Total WBC Count | 7,200 |  | /cumm | 4,000 - 10,000 |\"},\"panel\":\"COMPLETE BLOOD COUNT\",\"test_name\":\"Total WBC Count\",\"value_text\":\"7,200\",\"unit\":\"/cumm\",\"reference_ranges\":[\"4,000 - 10,000\"],\"flag_printed\":null}],\"remarks\":[{\"citation\":{\"page\":1,\"first_line\":31,\"last_line\":31,\"quote\":\"Comment: Microcytic hypochromic anaemia.\"},\"text\":\"Microcytic hypochromic anaemia.\",\"kind\":\"comment\",\"scope\":\"panel\",\"test_name\":null,\"panel\":\"COMPLETE BLOOD COUNT\"}],\"conditions\":[],\"vitals\":[],\"allergies\":[]}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3333,
+    "eval_count": 1425,
+    "total_duration": 79984551900,
+    "load_duration": 19060761000,
+    "prompt_eval_duration": 12205395000,
+    "eval_duration": 48425068000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

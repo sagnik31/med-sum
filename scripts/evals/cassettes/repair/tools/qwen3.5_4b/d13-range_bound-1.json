@@ -1,0 +1,79 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "3f4cb640d520070fb0ef3260f3b4da9bd5ac0a34f0b9f34fe3e14730ba327c31",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "3d946a99802883bd727f56d8f6acfae4b55f2c76bab32fcdcd34e2fe5c63e406",
+   "options": "9291cd10795858a97353300cd4f3ebf9cdc383b6b5a8b5e6f59fc72220df025b",
+   "reply": "",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3719,
+    "eval_count": 28,
+    "total_duration": 39103500300,
+    "load_duration": 5901400,
+    "prompt_eval_duration": 35887131000,
+    "eval_duration": 3075480000
+   },
+   "tool_calls": [
+    {
+     "name": "get_item",
+     "arguments": {
+      "item_id": "obs-2"
+     }
+    }
+   ],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "c79b9ee04dd5f49c354a39663fccb0c55f193ad042cd742b8d5726ed222684b0",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "d78818e110424dcc25531d711a5be067de6373a93709d0c65b9c978ad89d629c",
+   "options": "9291cd10795858a97353300cd4f3ebf9cdc383b6b5a8b5e6f59fc72220df025b",
+   "reply": "",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3956,
+    "eval_count": 28,
+    "total_duration": 7991474800,
+    "load_duration": 7393200,
+    "prompt_eval_duration": 4848341000,
+    "eval_duration": 3111415000
+   },
+   "tool_calls": [
+    {
+     "name": "get_item",
+     "arguments": {
+      "item_id": "obs-2"
+     }
+    }
+   ],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "5622f0f5e75194e0d6291d7606c94ccd63151f57be19e522bd51466eac5d723c",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "53dd0d085048f3f810c74b6e9b823ebfa460ab164cd50411de4e3cc5dece0fc0",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\"patient\":{\"name\":{\"citation\":{\"page\":1,\"first_line\":5,\"last_line\":5,\"quote\":\"Patient Name: Mr. Arjun Menon\"},\"text\":\"Mr. Arjun Menon\"},\"age\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age / Sex: 66 Years / Male\"},\"text\":\"66 Years\"},\"sex\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age / Sex: 66 Years / Male\"},\"text\":\"Male\"},\"date_of_birth\":null,\"patient_id\":{\"citation\":{\"page\":1,\"first_line\":9,\"last_line\":9,\"quote\":\"UHID: SH-100234\"},\"text\":\"SH-100234\"}},\"details\":{\"facility\":{\"citation\":{\"page\":1,\"first_line\":1,\"last_line\":1,\"quote\":\"# Sahaj Multispeciality Hospital - Laboratory Services\"},\"text\":\"Sahaj Multispeciality Hospital - Laboratory Services\"},\"clinicians\":[{\"citation\":{\"page\":1,\"first_line\":11,\"last_line\":11,\"quote\":\"Ordering Physician: Dr. Anil Deshpande\"},\"text\":\"Ordering Physician: Dr. Anil Deshpande\"}],\"report_date\":{\"citation\":{\"page\":1,\"first_line\":15,\"last_line\":15,\"quote\":\"Report Date: 04/03/2025 03:30 PM\"},\"text\":\"04/03/2025 03:30 PM\"},\"collection_date\":{\"citation\":{\"page\":1,\"first_line\":13,\"last_line\":13,\"quote\":\"Sample Collected: 04/03/2025 08:45 AM\"},\"text\":\"04/03/2025 08:45 AM\"},\"prescription_date\":null},\"results\":[{\"citation\":{\"page\":1,\"first_line\":21,\"last_line\":21,\"quote\":\"| Total Cholesterol | 236 | H | mg/dL | Desirable: < 200; Borderline: 200 - 239; High: >= 240 |\"},\"panel\":\"LIPID PROFILE\",\"test_name\":\"Total Cholesterol\",\"value_text\":\"236\",\"unit\":\"mg/dL\",\"reference_ranges\":[\"Desirable: < 200\",\"Borderline: 200 - 239\",\"High: >= 240\"],\"flag_printed\":\"H\"},{\"citation\":{\"page\":1,\"first_line\":22,\"last_line\":22,\"quote\":\"| Triglycerides | 210 | H | mg/dL | < 150 |\"},\"panel\":\"LIPID PROFILE\",\"test_name\":\"Triglycerides\",\"value_text\":\"210\",\"unit\":\"mg/dL\",\"reference_ranges\":[\"< 150\"],\"flag_printed\":\"H\"},{\"citation\":{\"page\":1,\"first_line\":23,\"last_line\":23,\"quote\":\"| HDL Cholesterol | 38 | L | mg/dL | > 40 |\"},\"panel\":\"LIPID PROFILE\",\"test_name\":\"HDL Cholesterol\",\"value_text\":\"38\",\"unit\":\"mg/dL\",\"reference_ranges\":[\"> 40\"],\"flag_printed\":\"L\"},{\"citation\":{\"page\":1,\"first_line\":24,\"last_line\":24,\"quote\":\"| LDL Cholesterol | 156 | H | mg/dL | Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160 |\"},\"panel\":\"LIPID PROFILE\",\"test_name\":\"LDL Cholesterol\",\"value_text\":\"156\",\"unit\":\"mg/dL\",\"reference_ranges\":[\"Optimal: < 100\",\"Near optimal: 100 - 129\",\"Borderline high: 130 - 159\",\"High: >= 160\"],\"flag_printed\":\"H\"},{\"citation\":{\"page\":1,\"first_line\":30,\"last_line\":30,\"quote\":\"| HbA1c | 6.2 |  | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |\"},\"panel\":\"GLYCATED HAEMOGLOBIN\",\"test_name\":\"HbA1c\",\"value_text\":\"6.2\",\"unit\":\"%\",\"reference_ranges\":[\"Normal: < 5.7\",\"Prediabetes: 5.7 - 6.4\",\"Diabetes: >= 6.5\"],\"flag_printed\":null}],\"remarks\":[],\"conditions\":[],\"vitals\":[],\"allergies\":[]}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3359,
+    "eval_count": 1021,
+    "total_duration": 162019757600,
+    "load_duration": 11488100,
+    "prompt_eval_duration": 44013821000,
+    "eval_duration": 117896971000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

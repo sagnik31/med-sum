@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "0cf4dbf2013ed629e2731a7319c26bd8802ec9fa5e3a6961142b7a60498b6403",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "7e7879d43529c9e2e1e70f80e082ef40262924c25558887a78ff1f336c5dece3",
+   "options": "3b64b24dcf543af91f040aef877d3dd005d3486d15ac9c21b874f5d0f4708a92",
+   "reply": "```json\n{\n  \"patient\": {\n    \"name\": \"Meera Iyer\",\n    \"text\": \"Meera Iyer\"\n  },\n  \"details\": {\n    \"facility\": \"Sahaj Multispeciality Hospital\",\n    \"clinicians\": [\n      {\n        \"name\": \"Dr. Kavita Rao\"\n      }\n    ],\n    \"prescription_date\": \"10/01/2025\"\n  },\n  \"medicines\": [\n    {\n      \"form\": \"Tab.\",\n      \"name\": \"Glycomet GP 1\",\n      \"strength\": \"1\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"1-0-1\",\n      \"duration\": \"3 months\",\n      \"instructions\": \"Before food\"\n    },\n    {\n      \"form\": \"Tab.\",\n      \"name\": \"Telma\",\n      \"strength\": \"40 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"1-0-0\",\n      \"duration\": \"3 months\",\n      \"instructions\": null\n    },\n    {\n      \"form\": \"Tab.\",\n      \"name\": \"Orofer XT\",\n      \"strength\": null,\n      \"dose\": \"1 tab\",\n      \"frequency\": \"BD\",\n      \"duration\": \"3 months\",\n      \"instructions\": \"After food\"\n    },\n    {\n      \"form\": \"Tab.\",\n      \"name\": \"Pan\",\n      \"strength\": \"40 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"1-0-0\",\n      \"duration\": \"15 days\",\n      \"instructions\": \"Before breakfast\"\n    },\n    {\n      \"form\": \"Tab.\",\n      \"name\": \"Dolo\",\n      \"strength\": \"650 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"SOS\",\n      \"duration\": \"5 days\",\n      \"instructions\": \"For fever\"\n    }\n  ],\n  \"conditions\": [\n    {\n      \"condition\": \"T2DM\",\n      \"kind\": \"history\"\n    },\n    {\n      \"condition\": \"HTN\",\n      \"kind\": \"history\"\n    },\n    {\n      \"condition\": \"Iron deficiency anaemia\",\n      \"kind\": \"impression\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"advice\": \"Repeat CBC, iron studies and HbA1c after 3 months.\",\n      \"scope\": \"document\"\n    }\n  ],\n  \"vitals\": [\n    {\n      \"name\": \"BP\",\n      \"value_text\": \"136/84\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"name\": \"Pulse\",\n      \"value_text\": \"76\",\n      \"unit\": \"/min\"\n    },\n    {\n      \"name\": \"Weight\",\n      \"value_text\": \"66.5\",\n      \"unit\": \"kg\"\n    }\n  ],\n  \"allergies\": [\n    {\n      \"allergy\": \"NKDA\"\n    }\n  ]\n}\n```",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3452,
+    "eval_count": 732,
+    "total_duration": 35867953500,
+    "load_duration": 9358200,
+    "prompt_eval_duration": 11457802000,
+    "eval_duration": 24365130000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "51d9f86675e886f465bf20c959df31604d3e744939cb799021f44b304513d646",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "786ba52451c2c72d845221623621ffc50d1e581650d6202533ee5930086277ac",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\"patient\":{\"name\":{\"citation\":{\"page\":1,\"first_line\":11,\"last_line\":11,\"quote\":\"Patient: Meera Iyer\"},\"text\":\"Meera Iyer\"},\"age\":{\"citation\":{\"page\":1,\"first_line\":13,\"last_line\":13,\"quote\":\"Age / Sex: 57 Y / F\"},\"text\":\"57 Y\"},\"sex\":{\"citation\":{\"page\":1,\"first_line\":13,\"last_line\":13,\"quote\":\"Age / Sex: 57 Y / F\"},\"text\":\"F\"},\"date_of_birth\":null,\"patient_id\":{\"citation\":{\"page\":1,\"first_line\":15,\"last_line\":15,\"quote\":\"UHID: SH-100231\"},\"text\":\"SH-100231\"}},\"details\":{\"facility\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Sahaj Multispeciality Hospital, Karve Road, Pune\"},\"text\":\"Sahaj Multispeciality Hospital\"},\"clinicians\":[{\"citation\":{\"page\":1,\"first_line\":1,\"last_line\":1,\"quote\":\"# Dr. Kavita Rao\"},\"text\":\"Dr. Kavita Rao\"}],\"report_date\":null,\"collection_date\":null,\"prescription_date\":{\"citation\":{\"page\":1,\"first_line\":9,\"last_line\":9,\"quote\":\"Date: 10/01/2025\"},\"text\":\"10/01/2025\"}},\"medicines\":[{\"citation\":{\"page\":1,\"first_line\":29,\"last_line\":29,\"quote\":\"| 1 | Tab. Glycomet GP 1 | 1 tab | 1-0-1 | 3 months | Before food |\"},\"form\":\"Tab.\",\"name\":\"Glycomet GP 1\",\"strength\":null,\"dose\":\"1 tab\",\"frequency\":\"1-0-1\",\"route\":null,\"duration\":\"3 months\",\"instructions\":\"Before food\"},{\"citation\":{\"page\":1,\"first_line\":30,\"last_line\":30,\"quote\":\"| 2 | Tab. Telma 40 mg | 1 tab | 1-0-0 | 3 months |  |\"},\"form\":\"Tab.\",\"name\":\"Telma\",\"strength\":\"40 mg\",\"dose\":\"1 tab\",\"frequency\":\"1-0-0\",\"route\":null,\"duration\":\"3 months\",\"instructions\":null},{\"citation\":{\"page\":1,\"first_line\":31,\"last_line\":31,\"quote\":\"| 3 | Tab. Orofer XT | 1 tab | BD | 3 months | After food |\"},\"form\":\"Tab.\",\"name\":\"Orofer XT\",\"strength\":null,\"dose\":\"1 tab\",\"frequency\":\"BD\",\"route\":null,\"duration\":\"3 months\",\"instructions\":\"After food\"},{\"citation\":{\"page\":1,\"first_line\":32,\"last_line\":32,\"quote\":\"| 4 | Tab. Pan 40 mg | 1 tab | 1-0-0 | 15 days | Before breakfast |\"},\"form\":\"Tab.\",\"name\":\"Pan\",\"strength\":\"40 mg\",\"dose\":\"1 tab\",\"frequency\":\"1-0-0\",\"route\":null,\"duration\":\"15 days\",\"instructions\":\"Before breakfast\"},{\"citation\":{\"page\":1,\"first_line\":33,\"last_line\":33,\"quote\":\"| 5 | Tab. Dolo 650 mg | 1 tab | SOS | 5 days | For fever |\"},\"form\":\"Tab.\",\"name\":\"Dolo\",\"strength\":\"650 mg\",\"dose\":\"1 tab\",\"frequency\":\"SOS\",\"route\":null,\"duration\":\"5 days\",\"instructions\":\"For fever\"}],\"conditions\":[{\"citation\":{\"page\":1,\"first_line\":21,\"last_line\":21,\"quote\":\"K/C/O: T2DM, HTN\"},\"text\":\"T2DM\",\"kind\":\"history\"},{\"citation\":{\"page\":1,\"first_line\":21,\"last_line\":21,\"quote\":\"K/C/O: T2DM, HTN\"},\"text\":\"HTN\",\"kind\":\"history\"},{\"citation\":{\"page\":1,\"first_line\":23,\"last_line\":23,\"quote\":\"Impression: Iron deficiency anaemia\"},\"text\":\"Iron deficiency anaemia\",\"kind\":\"impression\"}],\"remarks\":[{\"citation\":{\"page\":1,\"first_line\":35,\"last_line\":35,\"quote\":\"Advice: Repeat CBC, iron studies and HbA1c after 3 months.\"},\"text\":\"Repeat CBC, iron studies and HbA1c after 3 months.\",\"kind\":\"advice\",\"scope\":\"document\",\"test_name\":null,\"panel\":null}],\"vitals\":[{\"citation\":{\"page\":1,\"first_line\":17,\"last_line\":17,\"quote\":\"Vitals: BP 136/84 mmHg, Pulse 76 /min, Weight 66.5 kg\"},\"name\":\"BP\",\"value_text\":\"136/84\",\"unit\":\"mmHg\"},{\"citation\":{\"page\":1,\"first_line\":17,\"last_line\":17,\"quote\":\"Vitals: BP 136/84 mmHg, Pulse 76 /min, Weight 66.5 kg\"},\"name\":\"Pulse\",\"value_text\":\"76\",\"unit\":\"/min\"},{\"citation\":{\"page\":1,\"first_line\":17,\"last_line\":17,\"quote\":\"Vitals: BP 136/84 mmHg, Pulse 76 /min, Weight 66.5 kg\"},\"name\":\"Weight\",\"value_text\":\"66.5\",\"unit\":\"kg\"}],\"allergies\":[{\"citation\":{\"page\":1,\"first_line\":19,\"last_line\":19,\"quote\":\"Allergies: NKDA\"},\"text\":\"NKDA\",\"substance\":null,\"reaction\":null}]}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3007,
+    "eval_count": 1283,
+    "total_duration": 43029043800,
+    "load_duration": 11669800,
+    "prompt_eval_duration": 277354000,
+    "eval_duration": 42689544000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

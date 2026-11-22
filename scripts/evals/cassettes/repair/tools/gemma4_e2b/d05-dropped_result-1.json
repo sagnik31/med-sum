@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "16bac05e490eb09d0f6f670f2636d989e3ccaa367e65f25c9af4b795d4259d2d",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "c9ed944e4d41f2c3fc2798fce92c7ee8d62bd1cbc6c79c8a3bc21e7236711080",
+   "options": "9291cd10795858a97353300cd4f3ebf9cdc383b6b5a8b5e6f59fc72220df025b",
+   "reply": "```json\n{\n  \"patient\": {\n    \"name\": \"Mrs. Meera Iyer\",\n    \"age\": \"58 Years\",\n    \"sex\": \"Female\",\n    \"date_of_birth\": null,\n    \"patient_id\": \"SD-25-041288\"\n  },\n  \"details\": {\n    \"facility\": \"Sunrise Diagnostics\",\n    \"clinicians\": [\n      {\n        \"name\": \"Dr. Kavita Rao\",\n        \"label\": \"Ref. By: Dr. Kavita Rao\"\n      }\n    ],\n    \"report_date\": \"12/04/2025 01:10 PM\",\n    \"collection_date\": \"12/04/2025 07:55 AM\",\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"11.9\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"12.0 - 15.0\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"MCV\",\n      \"value_text\": \"81\",\n      \"unit\": \"fL\",\n      \"reference_ranges\": [\n        \"83 - 101\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"Platelet Count\",\n      \"value_text\": \"2,62,000\",\n      \"unit\": \"/cumm\",\n      \"reference_ranges\": [\n        \"1,50,000 - 4,10,000\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"panel\": \"IRON STUDIES\",\n      \"test_name\": \"Serum Iron\",\n      \"value_text\": \"48\",\n      \"unit\": \"µg/dL\",\n      \"reference_ranges\": [\n        \"50 - 170\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"panel\": \"IRON STUDIES\",\n      \"test_name\": \"TIBC\",\n      \"value_text\": \"412\",\n      \"unit\": \"µg/dL\",\n      \"reference_ranges\": [\n        \"250 - 400\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"panel\": \"IRON STUDIES\",\n      \"test_name\": \"Transferrin Saturation\",\n      \"value_text\": \"11.7\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"20 - 50\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"panel\": \"IRON STUDIES\",\n      \"test_name\": \"Serum Ferritin\",\n      \"value_text\": \"9.8\",\n      \"unit\": \"ng/mL\",\n      \"reference_ranges\": [\n        \"13 - 150\"\n      ],\n      \"flag_printed\": \"L\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"comment\": \"Iron deficiency picture.\",\n      \"scope\": \"panel\",\n      \"panel\": \"IRON STUDIES\"\n    }\n  ],\n  \"conditions\": [\n    \"Iron deficiency picture.\"\n  ],\n  \"vitals\": [],\n  \"allergies\": []\n}\n```",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3561,
+    "eval_count": 864,
+    "total_duration": 38297555400,
+    "load_duration": 11518300,
+    "prompt_eval_duration": 9258166000,
+    "eval_duration": 28981836000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "7eb1e5111c166faa67de468468b43fc907c265eb6f26ace5ab39274711b52b48",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "5e1c6341838daa8a4b9a969894e0bc59d2a7e677ebfdfb3fcf5f51237e3edb9b",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\"patient\":{\"name\":{\"citation\":{\"page\":1,\"first_line\":5,\"last_line\":5,\"quote\":\"Patient Name: Mrs. Meera Iyer\"},\"text\":\"Mrs. Meera Iyer\"},\"age\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age / Sex: 58 Years / Female\"},\"text\":\"58 Years\"},\"sex\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age / Sex: 58 Years / Female\"},\"text\":\"Female\"},\"date_of_birth\":null,\"patient_id\":{\"citation\":{\"page\":1,\"first_line\":9,\"last_line\":9,\"quote\":\"Lab ID: SD-25-041288\"},\"text\":\"SD-25-041288\"}},\"details\":{\"facility\":{\"citation\":{\"page\":1,\"first_line\":1,\"last_line\":1,\"quote\":\"# Sunrise Diagnostics\"},\"text\":\"Sunrise Diagnostics\"},\"clinicians\":[{\"citation\":{\"page\":1,\"first_line\":11,\"last_line\":11,\"quote\":\"Ref. By: Dr. Kavita Rao\"},\"text\":\"Ref. By: Dr. Kavita Rao\"}],\"report_date\":{\"citation\":{\"page\":1,\"first_line\":15,\"last_line\":15,\"quote\":\"Reported On: 12/04/2025 01:10 PM\"},\"text\":\"12/04/2025 01:10 PM\"},\"collection_date\":{\"citation\":{\"page\":1,\"first_line\":13,\"last_line\":13,\"quote\":\"Collected On: 12/04/2025 07:55 AM\"},\"text\":\"12/04/2025 07:55 AM\"},\"prescription_date\":null},\"results\":[{\"citation\":{\"page\":1,\"first_line\":21,\"last_line\":21,\"quote\":\"| Haemoglobin | 11.9 | L | g/dL | 12.0 - 15.0 |\"},\"panel\":\"COMPLETE BLOOD COUNT\",\"test_name\":\"Haemoglobin\",\"value_text\":\"11.9\",\"unit\":\"g/dL\",\"reference_ranges\":[\"12.0 - 15.0\"],\"flag_printed\":\"L\"},{\"citation\":{\"page\":1,\"first_line\":22,\"last_line\":22,\"quote\":\"| MCV | 81 | L | fL | 83 - 101 |\"},\"panel\":\"COMPLETE BLOOD COUNT\",\"test_name\":\"MCV\",\"value_text\":\"81\",\"unit\":\"fL\",\"reference_ranges\":[\"83 - 101\"],\"flag_printed\":\"L\"},{\"citation\":{\"page\":1,\"first_line\":23,\"last_line\":23,\"quote\":\"| Platelet Count | 2,62,000 |  | /cumm | 1,50,000 - 4,10,000 |\"},\"panel\":\"COMPLETE BLOOD COUNT\",\"test_name\":\"Platelet Count\",\"value_text\":\"2,62,000\",\"unit\":\"/cumm\",\"reference_ranges\":[\"1,50,000 - 4,10,000\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":29,\"last_line\":29,\"quote\":\"| Serum Iron | 48 | L | µg/dL | 50 - 170 |\"},\"panel\":\"IRON STUDIES\",\"test_name\":\"Serum Iron\",\"value_text\":\"48\",\"unit\":\"µg/dL\",\"reference_ranges\":[\"50 - 170\"],\"flag_printed\":\"L\"},{\"citation\":{\"page\":1,\"first_line\":30,\"last_line\":30,\"quote\":\"| TIBC | 412 | H | µg/dL | 250 - 400 |\"},\"panel\":\"IRON STUDIES\",\"test_name\":\"TIBC\",\"value_text\":\"412\",\"unit\":\"µg/dL\",\"reference_ranges\":[\"250 - 400\"],\"flag_printed\":\"H\"},{\"citation\":{\"page\":1,\"first_line\":31,\"last_line\":31,\"quote\":\"| Transferrin Saturation | 11.7 | L | % | 20 - 50 |\"},\"panel\":\"IRON STUDIES\",\"test_name\":\"Transferrin Saturation\",\"value_text\":\"11.7\",\"unit\":\"%\",\"reference_ranges\":[\"20 - 50\"],\"flag_printed\":\"L\"},{\"citation\":{\"page\":1,\"first_line\":32,\"last_line\":32,\"quote\":\"| Serum Ferritin | 9.8 | L | ng/mL | 13 - 150 |\"},\"panel\":\"IRON STUDIES\",\"test_name\":\"Serum Ferritin\",\"value_text\":\"9.8\",\"unit\":\"ng/mL\",\"reference_ranges\":[\"13 - 150\"],\"flag_printed\":\"L\"}],\"remarks\":[{\"citation\":{\"page\":1,\"first_line\":34,\"last_line\":34,\"quote\":\"Comment: Iron deficiency picture.\"},\"text\":\"Iron deficiency picture.\",\"kind\":\"comment\",\"scope\":\"panel\",\"test_name\":null,\"panel\":\"IRON STUDIES\"}],\"conditions\":[],\"vitals\":[],\"allergies\":[]}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2973,
+    "eval_count": 1184,
+    "total_duration": 45921432800,
+    "load_duration": 6622900,
+    "prompt_eval_duration": 7220059000,
+    "eval_duration": 38652683000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

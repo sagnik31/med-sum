@@ -1,0 +1,2803 @@
+{
+  "version": 1,
+  "kind": "repair",
+  "label": "suite-repair",
+  "generated_at": "2026-11-22T15:39:05+00:00",
+  "cases": [
+    "d01-decimal_shift-1",
+    "d01-remark_moved-1",
+    "d03-digit_swap-1",
+    "d04-date_swap-1",
+    "d05-dropped_result-1",
+    "d06-duplicated_item-1",
+    "d07-dropped_medicine-1",
+    "d08-invented_result-1",
+    "d08-qualifier_dropped-1",
+    "d10-frequency_change-1",
+    "d11-unit_swap-1",
+    "d12-invented_medicine-1",
+    "d13-range_bound-1",
+    "d14-strength_shift-1",
+    "d16-values_swapped-1"
+  ],
+  "models": {
+    "qwen3.5:4b": {
+      "rows": {
+        "fixed": {
+          "cases": 15,
+          "repaired": {
+            "hits": 14,
+            "total": 15,
+            "low": 0.7018346989112435,
+            "high": 0.9881331046384677
+          },
+          "repaired_first_try": 14,
+          "failed_runs": 0,
+          "repairs": 16,
+          "repairs_per_case": 1.07,
+          "model_calls_per_repair": 1.0,
+          "tokens_per_repair": 3677,
+          "seconds_per_repair": 150.1,
+          "median_seconds_per_case": 161.7,
+          "unsafe_before": 13,
+          "unsafe_after": 1,
+          "cases_with_unsafe_after": 1
+        },
+        "tools": {
+          "cases": 15,
+          "repaired": {
+            "hits": 15,
+            "total": 15,
+            "low": 0.7961166964035129,
+            "high": 1.0
+          },
+          "repaired_first_try": 14,
+          "failed_runs": 0,
+          "repairs": 16,
+          "repairs_per_case": 1.07,
+          "model_calls_per_repair": 3.0,
+          "tokens_per_repair": 11433,
+          "seconds_per_repair": 220.0,
+          "median_seconds_per_case": 221.3,
+          "unsafe_before": 13,
+          "unsafe_after": 0,
+          "cases_with_unsafe_after": 0,
+          "tools": {
+            "tool_calls": 32,
+            "malformed": 0,
+            "unknown_tool": 0,
+            "not_found": 1,
+            "inexact_types": 0,
+            "over_limit": 0,
+            "by_tool": {
+              "get_item": 26,
+              "get_lines": 3,
+              "search_transcription": 3
+            },
+            "well_formed_rate": 1.0,
+            "turns_per_repair": 3.0,
+            "fix_in_reading_turn": 0,
+            "fix_in_final_turn": 16,
+            "part_repairs": 16
+          }
+        }
+      },
+      "by_fault": {
+        "fixed": {
+          "date_swap": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "decimal_shift": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "digit_swap": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "dropped_medicine": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "dropped_result": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "duplicated_item": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "frequency_change": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "invented_medicine": {
+            "cases": 1,
+            "repaired": 0
+          },
+          "invented_result": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "qualifier_dropped": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "range_bound": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "remark_moved": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "strength_shift": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "unit_swap": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "values_swapped": {
+            "cases": 1,
+            "repaired": 1
+          }
+        },
+        "tools": {
+          "date_swap": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "decimal_shift": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "digit_swap": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "dropped_medicine": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "dropped_result": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "duplicated_item": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "frequency_change": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "invented_medicine": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "invented_result": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "qualifier_dropped": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "range_bound": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "remark_moved": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "strength_shift": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "unit_swap": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "values_swapped": {
+            "cases": 1,
+            "repaired": 1
+          }
+        }
+      },
+      "verdict": {
+        "supports": "fixed",
+        "why": [
+          "tools were slower per repair (220.0 s vs 150.1 s)"
+        ]
+      }
+    },
+    "gemma4:e2b": {
+      "rows": {
+        "fixed": {
+          "cases": 15,
+          "repaired": {
+            "hits": 14,
+            "total": 15,
+            "low": 0.7018346989112435,
+            "high": 0.9881331046384677
+          },
+          "repaired_first_try": 13,
+          "failed_runs": 0,
+          "repairs": 17,
+          "repairs_per_case": 1.13,
+          "model_calls_per_repair": 1.0,
+          "tokens_per_repair": 3886,
+          "seconds_per_repair": 43.4,
+          "median_seconds_per_case": 42.3,
+          "unsafe_before": 13,
+          "unsafe_after": 2,
+          "cases_with_unsafe_after": 2
+        },
+        "tools": {
+          "cases": 15,
+          "repaired": {
+            "hits": 13,
+            "total": 15,
+            "low": 0.6211801694601944,
+            "high": 0.9626387412357151
+          },
+          "repaired_first_try": 12,
+          "failed_runs": 0,
+          "repairs": 18,
+          "repairs_per_case": 1.2,
+          "model_calls_per_repair": 2.0,
+          "tokens_per_repair": 8102,
+          "seconds_per_repair": 76.2,
+          "median_seconds_per_case": 79.1,
+          "unsafe_before": 13,
+          "unsafe_after": 2,
+          "cases_with_unsafe_after": 2,
+          "tools": {
+            "tool_calls": 0,
+            "malformed": 0,
+            "unknown_tool": 0,
+            "not_found": 0,
+            "inexact_types": 0,
+            "over_limit": 0,
+            "by_tool": {},
+            "well_formed_rate": null,
+            "turns_per_repair": 2.0,
+            "fix_in_reading_turn": 0,
+            "fix_in_final_turn": 18,
+            "part_repairs": 18
+          }
+        }
+      },
+      "by_fault": {
+        "fixed": {
+          "date_swap": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "decimal_shift": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "digit_swap": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "dropped_medicine": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "dropped_result": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "duplicated_item": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "frequency_change": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "invented_medicine": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "invented_result": {
+            "cases": 1,
+            "repaired": 0
+          },
+          "qualifier_dropped": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "range_bound": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "remark_moved": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "strength_shift": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "unit_swap": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "values_swapped": {
+            "cases": 1,
+            "repaired": 1
+          }
+        },
+        "tools": {
+          "date_swap": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "decimal_shift": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "digit_swap": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "dropped_medicine": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "dropped_result": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "duplicated_item": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "frequency_change": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "invented_medicine": {
+            "cases": 1,
+            "repaired": 0
+          },
+          "invented_result": {
+            "cases": 1,
+            "repaired": 0
+          },
+          "qualifier_dropped": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "range_bound": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "remark_moved": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "strength_shift": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "unit_swap": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "values_swapped": {
+            "cases": 1,
+            "repaired": 1
+          }
+        }
+      },
+      "verdict": {
+        "supports": "fixed",
+        "why": [
+          "tools repaired fewer cases (13 vs 14)",
+          "tools were slower per repair (76.2 s vs 43.4 s)"
+        ]
+      }
+    }
+  },
+  "results": [
+    {
+      "case": "d01-decimal_shift-1",
+      "fault": "decimal_shift",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 213.2,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 3257,
+          "completion_tokens": 1357,
+          "seconds": 212.825
+        }
+      ]
+    },
+    {
+      "case": "d01-remark_moved-1",
+      "fault": "remark_moved",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 0,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 154.4,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 1,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2805,
+          "completion_tokens": 936,
+          "seconds": 154.169
+        }
+      ]
+    },
+    {
+      "case": "d03-digit_swap-1",
+      "fault": "digit_swap",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 118.9,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2359,
+          "completion_tokens": 703,
+          "seconds": 118.738
+        }
+      ]
+    },
+    {
+      "case": "d04-date_swap-1",
+      "fault": "date_swap",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 190.8,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2913,
+          "completion_tokens": 1220,
+          "seconds": 190.645
+        }
+      ]
+    },
+    {
+      "case": "d05-dropped_result-1",
+      "fault": "dropped_result",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 0,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 178.0,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2881,
+          "completion_tokens": 1121,
+          "seconds": 177.725
+        }
+      ]
+    },
+    {
+      "case": "d06-duplicated_item-1",
+      "fault": "duplicated_item",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 60.2,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 1,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 1886,
+          "completion_tokens": 256,
+          "seconds": 60.041
+        }
+      ]
+    },
+    {
+      "case": "d07-dropped_medicine-1",
+      "fault": "dropped_medicine",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 0,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 195.4,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2857,
+          "completion_tokens": 1281,
+          "seconds": 195.239
+        }
+      ]
+    },
+    {
+      "case": "d08-qualifier_dropped-1",
+      "fault": "qualifier_dropped",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 190.3,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 3090,
+          "completion_tokens": 1185,
+          "seconds": 190.167
+        }
+      ]
+    },
+    {
+      "case": "d08-invented_result-1",
+      "fault": "invented_result",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 4,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 161.7,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 3279,
+          "completion_tokens": 1185,
+          "seconds": 161.472
+        }
+      ]
+    },
+    {
+      "case": "d10-frequency_change-1",
+      "fault": "frequency_change",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 141.8,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2442,
+          "completion_tokens": 887,
+          "seconds": 141.74
+        }
+      ]
+    },
+    {
+      "case": "d11-unit_swap-1",
+      "fault": "unit_swap",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 105.9,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2445,
+          "completion_tokens": 698,
+          "seconds": 105.755
+        }
+      ]
+    },
+    {
+      "case": "d12-invented_medicine-1",
+      "fault": "invented_medicine",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "fixed",
+      "repaired": false,
+      "repairs": 2,
+      "errors_before": 2,
+      "errors_after": 1,
+      "unsafe_before": 1,
+      "unsafe_after": 1,
+      "stopped_at": "fallback",
+      "seconds": 270.5,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2535,
+          "completion_tokens": 932,
+          "seconds": 147.742
+        },
+        {
+          "attempt": 3,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2521,
+          "completion_tokens": 937,
+          "seconds": 122.708
+        }
+      ]
+    },
+    {
+      "case": "d13-range_bound-1",
+      "fault": "range_bound",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 151.7,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2871,
+          "completion_tokens": 1021,
+          "seconds": 151.566
+        }
+      ]
+    },
+    {
+      "case": "d14-strength_shift-1",
+      "fault": "strength_shift",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 167.1,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2713,
+          "completion_tokens": 1067,
+          "seconds": 166.947
+        }
+      ]
+    },
+    {
+      "case": "d16-values_swapped-1",
+      "fault": "values_swapped",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 4,
+      "errors_after": 0,
+      "unsafe_before": 2,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 104.7,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2506,
+          "completion_tokens": 682,
+          "seconds": 104.583
+        }
+      ]
+    },
+    {
+      "case": "d01-decimal_shift-1",
+      "fault": "decimal_shift",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 284.7,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 3,
+          "tool_calls": 2,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {
+            "get_item": 2
+          },
+          "fix_turn": "final",
+          "model_calls": 3,
+          "prompt_tokens": 12276,
+          "completion_tokens": 1483,
+          "seconds": 284.539
+        }
+      ]
+    },
+    {
+      "case": "d01-remark_moved-1",
+      "fault": "remark_moved",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 0,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 227.2,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 1,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 3,
+          "tool_calls": 2,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {
+            "get_item": 2
+          },
+          "fix_turn": "final",
+          "model_calls": 3,
+          "prompt_tokens": 10792,
+          "completion_tokens": 985,
+          "seconds": 226.984
+        }
+      ]
+    },
+    {
+      "case": "d03-digit_swap-1",
+      "fault": "digit_swap",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 190.7,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 3,
+          "tool_calls": 2,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 1,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {
+            "get_item": 2
+          },
+          "fix_turn": "final",
+          "model_calls": 3,
+          "prompt_tokens": 9110,
+          "completion_tokens": 759,
+          "seconds": 190.494
+        }
+      ]
+    },
+    {
+      "case": "d04-date_swap-1",
+      "fault": "date_swap",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 239.7,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 3,
+          "tool_calls": 2,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {
+            "search_transcription": 1,
+            "get_item": 1
+          },
+          "fix_turn": "final",
+          "model_calls": 3,
+          "prompt_tokens": 10570,
+          "completion_tokens": 1286,
+          "seconds": 239.592
+        }
+      ]
+    },
+    {
+      "case": "d05-dropped_result-1",
+      "fault": "dropped_result",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 0,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 267.0,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 3,
+          "tool_calls": 2,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {
+            "get_item": 2
+          },
+          "fix_turn": "final",
+          "model_calls": 3,
+          "prompt_tokens": 11155,
+          "completion_tokens": 1177,
+          "seconds": 266.826
+        }
+      ]
+    },
+    {
+      "case": "d06-duplicated_item-1",
+      "fault": "duplicated_item",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 112.7,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 1,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 3,
+          "tool_calls": 2,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {
+            "get_item": 2
+          },
+          "fix_turn": "final",
+          "model_calls": 3,
+          "prompt_tokens": 8116,
+          "completion_tokens": 313,
+          "seconds": 112.571
+        }
+      ]
+    },
+    {
+      "case": "d07-dropped_medicine-1",
+      "fault": "dropped_medicine",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 0,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 249.0,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 3,
+          "tool_calls": 2,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {
+            "get_item": 2
+          },
+          "fix_turn": "final",
+          "model_calls": 3,
+          "prompt_tokens": 10729,
+          "completion_tokens": 1337,
+          "seconds": 248.852
+        }
+      ]
+    },
+    {
+      "case": "d08-qualifier_dropped-1",
+      "fault": "qualifier_dropped",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 238.3,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 3,
+          "tool_calls": 2,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {
+            "get_item": 1,
+            "search_transcription": 1
+          },
+          "fix_turn": "final",
+          "model_calls": 3,
+          "prompt_tokens": 11209,
+          "completion_tokens": 1240,
+          "seconds": 238.198
+        }
+      ]
+    },
+    {
+      "case": "d08-invented_result-1",
+      "fault": "invented_result",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 4,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 196.6,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 3,
+          "tool_calls": 2,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {
+            "get_item": 1,
+            "search_transcription": 1
+          },
+          "fix_turn": "final",
+          "model_calls": 3,
+          "prompt_tokens": 11810,
+          "completion_tokens": 1241,
+          "seconds": 196.474
+        }
+      ]
+    },
+    {
+      "case": "d10-frequency_change-1",
+      "fault": "frequency_change",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 218.9,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 3,
+          "tool_calls": 2,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {
+            "get_item": 1,
+            "get_lines": 1
+          },
+          "fix_turn": "final",
+          "model_calls": 3,
+          "prompt_tokens": 9419,
+          "completion_tokens": 967,
+          "seconds": 218.836
+        }
+      ]
+    },
+    {
+      "case": "d11-unit_swap-1",
+      "fault": "unit_swap",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 156.8,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 3,
+          "tool_calls": 2,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {
+            "get_item": 1,
+            "get_lines": 1
+          },
+          "fix_turn": "final",
+          "model_calls": 3,
+          "prompt_tokens": 9677,
+          "completion_tokens": 778,
+          "seconds": 156.617
+        }
+      ]
+    },
+    {
+      "case": "d12-invented_medicine-1",
+      "fault": "invented_medicine",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 2,
+      "errors_before": 2,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 492.5,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 3,
+          "tool_calls": 2,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {
+            "get_item": 2
+          },
+          "fix_turn": "final",
+          "model_calls": 3,
+          "prompt_tokens": 9652,
+          "completion_tokens": 993,
+          "seconds": 225.011
+        },
+        {
+          "attempt": 3,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 3,
+          "tool_calls": 1,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {
+            "get_item": 1
+          },
+          "fix_turn": "final",
+          "model_calls": 3,
+          "prompt_tokens": 9405,
+          "completion_tokens": 1716,
+          "seconds": 267.306
+        }
+      ]
+    },
+    {
+      "case": "d13-range_bound-1",
+      "fault": "range_bound",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 209.4,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 3,
+          "tool_calls": 2,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {
+            "get_item": 2
+          },
+          "fix_turn": "final",
+          "model_calls": 3,
+          "prompt_tokens": 11034,
+          "completion_tokens": 1077,
+          "seconds": 209.244
+        }
+      ]
+    },
+    {
+      "case": "d14-strength_shift-1",
+      "fault": "strength_shift",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 221.3,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 3,
+          "tool_calls": 2,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {
+            "get_item": 1,
+            "get_lines": 1
+          },
+          "fix_turn": "final",
+          "model_calls": 3,
+          "prompt_tokens": 10168,
+          "completion_tokens": 1147,
+          "seconds": 221.172
+        }
+      ]
+    },
+    {
+      "case": "d16-values_swapped-1",
+      "fault": "values_swapped",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 4,
+      "errors_after": 0,
+      "unsafe_before": 2,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 218.0,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 3,
+          "tool_calls": 3,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {
+            "get_item": 3
+          },
+          "fix_turn": "final",
+          "model_calls": 3,
+          "prompt_tokens": 10542,
+          "completion_tokens": 766,
+          "seconds": 217.78
+        }
+      ]
+    },
+    {
+      "case": "d01-decimal_shift-1",
+      "fault": "decimal_shift",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 80.8,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 3333,
+          "completion_tokens": 1425,
+          "seconds": 80.422
+        }
+      ]
+    },
+    {
+      "case": "d01-remark_moved-1",
+      "fault": "remark_moved",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 0,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 42.3,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 1,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2839,
+          "completion_tokens": 972,
+          "seconds": 42.045
+        }
+      ]
+    },
+    {
+      "case": "d03-digit_swap-1",
+      "fault": "digit_swap",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 32.3,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2424,
+          "completion_tokens": 755,
+          "seconds": 32.182
+        }
+      ]
+    },
+    {
+      "case": "d04-date_swap-1",
+      "fault": "date_swap",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 53.6,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2984,
+          "completion_tokens": 1283,
+          "seconds": 53.44
+        }
+      ]
+    },
+    {
+      "case": "d05-dropped_result-1",
+      "fault": "dropped_result",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 0,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 49.1,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2950,
+          "completion_tokens": 1184,
+          "seconds": 48.973
+        }
+      ]
+    },
+    {
+      "case": "d06-duplicated_item-1",
+      "fault": "duplicated_item",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 14.9,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 1,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 1914,
+          "completion_tokens": 269,
+          "seconds": 14.841
+        }
+      ]
+    },
+    {
+      "case": "d07-dropped_medicine-1",
+      "fault": "dropped_medicine",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 0,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 54.3,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2913,
+          "completion_tokens": 1336,
+          "seconds": 54.107
+        }
+      ]
+    },
+    {
+      "case": "d08-qualifier_dropped-1",
+      "fault": "qualifier_dropped",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 2,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 95.0,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 3196,
+          "completion_tokens": 1173,
+          "seconds": 49.306
+        },
+        {
+          "attempt": 3,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 3091,
+          "completion_tokens": 1272,
+          "seconds": 45.564
+        }
+      ]
+    },
+    {
+      "case": "d08-invented_result-1",
+      "fault": "invented_result",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "fixed",
+      "repaired": false,
+      "repairs": 2,
+      "errors_before": 4,
+      "errors_after": 1,
+      "unsafe_before": 1,
+      "unsafe_after": 1,
+      "stopped_at": "fallback",
+      "seconds": 97.1,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 3391,
+          "completion_tokens": 1365,
+          "seconds": 50.634
+        },
+        {
+          "attempt": 3,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 3391,
+          "completion_tokens": 1365,
+          "seconds": 46.374
+        }
+      ]
+    },
+    {
+      "case": "d10-frequency_change-1",
+      "fault": "frequency_change",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 37.8,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2475,
+          "completion_tokens": 920,
+          "seconds": 37.644
+        }
+      ]
+    },
+    {
+      "case": "d11-unit_swap-1",
+      "fault": "unit_swap",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 1,
+      "stopped_at": "render",
+      "seconds": 29.2,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2501,
+          "completion_tokens": 737,
+          "seconds": 29.089
+        }
+      ]
+    },
+    {
+      "case": "d12-invented_medicine-1",
+      "fault": "invented_medicine",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 2,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 36.9,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2570,
+          "completion_tokens": 877,
+          "seconds": 36.849
+        }
+      ]
+    },
+    {
+      "case": "d13-range_bound-1",
+      "fault": "range_bound",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 41.8,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2918,
+          "completion_tokens": 1060,
+          "seconds": 41.565
+        }
+      ]
+    },
+    {
+      "case": "d14-strength_shift-1",
+      "fault": "strength_shift",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 45.5,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2771,
+          "completion_tokens": 1119,
+          "seconds": 45.437
+        }
+      ]
+    },
+    {
+      "case": "d16-values_swapped-1",
+      "fault": "values_swapped",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 4,
+      "errors_after": 0,
+      "unsafe_before": 2,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 29.2,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2559,
+          "completion_tokens": 726,
+          "seconds": 29.152
+        }
+      ]
+    },
+    {
+      "case": "d01-decimal_shift-1",
+      "fault": "decimal_shift",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 95.7,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 2,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": "final",
+          "model_calls": 2,
+          "prompt_tokens": 7300,
+          "completion_tokens": 2469,
+          "seconds": 95.433
+        }
+      ]
+    },
+    {
+      "case": "d01-remark_moved-1",
+      "fault": "remark_moved",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 0,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 99.3,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 1,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 2,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": "final",
+          "model_calls": 2,
+          "prompt_tokens": 6312,
+          "completion_tokens": 2488,
+          "seconds": 99.102
+        }
+      ]
+    },
+    {
+      "case": "d03-digit_swap-1",
+      "fault": "digit_swap",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 76.6,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 2,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": "final",
+          "model_calls": 2,
+          "prompt_tokens": 5339,
+          "completion_tokens": 1989,
+          "seconds": 76.498
+        }
+      ]
+    },
+    {
+      "case": "d04-date_swap-1",
+      "fault": "date_swap",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 79.1,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 2,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": "final",
+          "model_calls": 2,
+          "prompt_tokens": 6459,
+          "completion_tokens": 2015,
+          "seconds": 78.991
+        }
+      ]
+    },
+    {
+      "case": "d05-dropped_result-1",
+      "fault": "dropped_result",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 0,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 84.5,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 2,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": "final",
+          "model_calls": 2,
+          "prompt_tokens": 6534,
+          "completion_tokens": 2048,
+          "seconds": 84.334
+        }
+      ]
+    },
+    {
+      "case": "d06-duplicated_item-1",
+      "fault": "duplicated_item",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 33.2,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 1,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 2,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": "final",
+          "model_calls": 2,
+          "prompt_tokens": 4462,
+          "completion_tokens": 756,
+          "seconds": 33.121
+        }
+      ]
+    },
+    {
+      "case": "d07-dropped_medicine-1",
+      "fault": "dropped_medicine",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 0,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 80.8,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 2,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": "final",
+          "model_calls": 2,
+          "prompt_tokens": 6317,
+          "completion_tokens": 2076,
+          "seconds": 80.673
+        }
+      ]
+    },
+    {
+      "case": "d08-qualifier_dropped-1",
+      "fault": "qualifier_dropped",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 2,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 203.8,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 2,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": "final",
+          "model_calls": 2,
+          "prompt_tokens": 6883,
+          "completion_tokens": 3224,
+          "seconds": 122.598
+        },
+        {
+          "attempt": 3,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 2,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": "final",
+          "model_calls": 2,
+          "prompt_tokens": 6673,
+          "completion_tokens": 2226,
+          "seconds": 81.103
+        }
+      ]
+    },
+    {
+      "case": "d08-invented_result-1",
+      "fault": "invented_result",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "tools",
+      "repaired": false,
+      "repairs": 2,
+      "errors_before": 4,
+      "errors_after": 1,
+      "unsafe_before": 1,
+      "unsafe_after": 1,
+      "stopped_at": "fallback",
+      "seconds": 194.9,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 2,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": "final",
+          "model_calls": 2,
+          "prompt_tokens": 7273,
+          "completion_tokens": 2396,
+          "seconds": 90.249
+        },
+        {
+          "attempt": 3,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 2,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": "final",
+          "model_calls": 2,
+          "prompt_tokens": 7071,
+          "completion_tokens": 2865,
+          "seconds": 104.568
+        }
+      ]
+    },
+    {
+      "case": "d10-frequency_change-1",
+      "fault": "frequency_change",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 62.9,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 2,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": "final",
+          "model_calls": 2,
+          "prompt_tokens": 5441,
+          "completion_tokens": 1397,
+          "seconds": 62.824
+        }
+      ]
+    },
+    {
+      "case": "d11-unit_swap-1",
+      "fault": "unit_swap",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 49.3,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 2,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": "final",
+          "model_calls": 2,
+          "prompt_tokens": 5636,
+          "completion_tokens": 1173,
+          "seconds": 49.079
+        }
+      ]
+    },
+    {
+      "case": "d12-invented_medicine-1",
+      "fault": "invented_medicine",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "tools",
+      "repaired": false,
+      "repairs": 2,
+      "errors_before": 2,
+      "errors_after": 1,
+      "unsafe_before": 1,
+      "unsafe_after": 1,
+      "stopped_at": "fallback",
+      "seconds": 121.4,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 2,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": "final",
+          "model_calls": 2,
+          "prompt_tokens": 5631,
+          "completion_tokens": 1520,
+          "seconds": 67.469
+        },
+        {
+          "attempt": 3,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 2,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": "final",
+          "model_calls": 2,
+          "prompt_tokens": 5601,
+          "completion_tokens": 1447,
+          "seconds": 53.73
+        }
+      ]
+    },
+    {
+      "case": "d13-range_bound-1",
+      "fault": "range_bound",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 72.9,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 2,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": "final",
+          "model_calls": 2,
+          "prompt_tokens": 6470,
+          "completion_tokens": 1779,
+          "seconds": 72.745
+        }
+      ]
+    },
+    {
+      "case": "d14-strength_shift-1",
+      "fault": "strength_shift",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 68.3,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 2,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": "final",
+          "model_calls": 2,
+          "prompt_tokens": 6033,
+          "completion_tokens": 1736,
+          "seconds": 68.237
+        }
+      ]
+    },
+    {
+      "case": "d16-values_swapped-1",
+      "fault": "values_swapped",
+      "split": "test",
+      "model": "gemma4:e2b",
+      "variant": "tools",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 4,
+      "errors_after": 0,
+      "unsafe_before": 2,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 51.4,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "tools",
+          "turns": 2,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": "final",
+          "model_calls": 2,
+          "prompt_tokens": 5609,
+          "completion_tokens": 1190,
+          "seconds": 51.34
+        }
+      ]
+    }
+  ]
+}

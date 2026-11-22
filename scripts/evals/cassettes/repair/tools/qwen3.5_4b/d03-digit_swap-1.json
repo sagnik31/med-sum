@@ -1,0 +1,79 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "5d09d42234208d4a9b180683f92c22967845b7ef52dfbd3f38f328790ea525d8",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "75f6a65836a33352a4593c9048a82ed2b5f9a43d005283c0f7459957761d0cea",
+   "options": "3b64b24dcf543af91f040aef877d3dd005d3486d15ac9c21b874f5d0f4708a92",
+   "reply": "",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3053,
+    "eval_count": 28,
+    "total_duration": 55307024600,
+    "load_duration": 3769300,
+    "prompt_eval_duration": 52214616000,
+    "eval_duration": 3018140000
+   },
+   "tool_calls": [
+    {
+     "name": "get_item",
+     "arguments": {
+      "item_id": "obs-3"
+     }
+    }
+   ],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "ea9b39d5d0e74fc93fc279e7acd1bd2750727ab3c96ed0aafd81437e80ea7ac4",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "3aa08a09f6e7b6cb38eca04f9ef98be62ea06a7653d4a422afaa30b0b2b063cb",
+   "options": "3b64b24dcf543af91f040aef877d3dd005d3486d15ac9c21b874f5d0f4708a92",
+   "reply": "",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3337,
+    "eval_count": 28,
+    "total_duration": 8570168900,
+    "load_duration": 13407700,
+    "prompt_eval_duration": 5493903000,
+    "eval_duration": 3033759000
+   },
+   "tool_calls": [
+    {
+     "name": "get_item",
+     "arguments": {
+      "item_id": "med-1"
+     }
+    }
+   ],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "9a419866c41af0830bda023e89102f25505265829c2b7af7be461a2e37caf0ed",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "45c55c538c1bc7ae9aae4af12e9071a7b3c029c5a69c42d7f1f132e9a56d8808",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\"patient\":{\"name\":{\"citation\":{\"page\":1,\"first_line\":5,\"last_line\":5,\"quote\":\"Name: Meera Iyer\"},\"text\":\"Meera Iyer\"},\"age\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age/Gender: 57 Y/F\"},\"text\":\"57 Y\"},\"sex\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age/Gender: 57 Y/F\"},\"text\":\"F\"},\"date_of_birth\":null,\"patient_id\":{\"citation\":{\"page\":1,\"first_line\":9,\"last_line\":9,\"quote\":\"Patient ID: KCL-118842\"},\"text\":\"KCL-118842\"}},\"details\":{\"facility\":{\"citation\":{\"page\":1,\"first_line\":1,\"last_line\":1,\"quote\":\"# Kaveri Clinical Laboratory\"},\"text\":\"Kaveri Clinical Laboratory\"},\"clinicians\":[{\"citation\":{\"page\":1,\"first_line\":11,\"last_line\":11,\"quote\":\"Referred By: Dr. Anil Deshpande\"},\"text\":\"Referred By: Dr. Anil Deshpande\"}],\"report_date\":null,\"collection_date\":{\"citation\":{\"page\":1,\"first_line\":13,\"last_line\":13,\"quote\":\"Sample Collected: 16-Dec-2024\"},\"text\":\"16-Dec-2024\"},\"prescription_date\":null},\"results\":[{\"citation\":{\"page\":1,\"first_line\":19,\"last_line\":19,\"quote\":\"| Haemoglobin | 11.2 L | g/dL | 12.0 - 15.0 |\"},\"panel\":\"HAEMATOLOGY\",\"test_name\":\"Haemoglobin\",\"value_text\":\"11.2\",\"unit\":\"g/dL\",\"reference_ranges\":[\"12.0 - 15.0\"],\"flag_printed\":\"L\"},{\"citation\":{\"page\":1,\"first_line\":20,\"last_line\":20,\"quote\":\"| Total Leucocyte Count | 6.8 | 10³/µL | 4.0 - 10.0 |\"},\"panel\":\"HAEMATOLOGY\",\"test_name\":\"Total Leucocyte Count\",\"value_text\":\"6.8\",\"unit\":\"10³/µL\",\"reference_ranges\":[\"4.0 - 10.0\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":21,\"last_line\":21,\"quote\":\"| Platelets | 2.31 | lakh/cumm | 1.50 - 4.10 |\"},\"panel\":\"HAEMATOLOGY\",\"test_name\":\"Platelets\",\"value_text\":\"2.31\",\"unit\":\"lakh/cumm\",\"reference_ranges\":[\"1.50 - 4.10\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":22,\"last_line\":22,\"quote\":\"| MCV | 79 L | fL | 83 - 101 |\"},\"panel\":\"HAEMATOLOGY\",\"test_name\":\"MCV\",\"value_text\":\"79\",\"unit\":\"fL\",\"reference_ranges\":[\"83 - 101\"],\"flag_printed\":\"L\"}],\"remarks\":[],\"conditions\":[],\"vitals\":[],\"allergies\":[]}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2720,
+    "eval_count": 703,
+    "total_duration": 126491719400,
+    "load_duration": 8197500,
+    "prompt_eval_duration": 47234677000,
+    "eval_duration": 79172220000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

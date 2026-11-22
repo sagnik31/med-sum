@@ -1,0 +1,66 @@
+qwen3.5:4b/fixed/d01-decimal_shift-1: 213 s, repaired; 59 units left, about 3 h 30 min left
+qwen3.5:4b/fixed/d01-remark_moved-1: 154 s, repaired; 58 units left, about 2 h 58 min left
+qwen3.5:4b/fixed/d03-digit_swap-1: 119 s, repaired; 57 units left, about 2 h 34 min left
+qwen3.5:4b/fixed/d04-date_swap-1: 191 s, repaired; 56 units left, about 2 h 38 min left
+qwen3.5:4b/fixed/d05-dropped_result-1: 178 s, repaired; 55 units left, about 2 h 37 min left
+qwen3.5:4b/fixed/d06-duplicated_item-1: 60 s, repaired; 54 units left, about 2 h 17 min left
+qwen3.5:4b/fixed/d07-dropped_medicine-1: 195 s, repaired; 53 units left, about 2 h 20 min left
+qwen3.5:4b/fixed/d08-qualifier_dropped-1: 190 s, repaired; 52 units left, about 2 h 21 min left
+qwen3.5:4b/fixed/d08-invented_result-1: 162 s, repaired; 51 units left, about 2 h 18 min left
+qwen3.5:4b/fixed/d10-frequency_change-1: 142 s, repaired; 50 units left, about 2 h 14 min left
+qwen3.5:4b/fixed/d11-unit_swap-1: 106 s, repaired; 49 units left, about 2 h 07 min left
+qwen3.5:4b/fixed/d12-invented_medicine-1: 270 s, not repaired; 48 units left, about 2 h 12 min left
+qwen3.5:4b/fixed/d13-range_bound-1: 152 s, repaired; 47 units left, about 2 h 09 min left
+qwen3.5:4b/fixed/d14-strength_shift-1: 167 s, repaired; 46 units left, about 2 h 06 min left
+qwen3.5:4b/fixed/d16-values_swapped-1: 105 s, repaired; 45 units left, about 2 h 00 min left
+qwen3.5:4b fixed: 14/15 repaired
+qwen3.5:4b/tools/d01-decimal_shift-1: 285 s, repaired; 44 units left, about 2 h 03 min left
+qwen3.5:4b/tools/d01-remark_moved-1: 227 s, repaired; 43 units left, about 2 h 03 min left
+step ended: tool failed
+qwen3.5:4b/tools/d03-digit_swap-1: 191 s, repaired; 42 units left, about 2 h 01 min left
+qwen3.5:4b/tools/d04-date_swap-1: 240 s, repaired; 41 units left, about 2 h 00 min left
+qwen3.5:4b/tools/d05-dropped_result-1: 267 s, repaired; 40 units left, about 2 h 00 min left
+qwen3.5:4b/tools/d06-duplicated_item-1: 113 s, repaired; 39 units left, about 1 h 55 min left
+qwen3.5:4b/tools/d07-dropped_medicine-1: 249 s, repaired; 38 units left, about 1 h 54 min left
+qwen3.5:4b/tools/d08-qualifier_dropped-1: 238 s, repaired; 37 units left, about 1 h 53 min left
+qwen3.5:4b/tools/d08-invented_result-1: 197 s, repaired; 36 units left, about 1 h 50 min left
+qwen3.5:4b/tools/d10-frequency_change-1: 219 s, repaired; 35 units left, about 1 h 48 min left
+qwen3.5:4b/tools/d11-unit_swap-1: 157 s, repaired; 34 units left, about 1 h 44 min left
+qwen3.5:4b/tools/d12-invented_medicine-1: 492 s, repaired; 33 units left, about 1 h 48 min left
+qwen3.5:4b/tools/d13-range_bound-1: 209 s, repaired; 32 units left, about 1 h 45 min left
+qwen3.5:4b/tools/d14-strength_shift-1: 221 s, repaired; 31 units left, about 1 h 42 min left
+qwen3.5:4b/tools/d16-values_swapped-1: 218 s, repaired; 30 units left, about 1 h 39 min left
+qwen3.5:4b tools: 15/15 repaired
+gemma4:e2b/fixed/d01-decimal_shift-1: 81 s, repaired; 29 units left, about 1 h 34 min left
+gemma4:e2b/fixed/d01-remark_moved-1: 42 s, repaired; 28 units left, about 1 h 28 min left
+gemma4:e2b/fixed/d03-digit_swap-1: 32 s, repaired; 27 units left, about 1 h 23 min left
+gemma4:e2b/fixed/d04-date_swap-1: 54 s, repaired; 26 units left, about 1 h 18 min left
+gemma4:e2b/fixed/d05-dropped_result-1: 49 s, repaired; 25 units left, about 1 h 14 min left
+gemma4:e2b/fixed/d06-duplicated_item-1: 15 s, repaired; 24 units left, about 1 h 09 min left
+gemma4:e2b/fixed/d07-dropped_medicine-1: 54 s, repaired; 23 units left, about 1 h 05 min left
+gemma4:e2b/fixed/d08-qualifier_dropped-1: 95 s, repaired; 22 units left, about 1 h 01 min left
+gemma4:e2b/fixed/d08-invented_result-1: 97 s, not repaired; 21 units left, about 58 min left
+gemma4:e2b/fixed/d10-frequency_change-1: 38 s, repaired; 20 units left, about 54 min left
+gemma4:e2b/fixed/d11-unit_swap-1: 29 s, repaired; 19 units left, about 50 min left
+gemma4:e2b/fixed/d12-invented_medicine-1: 37 s, repaired; 18 units left, about 47 min left
+gemma4:e2b/fixed/d13-range_bound-1: 42 s, repaired; 17 units left, about 43 min left
+gemma4:e2b/fixed/d14-strength_shift-1: 46 s, repaired; 16 units left, about 40 min left
+gemma4:e2b/fixed/d16-values_swapped-1: 29 s, repaired; 15 units left, about 37 min left
+gemma4:e2b fixed: 14/15 repaired
+gemma4:e2b/tools/d01-decimal_shift-1: 96 s, repaired; 14 units left, about 34 min left
+gemma4:e2b/tools/d01-remark_moved-1: 99 s, repaired; 13 units left, about 32 min left
+gemma4:e2b/tools/d03-digit_swap-1: 77 s, repaired; 12 units left, about 29 min left
+gemma4:e2b/tools/d04-date_swap-1: 79 s, repaired; 11 units left, about 26 min left
+gemma4:e2b/tools/d05-dropped_result-1: 84 s, repaired; 10 units left, about 24 min left
+gemma4:e2b/tools/d06-duplicated_item-1: 33 s, repaired; 9 units left, about 21 min left
+gemma4:e2b/tools/d07-dropped_medicine-1: 81 s, repaired; 8 units left, about 19 min left
+gemma4:e2b/tools/d08-qualifier_dropped-1: 204 s, repaired; 7 units left, about 16 min left
+gemma4:e2b/tools/d08-invented_result-1: 195 s, not repaired; 6 units left, about 14 min left
+gemma4:e2b/tools/d10-frequency_change-1: 63 s, repaired; 5 units left, about 12 min left
+gemma4:e2b/tools/d11-unit_swap-1: 49 s, repaired; 4 units left, about 9 min left
+gemma4:e2b/tools/d12-invented_medicine-1: 121 s, not repaired; 3 units left, about 7 min left
+gemma4:e2b/tools/d13-range_bound-1: 73 s, repaired; 2 units left, about 5 min left
+gemma4:e2b/tools/d14-strength_shift-1: 68 s, repaired; 1 units left, about 2 min left
+gemma4:e2b/tools/d16-values_swapped-1: 51 s, repaired; 0 units left
+gemma4:e2b tools: 13/15 repaired
+wrote D:\Project\med-sum\scripts\evals\reports\2026-11-22-suite-repair\report.json and D:\Project\med-sum\scripts\evals\reports\2026-11-22-suite-repair\report.md

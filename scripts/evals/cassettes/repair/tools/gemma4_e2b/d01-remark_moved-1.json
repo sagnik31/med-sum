@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "74c2d78f0f02ee780c11de025aa582b5b47c9f14616117a23055fa9c3f42cf44",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "a8f35a2d53468f17242e138be0261a3a81236d0601f047dbc3e4564e6896ccf5",
+   "options": "9291cd10795858a97353300cd4f3ebf9cdc383b6b5a8b5e6f59fc72220df025b",
+   "reply": "```json\n{\n  \"patient\": {\n    \"name\": \"Mrs. Meera Iyer\",\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": \"SD-24-061407\"\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"| HbA1c | 8.1 | H | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |\"\n      },\n      \"panel\": \"GLYCATED HAEMOGLOBIN\",\n      \"test_name\": \"HbA1c\",\n      \"value_text\": \"8.1\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"Normal: < 5.7\",\n        \"Prediabetes: 5.7 - 6.4\",\n        \"Diabetes: >= 6.5\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Fasting Blood Sugar | 148 | H | mg/dL | 70 - 100 |\"\n      },\n      \"panel\": \"GLUCOSE\",\n      \"test_name\": \"Fasting Blood Sugar\",\n      \"value_text\": \"148\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"70 - 100\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 23,\n        \"last_line\": 23,\n        \"quote\": \"| Total Cholesterol | 182 |  | mg/dL | Desirable: < 200; Borderline: 200 - 239; High: >= 240 |\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"Total Cholesterol\",\n      \"value_text\": \"182\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"Desirable: < 200\",\n        \"Borderline: 200 - 239\",\n        \"High: >= 240\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 24,\n        \"last_line\": 24,\n        \"quote\": \"| Triglycerides | 168 | H | mg/dL | < 150 |\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"Triglycerides\",\n      \"value_text\": \"168\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"< 150\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 25,\n        \"last_line\": 25,\n        \"quote\": \"| HDL Cholesterol | 44 | L | mg/dL | > 50 |\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"HDL Cholesterol\",\n      \"value_text\": \"44\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"> 50\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 26,\n        \"last_line\": 26,\n        \"quote\": \"| LDL Cholesterol | 104 |  | mg/dL | Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160 |\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"LDL Cholesterol\",\n      \"value_text\": \"104\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"Optimal: < 100\",\n        \"Near optimal: 100 - 129\",\n        \"Borderline high: 130 - 159\",\n        \"High: >= 160\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 27,\n        \"last_line\": 27,\n        \"quote\": \"| VLDL Cholesterol | 33.6 | H | mg/dL | < 30 |\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"VLDL Cholesterol\",\n      \"value_text\": \"33.6\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"< 30\"\n      ],\n      \"flag_printed\": \"H\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Interpretation: HbA1c reflects average blood glucose over the past 2-3 months.\"\n      },\n      \"text\": \"HbA1c reflects average blood glucose over the past 2-3 months.\",\n      \"kind\": \"comment\",\n      \"scope\": \"test\",\n      \"test_name\": \"HbA1c\",\n      \"panel\": \"GLYCATED HAEMOGLOBIN\"\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}\n```",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3450,
+    "eval_count": 1516,
+    "total_duration": 60353110100,
+    "load_duration": 8310100,
+    "prompt_eval_duration": 8932724000,
+    "eval_duration": 51365958000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "964c4868d4015ea568b4b3e902b6ce261ae9ecf7d1e8bed57d6584d6daeada1a",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "f5bb0899bbddef6b9e4bd989698a0037c59032c5a10c4622099d927c91b731df",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\"patient\":{\"name\":null,\"age\":null,\"sex\":null,\"date_of_birth\":null,\"patient_id\":null},\"details\":{\"facility\":null,\"clinicians\":[],\"report_date\":null,\"collection_date\":null,\"prescription_date\":null},\"results\":[{\"citation\":{\"page\":2,\"first_line\":7,\"last_line\":7,\"quote\":\"| HbA1c | 8.1 | H | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |\"},\"panel\":\"GLYCATED HAEMOGLOBIN\",\"test_name\":\"HbA1c\",\"value_text\":\"8.1\",\"unit\":\"%\",\"reference_ranges\":[\"Normal: < 5.7\",\"Prediabetes: 5.7 - 6.4\",\"Diabetes: >= 6.5\"],\"flag_printed\":\"H\"},{\"citation\":{\"page\":2,\"first_line\":15,\"last_line\":15,\"quote\":\"| Fasting Blood Sugar | 148 | H | mg/dL | 70 - 100 |\"},\"panel\":\"GLUCOSE\",\"test_name\":\"Fasting Blood Sugar\",\"value_text\":\"148\",\"unit\":\"mg/dL\",\"reference_ranges\":[\"70 - 100\"],\"flag_printed\":\"H\"},{\"citation\":{\"page\":2,\"first_line\":23,\"last_line\":23,\"quote\":\"| Total Cholesterol | 182 |  | mg/dL | Desirable: < 200; Borderline: 200 - 239; High: >= 240 |\"},\"panel\":\"LIPID PROFILE\",\"test_name\":\"Total Cholesterol\",\"value_text\":\"182\",\"unit\":\"mg/dL\",\"reference_ranges\":[\"Desirable: < 200\",\"Borderline: 200 - 239\",\"High: >= 240\"],\"flag_printed\":null},{\"citation\":{\"page\":2,\"first_line\":24,\"last_line\":24,\"quote\":\"| Triglycerides | 168 | H | mg/dL | < 150 |\"},\"panel\":\"LIPID PROFILE\",\"test_name\":\"Triglycerides\",\"value_text\":\"168\",\"unit\":\"mg/dL\",\"reference_ranges\":[\"< 150\"],\"flag_printed\":\"H\"},{\"citation\":{\"page\":2,\"first_line\":25,\"last_line\":25,\"quote\":\"| HDL Cholesterol | 44 | L | mg/dL | > 50 |\"},\"panel\":\"LIPID PROFILE\",\"test_name\":\"HDL Cholesterol\",\"value_text\":\"44\",\"unit\":\"mg/dL\",\"reference_ranges\":[\"> 50\"],\"flag_printed\":\"L\"},{\"citation\":{\"page\":2,\"first_line\":26,\"last_line\":26,\"quote\":\"| LDL Cholesterol | 104 |  | mg/dL | Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160 |\"},\"panel\":\"LIPID PROFILE\",\"test_name\":\"LDL Cholesterol\",\"value_text\":\"104\",\"unit\":\"mg/dL\",\"reference_ranges\":[\"Optimal: < 100\",\"Near optimal: 100 - 129\",\"Borderline high: 130 - 159\",\"High: >= 160\"],\"flag_printed\":null},{\"citation\":{\"page\":2,\"first_line\":27,\"last_line\":27,\"quote\":\"| VLDL Cholesterol | 33.6 | H | mg/dL | < 30 |\"},\"panel\":\"LIPID PROFILE\",\"test_name\":\"VLDL Cholesterol\",\"value_text\":\"33.6\",\"unit\":\"mg/dL\",\"reference_ranges\":[\"< 30\"],\"flag_printed\":\"H\"}],\"remarks\":[{\"citation\":{\"page\":2,\"first_line\":9,\"last_line\":9,\"quote\":\"Interpretation: HbA1c reflects average blood glucose over the past 2-3 months.\"},\"text\":\"Interpretation: HbA1c reflects average blood glucose over the past 2-3 months.\",\"kind\":\"comment\",\"scope\":\"test\",\"test_name\":\"HbA1c\",\"panel\":\"GLYCATED HAEMOGLOBIN\"}],\"conditions\":[],\"vitals\":[],\"allergies\":[]}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2862,
+    "eval_count": 972,
+    "total_duration": 38672825700,
+    "load_duration": 8728100,
+    "prompt_eval_duration": 6904946000,
+    "eval_duration": 31711721000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

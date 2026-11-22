@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "6ed3ca04aa19ba8ab702714dc2edd67faffbfa9ad1c555d3ced3cbaf5da2aeff",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "09b6e8f1dc079191ce9ea93d7c3d88299a2cb36e54a54c479debbabd3f0b1b80",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\"patient\":{\"name\":{\"citation\":{\"page\":1,\"first_line\":5,\"last_line\":5,\"quote\":\"Name: Meera Iyer\"},\"text\":\"Meera Iyer\"},\"age\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age/Gender: 57 Y/F\"},\"text\":\"57 Y\"},\"sex\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age/Gender: 57 Y/F\"},\"text\":\"F\"},\"date_of_birth\":null,\"patient_id\":{\"citation\":{\"page\":1,\"first_line\":9,\"last_line\":9,\"quote\":\"Patient ID: KCL-118842\"},\"text\":\"KCL-118842\"}},\"details\":{\"facility\":{\"citation\":{\"page\":1,\"first_line\":1,\"last_line\":1,\"quote\":\"# Kaveri Clinical Laboratory\"},\"text\":\"Kaveri Clinical Laboratory\"},\"clinicians\":[{\"citation\":{\"page\":1,\"first_line\":11,\"last_line\":11,\"quote\":\"Referred By: Dr. Anil Deshpande\"},\"text\":\"Referred By: Dr. Anil Deshpande\"}],\"report_date\":null,\"collection_date\":{\"citation\":{\"page\":1,\"first_line\":13,\"last_line\":13,\"quote\":\"Sample Collected: 16-Dec-2024\"},\"text\":\"16-Dec-2024\"},\"prescription_date\":null},\"results\":[{\"citation\":{\"page\":1,\"first_line\":19,\"last_line\":19,\"quote\":\"| Haemoglobin | 11.2 L | g/dL | 12.0 - 15.0 |\"},\"panel\":\"HAEMATOLOGY\",\"test_name\":\"Haemoglobin\",\"value_text\":\"11.2\",\"unit\":\"g/dL\",\"reference_ranges\":[\"12.0 - 15.0\"],\"flag_printed\":\"L\"},{\"citation\":{\"page\":1,\"first_line\":20,\"last_line\":20,\"quote\":\"| Total Leucocyte Count | 6.8 | 10³/µL | 4.0 - 10.0 |\"},\"panel\":\"HAEMATOLOGY\",\"test_name\":\"Total Leucocyte Count\",\"value_text\":\"6.8\",\"unit\":\"10³/µL\",\"reference_ranges\":[\"4.0 - 10.0\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":21,\"last_line\":21,\"quote\":\"| Platelets | 2.31 | lakh/cumm | 1.50 - 4.10 |\"},\"panel\":\"HAEMATOLOGY\",\"test_name\":\"Platelets\",\"value_text\":\"2.31\",\"unit\":\"lakh/cumm\",\"reference_ranges\":[\"1.50 - 4.10\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":22,\"last_line\":22,\"quote\":\"| MCV | 79 L | fL | 83 - 101 |\"},\"panel\":\"HAEMATOLOGY\",\"test_name\":\"MCV\",\"value_text\":\"79\",\"unit\":\"fL\",\"reference_ranges\":[\"83 - 101\"],\"flag_printed\":\"L\"}],\"remarks\":[],\"conditions\":[],\"vitals\":[],\"allergies\":[]}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2424,
+    "eval_count": 755,
+    "total_duration": 32067350700,
+    "load_duration": 5104600,
+    "prompt_eval_duration": 7983800000,
+    "eval_duration": 24044202000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

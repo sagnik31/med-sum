@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "5908b4fbcc188522ce14f66c8651db01b09b8c7c462efa00c6b28d1b686e81f6",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "39d4478751aa107d5d1e89c6153ee1b596afe77ad19640b9ecb84f936beb0cbd",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\"patient\":{\"name\":null,\"age\":null,\"sex\":null,\"date_of_birth\":null,\"patient_id\":null},\"details\":{\"facility\":null,\"clinicians\":[{\"citation\":{\"page\":2,\"first_line\":13,\"last_line\":13,\"quote\":\"Dr. Neha Joshi, MD (Pathology)\"},\"text\":\"Dr. Neha Joshi, MD (Pathology)\"}],\"report_date\":null,\"collection_date\":null,\"prescription_date\":null},\"results\":[{\"citation\":{\"page\":2,\"first_line\":7,\"last_line\":7,\"quote\":\"| Random Blood Sugar | 112 |  | mg/dL | 70 - 140 |\"},\"panel\":\"GLUCOSE\",\"test_name\":\"Random Blood Sugar\",\"value_text\":\"112\",\"unit\":\"mg/dL\",\"reference_ranges\":[\"70 - 140\"],\"flag_printed\":null}],\"remarks\":[{\"citation\":{\"page\":2,\"first_line\":11,\"last_line\":11,\"quote\":\"Kindly correlate clinically.\"},\"text\":\"Kindly correlate clinically.\",\"kind\":\"comment\",\"scope\":\"document\",\"test_name\":null,\"panel\":null}],\"conditions\":[],\"vitals\":[],\"allergies\":[]}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1914,
+    "eval_count": 269,
+    "total_duration": 14742034500,
+    "load_duration": 7777800,
+    "prompt_eval_duration": 6193892000,
+    "eval_duration": 8502998000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

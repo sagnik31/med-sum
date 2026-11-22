@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "2688d42be17828af05add1d3e51408d6863c4bc75ac67ef23ede15b7348b18bb",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "75f6a65836a33352a4593c9048a82ed2b5f9a43d005283c0f7459957761d0cea",
+   "options": "3b64b24dcf543af91f040aef877d3dd005d3486d15ac9c21b874f5d0f4708a92",
+   "reply": "```json\n{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Name: Meera Iyer\"\n      },\n      \"text\": \"Meera Iyer\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age/Gender: 57 Y/F\"\n      },\n      \"text\": \"57 Y\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age/Gender: 57 Y/F\"\n      },\n      \"text\": \"F\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Patient ID: KCL-118842\"\n      },\n      \"text\": \"KCL-118842\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 1,\n        \"quote\": \"# Kaveri Clinical Laboratory\"\n      },\n      \"text\": \"Kaveri Clinical Laboratory\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 11,\n          \"last_line\": 11,\n          \"quote\": \"Referred By: Dr. Anil Deshpande\"\n        },\n        \"text\": \"Referred By: Dr. Anil Deshpande\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Sample Collected: 16-Dec-2024\"\n      },\n      \"text\": \"16-Dec-2024\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"| Haemoglobin | 11.2 L | g/dL | 12.0 - 15.0 |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"11.2\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"12.0 - 15.0\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 20,\n        \"last_line\": 20,\n        \"quote\": \"| Total Leucocyte Count | 6.8 | 10³/µL | 4.0 - 10.0 |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Total Leucocyte Count\",\n      \"value_text\": \"6.8\",\n      \"unit\": \"10³/µL\",\n      \"reference_ranges\": [\n        \"4.0 - 10.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"| Platelets | 2.31 | lakh/cumm | 1.50 - 4.10 |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Platelets\",\n      \"value_text\": \"2.31\",\n      \"unit\": \"lakh/cumm\",\n      \"reference_ranges\": [\n        \"1.50 - 4.10\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"| MCV | 79 L | fL | 83 - 101 |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"MCV\",\n      \"value_text\": \"79\",\n      \"unit\": \"fL\",\n      \"reference_ranges\": [\n        \"83 - 101\"\n      ],\n      \"flag_printed\": \"L\"\n    }\n  ],\n  \"remarks\": []\n}\n```",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2892,
+    "eval_count": 1234,
+    "total_duration": 47146465800,
+    "load_duration": 9026600,
+    "prompt_eval_duration": 6774950000,
+    "eval_duration": 40326216000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "82e5df855f4ecf268fb7dac928f2cc1853e1caf1ba260fdbb37436935ebe0475",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "61594e3f22c60bce983439b9868ca26290bf7fa7c2636f6131f47e79c9cde26a",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\"patient\":{\"name\":{\"citation\":{\"page\":1,\"first_line\":5,\"last_line\":5,\"quote\":\"Name: Meera Iyer\"},\"text\":\"Meera Iyer\"},\"age\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age/Gender: 57 Y/F\"},\"text\":\"57 Y\"},\"sex\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age/Gender: 57 Y/F\"},\"text\":\"F\"},\"date_of_birth\":null,\"patient_id\":{\"citation\":{\"page\":1,\"first_line\":9,\"last_line\":9,\"quote\":\"Patient ID: KCL-118842\"},\"text\":\"KCL-118842\"}},\"details\":{\"facility\":{\"citation\":{\"page\":1,\"first_line\":1,\"last_line\":1,\"quote\":\"# Kaveri Clinical Laboratory\"},\"text\":\"Kaveri Clinical Laboratory\"},\"clinicians\":[{\"citation\":{\"page\":1,\"first_line\":11,\"last_line\":11,\"quote\":\"Referred By: Dr. Anil Deshpande\"},\"text\":\"Referred By: Dr. Anil Deshpande\"}],\"report_date\":null,\"collection_date\":{\"citation\":{\"page\":1,\"first_line\":13,\"last_line\":13,\"quote\":\"Sample Collected: 16-Dec-2024\"},\"text\":\"16-Dec-2024\"},\"prescription_date\":null},\"results\":[{\"citation\":{\"page\":1,\"first_line\":19,\"last_line\":19,\"quote\":\"| Haemoglobin | 11.2 L | g/dL | 12.0 - 15.0 |\"},\"panel\":\"HAEMATOLOGY\",\"test_name\":\"Haemoglobin\",\"value_text\":\"11.2\",\"unit\":\"g/dL\",\"reference_ranges\":[\"12.0 - 15.0\"],\"flag_printed\":\"L\"},{\"citation\":{\"page\":1,\"first_line\":20,\"last_line\":20,\"quote\":\"| Total Leucocyte Count | 6.8 | 10³/µL | 4.0 - 10.0 |\"},\"panel\":\"HAEMATOLOGY\",\"test_name\":\"Total Leucocyte Count\",\"value_text\":\"6.8\",\"unit\":\"10³/µL\",\"reference_ranges\":[\"4.0 - 10.0\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":21,\"last_line\":21,\"quote\":\"| Platelets | 2.31 | lakh/cumm | 1.50 - 4.10 |\"},\"panel\":\"HAEMATOLOGY\",\"test_name\":\"Platelets\",\"value_text\":\"2.31\",\"unit\":\"lakh/cumm\",\"reference_ranges\":[\"1.50 - 4.10\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":22,\"last_line\":22,\"quote\":\"| MCV | 79 L | fL | 83 - 101 |\"},\"panel\":\"HAEMATOLOGY\",\"test_name\":\"MCV\",\"value_text\":\"79\",\"unit\":\"fL\",\"reference_ranges\":[\"83 - 101\"],\"flag_printed\":\"L\"}],\"remarks\":[],\"conditions\":[],\"vitals\":[],\"allergies\":[]}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2447,
+    "eval_count": 755,
+    "total_duration": 29267638900,
+    "load_duration": 7903800,
+    "prompt_eval_duration": 5509803000,
+    "eval_duration": 23708097000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

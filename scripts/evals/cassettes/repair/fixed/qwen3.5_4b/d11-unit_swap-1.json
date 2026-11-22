@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "37e3ba45776a37fe82ff2809695ada3965bea0fa93d8545a12509a9eaa826e02",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "a24806736d0ecc31c3a7b2f5f74eb2544c780d69fcd524e26291b4442ce25f07",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\"patient\":{\"name\":{\"citation\":{\"page\":1,\"first_line\":5,\"last_line\":5,\"quote\":\"Patient Name: Ms. Fatima Shaikh\"},\"text\":\"Ms. Fatima Shaikh\"},\"age\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age / Sex: 31 Years / Female\"},\"text\":\"31 Years\"},\"sex\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age / Sex: 31 Years / Female\"},\"text\":\"Female\"},\"date_of_birth\":null,\"patient_id\":{\"citation\":{\"page\":1,\"first_line\":9,\"last_line\":9,\"quote\":\"Lab ID: SD-25-010733\"},\"text\":\"SD-25-010733\"}},\"details\":{\"facility\":{\"citation\":{\"page\":1,\"first_line\":1,\"last_line\":1,\"quote\":\"# Sunrise Diagnostics\"},\"text\":\"Sunrise Diagnostics\"},\"clinicians\":[{\"citation\":{\"page\":1,\"first_line\":11,\"last_line\":11,\"quote\":\"Ref. By: Dr. Kavita Rao\"},\"text\":\"Ref. By: Dr. Kavita Rao\"},{\"citation\":{\"page\":1,\"first_line\":29,\"last_line\":29,\"quote\":\"Dr. Neha Joshi, MD (Pathology)\"},\"text\":\"Dr. Neha Joshi, MD (Pathology)\"}],\"report_date\":{\"citation\":{\"page\":1,\"first_line\":15,\"last_line\":15,\"quote\":\"Reported On: 08/01/2025 06:15 PM\"},\"text\":\"08/01/2025 06:15 PM\"},\"collection_date\":{\"citation\":{\"page\":1,\"first_line\":13,\"last_line\":13,\"quote\":\"Collected On: 08/01/2025 08:20 AM\"},\"text\":\"08/01/2025 08:20 AM\"},\"prescription_date\":null},\"results\":[{\"citation\":{\"page\":1,\"first_line\":21,\"last_line\":21,\"quote\":\"| TSH | 3.1 |  | µIU/mL | 0.27 - 4.20 |\"},\"panel\":\"THYROID PROFILE\",\"test_name\":\"TSH\",\"value_text\":\"3.1\",\"unit\":\"µIU/mL\",\"reference_ranges\":[\"0.27 - 4.20\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":27,\"last_line\":27,\"quote\":\"| Vitamin D (25-OH) | 18.4 | L | ng/mL | Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100 |\"},\"panel\":\"VITAMINS\",\"test_name\":\"Vitamin D (25-OH)\",\"value_text\":\"18.4\",\"unit\":\"ng/mL\",\"reference_ranges\":[\"Deficiency: < 20\",\"Insufficiency: 20 - 30\",\"Sufficiency: 30 - 100\"],\"flag_printed\":\"L\"}],\"remarks\":[],\"conditions\":[],\"vitals\":[],\"allergies\":[]}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2445,
+    "eval_count": 698,
+    "total_duration": 105671442100,
+    "load_duration": 9005900,
+    "prompt_eval_duration": 28078554000,
+    "eval_duration": 77511015000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "d7786308bef89bfb02a8824c6d1deb908cf2a07ff3fc25df87329d45fdd6db46",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "3d946a99802883bd727f56d8f6acfae4b55f2c76bab32fcdcd34e2fe5c63e406",
+   "options": "9291cd10795858a97353300cd4f3ebf9cdc383b6b5a8b5e6f59fc72220df025b",
+   "reply": "```json\n{\n  \"patient\": {\n    \"name\": \"Mr. Arjun Menon\",\n    \"age\": \"66 Years\",\n    \"sex\": \"Male\",\n    \"date_of_birth\": null,\n    \"patient_id\": \"SH-100234\"\n  },\n  \"details\": {\n    \"facility\": \"Sahaj Multispeciality Hospital - Laboratory Services\",\n    \"clinicians\": [\n      {\n        \"name\": \"Dr. Anil Deshpande\",\n        \"label\": \"Ordering Physician\"\n      }\n    ],\n    \"report_date\": \"04/03/2025 03:30 PM\",\n    \"collection_date\": \"04/03/2025 08:45 AM\",\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"Total Cholesterol\",\n      \"value_text\": \"236\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"Desirable: < 200\",\n        \"Borderline: 200 - 239\",\n        \"High: >= 240\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"Triglycerides\",\n      \"value_text\": \"210\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"< 150\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"HDL Cholesterol\",\n      \"value_text\": \"38\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"> 40\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"LDL Cholesterol\",\n      \"value_text\": \"156\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"Optimal: < 100\",\n        \"Near optimal: 100 - 129\",\n        \"Borderline high: 130 - 159\",\n        \"High: >= 160\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"panel\": \"GLYCATED HAEMOGLOBIN\",\n      \"test_name\": \"HbA1c\",\n      \"value_text\": \"6.2\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"Normal: < 5.7\",\n        \"Prediabetes: 5.7 - 6.4\",\n        \"Diabetes: >= 6.5\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": []\n}\n```",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3529,
+    "eval_count": 719,
+    "total_duration": 31392043900,
+    "load_duration": 4471000,
+    "prompt_eval_duration": 7162910000,
+    "eval_duration": 24187226000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "f9ddd99ba5a2958a9beb3a5aec3c540caa0ba86ba6bcc982b530d31d5483fa35",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "d0bbf570b9e229ea3d5eb92c89669fd8eaceb5a61ab946ad8bc99837524befea",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\"patient\":{\"name\":{\"citation\":{\"page\":1,\"first_line\":5,\"last_line\":5,\"quote\":\"Patient Name: Mr. Arjun Menon\"},\"text\":\"Mr. Arjun Menon\"},\"age\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age / Sex: 66 Years / Male\"},\"text\":\"66 Years\"},\"sex\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age / Sex: 66 Years / Male\"},\"text\":\"Male\"},\"date_of_birth\":null,\"patient_id\":{\"citation\":{\"page\":1,\"first_line\":9,\"last_line\":9,\"quote\":\"UHID: SH-100234\"},\"text\":\"SH-100234\"}},\"details\":{\"facility\":{\"citation\":{\"page\":1,\"first_line\":1,\"last_line\":1,\"quote\":\"# Sahaj Multispeciality Hospital - Laboratory Services\"},\"text\":\"Sahaj Multispeciality Hospital - Laboratory Services\"},\"clinicians\":[{\"citation\":{\"page\":1,\"first_line\":11,\"last_line\":11,\"quote\":\"Ordering Physician: Dr. Anil Deshpande\"},\"text\":\"Ordering Physician: Dr. Anil Deshpande\"}],\"report_date\":{\"citation\":{\"page\":1,\"first_line\":15,\"last_line\":15,\"quote\":\"Report Date: 04/03/2025 03:30 PM\"},\"text\":\"04/03/2025 03:30 PM\"},\"collection_date\":{\"citation\":{\"page\":1,\"first_line\":13,\"last_line\":13,\"quote\":\"Sample Collected: 04/03/2025 08:45 AM\"},\"text\":\"04/03/2025 08:45 AM\"},\"prescription_date\":null},\"results\":[{\"citation\":{\"page\":1,\"first_line\":21,\"last_line\":21,\"quote\":\"| Total Cholesterol | 236 | H | mg/dL | Desirable: < 200; Borderline: 200 - 239; High: >= 240 |\"},\"panel\":\"LIPID PROFILE\",\"test_name\":\"Total Cholesterol\",\"value_text\":\"236\",\"unit\":\"mg/dL\",\"reference_ranges\":[\"Desirable: < 200\",\"Borderline: 200 - 239\",\"High: >= 240\"],\"flag_printed\":\"H\"},{\"citation\":{\"page\":1,\"first_line\":22,\"last_line\":22,\"quote\":\"| Triglycerides | 210 | H | mg/dL | < 150 |\"},\"panel\":\"LIPID PROFILE\",\"test_name\":\"Triglycerides\",\"value_text\":\"210\",\"unit\":\"mg/dL\",\"reference_ranges\":[\"< 150\"],\"flag_printed\":\"H\"},{\"citation\":{\"page\":1,\"first_line\":23,\"last_line\":23,\"quote\":\"| HDL Cholesterol | 38 | L | mg/dL | > 40 |\"},\"panel\":\"LIPID PROFILE\",\"test_name\":\"HDL Cholesterol\",\"value_text\":\"38\",\"unit\":\"mg/dL\",\"reference_ranges\":[\"> 40\"],\"flag_printed\":\"L\"},{\"citation\":{\"page\":1,\"first_line\":24,\"last_line\":24,\"quote\":\"| LDL Cholesterol | 156 | H | mg/dL | Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160 |\"},\"panel\":\"LIPID PROFILE\",\"test_name\":\"LDL Cholesterol\",\"value_text\":\"156\",\"unit\":\"mg/dL\",\"reference_ranges\":[\"Optimal: < 100\",\"Near optimal: 100 - 129\",\"Borderline high: 130 - 159\",\"High: >= 160\"],\"flag_printed\":\"H\"},{\"citation\":{\"page\":1,\"first_line\":30,\"last_line\":30,\"quote\":\"| HbA1c | 6.2 |  | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |\"},\"panel\":\"GLYCATED HAEMOGLOBIN\",\"test_name\":\"HbA1c\",\"value_text\":\"6.2\",\"unit\":\"%\",\"reference_ranges\":[\"Normal: < 5.7\",\"Prediabetes: 5.7 - 6.4\",\"Diabetes: >= 6.5\"],\"flag_printed\":null}],\"remarks\":[],\"conditions\":[],\"vitals\":[],\"allergies\":[]}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2941,
+    "eval_count": 1060,
+    "total_duration": 41266234600,
+    "load_duration": 8131300,
+    "prompt_eval_duration": 7031227000,
+    "eval_duration": 34173828999
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

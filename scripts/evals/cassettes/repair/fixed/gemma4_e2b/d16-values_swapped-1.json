@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "870621ab1e74065ce9df818f5655df8b18f4256674a84758b97953ca2fbb4f56",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "c26945353a180ec34e3e5481ff24ab440fbe4928f81389f0b75b0510a8c16756",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\"patient\":{\"name\":{\"citation\":{\"page\":1,\"first_line\":5,\"last_line\":5,\"quote\":\"Name: Arjun Mehta\"},\"text\":\"Arjun Mehta\"},\"age\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age/Gender: 41 Y/M\"},\"text\":\"41 Y\"},\"sex\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age/Gender: 41 Y/M\"},\"text\":\"M\"},\"date_of_birth\":null,\"patient_id\":{\"citation\":{\"page\":1,\"first_line\":9,\"last_line\":9,\"quote\":\"Patient ID: KCL-120377\"},\"text\":\"KCL-120377\"}},\"details\":{\"facility\":{\"citation\":{\"page\":1,\"first_line\":1,\"last_line\":1,\"quote\":\"# Kaveri Clinical Laboratory\"},\"text\":\"Kaveri Clinical Laboratory\"},\"clinicians\":[{\"citation\":{\"page\":1,\"first_line\":11,\"last_line\":11,\"quote\":\"Referred By: Dr. S. Kulkarni\"},\"text\":\"Referred By: Dr. S. Kulkarni\"},{\"citation\":{\"page\":1,\"first_line\":23,\"last_line\":23,\"quote\":\"Dr. Prakash Nair, MD (Pathology)\"},\"text\":\"Dr. Prakash Nair, MD (Pathology)\"}],\"report_date\":{\"citation\":{\"page\":1,\"first_line\":13,\"last_line\":13,\"quote\":\"Reported: 02-Apr-2025 10:05 AM\"},\"text\":\"02-Apr-2025 10:05 AM\"},\"collection_date\":null,\"prescription_date\":null},\"results\":[{\"citation\":{\"page\":1,\"first_line\":19,\"last_line\":19,\"quote\":\"| Haemoglobin | 14.8 | g/dL | 13.0 - 17.0 |\"},\"panel\":\"HAEMATOLOGY\",\"test_name\":\"Haemoglobin\",\"value_text\":\"14.8\",\"unit\":\"g/dL\",\"reference_ranges\":[\"13.0 - 17.0\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":20,\"last_line\":20,\"quote\":\"| Total Leucocyte Count | 7.9 | 10³/µL | 4.0 - 10.0 |\"},\"panel\":\"HAEMATOLOGY\",\"test_name\":\"Total Leucocyte Count\",\"value_text\":\"7.9\",\"unit\":\"10³/µL\",\"reference_ranges\":[\"4.0 - 10.0\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":21,\"last_line\":21,\"quote\":\"| Platelets | 2.65 | lakh/cumm | 1.50 - 4.10 |\"},\"panel\":\"HAEMATOLOGY\",\"test_name\":\"Platelets\",\"value_text\":\"2.65\",\"unit\":\"lakh/cumm\",\"reference_ranges\":[\"1.50 - 4.10\"],\"flag_printed\":null}],\"remarks\":[],\"conditions\":[],\"vitals\":[],\"allergies\":[]}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2559,
+    "eval_count": 726,
+    "total_duration": 29055538800,
+    "load_duration": 13510600,
+    "prompt_eval_duration": 5939173000,
+    "eval_duration": 23061216000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

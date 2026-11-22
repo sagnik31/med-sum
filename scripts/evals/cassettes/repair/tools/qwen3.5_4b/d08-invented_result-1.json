@@ -1,0 +1,79 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "310f8272370f2f3ce3a1f4292388bd35f620d1f2ecfeb2f3bdee9af51fbd2254",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "856654ea363b6a5e31abbe4f9a7f69ed119c5aceda0bfa85e9855e9af8fbaee8",
+   "options": "3b64b24dcf543af91f040aef877d3dd005d3486d15ac9c21b874f5d0f4708a92",
+   "reply": "",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3973,
+    "eval_count": 29,
+    "total_duration": 26575353100,
+    "load_duration": 6863700,
+    "prompt_eval_duration": 23196717000,
+    "eval_duration": 3232925000
+   },
+   "tool_calls": [
+    {
+     "name": "get_item",
+     "arguments": {
+      "item_id": "obs-10"
+     }
+    }
+   ],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "af3606f54cca985dc137cdd0c0b6680dfc6beebad8c5c6a81a76dd847f5b1fdd",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "203ab0c82ee6651678e5cdc54ed2c45105e88e05656a8083686f70055906aeac",
+   "options": "3b64b24dcf543af91f040aef877d3dd005d3486d15ac9c21b874f5d0f4708a92",
+   "reply": "",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4215,
+    "eval_count": 27,
+    "total_duration": 7845255900,
+    "load_duration": 8301500,
+    "prompt_eval_duration": 4786763000,
+    "eval_duration": 3020051000
+   },
+   "tool_calls": [
+    {
+     "name": "search_transcription",
+     "arguments": {
+      "text": "CRP"
+     }
+    }
+   ],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "85156a6d5db6455a690ad554347ca0d88918db6246633a8b2535dbdbb23f6598",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "c652111c61720b624b0186a1aabdddb9bd36559f2f4a5dafdae8326395f26bf0",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\"patient\":{\"name\":{\"citation\":{\"page\":1,\"first_line\":5,\"last_line\":5,\"quote\":\"Name: Rohan Kulkarni\"},\"text\":\"Rohan Kulkarni\"},\"age\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age/Gender: 44 Y/M\"},\"text\":\"44 Y\"},\"sex\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Age/Gender: 44 Y/M\"},\"text\":\"M\"},\"date_of_birth\":null,\"patient_id\":{\"citation\":{\"page\":1,\"first_line\":9,\"last_line\":9,\"quote\":\"Patient ID: KCL-120051\"},\"text\":\"KCL-120051\"}},\"details\":{\"facility\":{\"citation\":{\"page\":1,\"first_line\":1,\"last_line\":1,\"quote\":\"# Kaveri Clinical Laboratory\"},\"text\":\"Kaveri Clinical Laboratory\"},\"clinicians\":[{\"citation\":{\"page\":1,\"first_line\":11,\"last_line\":11,\"quote\":\"Referred By: Dr. Anil Deshpande\"},\"text\":\"Referred By: Dr. Anil Deshpande\"},{\"citation\":{\"page\":1,\"first_line\":39,\"last_line\":39,\"quote\":\"Dr. Prakash Nair, MD (Pathology)\"},\"text\":\"Dr. Prakash Nair, MD (Pathology)\"}],\"report_date\":{\"citation\":{\"page\":1,\"first_line\":13,\"last_line\":13,\"quote\":\"Reported: 20-May-2025 11:30 AM\"},\"text\":\"20-May-2025 11:30 AM\"},\"collection_date\":null,\"prescription_date\":null},\"results\":[{\"citation\":{\"page\":1,\"first_line\":19,\"last_line\":19,\"quote\":\"| Total Bilirubin | 0.8 | mg/dL | 0.2 - 1.2 |\"},\"panel\":\"LIVER FUNCTION TEST\",\"test_name\":\"Total Bilirubin\",\"value_text\":\"0.8\",\"unit\":\"mg/dL\",\"reference_ranges\":[\"0.2 - 1.2\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":20,\"last_line\":20,\"quote\":\"| Direct Bilirubin | 0.2 | mg/dL | 0.0 - 0.3 |\"},\"panel\":\"LIVER FUNCTION TEST\",\"test_name\":\"Direct Bilirubin\",\"value_text\":\"0.2\",\"unit\":\"mg/dL\",\"reference_ranges\":[\"0.0 - 0.3\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":21,\"last_line\":21,\"quote\":\"| SGOT (AST) | 32 | U/L | 5 - 40 |\"},\"panel\":\"LIVER FUNCTION TEST\",\"test_name\":\"SGOT (AST)\",\"value_text\":\"32\",\"unit\":\"U/L\",\"reference_ranges\":[\"5 - 40\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":22,\"last_line\":22,\"quote\":\"| SGPT (ALT) | 48 H | U/L | 7 - 45 |\"},\"panel\":\"LIVER FUNCTION TEST\",\"test_name\":\"SGPT (ALT)\",\"value_text\":\"48\",\"unit\":\"U/L\",\"reference_ranges\":[\"7 - 45\"],\"flag_printed\":\"H\"},{\"citation\":{\"page\":1,\"first_line\":23,\"last_line\":23,\"quote\":\"| Alkaline Phosphatase | 96 | U/L | 40 - 129 |\"},\"panel\":\"LIVER FUNCTION TEST\",\"test_name\":\"Alkaline Phosphatase\",\"value_text\":\"96\",\"unit\":\"U/L\",\"reference_ranges\":[\"40 - 129\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":24,\"last_line\":24,\"quote\":\"| Total Protein | 7.1 | g/dL | 6.4 - 8.3 |\"},\"panel\":\"LIVER FUNCTION TEST\",\"test_name\":\"Total Protein\",\"value_text\":\"7.1\",\"unit\":\"g/dL\",\"reference_ranges\":[\"6.4 - 8.3\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":25,\"last_line\":25,\"quote\":\"| Albumin | 4.2 | g/dL | 3.5 - 5.2 |\"},\"panel\":\"LIVER FUNCTION TEST\",\"test_name\":\"Albumin\",\"value_text\":\"4.2\",\"unit\":\"g/dL\",\"reference_ranges\":[\"3.5 - 5.2\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":31,\"last_line\":31,\"quote\":\"| TSH | 2.4 | µIU/mL | 0.27 - 4.20 |\"},\"panel\":\"THYROID\",\"test_name\":\"TSH\",\"value_text\":\"2.4\",\"unit\":\"µIU/mL\",\"reference_ranges\":[\"0.27 - 4.20\"],\"flag_printed\":null},{\"citation\":{\"page\":1,\"first_line\":37,\"last_line\":37,\"quote\":\"| CRP | < 0.5 | mg/L | < 5.0 |\"},\"panel\":\"INFLAMMATORY MARKERS\",\"test_name\":\"CRP\",\"value_text\":\"< 0.5\",\"unit\":\"mg/L\",\"reference_ranges\":[\"< 5.0\"],\"flag_printed\":null}],\"remarks\":[],\"conditions\":[],\"vitals\":[],\"allergies\":[]}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3622,
+    "eval_count": 1185,
+    "total_duration": 161916904500,
+    "load_duration": 8765100,
+    "prompt_eval_duration": 22784708000,
+    "eval_duration": 138968091000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}
