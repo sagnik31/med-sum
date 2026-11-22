@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "d04ceb1026094d4f0f5d9d92bc5a9c6a8daa929624269b01f539e56cc1865ab0",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "af142ea2b10ac0bd20b4e8129bac297aa8bb6f743167ea76eb9d507f80c24d73",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "# Apex Pathology\nKalyani Nagar, Pune 411006\nPatient: Mrs. Nandini Bose | 36 Yrs / F | ID: AP-61930\nRef. Doctor: Dr. Suresh Pillai\nReport Date: 18/06/2025\n\n## HAEMATOLOGY\n\n| Investigation | Observed Value | Flag | Biological Reference Interval | Units |\n| :--- | :--- | :--- | :--- | :--- |\n| Haemoglobin | 11.9 | Low | 12.0 - 15.0 | g/dL |\n| PCV | 36.8 | | 36.0 - 46.0 | % |\n| RBC Count | 4.3 | | 3.8 - 4.8 | mill/cumm |\n| MCV | 82 | Low | 83 - 101 | fL |\n| MCH | 27.6 | | 27.0 - 32.0 | pg |\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 261,
+    "total_duration": 226814657000,
+    "load_duration": 17776100,
+    "prompt_eval_duration": 196893645000,
+    "eval_duration": 29696563000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "9721cefa97aa267e32b86c6dbc48c5593cdbb2950a329e61cfd3ee7e67a092de",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "8a67b7cdeedf6d1dfb5580455d4987f772c7412aee22caea4280269b8d45a5c9",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Apex Pathology | Mrs. Nandini Bose | AP-61930 | Page 2 of 2\n\n## HAEMATOLOGY (contd.)\n\n| Investigation | Observed Value | Flag | Biological Reference Interval | Units |\n|---|---|---|---|---|\n| Total WBC Count | 7,600 | | 4,000 - 10,000 | /cumm |\n| Platelet Count | 2,95,000 | | 1,50,000 - 4,10,000 | /cumm |\n\n## THYROID PROFILE\n\n| Investigation | Observed Value | Flag | Biological Reference Interval | Units |\n|---|---|---|---|---|\n| TSH | 2.9 | | 0.35 - 4.94 | µIU/mL |\n| Vitamin B12 | 180 | Low | 211 - 911 | pg/mL |\n\nDr. Kiran Patwardhan, MD (Pathology)\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 260,
+    "total_duration": 226749867500,
+    "load_duration": 21140400,
+    "prompt_eval_duration": 196681792000,
+    "eval_duration": 29736003000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "a3c9933b246bc6ace8a56c46295c4353a60d60f97c7b9296fa04a8b130e72212",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "3979aa85774a7050b36ecab5b8b8835b090aa7eb28060c0d769acb9daf863982",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"lab_report\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 699,
+    "eval_count": 14,
+    "total_duration": 16686635300,
+    "load_duration": 21110800,
+    "prompt_eval_duration": 13899847000,
+    "eval_duration": 1524147000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "0d886fadd860957135b875406afad5ad5d8eae3a0e0a08a1fd4413db8955e918",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "153fe8fcba3dfd9f5a4d27050d3b556cd5fe3cf65aa6d77da5fc68ca56d51f8e",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 3,\n        \"last_line\": 3,\n        \"quote\": \"Mrs. Nandini Bose\"\n      },\n      \"text\": \"Mrs. Nandini Bose\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 3,\n        \"last_line\": 3,\n        \"quote\": \"36 Yrs / F\"\n      },\n      \"text\": \"36 Yrs\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 3,\n        \"last_line\": 3,\n        \"quote\": \"36 Yrs / F\"\n      },\n      \"text\": \"F\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 3,\n        \"last_line\": 3,\n        \"quote\": \"AP-61930\"\n      },\n      \"text\": \"AP-61930\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 2,\n        \"quote\": \"Apex Pathology\\nKalyani Nagar, Pune 411006\"\n      },\n      \"text\": \"Apex Pathology\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 4,\n          \"last_line\": 4,\n          \"quote\": \"Ref. Doctor: Dr. Suresh Pillai\"\n        },\n        \"text\": \"Dr. Suresh Pillai\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"18/06/2025\"\n      },\n      \"text\": \"18/06/2025\"\n    },\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"| Haemoglobin | 11.9 | Low | 12.0 - 15.0 | g/dL |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"11.9\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"12.0 - 15.0\"\n      ],\n      \"flag_printed\": \"Low\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 12,\n        \"last_line\": 12,\n        \"quote\": \"| PCV | 36.8 | | 36.0 - 46.0 | % |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"PCV\",\n      \"value_text\": \"36.8\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"36.0 - 46.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"| RBC Count | 4.3 | | 3.8 - 4.8 | mill/cumm |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"RBC Count\",\n      \"value_text\": \"4.3\",\n      \"unit\": \"mill/cumm\",\n      \"reference_ranges\": [\n        \"3.8 - 4.8\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"| MCV | 82 | Low | 83 - 101 | fL |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"MCV\",\n      \"value_text\": \"82\",\n      \"unit\": \"fL\",\n      \"reference_ranges\": [\n        \"83 - 101\"\n      ],\n      \"flag_printed\": \"Low\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| MCH | 27.6 | | 27.0 - 32.0 | pg |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"MCH\",\n      \"value_text\": \"27.6\",\n      \"unit\": \"pg\",\n      \"reference_ranges\": [\n        \"27.0 - 32.0\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"Synthetic test document: fictional patient, doctors and laboratory.\"\n      },\n      \"text\": \"Synthetic test document: fictional patient, doctors and laboratory.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1361,
+    "eval_count": 1465,
+    "total_duration": 172379654500,
+    "load_duration": 11458200,
+    "prompt_eval_duration": 12525002000,
+    "eval_duration": 158680300000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "106cafaa1be97b7ec410afe03d54421e361e1b28ad10f8839175674ff28d6373",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "68684649d138fd29baf38dc340be12a6a59224da11b3d254c5da6ee3ba93c322",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 2,\n          \"first_line\": 17,\n          \"last_line\": 17,\n          \"quote\": \"Dr. Kiran Patwardhan, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Kiran Patwardhan, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"| Total WBC Count | 7,600 | | 4,000 - 10,000 | /cumm |\"\n      },\n      \"panel\": \"HAEMATOLOGY (contd.)\",\n      \"test_name\": \"Total WBC Count\",\n      \"value_text\": \"7,600\",\n      \"unit\": \"/cumm\",\n      \"reference_ranges\": [\n        \"4,000 - 10,000\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"| Platelet Count | 2,95,000 | | 1,50,000 - 4,10,000 | /cumm |\"\n      },\n      \"panel\": \"HAEMATOLOGY (contd.)\",\n      \"test_name\": \"Platelet Count\",\n      \"value_text\": \"2,95,000\",\n      \"unit\": \"/cumm\",\n      \"reference_ranges\": [\n        \"1,50,000 - 4,10,000\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"| TSH | 2.9 | | 0.35 - 4.94 | µIU/mL |\"\n      },\n      \"panel\": \"THYROID PROFILE\",\n      \"test_name\": \"TSH\",\n      \"value_text\": \"2.9\",\n      \"unit\": \"µIU/mL\",\n      \"reference_ranges\": [\n        \"0.35 - 4.94\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Vitamin B12 | 180 | Low | 211 - 911 | pg/mL |\"\n      },\n      \"panel\": \"THYROID PROFILE\",\n      \"test_name\": \"Vitamin B12\",\n      \"value_text\": \"180\",\n      \"unit\": \"pg/mL\",\n      \"reference_ranges\": [\n        \"211 - 911\"\n      ],\n      \"flag_printed\": \"Low\"\n    }\n  ],\n  \"remarks\": [],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1368,
+    "eval_count": 860,
+    "total_duration": 105075705900,
+    "load_duration": 13939400,
+    "prompt_eval_duration": 12261075000,
+    "eval_duration": 92671521000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

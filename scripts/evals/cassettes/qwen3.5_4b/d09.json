@@ -1,0 +1,65 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "ce5a5092b3e6a6ae9a51174654a9f7f13615098324ccaf9caec56314cf471622",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "1a29ae635321ce59ccb1dbd923d448412c7b59b228f4694f7ccbf092f49d389a",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "# Sunrise Diagnostics\nPlot 12, Baner Road, Pune 411045\nPatient Name: Ms. Fatima Shaikh\nAge / Sex: 31 Years / Female\nLab ID: SD-24-090512\nRef. By: Dr. Kavita Rao\nCollected On: 05/09/2024 08:30 AM\nReported On: 05/09/2024 04:00 PM\n\n## THYROID PROFILE\n\n| Test | Result | Flag | Unit | Reference Range |\n| :--- | :--- | :--- | :--- | :--- |\n| T3 (Total) | 1.1 | | ng/mL | 0.8 - 2.0 |\n| T4 (Total) | 6.2 | | µg/dL | 5.1 - 14.1 |\n| TSH | 8.9 | H | µIU/mL | 0.27 - 4.20 |\n\nNote: TSH values may vary with the time of sample collection.\n\n## HAEMOGRAM\n\n| Test | Result | Flag | Unit | Reference Range |\n| :--- | :--- | :--- | :--- | :--- |\n| Haemoglobin | 12.6 | | g/dL | 12.0 - 15.0 |\n| Total WBC Count | 6,400 | | /cumm | 4,000 - 10,000 |\n| Platelet Count | 2,80,000 | | /cumm | 1,50,000 - 4,10,000 |\n\nDr. Neha Joshi, MD (Pathology)\n*** End of Report ***\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 428,
+    "total_duration": 247457054800,
+    "load_duration": 10397300,
+    "prompt_eval_duration": 197793908000,
+    "eval_duration": 49289539000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "daffb6f19235d3dbee0a8b9c6d90f2950bb82169ff74674963c2065021b543ca",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "d27dec0a5c2c79e2470a1cdbc1e4bba11b3aaca9175f5e023d934b749ca6abab",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"lab_report\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 611,
+    "eval_count": 14,
+    "total_duration": 11638446900,
+    "load_duration": 4838700,
+    "prompt_eval_duration": 10258066000,
+    "eval_duration": 1305874000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "77b6947e8c0a5d9d6489657d09a52db5bee284821a0f40525c0ac89d57c80baa",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "6960822e54d9368dd64a6591c1d9b82d2976a16667ef73e5b8376353659e0bf8",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 3,\n        \"last_line\": 3,\n        \"quote\": \"Patient Name: Ms. Fatima Shaikh\"\n      },\n      \"text\": \"Ms. Fatima Shaikh\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"Age / Sex: 31 Years / Female\"\n      },\n      \"text\": \"31 Years\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"Age / Sex: 31 Years / Female\"\n      },\n      \"text\": \"Female\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Lab ID: SD-24-090512\"\n      },\n      \"text\": \"SD-24-090512\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 2,\n        \"quote\": \"# Sunrise Diagnostics\\nPlot 12, Baner Road, Pune 411045\"\n      },\n      \"text\": \"Sunrise Diagnostics\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 6,\n          \"last_line\": 6,\n          \"quote\": \"Ref. By: Dr. Kavita Rao\"\n        },\n        \"text\": \"Dr. Kavita Rao\"\n      },\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 28,\n          \"last_line\": 28,\n          \"quote\": \"Dr. Neha Joshi, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Neha Joshi, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Reported On: 05/09/2024 04:00 PM\"\n      },\n      \"text\": \"05/09/2024 04:00 PM\"\n    },\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Collected On: 05/09/2024 08:30 AM\"\n      },\n      \"text\": \"05/09/2024 08:30 AM\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"| T3 (Total) | 1.1 | | ng/mL | 0.8 - 2.0 |\"\n      },\n      \"panel\": \"THYROID PROFILE\",\n      \"test_name\": \"T3 (Total)\",\n      \"value_text\": \"1.1\",\n      \"unit\": \"ng/mL\",\n      \"reference_ranges\": [\n        \"0.8 - 2.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| T4 (Total) | 6.2 | | µg/dL | 5.1 - 14.1 |\"\n      },\n      \"panel\": \"THYROID PROFILE\",\n      \"test_name\": \"T4 (Total)\",\n      \"value_text\": \"6.2\",\n      \"unit\": \"µg/dL\",\n      \"reference_ranges\": [\n        \"5.1 - 14.1\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"| TSH | 8.9 | H | µIU/mL | 0.27 - 4.20 |\"\n      },\n      \"panel\": \"THYROID PROFILE\",\n      \"test_name\": \"TSH\",\n      \"value_text\": \"8.9\",\n      \"unit\": \"µIU/mL\",\n      \"reference_ranges\": [\n        \"0.27 - 4.20\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 24,\n        \"last_line\": 24,\n        \"quote\": \"| Haemoglobin | 12.6 | | g/dL | 12.0 - 15.0 |\"\n      },\n      \"panel\": \"HAEMOGRAM\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"12.6\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"12.0 - 15.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 25,\n        \"last_line\": 25,\n        \"quote\": \"| Total WBC Count | 6,400 | | /cumm | 4,000 - 10,000 |\"\n      },\n      \"panel\": \"HAEMOGRAM\",\n      \"test_name\": \"Total WBC Count\",\n      \"value_text\": \"6,400\",\n      \"unit\": \"/cumm\",\n      \"reference_ranges\": [\n        \"4,000 - 10,000\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 26,\n        \"last_line\": 26,\n        \"quote\": \"| Platelet Count | 2,80,000 | | /cumm | 1,50,000 - 4,10,000 |\"\n      },\n      \"panel\": \"HAEMOGRAM\",\n      \"test_name\": \"Platelet Count\",\n      \"value_text\": \"2,80,000\",\n      \"unit\": \"/cumm\",\n      \"reference_ranges\": [\n        \"1,50,000 - 4,10,000\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 18,\n        \"last_line\": 18,\n        \"quote\": \"Note: TSH values may vary with the time of sample collection.\"\n      },\n      \"text\": \"TSH values may vary with the time of sample collection.\",\n      \"kind\": \"comment\",\n      \"scope\": \"panel\",\n      \"test_name\": null,\n      \"panel\": \"THYROID PROFILE\"\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1573,
+    "eval_count": 1889,
+    "total_duration": 219432227500,
+    "load_duration": 14779600,
+    "prompt_eval_duration": 15449994000,
+    "eval_duration": 203903617000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

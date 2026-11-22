@@ -1,0 +1,65 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "939664f28a968462e3606eded3669d33b29efeb19200cd99d3e56b34d15e53cd",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "559efde4742959621de5817a101a291499e773b548a9e98cb5adf0e9607d846a",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "# Sunrise Diagnostics\nPlot 12, Baner Road, Pune 411045\nPatient Name: Ms. Fatima Shaikh\nAge / Sex: 31 Years / Female\nLab ID: SD-25-010733\nRef. By: Dr. Kavita Rao\nCollected On: 08/01/2025 08:20 AM\nReported On: 08/01/2025 06:15 PM\n\n## THYROID PROFILE\n\n| Test | Result | Flag | Unit | Reference Range |\n| :--- | :--- | :--- | :--- | :--- |\n| TSH | 3.1 | | µIU/mL | 0.27 - 4.20 |\n\n## VITAMINS\n\n| Test | Result | Flag | Unit | Reference Range |\n| :--- | :--- | :--- | :--- | :--- |\n| Vitamin D (25-OH) | 18.4 | L | ng/mL | Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100 |\n\nDr. Neha Joshi, MD (Pathology)\n*** End of Report ***\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 305,
+    "total_duration": 233131077200,
+    "load_duration": 15907600,
+    "prompt_eval_duration": 198069954000,
+    "eval_duration": 34582586000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "3c0b652ccfb26997dbfe62c002f3fe6f0bd004a9a2af8bd68f32f22bdcd3cf96",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "14716110186f0385e7b3f99eb3aef2cb5c62f0d93db5bb6536b98147e22da298",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"lab_report\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 488,
+    "eval_count": 14,
+    "total_duration": 9523623400,
+    "load_duration": 2938900,
+    "prompt_eval_duration": 8191167000,
+    "eval_duration": 1272709000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "78c5143177623c0e8e70d73ea3218943cc9cefb7a58731c02eca04245b032376",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "95cb48c6f7b174ebaa26ecf48a8f4b6c7c88b066e5d63c21ea80d0a3088dddc2",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 3,\n        \"last_line\": 3,\n        \"quote\": \"Patient Name: Ms. Fatima Shaikh\"\n      },\n      \"text\": \"Ms. Fatima Shaikh\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"Age / Sex: 31 Years / Female\"\n      },\n      \"text\": \"31 Years\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"Age / Sex: 31 Years / Female\"\n      },\n      \"text\": \"Female\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Lab ID: SD-25-010733\"\n      },\n      \"text\": \"SD-25-010733\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 2,\n        \"quote\": \"# Sunrise Diagnostics\\nPlot 12, Baner Road, Pune 411045\"\n      },\n      \"text\": \"Sunrise Diagnostics\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 6,\n          \"last_line\": 6,\n          \"quote\": \"Ref. By: Dr. Kavita Rao\"\n        },\n        \"text\": \"Dr. Kavita Rao\"\n      },\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 22,\n          \"last_line\": 22,\n          \"quote\": \"Dr. Neha Joshi, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Neha Joshi, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Reported On: 08/01/2025 06:15 PM\"\n      },\n      \"text\": \"08/01/2025 06:15 PM\"\n    },\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Collected On: 08/01/2025 08:20 AM\"\n      },\n      \"text\": \"08/01/2025 08:20 AM\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"| TSH | 3.1 | | µIU/mL | 0.27 - 4.20 |\"\n      },\n      \"panel\": \"THYROID PROFILE\",\n      \"test_name\": \"TSH\",\n      \"value_text\": \"3.1\",\n      \"unit\": \"µIU/mL\",\n      \"reference_ranges\": [\n        \"0.27 - 4.20\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 20,\n        \"last_line\": 20,\n        \"quote\": \"| Vitamin D (25-OH) | 18.4 | L | ng/mL | Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100 |\"\n      },\n      \"panel\": \"VITAMINS\",\n      \"test_name\": \"Vitamin D (25-OH)\",\n      \"value_text\": \"18.4\",\n      \"unit\": \"ng/mL\",\n      \"reference_ranges\": [\n        \"Deficiency: < 20; Insufficiency: 20 - 30; Sufficiency: 30 - 100\"\n      ],\n      \"flag_printed\": \"L\"\n    }\n  ],\n  \"remarks\": [],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1431,
+    "eval_count": 1174,
+    "total_duration": 148977496900,
+    "load_duration": 3909500,
+    "prompt_eval_duration": 12927193000,
+    "eval_duration": 135984440999
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

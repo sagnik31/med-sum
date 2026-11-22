@@ -1,0 +1,85 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "ebe3c9b9ed366c85201a46abae85e7f346a71ebe693356cbd27e91eda9f34f09",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "0b89389db4c7b9ee8b6bbc3602bb2e1a13633dce08f7224037f453089627d76c",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Dr. Anil Deshpande\nMBBS, MD (General Medicine)\nReg. No.: MMC-2009/04/0001\nSahaj Multispeciality Hospital, Karve Road, Pune\nDate: 11/03/2025\nPatient: Arjun Menon\nAge / Sex: 66 Y / M\nUHID: SH-100234\nVitals: BP 130/80 mmHg, Pulse 70 /min, SpO2 97 %\nAllergies: NKDA\nK/C/O: CAD, post PTCA (2019)\nDiagnosis: Dyslipidaemia\n\nRx\n\n| # | Medicine | Dose | Frequency | Duration | Instructions |\n|---|---|---|---|---|---|\n| 1 | Tab. Rosuvus 10 mg | 1 tab | 0-0-1 | 3 months | At bedtime |\n| 2 | Tab. Ecosprin 75 mg | 1 tab | 0-1-0 | 3 months | After lunch |\n| 3 | Tab. Metformin 500 mg | 1 tab | OD | 3 months | With dinner |\n\nAdvice: Low fat diet; avoid fried food.\nRepeat lipid profile after 3 months.\nSignature: Dr. Anil Deshpande\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1499,
+    "eval_count": 329,
+    "total_duration": 75888593300,
+    "load_duration": 6615900,
+    "prompt_eval_duration": 41441640000,
+    "eval_duration": 34273233999
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "620ba7b9426a08d363cadccad7e1b84f4350c087c18a338bd9f4bff709502822",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "956ac3d19769b8856ef41279fbbe5090929b5982406bff9cfe374bf2dd653a43",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"prescription\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 512,
+    "eval_count": 14,
+    "total_duration": 11003349500,
+    "load_duration": 16711500,
+    "prompt_eval_duration": 9276329000,
+    "eval_duration": 1367903000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "5c5a0fe860154fdb0aff74eaf10be2422350c5a8b78935e42e51fd8a2dbb88b9",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "c4b9fe899daa244577b585be3def9cd76cede5e20236bac3ad42a10326046951",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"Patient: Arjun Menon\"\n      },\n      \"text\": \"Arjun Menon\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age / Sex: 66 Y / M\"\n      },\n      \"text\": \"66 Y\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age / Sex: 66 Y / M\"\n      },\n      \"text\": \"M\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"UHID: SH-100234\"\n      },\n      \"text\": \"SH-100234\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"Sahaj Multispeciality Hospital, Karve Road, Pune\"\n      },\n      \"text\": \"Sahaj Multispeciality Hospital\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 1,\n          \"last_line\": 3,\n          \"quote\": \"Dr. Anil Deshpande\\nMBBS, MD (General Medicine)\\nReg. No.: MMC-2009/04/0001\"\n        },\n        \"text\": \"Dr. Anil Deshpande\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Date: 11/03/2025\"\n      },\n      \"text\": \"11/03/2025\"\n    }\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 18,\n        \"last_line\": 18,\n        \"quote\": \"| 1 | Tab. Rosuvus 10 mg | 1 tab | 0-0-1 | 3 months | At bedtime |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Rosuvus\",\n      \"strength\": \"10 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"0-0-1\",\n      \"route\": null,\n      \"duration\": \"3 months\",\n      \"instructions\": \"At bedtime\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"| 2 | Tab. Ecosprin 75 mg | 1 tab | 0-1-0 | 3 months | After lunch |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Ecosprin\",\n      \"strength\": \"75 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"0-1-0\",\n      \"route\": null,\n      \"duration\": \"3 months\",\n      \"instructions\": \"After lunch\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 20,\n        \"last_line\": 20,\n        \"quote\": \"| 3 | Tab. Metformin 500 mg | 1 tab | OD | 3 months | With dinner |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Metformin\",\n      \"strength\": \"500 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"OD\",\n      \"route\": null,\n      \"duration\": \"3 months\",\n      \"instructions\": \"With dinner\"\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"K/C/O: CAD, post PTCA (2019)\"\n      },\n      \"text\": \"CAD\",\n      \"kind\": \"history\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"K/C/O: CAD, post PTCA (2019)\"\n      },\n      \"text\": \"post PTCA (2019)\",\n      \"kind\": \"history\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 12,\n        \"last_line\": 12,\n        \"quote\": \"Diagnosis: Dyslipidaemia\"\n      },\n      \"text\": \"Dyslipidaemia\",\n      \"kind\": \"diagnosis\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"Advice: Low fat diet; avoid fried food.\"\n      },\n      \"text\": \"Low fat diet; avoid fried food.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 23,\n        \"last_line\": 23,\n        \"quote\": \"Repeat lipid profile after 3 months.\"\n      },\n      \"text\": \"Repeat lipid profile after 3 months.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\n      \"test_name\": \"lipid profile\",\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 130/80 mmHg, Pulse 70 /min, SpO2 97 %\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"130/80\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 130/80 mmHg, Pulse 70 /min, SpO2 97 %\"\n      },\n      \"name\": \"Pulse\",\n      \"value_text\": \"70\",\n      \"unit\": \"/min\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 130/80 mmHg, Pulse 70 /min, SpO2 97 %\"\n      },\n      \"name\": \"SpO2\",\n      \"value_text\": \"97\",\n      \"unit\": \"%\"\n    }\n  ],\n  \"allergies\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"Allergies: NKDA\"\n      },\n      \"text\": \"NKDA\",\"substance\": null,\n      \"reaction\": null\n    }\n  ]\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1295,
+    "eval_count": 1971,
+    "total_duration": 245533100200,
+    "load_duration": 7865100,
+    "prompt_eval_duration": 18483922000,
+    "eval_duration": 226867186000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "fba372495a1e289a5b49ddb98ca29cb96f7ba344b7080f093d60d8f6c5e89d23",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "100a413d3e2104e265271bce0af5a69795a0528e76d6fee7847e0b0c9bf6915b",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"Patient: Arjun Menon\"\n      },\n      \"text\": \"Arjun Menon\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age / Sex: 66 Y / M\"\n      },\n      \"text\": \"66 Y\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age / Sex: 66 Y / M\"\n      },\n      \"text\": \"M\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"UHID: SH-100234\"\n      },\n      \"text\": \"SH-100234\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"Sahaj Multispeciality Hospital, Karve Road, Pune\"\n      },\n      \"text\": \"Sahaj Multispeciality Hospital\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 1,\n          \"last_line\": 3,\n          \"quote\": \"Dr. Anil Deshpande\\nMBBS, MD (General Medicine)\\nReg. No.: MMC-2009/04/0001\"\n        },\n        \"text\": \"Dr. Anil Deshpande\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Date: 11/03/2025\"\n      },\n      \"text\": \"11/03/2025\"\n    }\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 18,\n        \"last_line\": 18,\n        \"quote\": \"| 1 | Tab. Rosuvus 10 mg | 1 tab | 0-0-1 | 3 months | At bedtime |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Rosuvus\",\n      \"strength\": \"10 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"0-0-1\",\n      \"route\": null,\n      \"duration\": \"3 months\",\n      \"instructions\": \"At bedtime\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"| 2 | Tab. Ecosprin 75 mg | 1 tab | 0-1-0 | 3 months | After lunch |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Ecosprin\",\n      \"strength\": \"75 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"0-1-0\",\n      \"route\": null,\n      \"duration\": \"3 months\",\n      \"instructions\": \"After lunch\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 20,\n        \"last_line\": 20,\n        \"quote\": \"| 3 | Tab. Metformin 500 mg | 1 tab | OD | 3 months | With dinner |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Metformin\",\n      \"strength\": \"500 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"OD\",\n      \"route\": null,\n      \"duration\": \"3 months\",\n      \"instructions\": \"With dinner\"\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"K/C/O: CAD, post PTCA (2019)\"\n      },\n      \"text\": \"CAD\",\n      \"kind\": \"history\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"K/C/O: CAD, post PTCA (2019)\"\n      },\n      \"text\": \"post PTCA (2019)\",\n      \"kind\": \"history\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 12,\n        \"last_line\": 12,\n        \"quote\": \"Diagnosis: Dyslipidaemia\"\n      },\n      \"text\": \"Dyslipidaemia\",\n      \"kind\": \"diagnosis\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"Advice: Low fat diet; avoid fried food.\"\n      },\n      \"text\": \"Low fat diet; avoid fried food.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 23,\n        \"last_line\": 23,\n        \"quote\": \"Repeat lipid profile after 3 months.\"\n      },\n      \"text\": \"Repeat lipid profile after 3 months.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 130/80 mmHg, Pulse 70 /min, SpO2 97 %\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"130/80\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 130/80 mmHg, Pulse 70 /min, SpO2 97 %\"\n      },\n      \"name\": \"Pulse\",\n      \"value_text\": \"70\",\n      \"unit\": \"/min\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 130/80 mmHg, Pulse 70 /min, SpO2 97 %\"\n      },\n      \"name\": \"SpO2\",\n      \"value_text\": \"97\",\n      \"unit\": \"%\"\n    }\n  ],\n  \"allergies\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"Allergies: NKDA\"\n      },\n      \"text\": \"NKDA\",\n      \"substance\": null,\n      \"reaction\": null\n    }\n  ]\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3532,
+    "eval_count": 1950,
+    "total_duration": 306671381600,
+    "load_duration": 13674000,
+    "prompt_eval_duration": 42820971000,
+    "eval_duration": 263723582999
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

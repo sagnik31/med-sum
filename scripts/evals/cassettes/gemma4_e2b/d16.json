@@ -1,0 +1,125 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "a2912d6decbbcd92b6e15c989ce24b0e363d534ecf296b72034637cd2d1c993b",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "8688202504a1702031e258728feea8fa2222f2ad3f07115fe9521d8b928527ab",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Kaveri Clinical Laboratory\nKothrud, Pune 411038\nName: Arjun Mehta\nAge/Gender: 41 Y/M\nPatient ID: KCL-120377\nReferred By: Dr. S. Kulkarni\nReported: 02-Apr-2025 10:05 AM\n\nHAEMATOLOGY\n\n| Test | Result | Unit | Reference Range |\n|---|---|---|---|\n| Haemoglobin | 14.8 | g/dL | 13.0 - 17.0 |\n| Total Leucocyte Count | 7.9 | 10^3/µL | 4.0 - 10.0 |\n| Platelets | 2.65 | lakh/cumm | 1.50 - 4.10 |\n\nDr. Prakash Nair, MD (Pathology)\n*** End of Report ***\n\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1535,
+    "eval_count": 227,
+    "total_duration": 43613837900,
+    "load_duration": 14640600,
+    "prompt_eval_duration": 36375831000,
+    "eval_duration": 7091609000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "7db45b4053fe7668f7ab9d4c6512d860354dc63bbee7deee6b4a460b7cb5084b",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "529bf96b49cb0b80c3001b3d51402be5f4a408d9e2daa7d329f671d8560a40cb",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"lab_report\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 405,
+    "eval_count": 16,
+    "total_duration": 1902764600,
+    "load_duration": 8021200,
+    "prompt_eval_duration": 1324757000,
+    "eval_duration": 547384000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "686d6cd7850fb2413bc1dd90b4b747a519f07ebff94b171d07bc66334d311480",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "4d728d17e620018f0a4264a6875cc2a162bdcd90f3a9e69ad142f952a920e42a",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 6,\n          \"first_line\": 6,\n          \"last_line\": 6,\n          \"quote\": \"Referred By: Dr. S. Kulkarni\"\n        },\n        \"text\": \"Referred By: Dr. S. Kulkarni\"\n      },\n      {\n        \"citation\": {\n          \"page\": 17,\n          \"first_line\": 17,\n          \"last_line\": 17,\n          \"quote\": \"Dr. Prakash Nair, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Prakash Nair, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 7,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Reported: 02-Apr-2025 10:05 AM\"\n      },\n      \"text\": \"02-Apr-2025 10:05 AM\"\n    },\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 13,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Haematology\\nHaemoglobin | 14.8 | g/dL | 13.0 - 17.0\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"14.8\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"13.0 - 17.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 14,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"Total Leucocyte Count | 7.9 | 10^3/µL | 4.0 - 10.0\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Total Leucocyte Count\",\n      \"value_text\": \"7.9\",\n      \"unit\": \"10^3/µL\",\n      \"reference_ranges\": [\n        \"4.0 - 10.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 15,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"Platelets | 2.65 | lakh/cumm | 1.50 - 4.10\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Platelets\",\n      \"value_text\": \"2.65\",\n      \"unit\": \"lakh/cumm\",\n      \"reference_ranges\": [\n        \"1.50 - 4.10\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1344,
+    "eval_count": 886,
+    "total_duration": 34227156400,
+    "load_duration": 9341400,
+    "prompt_eval_duration": 4297392000,
+    "eval_duration": 29883410000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "8d7ff37459d757ce53cc2c9a389c7906025c21375ac67b9fef53b0c8fe24fac2",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "a6a92049ee5728c7eedb61fb0993602e78f38b051e1475705edbad02a51a02a2",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 6,\n          \"first_line\": 6,\n          \"last_line\": 6,\n          \"quote\": \"Referred By: Dr. S. Kulkarni\"\n        },\n        \"text\": \"Referred By: Dr. S. Kulkarni\"\n      },\n      {\n        \"citation\": {\n          \"page\": 17,\n          \"first_line\": 17,\n          \"last_line\": 17,\n          \"quote\": \"Dr. Prakash Nair, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Prakash Nair, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 7,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Reported: 02-Apr-2025 10:05 AM\"\n      },\n      \"text\": \"02-Apr-2025 10:05 AM\"\n    },\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 13,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Test | Haemoglobin | 14.8 | g/dL | 13.0 - 17.0\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"14.8\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"13.0 - 17.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 14,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"Test | Total Leucocyte Count | 7.9 | 10^3/µL | 4.0 - 10.0\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Total Leucocyte Count\",\n      \"value_text\": \"7.9\",\n      \"unit\": \"10^3/µL\",\n      \"reference_ranges\": [\n        \"4.0 - 10.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 15,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"Test | Platelets | 2.65 | lakh/cumm | 1.50 - 4.10\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Platelets\",\n      \"value_text\": \"2.65\",\n      \"unit\": \"lakh/cumm\",\n      \"reference_ranges\": [\n        \"1.50 - 4.10\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2749,
+    "eval_count": 872,
+    "total_duration": 33272417000,
+    "load_duration": 10676000,
+    "prompt_eval_duration": 5031816000,
+    "eval_duration": 28192361000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "e0089a4c1c3be8950854ef7f356fa40ef6d0c0fa12e9f1e87a18c39874c23e1d",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "e7a7d7715629991ec5688aeb5805f631708b113607e6dcfa4560c1f00460fcbd",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 6,\n          \"first_line\": 6,\n          \"last_line\": 6,\n          \"quote\": \"Referred By: Dr. S. Kulkarni\"\n        },\n        \"text\": \"Referred By: Dr. S. Kulkarni\"\n      },\n      {\n        \"citation\": {\n          \"page\": 17,\n          \"first_line\": 17,\n          \"last_line\": 17,\n          \"quote\": \"Dr. Prakash Nair, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Prakash Nair, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 7,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Reported: 02-Apr-2025 10:05 AM\"\n      },\n      \"text\": \"02-Apr-2025 10:05 AM\"\n    },\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 13,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Test | Haemoglobin | 14.8 | g/dL | 13.0 - 17.0\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"14.8\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"13.0 - 17.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 14,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"Test | Total Leucocyte Count | 7.9 | 10^3/µL | 4.0 - 10.0\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Total Leucocyte Count\",\n      \"value_text\": \"7.9\",\n      \"unit\": \"10^3/µL\",\n      \"reference_ranges\": [\n        \"4.0 - 10.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 15,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"Test | Platelets | 2.65 | lakh/cumm | 1.50 - 4.10\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Platelets\",\n      \"value_text\": \"2.65\",\n      \"unit\": \"lakh/cumm\",\n      \"reference_ranges\": [\n        \"1.50 - 4.10\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2749,
+    "eval_count": 872,
+    "total_duration": 31837281700,
+    "load_duration": 13977800,
+    "prompt_eval_duration": 3725012000,
+    "eval_duration": 28052571000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "0ba1d4e019a5ea187bb106e16cbc944816c3c79e64a3215b765bd308f27deeff",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "4d728d17e620018f0a4264a6875cc2a162bdcd90f3a9e69ad142f952a920e42a",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 3,\n        \"last_line\": 3,\n        \"quote\": \"Name: Arjun Mehta\"\n      },\n      \"text\": \"Arjun Mehta\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"Age/Gender: 41 Y/M\"\n      },\n      \"text\": \"41 Y\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"Age/Gender: 41 Y/M\"\n      },\n      \"text\": \"M\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Patient ID: KCL-120377\"\n      },\n      \"text\": \"KCL-120377\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 2,\n        \"quote\": \"Kaveri Clinical Laboratory\\nKothrud, Pune 411038\"\n      },\n      \"text\": \"Kaveri Clinical Laboratory\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 6,\n          \"last_line\": 6,\n          \"quote\": \"Referred By: Dr. S. Kulkarni\"\n        },\n        \"text\": \"Dr. S. Kulkarni\"\n      },\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 17,\n          \"last_line\": 17,\n          \"quote\": \"Dr. Prakash Nair, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Prakash Nair, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Reported: 02-Apr-2025 10:05 AM\"\n      },\n      \"text\": \"02-Apr-2025 10:05 AM\"\n    },\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"| Haemoglobin | 14.8 | g/dL | 13.0 - 17.0 |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"14.8\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"13.0 - 17.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"| Total Leucocyte Count | 7.9 | 10^3/µL | 4.0 - 10.0 |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Total Leucocyte Count\",\n      \"value_text\": \"7.9\",\n      \"unit\": \"10^3/µL\",\n      \"reference_ranges\": [\n        \"4.0 - 10.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Platelets | 2.65 | lakh/cumm | 1.50 - 4.10 |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Platelets\",\n      \"value_text\": \"2.65\",\n      \"unit\": \"lakh/cumm\",\n      \"reference_ranges\": [\n        \"1.50 - 4.10\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1342,
+    "eval_count": 1182,
+    "total_duration": 144715000200,
+    "load_duration": 10257000,
+    "prompt_eval_duration": 15512482000,
+    "eval_duration": 128161999000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

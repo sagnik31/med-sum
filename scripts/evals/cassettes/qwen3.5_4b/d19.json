@@ -1,0 +1,85 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "1be507607c1b3eec52d5d6081cedccd5cd9be47272b79adff2c9aebf3bd2ca3e",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "5c4232d3af7f9cfb16170843af92aad465303c24c6ad942bbe1e592791725445",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "# Heartline Cardiac Clinic\n\nDr. Farah Khan\nMBBS, MD, DM (Cardiology)\nBaner, Pune 411045 | Reg. No.: MMC-2011/02/0003\nDate: 05-03-2025\n\nName: Kabir Sethi | Age/Sex: 45/M | UHID: SH-100235\nBP: 148/94 mmHg | Pulse: 88/min | SpO2: 97%\nDx: Essential hypertension; Dyslipidaemia\nAllergy: None known\n\n## Rx\n\n1. Tab. Telma 40 mg — 1 tab — 1-0-0 — x 30 days — After breakfast\n2. Tab. Rosuvas 10 mg — 1 tab — 0-0-1 — x 30 days — After dinner\n3. Tab. Ecosprin 75 mg — 1 tab — 0-1-0 — x 30 days — After lunch\n4. Tab. Sorbitrate 5 mg (sublingual) — 1 tab — SOS — If chest pain\n\nAdvice: Review after 4 weeks with lipid profile.\n\nSignature: Dr. Farah Khan\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1499,
+    "eval_count": 305,
+    "total_duration": 73945448100,
+    "load_duration": 13229900,
+    "prompt_eval_duration": 41507958000,
+    "eval_duration": 32163786000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "b6eb590025d2b9fd6d750aaa0f40b074b12c5ca8a07186a62322837bca1046b7",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "a706f08a75488f52fc609f63236e9e86a83a513da63e1b451048f32d89f87a81",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"prescription\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 488,
+    "eval_count": 14,
+    "total_duration": 12347441700,
+    "load_duration": 10856700,
+    "prompt_eval_duration": 10630915000,
+    "eval_duration": 1501318000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "c4fe85409d75adbdd92b022a84794dcc51d62a86971dda347c32f7f77fdbf1e7",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "5da43993b29a58f7f178d21a00e99bb320a501ca12684c568bcf09ec5acfde59",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Name: Kabir Sethi | Age/Sex: 45/M | UHID: SH-100235\"\n      },\n      \"text\": \"Kabir Sethi\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Name: Kabir Sethi | Age/Sex: 45/M | UHID: SH-100235\"\n      },\n      \"text\": \"45 Y\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Name: Kabir Sethi | Age/Sex: 45/M | UHID: SH-100235\"\n      },\n      \"text\": \"M\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Name: Kabir Sethi | Age/Sex: 45/M | UHID: SH-100235\"\n      },\n      \"text\": \"SH-100235\"\n    }\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 3,\n          \"last_line\": 4,\n          \"quote\": \"Dr. Farah Khan\\nMBBS, MD, DM (Cardiology)\"\n        },\n        \"text\": \"Dr. Farah Khan\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"Date: 05-03-2025\"\n      },\n      \"text\": \"05-03-2025\"\n    }\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"1. Tab. Telma 40 mg — 1 tab — 1-0-0 — x 30 days — After breakfast\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Telma\",\n      \"strength\": \"40 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"1-0-0\",\n      \"route\": null,\n      \"duration\": \"x 30 days\",\n      \"instructions\": \"After breakfast\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"2. Tab. Rosuvas 10 mg — 1 tab — 0-0-1 — x 30 days — After dinner\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Rosuvas\",\n      \"strength\": \"10 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"0-0-1\",\n      \"route\": null,\n      \"duration\": \"x 30 days\",\n      \"instructions\": \"After dinner\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"3. Tab. Ecosprin 75 mg — 1 tab — 0-1-0 — x 30 days — After lunch\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Ecosprin\",\n      \"strength\": \"75 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"0-1-0\",\n      \"route\": null,\n      \"duration\": \"x 30 days\",\n      \"instructions\": \"After lunch\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 18,\n        \"last_line\": 18,\n        \"quote\": \"4. Tab. Sorbitrate 5 mg (sublingual) — 1 tab — SOS — If chest pain\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Sorbitrate\",\n      \"strength\": \"5 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"SOS\",\n      \"route\": \"sublingual\",\n      \"duration\": null,\n      \"instructions\": \"If chest pain\"\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"Dx: Essential hypertension; Dyslipidaemia\"\n      },\n      \"text\": \"Essential hypertension\",\n      \"kind\": \"history\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"Dx: Essential hypertension; Dyslipidaemia\"\n      },\n      \"text\": \"Dyslipidaemia\",\n      \"kind\": \"history\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 20,\n        \"last_line\": 20,\n        \"quote\": \"Advice: Review after 4 weeks with lipid profile.\"\n      },\n      \"text\": \"Review after 4 weeks with lipid profile.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"BP: 148/94 mmHg | Pulse: 88/min | SpO2: 97%\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"148/94\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"BP: 148/94 mmHg | Pulse: 88/min | SpO2: 97%\"\n      },\n      \"name\": \"Pulse\",\n      \"value_text\": \"88\",\n      \"unit\": \"/min\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"BP: 148/94 mmHg | Pulse: 88/min | SpO2: 97%\"\n      },\n      \"name\": \"SpO2\",\n      \"value_text\": \"97\",\n      \"unit\": \"%\"\n    }\n  ],\n  \"allergies\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"Allergy: None known\"\n      },\n      \"text\": \"None known\",\"substance\": null,\n      \"reaction\": null\n    }\n  ]\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1272,
+    "eval_count": 1916,
+    "total_duration": 253929982800,
+    "load_duration": 11331200,
+    "prompt_eval_duration": 17250058000,
+    "eval_duration": 236438161000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "1346730191c0f1dbfde63ad895737e8047a272b7ee6a1b5085000483ea2cf687",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "a8f73a50a9c409f1032a2f06cfacc20a5d3a789d63e2d1743ddda8adbffa50d2",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Name: Kabir Sethi | Age/Sex: 45/M | UHID: SH-100235\"\n      },\n      \"text\": \"Kabir Sethi\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Name: Kabir Sethi | Age/Sex: 45/M | UHID: SH-100235\"\n      },\n      \"text\": \"45\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Name: Kabir Sethi | Age/Sex: 45/M | UHID: SH-100235\"\n      },\n      \"text\": \"M\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Name: Kabir Sethi | Age/Sex: 45/M | UHID: SH-100235\"\n      },\n      \"text\": \"SH-100235\"\n    }\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 3,\n          \"last_line\": 4,\n          \"quote\": \"Dr. Farah Khan\\nMBBS, MD, DM (Cardiology)\"\n        },\n        \"text\": \"Dr. Farah Khan\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"Date: 05-03-2025\"\n      },\n      \"text\": \"05-03-2025\"\n    }\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"1. Tab. Telma 40 mg — 1 tab — 1-0-0 — x 30 days — After breakfast\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Telma\",\n      \"strength\": \"40 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"1-0-0\",\n      \"route\": null,\n      \"duration\": \"x 30 days\",\n      \"instructions\": \"After breakfast\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"2. Tab. Rosuvas 10 mg — 1 tab — 0-0-1 — x 30 days — After dinner\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Rosuvas\",\n      \"strength\": \"10 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"0-0-1\",\n      \"route\": null,\n      \"duration\": \"x 30 days\",\n      \"instructions\": \"After dinner\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"3. Tab. Ecosprin 75 mg — 1 tab — 0-1-0 — x 30 days — After lunch\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Ecosprin\",\n      \"strength\": \"75 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"0-1-0\",\n      \"route\": null,\n      \"duration\": \"x 30 days\",\n      \"instructions\": \"After lunch\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 18,\n        \"last_line\": 18,\n        \"quote\": \"4. Tab. Sorbitrate 5 mg (sublingual) — 1 tab — SOS — If chest pain\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Sorbitrate\",\n      \"strength\": \"5 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"SOS\",\n      \"route\": \"sublingual\",\n      \"duration\": null,\n      \"instructions\": \"If chest pain\"\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"Dx: Essential hypertension; Dyslipidaemia\"\n      },\n      \"text\": \"Essential hypertension\",\n      \"kind\": \"history\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"Dx: Essential hypertension; Dyslipidaemia\"\n      },\n      \"text\": \"Dyslipidaemia\",\n      \"kind\": \"history\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 20,\n        \"last_line\": 20,\n        \"quote\": \"Advice: Review after 4 weeks with lipid profile.\"\n      },\n      \"text\": \"Review after 4 weeks with lipid profile.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"BP: 148/94 mmHg | Pulse: 88/min | SpO2: 97%\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"148/94\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"BP: 148/94 mmHg | Pulse: 88/min | SpO2: 97%\"\n      },\n      \"name\": \"Pulse\",\n      \"value_text\": \"88\",\n      \"unit\": \"/min\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"BP: 148/94 mmHg | Pulse: 88/min | SpO2: 97%\"\n      },\n      \"name\": \"SpO2\",\n      \"value_text\": \"97\",\n      \"unit\": \"%\"\n    }\n  ],\n  \"allergies\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"Allergy: None known\"\n      },\n      \"text\": \"None known\",\n      \"substance\": null,\n      \"reaction\": null\n    }\n  ]\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3461,
+    "eval_count": 1899,
+    "total_duration": 291624683900,
+    "load_duration": 12388900,
+    "prompt_eval_duration": 43186259000,
+    "eval_duration": 248329715000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

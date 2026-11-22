@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "f937412e3f3891bd9470d6369048c9a86888d89248dd48c02e9b58bddc3697a6",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "4dcfd353c876030e6edf89a016c172b8dfa8a5dafc75132247b6fe99039f10c4",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "# Sahaj Multispeciality Hospital - Department of Radiology\nKarve Road, Pune 411004\n\n**Patient Name:** Mr. Arjun Menon\n**Age / Sex:** 66 Years / Male\n**UHID:** SH-100234\n**Date:** 20/04/2025\n\n## X-RAY CHEST PA VIEW\n\n**Findings:** Both lung fields are clear. Cardiac silhouette is within normal limits. Costophrenic angles are clear. Bony thorax appears normal.\n\n**Impression:** No active lung lesion.\n\nDr. R. Pillai, MD (Radiodiagnosis)\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 163,
+    "total_duration": 214723824100,
+    "load_duration": 5721900,
+    "prompt_eval_duration": 196020197000,
+    "eval_duration": 18441120000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "6ee3951ba48be90d3766aab915eb3f81f9d7360cb86c0b8bc4a154905d3cb77c",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "70eff74ceabcfba81df09c3d785faae3170a420e2cff5d53d55e3f62a71a4717",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"other\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 346,
+    "eval_count": 13,
+    "total_duration": 7360985300,
+    "load_duration": 4092700,
+    "prompt_eval_duration": 5883542000,
+    "eval_duration": 1324780000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

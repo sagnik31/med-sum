@@ -1,0 +1,85 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "0fc4667de7bb13beae1eeac9aed505729a02736cd89da90006fd57c769820bed",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "76e6a9bc8312724cbd40ff9c5810e1c3686a6ef9d7ff92c2480e853b0ab47b9c",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "# Medilink Diagnostics\nFC Road, Shivajnagar, Pune 411005\n\n| Patient Name | Ms. Nandini Bose | Sample ID | MD-250412-077 |\n| :--- | :--- | :--- | :--- |\n| Age / Gender | 36 Years / Female | Referred By | Dr. Suresh Pillai |\n| Collected | 12/04/2025 09:05 | Reported | 12/04/2025 17:40 |\n\n## THYROID FUNCTION TEST\n\n| Investigation | Observed Value | Flag | Biological Reference Interval | Units |\n| :--- | :--- | :--- | :--- | :--- |\n| Free T4 | 0.82 | | 0.70 - 1.48 | ng/dL |\n| TSH (Ultrasensitive) | 6.8 | High | 0.35 - 4.94 | µIU/mL |\n| Anti-TPO Antibodies | 142 | High | < 34 | IU/mL |\n\n## COMPLETE BLOOD COUNT\n\n| Investigation | Observed Value | Flag | Biological Reference Interval | Units |\n| :--- | :--- | :--- | :--- | :--- |\n| Haemoglobin | 11.1 | Low | 12.0 - 15.0 | g/dL |\n| MCV | 78 | Low | 83 - 101 | fL |\n| Total Leucocyte Count | 8.2 | | 4.0 - 10.0 | 10³/µL |\n| Platelets | 3.10 | | 1.50 - 4.10 | lakh/cumm |\n\n## INTERPRETATION\n\nRaised TSH with positive anti-TPO antibodies suggests autoimmune thyroiditis; clinical correlation advised.\nDr. Ritu Saxena, MD (Pathology)\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 467,
+    "total_duration": 251143396100,
+    "load_duration": 14541700,
+    "prompt_eval_duration": 196970272000,
+    "eval_duration": 53873330000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "6e87390c884324e528b843daced01ca4955fc0ef4c18ec31b45b9f8801942b44",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "216bb44840a248d9755ade1d08596d1c84616664171aeb0b439f4d1df015eecb",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"lab_report\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 650,
+    "eval_count": 14,
+    "total_duration": 12519366700,
+    "load_duration": 9655500,
+    "prompt_eval_duration": 11010419000,
+    "eval_duration": 1330007000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "c52ef0348a36e86a4e0b548e645122f54fa173ab323328e5922b514584c52022",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "533bb043e64a18198f87567f2859312386f201b5980ffe60111d28651a9825ad",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"| Patient Name | Ms. Nandini Bose | Sample ID | MD-250412-077 |\"\n      },\n      \"text\": \"Ms. Nandini Bose\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"| Age / Gender | 36 Years / Female | Referred By | Dr. Suresh Pillai |\"\n      },\n      \"text\": \"36 Years\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"| Age / Gender | 36 Years / Female | Referred By | Dr. Suresh Pillai |\"\n      },\n      \"text\": \"Female\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"| Patient Name | Ms. Nandini Bose | Sample ID | MD-250412-077 |\"\n      },\n      \"text\": \"MD-250412-077\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 2,\n        \"quote\": \"# Medilink Diagnostics\\nFC Road, Shivajnagar, Pune 411005\"\n      },\n      \"text\": \"Medilink Diagnostics\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 6,\n          \"last_line\": 6,\n          \"quote\": \"| Age / Gender | 36 Years / Female | Referred By | Dr. Suresh Pillai |\"\n        },\n        \"text\": \"Dr. Suresh Pillai\"\n      },\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 29,\n          \"last_line\": 29,\n          \"quote\": \"Dr. Ritu Saxena, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Ritu Saxena, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"| Collected | 12/04/2025 09:05 | Reported | 12/04/2025 17:40 |\"\n      },\n      \"text\": \"12/04/2025 17:40\"\n    },\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"| Collected | 12/04/2025 09:05 | Reported | 12/04/2025 17:40 |\"\n      },\n      \"text\": \"12/04/2025 09:05\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"| Free T4 | 0.82 | | 0.70 - 1.48 | ng/dL |\"\n      },\n      \"panel\": \"THYROID FUNCTION TEST\",\n      \"test_name\": \"Free T4\",\n      \"value_text\": \"0.82\",\n      \"unit\": \"ng/dL\",\n      \"reference_ranges\": [\n        \"0.70 - 1.48\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"| TSH (Ultrasensitive) | 6.8 | High | 0.35 - 4.94 | µIU/mL |\"\n      },\n      \"panel\": \"THYROID FUNCTION TEST\",\n      \"test_name\": \"TSH (Ultrasensitive)\",\n      \"value_text\": \"6.8\",\n      \"unit\": \"µIU/mL\",\n      \"reference_ranges\": [\n        \"0.35 - 4.94\"\n      ],\n      \"flag_printed\": \"High\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Anti-TPO Antibodies | 142 | High | < 34 | IU/mL |\"\n      },\n      \"panel\": \"THYROID FUNCTION TEST\",\n      \"test_name\": \"Anti-TPO Antibodies\",\n      \"value_text\": \"142\",\n      \"unit\": \"IU/mL\",\n      \"reference_ranges\": [\n        \"< 34\"\n      ],\n      \"flag_printed\": \"High\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"| Haemoglobin | 11.1 | Low | 12.0 - 15.0 | g/dL |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"11.1\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"12.0 - 15.0\"\n      ],\n      \"flag_printed\": \"Low\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"| MCV | 78 | Low | 83 - 101 | fL |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"MCV\",\n      \"value_text\": \"78\",\n      \"unit\": \"fL\",\n      \"reference_ranges\": [\n        \"83 - 101\"\n      ],\n      \"flag_printed\": \"Low\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 23,\n        \"last_line\": 23,\n        \"quote\": \"| Total Leucocyte Count | 8.2 | | 4.0 - 10.0 | 10³/µL |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"Total Leucocyte Count\",\n      \"value_text\": \"8.2\",\n      \"unit\": \"10³/µL\",\n      \"reference_ranges\": [\n        \"4.0 - 10.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 24,\n        \"last_line\": 24,\n        \"quote\": \"| Platelets | 3.10 | | 1.50 - 4.10 | lakh/cumm |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"Platelets\",\n      \"value_text\": \"3.10\",\n      \"unit\": \"lakh/cumm\",\n      \"reference_ranges\": [\n        \"1.50 - 4.10\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 28,\n        \"last_line\": 28,\n        \"quote\": \"Raised TSH with positive anti-TPO antibodies suggests autoimmune thyroiditis; clinical correlation advised.\"\n      },\n      \"text\": \"Raised TSH with positive anti-TPO antibodies suggests autoimmune thyroiditis; clinical correlation advised.\",\n      \"kind\": \"comment\",\n      \"scope\": \"panel\",\n      \"test_name\": null,\n      \"panel\": \"THYROID FUNCTION TEST\"\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1614,
+    "eval_count": 2117,
+    "total_duration": 273474000800,
+    "load_duration": 7930500,
+    "prompt_eval_duration": 16702504000,
+    "eval_duration": 255873614000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "38dc0ec207b7c4c3ce761a7bcad535dda88874ee21fde1ee67b6bc4ebdaca097",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "720c724d5991a2c31bd0475dd486d5e40a07239c3e4fcde415069d034fc5d293",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"| Patient Name | Ms. Nandini Bose | Sample ID | MD-250412-077 |\"\n      },\n      \"text\": \"Ms. Nandini Bose\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"| Age / Gender | 36 Years / Female | Referred By | Dr. Suresh Pillai |\"\n      },\n      \"text\": \"36 Years\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"| Age / Gender | 36 Years / Female | Referred By | Dr. Suresh Pillai |\"\n      },\n      \"text\": \"Female\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"| Patient Name | Ms. Nandini Bose | Sample ID | MD-250412-077 |\"\n      },\n      \"text\": \"MD-250412-077\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 2,\n        \"quote\": \"# Medilink Diagnostics\\nFC Road, Shivajnagar, Pune 411005\"\n      },\n      \"text\": \"Medilink Diagnostics\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 6,\n          \"last_line\": 6,\n          \"quote\": \"| Age / Gender | 36 Years / Female | Referred By | Dr. Suresh Pillai |\"\n        },\n        \"text\": \"Dr. Suresh Pillai\"\n      },\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 29,\n          \"last_line\": 29,\n          \"quote\": \"Dr. Ritu Saxena, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Ritu Saxena, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"| Collected | 12/04/2025 09:05 | Reported | 12/04/2025 17:40 |\"\n      },\n      \"text\": \"12/04/2025 17:40\"\n    },\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"| Collected | 12/04/2025 09:05 | Reported | 12/04/2025 17:40 |\"\n      },\n      \"text\": \"12/04/2025 09:05\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"| Free T4 | 0.82 | | 0.70 - 1.48 | ng/dL |\"\n      },\n      \"panel\": \"THYROID FUNCTION TEST\",\n      \"test_name\": \"Free T4\",\n      \"value_text\": \"0.82\",\n      \"unit\": \"ng/dL\",\n      \"reference_ranges\": [\n        \"0.70 - 1.48\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"| TSH (Ultrasensitive) | 6.8 | High | 0.35 - 4.94 | µIU/mL |\"\n      },\n      \"panel\": \"THYROID FUNCTION TEST\",\n      \"test_name\": \"TSH (Ultrasensitive)\",\n      \"value_text\": \"6.8\",\n      \"unit\": \"µIU/mL\",\n      \"reference_ranges\": [\n        \"0.35 - 4.94\"\n      ],\n      \"flag_printed\": \"High\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Anti-TPO Antibodies | 142 | High | < 34 | IU/mL |\"\n      },\n      \"panel\": \"THYROID FUNCTION TEST\",\n      \"test_name\": \"Anti-TPO Antibodies\",\n      \"value_text\": \"142\",\n      \"unit\": \"IU/mL\",\n      \"reference_ranges\": [\n        \"< 34\"\n      ],\n      \"flag_printed\": \"High\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"| Haemoglobin | 11.1 | Low | 12.0 - 15.0 | g/dL |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"11.1\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"12.0 - 15.0\"\n      ],\n      \"flag_printed\": \"Low\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"| MCV | 78 | Low | 83 - 101 | fL |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"MCV\",\n      \"value_text\": \"78\",\n      \"unit\": \"fL\",\n      \"reference_ranges\": [\n        \"83 - 101\"\n      ],\n      \"flag_printed\": \"Low\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 23,\n        \"last_line\": 23,\n        \"quote\": \"| Total Leucocyte Count | 8.2 | | 4.0 - 10.0 | 10³/µL |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"Total Leucocyte Count\",\n      \"value_text\": \"8.2\",\n      \"unit\": \"10³/µL\",\n      \"reference_ranges\": [\n        \"4.0 - 10.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 24,\n        \"last_line\": 24,\n        \"quote\": \"| Platelets | 3.10 | | 1.50 - 4.10 | lakh/cumm |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"Platelets\",\n      \"value_text\": \"3.10\",\n      \"unit\": \"lakh/cumm\",\n      \"reference_ranges\": [\n        \"1.50 - 4.10\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 28,\n        \"last_line\": 28,\n        \"quote\": \"Raised TSH with positive anti-TPO antibodies suggests autoimmune thyroiditis; clinical correlation advised.\"\n      },\n      \"text\": \"Raised TSH with positive anti-TPO antibodies suggests autoimmune thyroiditis; clinical correlation advised.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4030,
+    "eval_count": 2111,
+    "total_duration": 310171386800,
+    "load_duration": 15072800,
+    "prompt_eval_duration": 45400536000,
+    "eval_duration": 264614591000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

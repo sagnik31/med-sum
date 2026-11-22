@@ -1,0 +1,125 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "c05917e5ffb2c8a7669c926f14ffc8b35d56011a0d476c7af8552b5432398a92",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "7ba241db495ddfe14324fb2c0d7eb887283afa707b858c1096412af3af78a7c3",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Dr. Kavita Rao\nMBBS, DM (Endocrinology)\nReg. No.: MMC-2012/07/0002\nSahaj Multispeciality Hospital, Karve Road, Pune\nDate: 09/09/2024\nPatient: Fatima Shaikh\nAge / Sex: 31 Y / F\nUHID: SH-100233\nVitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\nAllergies: Penicillin - hives\nDiagnosis: Hypothyroidism\nRx\n| # | Medicine | Dose | Frequency | Duration | Instructions |\n|---|---|---|---|---|---|\n| 1 | Tab. Thyronorm | 50 | tatcg | 1-0-0 | 6 weeks | Empty stomach, 30 min before breakfast |\nAdvice: Repeat TSH after 6 weeks.\nSignature: Dr. Kavita Rao\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 911,
+    "eval_count": 240,
+    "total_duration": 19337316000,
+    "load_duration": 6678200,
+    "prompt_eval_duration": 11480985000,
+    "eval_duration": 7789696000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "77406f2916115f2125e91d8cdad4388fa1ea192e6f53fc1b5dbd78d562a2cfb0",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "b4f8b52622cdc0dfde7def0e85564e345542ee44a87bfdc8adc2ee189e58a9cb",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"prescription\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 418,
+    "eval_count": 14,
+    "total_duration": 17029246700,
+    "load_duration": 13655294200,
+    "prompt_eval_duration": 2216280000,
+    "eval_duration": 1035490000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "507d2c621d1e0b9380a865e7bf4dafeeaa1a12b355051b7c42939700056fb5b0",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "a78bfda99c82a434a5f953f7433ca2983f8223c09b9eaf4162b399bc6dc71d48",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 1,\n          \"last_line\": 3,\n          \"quote\": \"Dr. Kavita Rao\\nMBBS, DM (Endocrinology)\\nReg. No.: MMC-2012/07/0002\"\n        },\n        \"text\": \"Dr. Kavita Rao\\nMBBS, DM (Endocrinology)\\nReg. No.: MMC-2012/07/0002\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| 1 | Tab. Thyronorm | 50 | tatcg | 1-0-0 | 6 weeks | Empty stomach, 30 min before breakfast\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Thyronorm\",\n      \"strength\": \"50\",\n      \"dose\": \"50\",\n      \"frequency\": \"tatcg\",\n      \"route\": null,\n      \"duration\": \"6 weeks\",\n      \"instructions\": \"Empty stomach, 30 min before breakfast\"\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"Diagnosis: Hypothyroidism\"\n      },\n      \"text\": \"Hypothyroidism\",\n      \"kind\": \"diagnosis\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"Advice: Repeat TSH after 6 weeks.\"\n      },\n      \"text\": \"Repeat TSH after 6 weeks.\",\n      \"kind\": \"advice\",\n      \"scope\": \"test\",\n      \"test_name\": \"TSH\",\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"118/76\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"Pulse\",\n      \"value_text\": \"72\",\n      \"unit\": \"min\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"Weight\",\n      \"value_text\": \"61\",\n      \"unit\": \"kg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"Temp\",\n      \"value_text\": \"98.4\",\n      \"unit\": \"°F\"\n    }\n  ],\n  \"allergies\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"Allergies: Penicillin - hives\"\n      },\n      \"text\": \"Penicillin - hives\",\n      \"substance\": \"Penicillin\",\n      \"reaction\": \"hives\"\n    }\n  ]\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1175,
+    "eval_count": 1176,
+    "total_duration": 44977995400,
+    "load_duration": 15350300,
+    "prompt_eval_duration": 4758993000,
+    "eval_duration": 40118350000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "37d49282c8e5cc0d1a605305625a9e2920b9fd33ad8cb2b9fd48b834a1df266f",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "036368b9e80f3830aca12a4f9a826fc5e95c57afa79b796435689ac9901b8b20",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 1,\n          \"last_line\": 3,\n          \"quote\": \"Dr. Kavita Rao\\nMBBS, DM (Endocrinology)\\nReg. No.: MMC-2012/07/0002\"\n        },\n        \"text\": \"Dr. Kavita Rao\\nMBBS, DM (Endocrinology)\\nReg. No.: MMC-2012/07/0002\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| 1 | Tab. Thyronorm | 50 | tatcg | 1-0-0 | 6 weeks | Empty stomach, 30 min before breakfast\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Thyronorm\",\n      \"strength\": \"50\",\n      \"dose\": \"50\",\n      \"frequency\": \"tatcg\",\n      \"route\": null,\n      \"duration\": \"6 weeks\",\n      \"instructions\": \"Empty stomach, 30 min before breakfast\"\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"Diagnosis: Hypothyroidism\"\n      },\n      \"text\": \"Hypothyroidism\",\n      \"kind\": \"diagnosis\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"Advice: Repeat TSH after 6 weeks.\"\n      },\n      \"text\": \"Repeat TSH after 6 weeks.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\"test_name\": \"TSH\",\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"118/76\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"Pulse\",\n      \"value_text\": \"72\",\n      \"unit\": \"min\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"Weight\",\n      \"value_text\": \"61\",\n      \"unit\": \"kg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"Temp\",\n      \"value_text\": \"98.4\",\n      \"unit\": \"°F\"\n    }\n  ],\n  \"allergies\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"Allergies: Penicillin - hives\"\n      },\n      \"text\": \"Penicillin - hives\",\n      \"substance\": \"Penicillin\",\n      \"reaction\": \"hives\"\n    }\n  ]\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2638,
+    "eval_count": 1165,
+    "total_duration": 43408401400,
+    "load_duration": 19452700,
+    "prompt_eval_duration": 5380179000,
+    "eval_duration": 37854420000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "d46f5d5407460f7f9c2adf08a2e72fb4c0a67cdcc3f10097ef76684d87c03a24",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "7636776d5263ef37af5b97c2c3b3511c91d5a5ef3d923d614f777a70af60d45d",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 1,\n          \"last_line\": 3,\n          \"quote\": \"Dr. Kavita Rao\\nMBBS, DM (Endocrinology)\\nReg. No.: MMC-2012/07/0002\"\n        },\n        \"text\": \"Dr. Kavita Rao\\nMBBS, DM (Endocrinology)\\nReg. No.: MMC-2012/07/0002\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| 1 | Tab. Thyronorm | 50 | tatcg | 1-0-0 | 6 weeks | Empty stomach, 30 min before breakfast\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Thyronorm\",\n      \"strength\": \"50\",\n      \"dose\": \"50\",\n      \"frequency\": \"tatcg\",\n      \"route\": null,\n      \"duration\": \"6 weeks\",\n      \"instructions\": \"Empty stomach, 30 min before breakfast\"\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"Diagnosis: Hypothyroidism\"\n      },\n      \"text\": \"Hypothyroidism\",\n      \"kind\": \"diagnosis\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"Advice: Repeat TSH after 6 weeks.\"\n      },\n      \"text\": \"Repeat TSH after 6 weeks.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\"test_name\": \"TSH\",\"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"118/76\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"Pulse\",\n      \"value_text\": \"72\",\n      \"unit\": \"min\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"Weight\",\n      \"value_text\": \"61\",\n      \"unit\": \"kg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"Temp\",\n      \"value_text\": \"98.4\",\n      \"unit\": \"°F\"\n    }\n  ],\n  \"allergies\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"Allergies: Penicillin - hives\"\n      },\n      \"text\": \"Penicillin - hives\",\n      \"substance\": \"Penicillin\",\n      \"reaction\": \"hives\"\n    }\n  ]\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2626,
+    "eval_count": 1163,
+    "total_duration": 41650354500,
+    "load_duration": 8411500,
+    "prompt_eval_duration": 3719650000,
+    "eval_duration": 37868758000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "56e94a0c223b0cb4a6debb67fcad7932279dc495e6bcfdacc09ffff6f9dead4e",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "a78bfda99c82a434a5f953f7433ca2983f8223c09b9eaf4162b399bc6dc71d48",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"Patient: Fatima Shaikh\"\n      },\n      \"text\": \"Fatima Shaikh\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age / Sex: 31 Y / F\"\n      },\n      \"text\": \"31 Y\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age / Sex: 31 Y / F\"\n      },\n      \"text\": \"F\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"UHID: SH-100233\"\n      },\n      \"text\": \"SH-100233\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"Sahaj Multispeciality Hospital, Karve Road, Pune\"\n      },\n      \"text\": \"Sahaj Multispeciality Hospital\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 1,\n          \"last_line\": 2,\n          \"quote\": \"Dr. Kavita Rao\\nMBBS, DM (Endocrinology)\"\n        },\n        \"text\": \"Dr. Kavita Rao\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Date: 09/09/2024\"\n      },\n      \"text\": \"09/09/2024\"\n    }\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| 1 | Tab. Thyronorm | 50 | tatcg | 1-0-0 | 6 weeks | Empty stomach, 30 min before breakfast |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Thyronorm\",\n      \"strength\": \"50\",\n      \"dose\": \"tatcg\",\n      \"frequency\": \"1-0-0\",\n      \"route\": null,\n      \"duration\": \"6 weeks\",\n      \"instructions\": \"Empty stomach, 30 min before breakfast\"\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"Diagnosis: Hypothyroidism\"\n      },\n      \"text\": \"Hypothyroidism\",\n      \"kind\": \"diagnosis\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"Advice: Repeat TSH after 6 weeks.\"\n      },\n      \"text\": \"Repeat TSH after 6 weeks.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"118/76\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"Pulse\",\n      \"value_text\": \"72\",\n      \"unit\": \"/min\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"Weight\",\n      \"value_text\": \"61\",\n      \"unit\": \"kg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"Temp\",\n      \"value_text\": \"98.4\",\n      \"unit\": \"°F\"\n    }\n  ],\n  \"allergies\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"Allergies: Penicillin - hives\"\n      },\n      \"text\": \"Penicillin - hives\",\"substance\": \"Penicillin\",\n      \"reaction\": \"hives\"\n    }\n  ]\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1194,
+    "eval_count": 1513,
+    "total_duration": 181287212500,
+    "load_duration": 14778000,
+    "prompt_eval_duration": 16340931000,
+    "eval_duration": 163766637000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

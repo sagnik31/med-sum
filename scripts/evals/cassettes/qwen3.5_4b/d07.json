@@ -1,0 +1,85 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "03202013f4798d29132a8529137d3b5e7e8cb939d63796396a56cff11c2a09b0",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "fc5c7ae226dfab400627feab8ab2aea2116457beda3c42db03c49eadc7a9fd2b",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Dr. Anil Deshpande\nMBBS, MD (General Medicine)\nReg. No.: MMC-2009/04/0001\nSahaj Multispeciality Hospital, Karve Road, Pune\nDate: 10/02/2025\nPatient: Rohan Kulkarni\nAge / Sex: 44 Y / M\nUHID: SH-100232\nVitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²\nDrug Allergy: Sulfa drugs (rash)\nC/O: Occasional headache\nDiagnosis: Hypertension\nProvisional Diagnosis: Chronic kidney disease, to be evaluated\n\nRx\n\n| # | Medicine | Dose | Frequency | Duration | Instructions |\n|---|---|---|---|---|---|\n| 1 | Tab. Amlong 5 mg | 1 tab | 1-0-0 | 1 month | |\n| 2 | Tab. Atorva 20 mg | 1 tab | 0-0-1 | 1 month | At bedtime |\n| 3 | Tab. Pantocid 40 mg | 1 tab | 1-0-0 | 14 days | Before breakfast |\n\nAdvice: Low salt diet.\nRepeat KFT after 4 weeks.\nSignature: Dr. Anil Deshpande\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1499,
+    "eval_count": 351,
+    "total_duration": 77609233500,
+    "load_duration": 5716800,
+    "prompt_eval_duration": 40811327000,
+    "eval_duration": 36682174000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "7d4da54fa8b7f01f5f3ecbf35d75422d8ed86922f99a50122cfc6e998402e112",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "22ab3d464697f3c483bd966d7b42446fda523cfb14957e91032fb49ad3967543",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"prescription\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 534,
+    "eval_count": 14,
+    "total_duration": 10696583100,
+    "load_duration": 9554000,
+    "prompt_eval_duration": 9280387000,
+    "eval_duration": 1341045000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "becad8649ea928eff52e3874a9f133709c532bff7e621b817bf3e4e9a98fb7a9",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "689ebdcadf5ef3a91f256781dd39da1a1b669afbaa7b5549d626192996c8175a",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"Patient: Rohan Kulkarni\"\n      },\n      \"text\": \"Rohan Kulkarni\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age / Sex: 44 Y / M\"\n      },\n      \"text\": \"44 Y\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age / Sex: 44 Y / M\"\n      },\n      \"text\": \"M\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"UHID: SH-100232\"\n      },\n      \"text\": \"SH-100232\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"Sahaj Multispeciality Hospital, Karve Road, Pune\"\n      },\n      \"text\": \"Sahaj Multispeciality Hospital\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 1,\n          \"last_line\": 3,\n          \"quote\": \"Dr. Anil Deshpande\\nMBBS, MD (General Medicine)\\nReg. No.: MMC-2009/04/0001\"\n        },\n        \"text\": \"Dr. Anil Deshpande\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Date: 10/02/2025\"\n      },\n      \"text\": \"10/02/2025\"\n    }\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"| 1 | Tab. Amlong 5 mg | 1 tab | 1-0-0 | 1 month | |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Amlong\",\n      \"strength\": \"5 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"1-0-0\",\n      \"route\": null,\n      \"duration\": \"1 month\",\n      \"instructions\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 20,\n        \"last_line\": 20,\n        \"quote\": \"| 2 | Tab. Atorva 20 mg | 1 tab | 0-0-1 | 1 month | At bedtime |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Atorva\",\n      \"strength\": \"20 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"0-0-1\",\n      \"route\": null,\n      \"duration\": \"1 month\",\n      \"instructions\": \"At bedtime\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"| 3 | Tab. Pantocid 40 mg | 1 tab | 1-0-0 | 14 days | Before breakfast |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Pantocid\",\n      \"strength\": \"40 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"1-0-0\",\n      \"route\": null,\n      \"duration\": \"14 days\",\n      \"instructions\": \"Before breakfast\"\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 12,\n        \"last_line\": 12,\n        \"quote\": \"Diagnosis: Hypertension\"\n      },\n      \"text\": \"Hypertension\",\n      \"kind\": \"diagnosis\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Provisional Diagnosis: Chronic kidney disease, to be evaluated\"\n      },\n      \"text\": \"Chronic kidney disease\",\n      \"kind\": \"provisional_diagnosis\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 23,\n        \"last_line\": 23,\n        \"quote\": \"Advice: Low salt diet.\"\n      },\n      \"text\": \"Low salt diet.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\"test_name\": null,\n      \"panel\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 24,\n        \"last_line\": 24,\n        \"quote\": \"Repeat KFT after 4 weeks.\"\n      },\n      \"text\": \"Repeat KFT after 4 weeks.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": \"KFT\",\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"148/94\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²\"\n      },\n      \"name\": \"Pulse\",\n      \"value_text\": \"88\",\n      \"unit\": \"/min\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²\"\n      },\n      \"name\": \"Weight\",\n      \"value_text\": \"84\",\n      \"unit\": \"kg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²\"\n      },\n      \"name\": \"Height\",\n      \"value_text\": \"172\",\n      \"unit\": \"cm\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²\"\n      },\n      \"name\": \"BMI\",\n      \"value_text\": \"28.4\",\n      \"unit\": \"kg/m²\"\n    }\n  ],\n  \"allergies\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"Drug Allergy: Sulfa drugs (rash)\"\n      },\n      \"text\": \"Sulfa drugs\",\n      \"substance\": \"Sulfa drugs\",\n      \"reaction\": \"rash\"\n    }\n  ]\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1319,
+    "eval_count": 2182,
+    "total_duration": 256092532800,
+    "load_duration": 11303900,
+    "prompt_eval_duration": 17100350999,
+    "eval_duration": 238914780000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "fc3ac0ca2d759ce7be7a85cb3f86bd53863350a32b4350c18ba7595b1e4e45b4",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "9db4e00d133b4330675419cb029d810fcc63c1cfe7d7d90c2b288ae7f6adb5d8",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"Patient: Rohan Kulkarni\"\n      },\n      \"text\": \"Rohan Kulkarni\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age / Sex: 44 Y / M\"\n      },\n      \"text\": \"44 Y\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age / Sex: 44 Y / M\"\n      },\n      \"text\": \"M\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"UHID: SH-100232\"\n      },\n      \"text\": \"SH-100232\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"Sahaj Multispeciality Hospital, Karve Road, Pune\"\n      },\n      \"text\": \"Sahaj Multispeciality Hospital\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 1,\n          \"last_line\": 3,\n          \"quote\": \"Dr. Anil Deshpande\\nMBBS, MD (General Medicine)\\nReg. No.: MMC-2009/04/0001\"\n        },\n        \"text\": \"Dr. Anil Deshpande\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Date: 10/02/2025\"\n      },\n      \"text\": \"10/02/2025\"\n    }\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"| 1 | Tab. Amlong 5 mg | 1 tab | 1-0-0 | 1 month | |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Amlong\",\n      \"strength\": \"5 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"1-0-0\",\n      \"route\": null,\n      \"duration\": \"1 month\",\n      \"instructions\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 20,\n        \"last_line\": 20,\n        \"quote\": \"| 2 | Tab. Atorva 20 mg | 1 tab | 0-0-1 | 1 month | At bedtime |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Atorva\",\n      \"strength\": \"20 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"0-0-1\",\n      \"route\": null,\n      \"duration\": \"1 month\",\n      \"instructions\": \"At bedtime\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"| 3 | Tab. Pantocid 40 mg | 1 tab | 1-0-0 | 14 days | Before breakfast |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Pantocid\",\n      \"strength\": \"40 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"1-0-0\",\n      \"route\": null,\n      \"duration\": \"14 days\",\n      \"instructions\": \"Before breakfast\"\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 12,\n        \"last_line\": 12,\n        \"quote\": \"Diagnosis: Hypertension\"\n      },\n      \"text\": \"Hypertension\",\n      \"kind\": \"diagnosis\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Provisional Diagnosis: Chronic kidney disease, to be evaluated\"\n      },\n      \"text\": \"Chronic kidney disease\",\n      \"kind\": \"provisional_diagnosis\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 23,\n        \"last_line\": 23,\n        \"quote\": \"Advice: Low salt diet.\"\n      },\n      \"text\": \"Low salt diet.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 24,\n        \"last_line\": 24,\n        \"quote\": \"Repeat KFT after 4 weeks.\"\n      },\n      \"text\": \"Repeat KFT after 4 weeks.\",\n      \"kind\": \"comment\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"148/94\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²\"\n      },\n      \"name\": \"Pulse\",\n      \"value_text\": \"88\",\n      \"unit\": \"/min\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²\"\n      },\n      \"name\": \"Weight\",\n      \"value_text\": \"84\",\n      \"unit\": \"kg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²\"\n      },\n      \"name\": \"Height\",\n      \"value_text\": \"172\",\n      \"unit\": \"cm\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²\"\n      },\n      \"name\": \"BMI\",\n      \"value_text\": \"28.4\",\n      \"unit\": \"kg/m²\"\n    }\n  ],\n  \"allergies\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"Drug Allergy: Sulfa drugs (rash)\"\n      },\n      \"text\": \"Sulfa drugs\",\n      \"substance\": \"Sulfa drugs\",\n      \"reaction\": \"rash\"\n    }\n  ]\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3767,
+    "eval_count": 2162,
+    "total_duration": 310315834200,
+    "load_duration": 10812000,
+    "prompt_eval_duration": 44817607000,
+    "eval_duration": 265401985000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

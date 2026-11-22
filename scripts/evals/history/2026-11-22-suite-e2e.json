@@ -1,0 +1,204 @@
+{
+  "history_version": 1,
+  "label": "suite-e2e",
+  "generated_at": "2026-11-22T23:57:07+00:00",
+  "mode": "live",
+  "stage": "e2e",
+  "dataset": "med-sum synthetic v2",
+  "code": {
+    "commit": "8a9bbd4fb089c6aeff2f55456afd2f5e872eff11",
+    "dirty": true
+  },
+  "prompts": {
+    "classify_document": "b55be6a359073bb11808b8701ac98b84ff727231437b8f12c672ab8892dc9943",
+    "extract_page": "f736c8f51d43204a4bca4281d1fff87208c27d1cef05aae7359a3ffe90ed50d7",
+    "mcp_eval.system": "d4063946226a0c7a56f76251208e5f700d7b84e2ec95263686851b5a334ef615",
+    "mcp_server.instructions": "aa5801c92c410131c89ab943baf1a2ae9330f1283858e5e53e1adb2b2b1eef4e",
+    "parse_lab_report": "93970b166dac8032f3bcaedea32dafeaa7a78a9bb911aedce5f6313d710bf36e",
+    "parse_prescription": "3287659e2e24efeaa3fb12d8ef5dec39cd0623690594bcc6a01153ac1a855b39",
+    "repair_parse": "7a5e709a5597b550eb0001b34e79fd59c2a27ae263281128c29799bce57bd161",
+    "summary_overview": "a9446be55289b5551ea8167bb365f5bb581fbb70afd8bf73ab88232cfc10f02b",
+    "tool_repair.final_note": "b6aa1ec360c97ed519ba0bd8b777acb08a234a534e0d841dae03e3df14b7bc4f",
+    "tool_repair.reading_note": "bb4793d72d565076eb4f37242f42f0c77116a5fd3aefbd6ff9f8d2e6f4223ce7",
+    "toolprobe.system": "d04838488c72a44b409135ae5149ec9989c3e9128a7b3ea06bb86ca370661a2c"
+  },
+  "digests": {
+    "gemma4:e2b": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+    "qwen3.5:4b": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+  },
+  "generation_options": {
+    "temperature": 0,
+    "presence_penalty": 0,
+    "seed": 0
+  },
+  "choice": null,
+  "report": "reports/2026-11-22-suite-e2e",
+  "documents": {
+    "qwen3.5:4b": [
+      "d01",
+      "d02",
+      "d03",
+      "d04",
+      "d05",
+      "d06",
+      "d07",
+      "d08",
+      "d09",
+      "d10",
+      "d11",
+      "d12",
+      "d13",
+      "d14",
+      "d15",
+      "d16",
+      "d17",
+      "d18",
+      "d19",
+      "d20",
+      "d21",
+      "d22",
+      "d23",
+      "d24",
+      "d25"
+    ],
+    "gemma4:e2b": [
+      "d01",
+      "d02",
+      "d03",
+      "d04",
+      "d05",
+      "d06",
+      "d07",
+      "d08",
+      "d09",
+      "d10",
+      "d11",
+      "d12",
+      "d13",
+      "d14",
+      "d15",
+      "d16",
+      "d17",
+      "d18",
+      "d19",
+      "d20",
+      "d21",
+      "d22",
+      "d23",
+      "d24",
+      "d25"
+    ]
+  },
+  "models": {
+    "qwen3.5:4b": {
+      "documents": 25,
+      "field_f1": 0.9137294394091977,
+      "derived_f1": 0.9657360406091371,
+      "medicine_recall": 0.8,
+      "unsafe": 10,
+      "clinical_items": 204,
+      "hallucinated": 18,
+      "missed": 10,
+      "value_recall": 0.9986159169550173,
+      "cer": 0.1101825778908166,
+      "seconds_per_document": 632.545607200024,
+      "splits": {
+        "dev": {
+          "documents": 2,
+          "field_f1": 0.8421052631578947,
+          "unsafe": {
+            "hits": 2,
+            "total": 14
+          }
+        },
+        "held_out": {
+          "documents": 7,
+          "field_f1": 0.9397944199706314,
+          "unsafe": {
+            "hits": 0,
+            "total": 47
+          }
+        },
+        "test": {
+          "documents": 16,
+          "field_f1": 0.9117647058823529,
+          "unsafe": {
+            "hits": 8,
+            "total": 175
+          }
+        }
+      },
+      "routing": {
+        "end_state_right": {
+          "hits": 21,
+          "total": 25
+        },
+        "auto_verified": {
+          "hits": 18,
+          "total": 25
+        },
+        "unsafe_in_verified": {
+          "hits": 8,
+          "total": 149
+        },
+        "fallback_records": 2,
+        "failed": 0
+      }
+    },
+    "gemma4:e2b": {
+      "documents": 25,
+      "field_f1": 0.8931147540983606,
+      "derived_f1": 0.956359102244389,
+      "medicine_recall": 0.8666666666666667,
+      "unsafe": 27,
+      "clinical_items": 204,
+      "hallucinated": 31,
+      "missed": 8,
+      "value_recall": 0.9826989619377162,
+      "cer": 0.11281678626578254,
+      "seconds_per_document": 637.336804199989,
+      "splits": {
+        "dev": {
+          "documents": 2,
+          "field_f1": 0.9791666666666666,
+          "unsafe": {
+            "hits": 0,
+            "total": 12
+          }
+        },
+        "held_out": {
+          "documents": 7,
+          "field_f1": 0.9186046511627907,
+          "unsafe": {
+            "hits": 2,
+            "total": 47
+          }
+        },
+        "test": {
+          "documents": 16,
+          "field_f1": 0.8774193548387097,
+          "unsafe": {
+            "hits": 24,
+            "total": 186
+          }
+        }
+      },
+      "routing": {
+        "end_state_right": {
+          "hits": 15,
+          "total": 25
+        },
+        "auto_verified": {
+          "hits": 12,
+          "total": 25
+        },
+        "unsafe_in_verified": {
+          "hits": 9,
+          "total": 78
+        },
+        "fallback_records": 23,
+        "failed": 0
+      }
+    }
+  }
+}

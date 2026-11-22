@@ -1,0 +1,145 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "fbfdccc81f74fd3c0878de0a531eed068bbb961b0c19bc7598a48dfb3d4c27e5",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "cd6cd622e8daac48cdf52c35134f3aa0f0490b0e925656e3adc89f51ccec9dde",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "# Heartline Cardiac Clinic\nDr. Farah Khan\nMBBS, MD, DM (Cardiology)\nBaner, Pune 411045 | Reg. No.: MMC-2011/02/0003\nDate: 14 April 2025\nName: Kabir Sethi | Age/Sex: 46/M | UHID: SH-100235\nBP: 132/84 mmHg; HR: 76 bpm\nImpression: Hypertension, better controlled\n\n## Medicines\n| Drug | Strength | Frequency | Duration | Remarks |\n|---|---|---|---|---|\n| Tab. Telma-AM | 40/5 mg | OD | 30 days | Morning |\n| Tab. Rosuvas | 20 mg | OD | 30 days | Night |\n| Tab. Glycomet | 500 mg | BD | 30 days | After food |\n| Cap. Omez | 20 mg | OD | 14 days | Before breakfast |\n\nAdvice: Low-salt diet; walk 30 minutes a day.\nNext visit: 14 May 2025\nThis is a computer-generated prescription.\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1535,
+    "eval_count": 291,
+    "total_duration": 44780427600,
+    "load_duration": 12967700,
+    "prompt_eval_duration": 35277168000,
+    "eval_duration": 9354252000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "5edc925b8013999d6b633ded8514499f06b39e094b1d3b531bbc23e513ebdc95",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "d5b44007c10d801dc6d783fca8b50afe95046720aabfe91e24b3f3c912195563",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"prescription\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 469,
+    "eval_count": 14,
+    "total_duration": 16608758000,
+    "load_duration": 13713749300,
+    "prompt_eval_duration": 1992007000,
+    "eval_duration": 807907000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "4a7fe68c8d164b87ba0b609376310ca1e65427169ec87d3c8c9ae1771f367528",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "36d32c48f37e6a5cbcc3383ab496681693df9835dfc4f1ab86cc6d83644f8ecd",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 2,\n          \"first_line\": 1,\n          \"last_line\": 3,\n          \"quote\": \"# Heartline Cardiac Clinic\\nDr. Farah Khan\\nMBBS, MD, DM (Cardiology)\"\n        },\n        \"text\": \"Dr. Farah Khan MBBS, MD, DM (Cardiology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Tab. Telma-AM 40/5 mg OD 30 days Morning\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Telma-AM\",\n      \"strength\": \"40/5 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"OD\",\n      \"route\": null,\n      \"duration\": \"30 days\",\n      \"instructions\": \"Morning\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"Tab. Rosuvas 20 mg OD 30 days Night\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Rosuvas\",\n      \"strength\": \"20 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"OD\",\n      \"route\": null,\n      \"duration\": \"30 days\",\n      \"instructions\": \"Night\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"Tab. Glycomet 500 mg BD 30 days After food\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Glycomet\",\n      \"strength\": \"500 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"BD\",\n      \"route\": null,\n      \"duration\": \"30 days\",\n      \"instructions\": \"After food\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"Cap. Omez 20 mg OD 14 days Before breakfast\"\n      },\n      \"form\": \"Cap.\",\n      \"name\": \"Omez\",\n      \"strength\": \"20 mg\",\n      \"dose\": \"1 cap\",\n      \"frequency\": \"OD\",\n      \"route\": null,\n      \"duration\": \"14 days\",\n      \"instructions\": \"Before breakfast\"\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Impression: Hypertension, better controlled\"\n      },\n      \"text\": \"Hypertension, better controlled\",\n      \"kind\": \"impression\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 18,\n        \"last_line\": 18,\n        \"quote\": \"Advice: Low-salt diet; walk 30 minutes a day.\"\n      },\n      \"text\": \"Low-salt diet; walk 30 minutes a day.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"BP: 132/84 mmHg; HR: 76 bpm\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"132/84\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"BP: 132/84 mmHg; HR: 76 bpm\"\n      },\n      \"name\": \"HR\",\n      \"value_text\": \"76\",\n      \"unit\": \"bpm\"\n    }\n  ],\n  \"allergies\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"BP: 132/84 mmHg; HR: 76 bpm\"\n      },\n      \"text\": \"No known allergies\",\n      \"substance\": null,\n      \"reaction\": null\n    }\n  ]\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1239,
+    "eval_count": 1285,
+    "total_duration": 47819132700,
+    "load_duration": 18333200,
+    "prompt_eval_duration": 4660639000,
+    "eval_duration": 43026462000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "77f9222ac2b0a655ebba9fa963e136bcb6fc44525317b24965c28adcdb288054",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "9cb0c8b8138ef630fa0597dee7894510bea2493f1b0b31deace58f3d9ce449dd",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 2,\n          \"first_line\": 2,\n          \"last_line\": 3,\n          \"quote\": \"Dr. Farah Khan\\nMBBS, MD, DM (Cardiology)\"\n        },\n        \"text\": \"Dr. Farah Khan MBBS, MD, DM (Cardiology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Tab. Telma-AM 40/5 mg OD 30 days Morning\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Telma-AM\",\n      \"strength\": \"40/5 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"OD\",\n      \"route\": null,\n      \"duration\": \"30 days\",\n      \"instructions\": \"Morning\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"Tab. Rosuvas 20 mg OD 30 days Night\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Rosuvas\",\n      \"strength\": \"20 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"OD\",\n      \"route\": null,\n      \"duration\": \"30 days\",\n      \"instructions\": \"Night\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"Tab. Glycomet 500 mg BD 30 days After food\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Glycomet\",\n      \"strength\": \"500 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"BD\",\n      \"route\": null,\n      \"duration\": \"30 days\",\n      \"instructions\": \"After food\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"Cap. Omez 20 mg OD 14 days Before breakfast\"\n      },\n      \"form\": \"Cap.\",\n      \"name\": \"Omez\",\n      \"strength\": \"20 mg\",\n      \"dose\": \"1 cap\",\n      \"frequency\": \"OD\",\n      \"route\": null,\n      \"duration\": \"14 days\",\n      \"instructions\": \"Before breakfast\"\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Impression: Hypertension, better controlled\"\n      },\n      \"text\": \"Hypertension, better controlled\",\n      \"kind\": \"impression\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 18,\n        \"last_line\": 18,\n        \"quote\": \"Advice: Low-salt diet; walk 30 minutes a day.\"\n      },\n      \"text\": \"Low-salt diet; walk 30 minutes a day.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"BP: 132/84 mmHg; HR: 76 bpm\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"132/84\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"BP: 132/84 mmHg; HR: 76 bpm\"\n      },\n      \"name\": \"HR\",\n      \"value_text\": \"76\",\n      \"unit\": \"bpm\"\n    }\n  ],\n  \"allergies\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"BP: 132/84 mmHg; HR: 76 bpm\"\n      },\n      \"text\": \"No known allergies\",\n      \"substance\": null,\n      \"reaction\": null\n    }\n  ]\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3030,
+    "eval_count": 1271,
+    "total_duration": 48462732000,
+    "load_duration": 9819100,
+    "prompt_eval_duration": 6648979000,
+    "eval_duration": 41754754000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "be893fd6dc231ce1c9a87a1a78e12e670ce6185062b3232528dc8aeebfe36b0a",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "ae8d30cd39b9081c940c4b1678385c48585ef851f9d07054f64f3330bd6c1cc0",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 2,\n          \"first_line\": 2,\n          \"last_line\": 3,\n          \"quote\": \"Dr. Farah Khan\\nMBBS, MD, DM (Cardiology)\"\n        },\n        \"text\": \"Dr. Farah Khan MBBS, MD, DM (Cardiology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"Tab. Telma-AM 40/5 mg OD 30 days Morning\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Telma-AM\",\n      \"strength\": \"40/5 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"OD\",\n      \"route\": null,\n      \"duration\": \"30 days\",\n      \"instructions\": \"Morning\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"Tab. Rosuvas 20 mg OD 30 days Night\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Rosuvas\",\n      \"strength\": \"20 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"OD\",\n      \"route\": null,\n      \"duration\": \"30 days\",\n      \"instructions\": \"Night\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"Tab. Glycomet 500 mg BD 30 days After food\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Glycomet\",\n      \"strength\": \"500 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"BD\",\n      \"route\": null,\n      \"duration\": \"30 days\",\n      \"instructions\": \"After food\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"Cap. Omez 20 mg OD 14 days Before breakfast\"\n      },\n      \"form\": \"Cap.\",\n      \"name\": \"Omez\",\n      \"strength\": \"20 mg\",\n      \"dose\": \"1 cap\",\n      \"frequency\": \"OD\",\n      \"route\": null,\n      \"duration\": \"14 days\",\n      \"instructions\": \"Before breakfast\"\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Impression: Hypertension, better controlled\"\n      },\n      \"text\": \"Hypertension, better controlled\",\n      \"kind\": \"impression\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 18,\n        \"last_line\": 18,\n        \"quote\": \"Advice: Low-salt diet; walk 30 minutes a day.\"\n      },\n      \"text\": \"Low-salt diet; walk 30 minutes a day.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"BP: 132/84 mmHg; HR: 76 bpm\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"132/84\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"BP: 132/84 mmHg; HR: 76 bpm\"\n      },\n      \"name\": \"HR\",\n      \"value_text\": \"76\",\n      \"unit\": \"bpm\"\n    }\n  ],\n  \"allergies\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"BP: 132/84 mmHg; HR: 76 bpm\"\n      },\n      \"text\": \"No known allergies\",\n      \"substance\": null,\n      \"reaction\": null\n    }\n  ]\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3021,
+    "eval_count": 1271,
+    "total_duration": 48237089200,
+    "load_duration": 8471500,
+    "prompt_eval_duration": 6447002000,
+    "eval_duration": 41739203000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "d215c7e2a0fc8f407d704dd7b69b6291e105f8de3730b57a18c13d371b3ba637",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "36d32c48f37e6a5cbcc3383ab496681693df9835dfc4f1ab86cc6d83644f8ecd",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"Name: Kabir Sethi | Age/Sex: 46/M | UHID: SH-100235\"\n      },\n      \"text\": \"Kabir Sethi\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"Name: Kabir Sethi | Age/Sex: 46/M | UHID: SH-100235\"\n      },\n      \"text\": \"46 Y\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"Name: Kabir Sethi | Age/Sex: 46/M | UHID: SH-100235\"\n      },\n      \"text\": \"M\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"Name: Kabir Sethi | Age/Sex: 46/M | UHID: SH-100235\"\n      },\n      \"text\": \"SH-100235\"\n    }\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 2,\n          \"last_line\": 4,\n          \"quote\": \"Dr. Farah Khan\\nMBBS, MD, DM (Cardiology)\\nBaner, Pune 411045 | Reg. No.: MMC-2011/02/0003\"\n        },\n        \"text\": \"Dr. Farah Khan\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Date: 14 April 2025\"\n      },\n      \"text\": \"14 April 2025\"\n    }\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"| Tab. Telma-AM | 40/5 mg | OD | 30 days | Morning |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Telma-AM\",\n      \"strength\": \"40/5 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"OD\",\n      \"route\": null,\n      \"duration\": \"30 days\",\n      \"instructions\": \"Morning\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"| Tab. Rosuvas | 20 mg | OD | 30 days | Night |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Rosuvas\",\n      \"strength\": \"20 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"OD\",\n      \"route\": null,\n      \"duration\": \"30 days\",\n      \"instructions\": \"Night\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Tab. Glycomet | 500 mg | BD | 30 days | After food |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Glycomet\",\n      \"strength\": \"500 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"BD\",\n      \"route\": null,\n      \"duration\": \"30 days\",\n      \"instructions\": \"After food\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"| Cap. Omez | 20 mg | OD | 14 days | Before breakfast |\"\n      },\n      \"form\": \"Cap.\",\n      \"name\": \"Omez\",\n      \"strength\": \"20 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"OD\",\n      \"route\": null,\n      \"duration\": \"14 days\",\n      \"instructions\": \"Before breakfast\"\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Impression: Hypertension, better controlled\"\n      },\n      \"text\": \"Hypertension\",\n      \"kind\": \"impression\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Impression: Hypertension, better controlled\"\n      },\n      \"text\": \"better controlled\",\n      \"kind\": \"impression\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 18,\n        \"last_line\": 18,\n        \"quote\": \"Advice: Low-salt diet; walk 30 minutes a day.\"\n      },\n      \"text\": \"Low-salt diet; walk 30 minutes a day.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\"test_name\": null,\"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"BP: 132/84 mmHg; HR: 76 bpm\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"132/84\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"BP: 132/84 mmHg; HR: 76 bpm\"\n      },\n      \"name\": \"HR\",\n      \"value_text\": \"76\",\n      \"unit\": \"bpm\"\n    }\n  ],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1251,
+    "eval_count": 1693,
+    "total_duration": 202898260200,
+    "load_duration": 10914600,
+    "prompt_eval_duration": 17571760000,
+    "eval_duration": 184520224000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "5f35cc72674ea1aefbf663777a486ee55a6c8b217d1039be726b3c24949140ca",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "d5a6f280c445d2750da48f65d966b1eb67c40ebddfbe452cea13c90c731210ff",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"Name: Kabir Sethi | Age/Sex: 46/M | UHID: SH-100235\"\n      },\n      \"text\": \"Kabir Sethi\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"Name: Kabir Sethi | Age/Sex: 46/M | UHID: SH-100235\"\n      },\n      \"text\": \"46\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"Name: Kabir Sethi | Age/Sex: 46/M | UHID: SH-100235\"\n      },\n      \"text\": \"M\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"Name: Kabir Sethi | Age/Sex: 46/M | UHID: SH-100235\"\n      },\n      \"text\": \"SH-100235\"\n    }\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 2,\n          \"last_line\": 4,\n          \"quote\": \"Dr. Farah Khan\\nMBBS, MD, DM (Cardiology)\\nBaner, Pune 411045 | Reg. No.: MMC-2011/02/0003\"\n        },\n        \"text\": \"Dr. Farah Khan\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Date: 14 April 2025\"\n      },\n      \"text\": \"14 April 2025\"\n    }\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"| Tab. Telma-AM | 40/5 mg | OD | 30 days | Morning |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Telma-AM\",\n      \"strength\": \"40/5 mg\",\n      \"dose\": null,\n      \"frequency\": \"OD\",\n      \"route\": null,\n      \"duration\": \"30 days\",\n      \"instructions\": \"Morning\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"| Tab. Rosuvas | 20 mg | OD | 30 days | Night |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Rosuvas\",\n      \"strength\": \"20 mg\",\n      \"dose\": null,\n      \"frequency\": \"OD\",\n      \"route\": null,\n      \"duration\": \"30 days\",\n      \"instructions\": \"Night\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Tab. Glycomet | 500 mg | BD | 30 days | After food |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Glycomet\",\n      \"strength\": \"500 mg\",\n      \"dose\": null,\n      \"frequency\": \"BD\",\n      \"route\": null,\n      \"duration\": \"30 days\",\n      \"instructions\": \"After food\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"| Cap. Omez | 20 mg | OD | 14 days | Before breakfast |\"\n      },\n      \"form\": \"Cap.\",\n      \"name\": \"Omez\",\n      \"strength\": \"20 mg\",\n      \"dose\": null,\n      \"frequency\": \"OD\",\n      \"route\": null,\n      \"duration\": \"14 days\",\n      \"instructions\": \"Before breakfast\"\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Impression: Hypertension, better controlled\"\n      },\n      \"text\": \"Hypertension\",\n      \"kind\": \"impression\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Impression: Hypertension, better controlled\"\n      },\n      \"text\": \"better controlled\",\n      \"kind\": \"impression\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 18,\n        \"last_line\": 18,\n        \"quote\": \"Advice: Low-salt diet; walk 30 minutes a day.\"\n      },\n      \"text\": \"Low-salt diet; walk 30 minutes a day.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\"test_name\": null,\"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"BP: 132/84 mmHg; HR: 76 bpm\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"132/84\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"BP: 132/84 mmHg; HR: 76 bpm\"\n      },\n      \"name\": \"HR\",\n      \"value_text\": \"76\",\n      \"unit\": \"bpm\"\n    }\n  ],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3320,
+    "eval_count": 1668,
+    "total_duration": 235897485500,
+    "load_duration": 13744600,
+    "prompt_eval_duration": 38236858000,
+    "eval_duration": 197398842000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

@@ -1,0 +1,165 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "767e8367935e2d5ff469c7a1f79475025ef062528cad1c83b436297cd0da36b6",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "74ca5c9f13d6126c6cdb82a63ced8e2ab18725d37b1ccae522e6c6e50abd7707",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "# Sunrise Diagnostics\nPlot 12, Baner Road, Pune 411045\nPatient Name: Mrs. Meera Iyer\nAge / Sex: 57 Years / Female\nLab ID: SD-24-061407\nRef. By: Dr. Anil Deshpande\nCollected On: 14/06/2024 08:10 AM\nReported On: 14/06/2024 02:45 PM\n\n## COMPLETE BLOOD COUNT\n\n| Test | Result | Flag | Unit | Reference Range |\n| :--- | :--- | :--- | :--- | :--- |\n| Haemoglobin | 10.4 | L | g/dL | 12.0 - 15.0 |\n| RBC Count | 4.1 | | mill/cumm | 3.8 - 4.8 |\n| PCV | 33.2 | L | % | 36.0 - 46.0 |\n| MCV | 76 | L | fL | 83 - 101 |\n| MCH | 25.4 | L | pg | 27.0 - 32.0 |\n| MCHC | 31.3 | L | g/dL | 31.5 - 34.5 |\n| RDW-CV | 16.2 | H | % | 11.6 - 14.0 |\n| Platelet Count | 2,45,000 | | /cumm | 1,50,000 - 4,10,000 |\n| Total WBC Count | 7,200 | | /cumm | 4,000 - 10,000 |\n\nComment: Microcytic hypochromic anaemia.\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 451,
+    "total_duration": 246522103600,
+    "load_duration": 9709097500,
+    "prompt_eval_duration": 184481070000,
+    "eval_duration": 52081067000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "f21a47dacc8437c7dc46a658b5aca0af6c29151857cf1ca3e3988d2bd935259b",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "b38dd6d80f9ac1ccd14e515965dcf469ca397799f8a0582786181ad81bd1d3c4",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Patient: Mrs. Meera Iyer | Lab ID: SD-24-061407 | Page 2 of 3\n\n## GLYCATED HAEMOGLOBIN\n\n| Test | Result | Flag | Unit | Reference Range |\n| :--- | :--- | :--- | :--- | :--- |\n| HbA1c | 8.1 | H | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |\n\nInterpretation: HbA1c reflects average blood glucose over the past 2-3 months.\n\n## GLUCOSE\n\n| Test | Result | Flag | Unit | Reference Range |\n| :--- | :--- | :--- | :--- | :--- |\n| Fasting Blood Sugar | 148 | H | mg/dL | 70 - 100 |\n\nMethod: Hexokinase\n\n## LIPID PROFILE\n\n| Test | Result | Flag | Unit | Reference Range |\n| :--- | :--- | :--- | :--- | :--- |\n| Total Cholesterol | 182 | | mg/dL | Desirable: < 200; Borderline: 200 - 239; High: >= 240 |\n| Triglycerides | 168 | H | mg/dL | < 150 |\n| HDL Cholesterol | 44 | L | mg/dL | > 50 |\n| LDL Cholesterol | 104 | | mg/dL | Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160 |\n| VLDL Cholesterol | 33.6 | H | mg/dL | < 30 |\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 439,
+    "total_duration": 237073165800,
+    "load_duration": 16817600,
+    "prompt_eval_duration": 185901609000,
+    "eval_duration": 50867819000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "7f59447459e206dadd11f6d057d3ecaeae70c5f7c78096c5e9299e4b4bc33150",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "646991d0b12b5f91a107e0a351a02b3ac864006a9b7826ff09e1c57d104b03a5",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Patient: Mrs. Meera Iyer | Lab ID: SD-24-061407 | Page 3 of 3\n\n## KIDNEY FUNCTION TEST\n\n| Test | Result | Flag | Unit | Reference Range |\n| :--- | :--- | :--- | :--- | :--- |\n| Blood Urea | 28 | | mg/dL | 15 - 40 |\n| Blood Urea Nitrogen (BUN) | 13.1 | | mg/dL | 7 - 20 |\n| Serum Creatinine | 0.9 | | mg/dL | 0.6 - 1.1 |\n| Uric Acid | 5.2 | | mg/dL | 2.6 - 6.0 |\n\n## URINE ROUTINE\n\n| Test | Result | Flag | Unit | Reference Range |\n| :--- | :--- | :--- | :--- | :--- |\n| Colour | Pale yellow | | | |\n| Appearance | Clear | | | |\n| Specific Gravity | 1.020 | | | 1.005 - 1.030 |\n| Protein | Nil | | | Nil |\n| Glucose | Trace | * | | Nil |\n| Pus Cells | 2-4 | | /hpf | 0 - 5 |\n\nDr. Neha Joshi, MD (Pathology)\n*** End of Report ***\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 336,
+    "total_duration": 231644707400,
+    "load_duration": 13852200,
+    "prompt_eval_duration": 192863434000,
+    "eval_duration": 38495870000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "59dc83dc403ddb7ec27ddcccf9978fc58b9d9dd5d7d1aa1b2aa1847670602d08",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "0bb20e6a98d5a01e43162edca8311c4197763feb96be50853f762ff73c5552d4",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"lab_report\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1399,
+    "eval_count": 14,
+    "total_duration": 22941744000,
+    "load_duration": 4975800,
+    "prompt_eval_duration": 21442730000,
+    "eval_duration": 1251823000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "b734f1a9c0a8e7aa3e8ee1e75004e105da54354f84839242e05282cf8757932e",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "dc5435b94fa121143b1097003a9653b0f665319b3574930f8738e56decb9030e",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 3,\n        \"last_line\": 3,\n        \"quote\": \"Patient Name: Mrs. Meera Iyer\"\n      },\n      \"text\": \"Mrs. Meera Iyer\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"Age / Sex: 57 Years / Female\"\n      },\n      \"text\": \"57 Years\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"Age / Sex: 57 Years / Female\"\n      },\n      \"text\": \"Female\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Lab ID: SD-24-061407\"\n      },\n      \"text\": \"SD-24-061407\"\n    }\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 6,\n          \"last_line\": 6,\n          \"quote\": \"Ref. By: Dr. Anil Deshpande\"\n        },\n        \"text\": \"Dr. Anil Deshpande\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Reported On: 14/06/2024 02:45 PM\"\n      },\n      \"text\": \"14/06/2024 02:45 PM\"\n    },\n    \"collection_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Collected On: 14/06/2024 08:10 AM\"\n      },\n      \"text\": \"14/06/2024 08:10 AM\"\n    },\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"| Haemoglobin | 10.4 | L | g/dL | 12.0 - 15.0 |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"10.4\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"12.0 - 15.0\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| RBC Count | 4.1 | | mill/cumm | 3.8 - 4.8 |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"RBC Count\",\n      \"value_text\": \"4.1\",\n      \"unit\": \"mill/cumm\",\n      \"reference_ranges\": [\n        \"3.8 - 4.8\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"| PCV | 33.2 | L | % | 36.0 - 46.0 |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"PCV\",\n      \"value_text\": \"33.2\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"36.0 - 46.0\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"| MCV | 76 | L | fL | 83 - 101 |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"MCV\",\n      \"value_text\": \"76\",\n      \"unit\": \"fL\",\n      \"reference_ranges\": [\n        \"83 - 101\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 18,\n        \"last_line\": 18,\n        \"quote\": \"| MCH | 25.4 | L | pg | 27.0 - 32.0 |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"MCH\",\n      \"value_text\": \"25.4\",\n      \"unit\": \"pg\",\n      \"reference_ranges\": [\n        \"27.0 - 32.0\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"| MCHC | 31.3 | L | g/dL | 31.5 - 34.5 |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"MCHC\",\n      \"value_text\": \"31.3\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"31.5 - 34.5\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 20,\n        \"last_line\": 20,\n        \"quote\": \"| RDW-CV | 16.2 | H | % | 11.6 - 14.0 |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"RDW-CV\",\n      \"value_text\": \"16.2\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"11.6 - 14.0\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"| Platelet Count | 2,45,000 | | /cumm | 1,50,000 - 4,10,000 |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"Platelet Count\",\n      \"value_text\": \"2,45,000\",\n      \"unit\": \"/cumm\",\n      \"reference_ranges\": [\n        \"1,50,000 - 4,10,000\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 22,\n        \"last_line\": 22,\n        \"quote\": \"| Total WBC Count | 7,200 | | /cumm | 4,000 - 10,000 |\"\n      },\n      \"panel\": \"COMPLETE BLOOD COUNT\",\n      \"test_name\": \"Total WBC Count\",\n      \"value_text\": \"7,200\",\n      \"unit\": \"/cumm\",\n      \"reference_ranges\": [\n        \"4,000 - 10,000\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 24,\n        \"last_line\": 24,\n        \"quote\": \"Comment: Microcytic hypochromic anaemia.\"\n      },\n      \"text\": \"Microcytic hypochromic anaemia.\",\n      \"kind\": \"comment\",\n      \"scope\": \"panel\",\n      \"test_name\": null,\n      \"panel\": \"COMPLETE BLOOD COUNT\"\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1578,
+    "eval_count": 2181,
+    "total_duration": 242633698500,
+    "load_duration": 10915500,
+    "prompt_eval_duration": 14999669000,
+    "eval_duration": 227382693000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "9e7a5c778a987f910f983384baef905f43d0daef0ab2bd094630aa5d8566bd39",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "fb40f36f8678e74bce2cbb34c96fa0e77d5ffc10b06ffd06dc5507f1225a7b5d",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 3,\n        \"last_line\": 3,\n        \"quote\": \"## GLYCATED HAEMOGLOBIN\"\n      },\n      \"panel\": \"GLYCATED HAEMOGLOBIN\",\n      \"test_name\": \"HbA1c\",\n      \"value_text\": \"8.1\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Interpretation: HbA1c reflects average blood glucose over the past 2-3 months.\"\n      },\n      \"panel\": \"GLYCATED HAEMOGLOBIN\",\n      \"test_name\": \"HbA1c\",\n      \"value_text\": \"8.1\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"## GLUCOSE\"\n      },\n      \"panel\": \"GLUCOSE\",\n      \"test_name\": \"Fasting Blood Sugar\",\n      \"value_text\": \"148\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"70 - 100\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"Method: Hexokinase\"\n      },\n      \"panel\": \"GLUCOSE\",\n      \"test_name\": \"Fasting Blood Sugar\",\n      \"value_text\": \"148\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"70 - 100\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"## LIPID PROFILE\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"Total Cholesterol\",\n      \"value_text\": \"182\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"Desirable: < 200; Borderline: 200 - 239; High: >= 240\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 23,\n        \"last_line\": 23,\n        \"quote\": \"Total Cholesterol | 182 | | mg/dL | Desirable: < 200; Borderline: 200 - 239; High: >= 240\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"Total Cholesterol\",\n      \"value_text\": \"182\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"Desirable: < 200; Borderline: 200 - 239; High: >= 240\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"## LIPID PROFILE\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"Triglycerides\",\n      \"value_text\": \"168\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"< 150\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 25,\n        \"last_line\": 25,\n        \"quote\": \"HDL Cholesterol | 44 | L | mg/dL | > 50\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"HDL Cholesterol\",\n      \"value_text\": \"44\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"> 50\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"## LIPID PROFILE\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"LDL Cholesterol\",\n      \"value_text\": \"104\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 26,\n        \"last_line\": 26,\n        \"quote\": \"LDL Cholesterol | 104 | | mg/dL | Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"LDL Cholesterol\",\n      \"value_text\": \"104\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"## LIPID PROFILE\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"VLDL Cholesterol\",\n      \"value_text\": \"33.6\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"< 30\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 27,\n        \"last_line\": 27,\n        \"quote\": \"VLDL Cholesterol | 33.6 | H | mg/dL | < 30\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"VLDL Cholesterol\",\n      \"value_text\": \"33.6\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"< 30\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 29,\n        \"last_line\": 29,\n        \"quote\": \"Synthetic test document: fictional patient, doctors and laboratory.\"\n      },\n      \"panel\": null,\n      \"test_name\": \"Synthetic test document: fictional patient, doctors and laboratory.\",\n      \"value_text\": \"Synthetic test document: fictional patient, doctors and laboratory.\",\n      \"unit\": null,\n      \"reference_ranges\": [],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Interpretation: HbA1c reflects average blood glucose over the past 2-3 months.\"\n      },\n      \"text\": \"HbA1c reflects average blood glucose over the past 2-3 months.\",\n      \"kind\": \"comment\",\n      \"scope\": \"test\",\n      \"test_name\": \"HbA1c\",\n      \"panel\": \"GLYCATED HAEMOGLOBIN\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 29,\n        \"last_line\": 29,\n        \"quote\": \"Synthetic test document: fictional patient, doctors and laboratory.\"\n      },\n      \"text\": \"Synthetic test document: fictional patient, doctors and laboratory.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1580,
+    "eval_count": 2363,
+    "total_duration": 268152962600,
+    "load_duration": 11271600,
+    "prompt_eval_duration": 16284739000,
+    "eval_duration": 251760996000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "e11539cdfbc871bbdc473438a8d5de98f2c9d5f691ad39af33373dc7b5521c62",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "f4d9aea058179a8b58b51f8b3bf997073fbbc72cb62034631e13548ac8ebaa5b",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 3,\n        \"first_line\": 1,\n        \"last_line\": 1,\n        \"quote\": \"Patient: Mrs. Meera Iyer | Lab ID: SD-24-061407 | Page 3 of 3\"\n      },\n      \"text\": \"Mrs. Meera Iyer\"\n    },\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 3,\n        \"first_line\": 1,\n        \"last_line\": 1,\n        \"quote\": \"Patient: Mrs. Meera Iyer | Lab ID: SD-24-061407 | Page 3 of 3\"\n      },\n      \"text\": \"SD-24-061407\"\n    }\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 3,\n          \"first_line\": 23,\n          \"last_line\": 23,\n          \"quote\": \"Dr. Neha Joshi, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Neha Joshi, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 3,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"| Blood Urea | 28 | | mg/dL | 15 - 40 |\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Blood Urea\",\n      \"value_text\": \"28\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"15 - 40\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 3,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"| Blood Urea Nitrogen (BUN) | 13.1 | | mg/dL | 7 - 20 |\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Blood Urea Nitrogen (BUN)\",\n      \"value_text\": \"13.1\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"7 - 20\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 3,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"| Serum Creatinine | 0.9 | | mg/dL | 0.6 - 1.1 |\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Serum Creatinine\",\n      \"value_text\": \"0.9\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"0.6 - 1.1\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 3,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"| Uric Acid | 5.2 | | mg/dL | 2.6 - 6.0 |\"\n      },\n      \"panel\": \"KIDNEY FUNCTION TEST\",\n      \"test_name\": \"Uric Acid\",\n      \"value_text\": \"5.2\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"2.6 - 6.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 3,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"| Colour | Pale yellow | | | |\"\n      },\n      \"panel\": \"URINE ROUTINE\",\n      \"test_name\": \"Colour\",\n      \"value_text\": \"Pale yellow\",\n      \"unit\": null,\n      \"reference_ranges\": [],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 3,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"| Appearance | Clear | | | |\"\n      },\n      \"panel\": \"URINE ROUTINE\",\n      \"test_name\": \"Appearance\",\n      \"value_text\": \"Clear\",\n      \"unit\": null,\n      \"reference_ranges\": [],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 3,\n        \"first_line\": 18,\n        \"last_line\": 18,\n        \"quote\": \"| Specific Gravity | 1.020 | | | 1.005 - 1.030 |\"\n      },\n      \"panel\": \"URINE ROUTINE\",\n      \"test_name\": \"Specific Gravity\",\n      \"value_text\": \"1.020\",\n      \"unit\": null,\n      \"reference_ranges\": [\n        \"1.005 - 1.030\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 3,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"| Protein | Nil | | | Nil |\"\n      },\n      \"panel\": \"URINE ROUTINE\",\n      \"test_name\": \"Protein\",\n      \"value_text\": \"Nil\",\n      \"unit\": null,\n      \"reference_ranges\": [\n        \"Nil\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 3,\n        \"first_line\": 20,\n        \"last_line\": 20,\n        \"quote\": \"| Glucose | Trace | * | | Nil |\"\n      },\n      \"panel\": \"URINE ROUTINE\",\n      \"test_name\": \"Glucose\",\n      \"value_text\": \"Trace\",\n      \"unit\": null,\n      \"reference_ranges\": [\n        \"Nil\"\n      ],\n      \"flag_printed\": \"*\"\n    },\n    {\n      \"citation\": {\n        \"page\": 3,\n        \"first_line\": 21,\n        \"last_line\": 21,\n        \"quote\": \"| Pus Cells | 2-4 | | /hpf | 0 - 5 |\"\n      },\n      \"panel\": \"URINE ROUTINE\",\n      \"test_name\": \"Pus Cells\",\n      \"value_text\": \"2-4\",\n      \"unit\": \"/hpf\",\n      \"reference_ranges\": [\n        \"0 - 5\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1466,
+    "eval_count": 1727,
+    "total_duration": 202240649400,
+    "load_duration": 11349900,
+    "prompt_eval_duration": 14960295000,
+    "eval_duration": 187190831000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "eefaab25ab78b51ca7184e5916ab1c60c59e9d45b634a700a1c230cac3159f76",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "83926b9d4ed109444d46c7f6de25b0bf00fb8341e5d0f2ed93b534f821880cbb",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"| HbA1c | 8.1 | H | % | Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5 |\"\n      },\n      \"panel\": \"GLYCATED HAEMOGLOBIN\",\n      \"test_name\": \"HbA1c\",\n      \"value_text\": \"8.1\",\n      \"unit\": \"%\",\n      \"reference_ranges\": [\n        \"Normal: < 5.7; Prediabetes: 5.7 - 6.4; Diabetes: >= 6.5\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Fasting Blood Sugar | 148 | H | mg/dL | 70 - 100 |\"\n      },\n      \"panel\": \"GLUCOSE\",\n      \"test_name\": \"Fasting Blood Sugar\",\n      \"value_text\": \"148\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"70 - 100\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 23,\n        \"last_line\": 23,\n        \"quote\": \"| Total Cholesterol | 182 | | mg/dL | Desirable: < 200; Borderline: 200 - 239; High: >= 240 |\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"Total Cholesterol\",\n      \"value_text\": \"182\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"Desirable: < 200; Borderline: 200 - 239; High: >= 240\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 24,\n        \"last_line\": 24,\n        \"quote\": \"| Triglycerides | 168 | H | mg/dL | < 150 |\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"Triglycerides\",\n      \"value_text\": \"168\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"< 150\"\n      ],\n      \"flag_printed\": \"H\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 25,\n        \"last_line\": 25,\n        \"quote\": \"| HDL Cholesterol | 44 | L | mg/dL | > 50 |\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"HDL Cholesterol\",\n      \"value_text\": \"44\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"> 50\"\n      ],\n      \"flag_printed\": \"L\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 26,\n        \"last_line\": 26,\n        \"quote\": \"| LDL Cholesterol | 104 | | mg/dL | Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160 |\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"LDL Cholesterol\",\n      \"value_text\": \"104\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"Optimal: < 100; Near optimal: 100 - 129; Borderline high: 130 - 159; High: >= 160\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 27,\n        \"last_line\": 27,\n        \"quote\": \"| VLDL Cholesterol | 33.6 | H | mg/dL | < 30 |\"\n      },\n      \"panel\": \"LIPID PROFILE\",\n      \"test_name\": \"VLDL Cholesterol\",\n      \"value_text\": \"33.6\",\n      \"unit\": \"mg/dL\",\n      \"reference_ranges\": [\n        \"< 30\"\n      ],\n      \"flag_printed\": \"H\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Interpretation: HbA1c reflects average blood glucose over the past 2-3 months.\"\n      },\n      \"text\": \"HbA1c reflects average blood glucose over the past 2-3 months.\",\n      \"kind\": \"comment\",\n      \"scope\": \"panel\",\n      \"test_name\": null,\n      \"panel\": \"GLYCATED HAEMOGLOBIN\"\n    },\n    {\n      \"citation\": {\n        \"page\": 2,\n        \"first_line\": 29,\n        \"last_line\": 29,\n        \"quote\": \"Synthetic test document: fictional patient, doctors and laboratory.\"\n      },\n      \"text\": \"Synthetic test document: fictional patient, doctors and laboratory.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 5560,
+    "eval_count": 1553,
+    "total_duration": 278884931900,
+    "load_duration": 10478000,
+    "prompt_eval_duration": 75351321000,
+    "eval_duration": 203373635000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

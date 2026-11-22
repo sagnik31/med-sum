@@ -1,0 +1,65 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "ee4f33b02991295c6e216b76df96e0f117c8b7f482d14146cbe9b7094abd86d7",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "8688202504a1702031e258728feea8fa2222f2ad3f07115fe9521d8b928527ab",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "# Kaveri Clinical Laboratory\nKothrud, Pune 411038\nName: Arjun Mehta\nAge/Gender: 41 Y/M\nPatient ID: KCL-120377\nReferred By: Dr. S. Kulkarni\nReported: 02-Apr-2025 10:05 AM\n\n## HAEMATOLOGY\n\n| Test | Result | Unit | Reference Range |\n| :--- | :--- | :--- | :--- |\n| Haemoglobin | 14.8 | g/dL | 13.0 - 17.0 |\n| Total Leucocyte Count | 7.9 | 10³/µL | 4.0 - 10.0 |\n| Platelets | 2.65 | lakh/cumm | 1.50 - 4.10 |\n\nDr. Prakash Nair, MD (Pathology)\n*** End of Report ***\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 4242,
+    "eval_count": 238,
+    "total_duration": 223888508200,
+    "load_duration": 17786600,
+    "prompt_eval_duration": 196387379000,
+    "eval_duration": 27117964000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "6b7ebc49a6af83a34e8fba50f2dd59b382c12629762bc8e89095fdfaab3ca599",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "107af9b08e2e93360c04846f446a12c25f22e6a13c488f058fec66c6cd8e3797",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"lab_report\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 421,
+    "eval_count": 14,
+    "total_duration": 9929766600,
+    "load_duration": 11561700,
+    "prompt_eval_duration": 7889006000,
+    "eval_duration": 1368169000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "d998dffeb79d85727af5770ef138c3d80acbafdef0612fe825c82f6b0382da0f",
+   "prompt": "ed9944df0cad3b8302c4a60c745790d244829ee829dc0130846bb295d5848219",
+   "input": "a6fbfb4bc6f2f50e549229532bb524eff627ebd8aa7c13acc42896519008a0d5",
+   "options": "8f4dbb25b8c8852a3b30ecc9355dea4c56df72964dc48e256e1988543ec960ec",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 3,\n        \"last_line\": 3,\n        \"quote\": \"Name: Arjun Mehta\"\n      },\n      \"text\": \"Arjun Mehta\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"Age/Gender: 41 Y/M\"\n      },\n      \"text\": \"41 Y\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"Age/Gender: 41 Y/M\"\n      },\n      \"text\": \"M\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Patient ID: KCL-120377\"\n      },\n      \"text\": \"KCL-120377\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 2,\n        \"quote\": \"# Kaveri Clinical Laboratory\\nKothrud, Pune 411038\"\n      },\n      \"text\": \"Kaveri Clinical Laboratory\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 6,\n          \"last_line\": 6,\n          \"quote\": \"Referred By: Dr. S. Kulkarni\"\n        },\n        \"text\": \"Dr. S. Kulkarni\"\n      },\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 17,\n          \"last_line\": 17,\n          \"quote\": \"Dr. Prakash Nair, MD (Pathology)\"\n        },\n        \"text\": \"Dr. Prakash Nair, MD (Pathology)\"\n      }\n    ],\n    \"report_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Reported: 02-Apr-2025 10:05 AM\"\n      },\n      \"text\": \"02-Apr-2025 10:05 AM\"\n    },\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"results\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"| Haemoglobin | 14.8 | g/dL | 13.0 - 17.0 |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Haemoglobin\",\n      \"value_text\": \"14.8\",\n      \"unit\": \"g/dL\",\n      \"reference_ranges\": [\n        \"13.0 - 17.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"| Total Leucocyte Count | 7.9 | 10³/µL | 4.0 - 10.0 |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Total Leucocyte Count\",\n      \"value_text\": \"7.9\",\n      \"unit\": \"10³/µL\",\n      \"reference_ranges\": [\n        \"4.0 - 10.0\"\n      ],\n      \"flag_printed\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| Platelets | 2.65 | lakh/cumm | 1.50 - 4.10 |\"\n      },\n      \"panel\": \"HAEMATOLOGY\",\n      \"test_name\": \"Platelets\",\n      \"value_text\": \"2.65\",\n      \"unit\": \"lakh/cumm\",\n      \"reference_ranges\": [\n        \"1.50 - 4.10\"\n      ],\n      \"flag_printed\": null\n    }\n  ],\n  \"remarks\": [],\n  \"conditions\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1347,
+    "eval_count": 1180,
+    "total_duration": 151523763900,
+    "load_duration": 15047600,
+    "prompt_eval_duration": 12576842000,
+    "eval_duration": 138087152000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

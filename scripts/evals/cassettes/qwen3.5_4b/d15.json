@@ -1,0 +1,65 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "df1966f5a149b0499f9b482724da8ba392654d58372fc788e25bf41fb6fa9b7e",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "b7d56b5be73a52eb1cdb6f01ac55fed30a58aad1e11e07f02de97ad34c916b23",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Dr. Anil Deshpande\nMBBS, MD (General Medicine)\nReg. No.: MMC-2009/04/0001\nSahaj Multispeciality Hospital, Karve Road, Pune\nPatient: Arjun Menon\nAge / Sex: 66 Y / M\nUHID: SH-100234\nMedication card (continue as advised)\n\nRx\n\n| # | Medicine | Dose | Frequency | Duration | Instructions |\n|---|---|---|---|---|---|\n| 1 | Tab. Rosuvas 10 mg | 1 tab | 0-0-1 | Continue | |\n| 2 | Tab. Ecosprin 75 mg | 1 tab | 0-1-0 | Continue | |\n\nSignature: Dr. Anil Deshpande\n\nSynthetic test document: fictional patient, doctors and laboratory.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1499,
+    "eval_count": 207,
+    "total_duration": 62542701800,
+    "load_duration": 11252300,
+    "prompt_eval_duration": 41125557000,
+    "eval_duration": 21324384000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "64ea0da7bb1dd3667f0066a355d8b4a66730fcb5cf82bb3e9a467599651fa4d2",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "6f5e93e6a4e8e74626898d70658ceb66cdd73b0bbf3911349f68a80d0441e838",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"prescription\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 390,
+    "eval_count": 14,
+    "total_duration": 8619550800,
+    "load_duration": 12173900,
+    "prompt_eval_duration": 7064350000,
+    "eval_duration": 1370172000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "faec22b4145d412911db1264554f1bb5cdc92e925269def20b36ee729e7e4270",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "631dab2b44b74cd8ae31de7f4dc2fbf79ccd7f752b570ec6e76fcdc090de1738",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Patient: Arjun Menon\"\n      },\n      \"text\": \"Arjun Menon\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"Age / Sex: 66 Y / M\"\n      },\n      \"text\": \"66 Y\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"Age / Sex: 66 Y / M\"\n      },\n      \"text\": \"M\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"UHID: SH-100234\"\n      },\n      \"text\": \"SH-100234\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"Sahaj Multispeciality Hospital, Karve Road, Pune\"\n      },\n      \"text\": \"Sahaj Multispeciality Hospital\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 1,\n          \"last_line\": 3,\n          \"quote\": \"Dr. Anil Deshpande\\nMBBS, MD (General Medicine)\\nReg. No.: MMC-2009/04/0001\"\n        },\n        \"text\": \"Dr. Anil Deshpande\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"| 1 | Tab. Rosuvas 10 mg | 1 tab | 0-0-1 | Continue | |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Rosuvas\",\n      \"strength\": \"10 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"0-0-1\",\n      \"route\": null,\n      \"duration\": \"Continue\",\n      \"instructions\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 15,\n        \"last_line\": 15,\n        \"quote\": \"| 2 | Tab. Ecosprin 75 mg | 1 tab | 0-1-0 | Continue | |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Ecosprin\",\n      \"strength\": \"75 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"0-1-0\",\n      \"route\": null,\n      \"duration\": \"Continue\",\n      \"instructions\": null\n    }\n  ],\n  \"conditions\": [],\n  \"remarks\": [],\n  \"vitals\": [],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1153,
+    "eval_count": 868,
+    "total_duration": 128920613400,
+    "load_duration": 8541700,
+    "prompt_eval_duration": 14309374000,
+    "eval_duration": 114402787000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

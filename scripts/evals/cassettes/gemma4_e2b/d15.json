@@ -1,0 +1,65 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "3e0443f21a0e528f59f53ec2ea0c760c73a39af84765e252a62d3275a0b6d66e",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "b7d56b5be73a52eb1cdb6f01ac55fed30a58aad1e11e07f02de97ad34c916b23",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Dr. Anil Deshpande\nMBBS, MD (General Medicine)\nReg. No.: MMC-2009/04/0001\nSahaj Multispeciality Hospital, Karve Road, Pune\nPatient: Arjun Menon\nAge / Sex: 66 Y / M\nUHID: SH-100234\nMedication card (continue as advised)\n\nRx\n| # | Medicine | Dose | Frequency | Duration | Instructions |\n|---|---|---|---|---|---|\n| 1 | Tab. Rosuvas 10 mg | 1 tab | 0-0-1 | Continue |\n| 2 | Tab. Escoprin 75 mg | 1 tab | 0-1-0 | Continue |\n\nSignature: Dr. Anil Deshpande\n\nSynthetic test document: fictional patient, doctors and laboratory.\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 911,
+    "eval_count": 193,
+    "total_duration": 17453711600,
+    "load_duration": 13604200,
+    "prompt_eval_duration": 11434123000,
+    "eval_duration": 5939685000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "caae65e9c994ab2c46e55696cfd05a4a39172d03b7fb36c95792ed126cb416a6",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "e219a03616e35aac6df3bdcf68d79d02a921a9d942536a63b177a768e648dceb",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"prescription\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 371,
+    "eval_count": 14,
+    "total_duration": 1897168900,
+    "load_duration": 11945100,
+    "prompt_eval_duration": 1293945000,
+    "eval_duration": 556061000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "19723845dc79b9a579598268c6bf8e6084fc607edb380341c4dd0f3707862de4",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "9f7197cde7618a083d42a09b7235fcbb70038e593b2add1b4c88a261fd74fb85",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": null,\n    \"age\": null,\n    \"sex\": null,\n    \"date_of_birth\": null,\n    \"patient_id\": null\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 1,\n          \"last_line\": 3,\n          \"quote\": \"Dr. Anil Deshpande\\nMBBS, MD (General Medicine)\\nReg. No.: MMC-2009/04/0001\"\n        },\"text\": \"Dr. Anil Deshpande\\nMBBS, MD (General Medicine)\\nReg. No.: MMC-2009/04/0001\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": null\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 13,\n        \"last_line\": 13,\n        \"quote\": \"| 1 | Tab. Rosuvas 10 mg | 1 tab | 0-0-1 | Continue\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Rosuvas\",\n      \"strength\": \"10 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": null,\n      \"route\": null,\n      \"duration\": \"0-0-1\",\n      \"instructions\": \"Continue\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 14,\n        \"last_line\": 14,\n        \"quote\": \"| 2 | Tab. Escoprin 75 mg | 1 tab | 0-1-0 | Continue\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Escoprin\",\n      \"strength\": \"75 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": null,\n      \"route\": null,\n      \"duration\": \"0-1-0\",\n      \"instructions\": \"Continue\"\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"Age / Sex: 66 Y / M\"\n      },\n      \"text\": \"Age / Sex: 66 Y / M\",\n      \"kind\": \"history\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"Medication card (continue as advised)\"\n      },\n      \"text\": \"Medication card (continue as advised)\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\n      \"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [],\n  \"allergies\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 18,\n        \"last_line\": 18,\n        \"quote\": \"Synthetic test document: fictional patient, doctors and laboratory.\"\n      },\n      \"text\": \"Synthetic test document: fictional patient, doctors and laboratory.\",\n      \"substance\": null,\n      \"reaction\": null\n    }\n  ]\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1134,
+    "eval_count": 857,
+    "total_duration": 33614187200,
+    "load_duration": 14369200,
+    "prompt_eval_duration": 3076996000,
+    "eval_duration": 30490950000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

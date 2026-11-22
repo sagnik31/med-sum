@@ -1,0 +1,125 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "6f8cd9a46736acff973e0e1ee89a9234ddbb264ddcb6ed27560ef1de9e0b98be",
+   "prompt": "b4e85ef6e706f6152073580ce57c6c7a0ed19a84aee90577742526e019168db7",
+   "input": "c9b922c4fb6711e7e32ab36c101d3d1f8eec166611f558143ab54342b0d6cc0b",
+   "options": "13b06877d71ea1614f07c39653bc9f119ea129f0ceb6e21ac304a76977a68f0a",
+   "reply": "Pillai Family Clinic\nDr. Suresh Pillai\nMBBS, MD (Medicine)\nModel Colony, Pune 411016 | Reg. No.: MMC-2007/11/0004\nPatient: Mrs. Nandini Bose, 36 F, UHID SH-100236 | Date: 15.04.2025\n\nClinical notes\nC/O: tiredness, weight gain x 3 months\nBP: 122/80 mmHg | Pulse: 64/min | Wt: 71 kg\nH/o: PCOS\nDiagnosis: Hashimoto's thyroiditis\nAdvice: Repeat TSH after 8 weeks\nSignature: Dr. Suresh Pillai\n\nRx\n1. Tab. Thyronorm 25 mcg — 1 tab — 1-0-0 — 8 weeks — Empty stomach\n2. Sachet Calcirol 60,000 IU — 1 sachet — Once a week — 8 weeks — With milk\n3. Tab. Folvite 5 mg — 1 tab — 0-1-0 — 8 weeks\n\nSynthetic test document: fictional patient, doctors and laboratory.\n\n",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1405,
+    "eval_count": 272,
+    "total_duration": 39171635600,
+    "load_duration": 11897500,
+    "prompt_eval_duration": 29922859000,
+    "eval_duration": 9108364000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "3fbdd44df80b5a7af11df15302b8eaf8ddda56d277dc3c69ef3b4e133714cb26",
+   "prompt": "b888babbf1bb762af8ffbedab9550276fd58a282629a32b339751e96b9c60d4a",
+   "input": "40791f3f07833af76cf12ac33b50abb807b87b4ad99545366fe358d54c2eb2b0",
+   "options": "788e585c90fa3699b94c55711ccaa8375e58ec02f15b37944d3085cd77a8d1da",
+   "reply": "{\n  \"document_type\": \"prescription\"\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 450,
+    "eval_count": 14,
+    "total_duration": 14429347100,
+    "load_duration": 12148567500,
+    "prompt_eval_duration": 1591879000,
+    "eval_duration": 574653000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "4adf2c7203b612df77c9931edf8c4cb08e4ec47dff64bb6ad749006433d0f07d",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "7d08a66c3900d09b3ef49e1b35bec2abc737bde9859bea097934f7511a3e20f0",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 5,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Patient: Mrs. Nandini Bose\"\n      },\n      \"text\": \"Mrs. Nandini Bose\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 5,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Patient: Mrs. Nandini Bose, 36 F\"\n      },\n      \"text\": \"36 F\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 5,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Patient: Mrs. Nandini Bose, 36 F\"\n      },\n      \"text\": \"F\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 5,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Patient: Mrs. Nandini Bose, 36 F, UHID SH-100236\"\n      },\n      \"text\": \"SH-100236\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 1,\n        \"quote\": \"Pillai Family Clinic\"\n      },\n      \"text\": \"Pillai Family Clinic\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 2,\n          \"first_line\": 2,\n          \"last_line\": 2,\n          \"quote\": \"Dr. Suresh Pillai\"\n        },\n        \"text\": \"Dr. Suresh Pillai\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": {\n      \"citation\": {\n        \"page\": 5,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Patient: Mrs. Nandini Bose, 36 F, UHID SH-100236 | Date: 15.04.2025\"\n      },\n      \"text\": \"15.04.2025\"\n    }\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 16,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"1. Tab. Thyronorm 25 mcg — 1 tab — 1-0-0 — 8 weeks — Empty stomach\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Thyronorm\",\n      \"strength\": \"25 mcg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"1-0-0\",\n      \"route\": \"Empty stomach\",\n      \"duration\": \"8 weeks\",\n      \"instructions\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 17,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"2. Sachet Calcirol 60,000 IU — 1 sachet — Once a week — 8 weeks — With milk\"\n      },\n      \"form\": \"Sachet\",\n      \"name\": \"Calcirol\",\n      \"strength\": \"60,000 IU\",\n      \"dose\": \"1 sachet\",\n      \"frequency\": \"Once a week\",\n      \"route\": \"With milk\",\n      \"duration\": \"8 weeks\",\n      \"instructions\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 18,\n        \"first_line\": 18,\n        \"last_line\": 18,\n        \"quote\": \"3. Tab. Folvite 5 mg — 1 tab — 0-1-0 — 8 weeks\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Folvite\",\n      \"strength\": \"5 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"0-1-0\",\n      \"route\": null,\n      \"duration\": \"8 weeks\",\n      \"instructions\": null\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 10,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"H/o: PCOS\"\n      },\n      \"text\": \"PCOS\",\n      \"kind\": \"history\"\n    },\n    {\n      \"citation\": {\n        \"page\": 11,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"Diagnosis: Hashimoto's thyroiditis\"\n      },\n      \"text\": \"Hashimoto's thyroiditis\",\n      \"kind\": \"diagnosis\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 12,\n        \"first_line\": 12,\n        \"last_line\": 12,\n        \"quote\": \"Advice: Repeat TSH after 8 weeks\"\n      },\n      \"text\": \"Repeat TSH after 8 weeks\",\n      \"kind\": \"advice\",\n      \"scope\": \"test\",\n      \"test_name\": \"TSH\",\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 9,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"BP: 122/80 mmHg | Pulse: 64/min | Wt: 71 kg\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"122/80\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 9,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"BP: 122/80 mmHg | Pulse: 64/min | Wt: 71 kg\"\n      },\n      \"name\": \"Pulse\",\n      \"value_text\": \"64/min\",\n      \"unit\": \"min\"\n    },\n    {\n      \"citation\": {\n        \"page\": 9,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"BP: 122/80 mmHg | Pulse: 64/min | Wt: 71 kg\"\n      },\n      \"name\": \"Wt\",\n      \"value_text\": \"71\",\n      \"unit\": \"kg\"\n    }\n  ],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1222,
+    "eval_count": 1714,
+    "total_duration": 60534812100,
+    "load_duration": 10484400,
+    "prompt_eval_duration": 4210430999,
+    "eval_duration": 56238022000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "ced75df7c4e9d9810aef1459091408ae76c01ebb8312f7bce45dba04309fec08",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "7140f4ae47cf2bb617463d966723ad9f9bd22dcda81b79b52d146f4c2df2a05c",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 5,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Patient: Mrs. Nandini Bose\"\n      },\n      \"text\": \"Mrs. Nandini Bose\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 5,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Patient: Mrs. Nandini Bose, 36 F\"\n      },\n      \"text\": \"36 F\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 5,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Patient: Mrs. Nandini Bose, 36 F\"\n      },\n      \"text\": \"F\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 5,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Patient: Mrs. Nandini Bose, 36 F, UHID SH-100236\"\n      },\n      \"text\": \"SH-100236\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 1,\n        \"quote\": \"Pillai Family Clinic\"\n      },\n      \"text\": \"Pillai Family Clinic\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 2,\n          \"first_line\": 2,\n          \"last_line\": 2,\n          \"quote\": \"Dr. Suresh Pillai\"\n        },\n        \"text\": \"Dr. Suresh Pillai\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": {\n      \"citation\": {\n        \"page\": 5,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Patient: Mrs. Nandini Bose, 36 F, UHID SH-100236 | Date: 15.04.2025\"\n      },\n      \"text\": \"15.04.2025\"\n    }\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 16,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"1. Tab. Thyronorm 25 mcg — 1 tab — 1-0-0 — 8 weeks — Empty stomach\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Thyronorm\",\n      \"strength\": \"25 mcg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"1-0-0\",\n      \"route\": \"Empty stomach\",\n      \"duration\": \"8 weeks\",\n      \"instructions\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 17,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"2. Sachet Calcirol 60,000 IU — 1 sachet — Once a week — 8 weeks — With milk\"\n      },\n      \"form\": \"Sachet\",\n      \"name\": \"Calcirol\",\n      \"strength\": \"60,000 IU\",\n      \"dose\": \"1 sachet\",\n      \"frequency\": \"Once a week\",\n      \"route\": \"With milk\",\n      \"duration\": \"8 weeks\",\n      \"instructions\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 18,\n        \"first_line\": 18,\n        \"last_line\": 18,\n        \"quote\": \"3. Tab. Folvite 5 mg — 1 tab — 0-1-0 — 8 weeks\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Folvite\",\n      \"strength\": \"5 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"0-1-0\",\n      \"route\": null,\n      \"duration\": \"8 weeks\",\n      \"instructions\": null\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 10,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"H/o: PCOS\"\n      },\n      \"text\": \"PCOS\",\n      \"kind\": \"history\"\n    },\n    {\n      \"citation\": {\n        \"page\": 11,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"Diagnosis: Hashimoto's thyroiditis\"\n      },\n      \"text\": \"Hashimoto's thyroiditis\",\n      \"kind\": \"diagnosis\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 12,\n        \"first_line\": 12,\n        \"last_line\": 12,\n        \"quote\": \"Advice: Repeat TSH after 8 weeks\"\n      },\n      \"text\": \"Repeat TSH after 8 weeks\",\n      \"kind\": \"advice\",\n      \"scope\": \"test\",\n      \"test_name\": \"TSH\",\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 9,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"BP: 122/80 mmHg | Pulse: 64/min | Wt: 71 kg\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"122/80\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 9,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"BP: 122/80 mmHg | Pulse: 64/min | Wt: 71 kg\"\n      },\n      \"name\": \"Pulse\",\n      \"value_text\": \"64/min\",\n      \"unit\": \"min\"\n    },\n    {\n      \"citation\": {\n        \"page\": 9,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"BP: 122/80 mmHg | Pulse: 64/min | Wt: 71 kg\"\n      },\n      \"name\": \"Wt\",\n      \"value_text\": \"71\",\n      \"unit\": \"kg\"\n    }\n  ],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3847,
+    "eval_count": 1707,
+    "total_duration": 69754942700,
+    "load_duration": 9758100,
+    "prompt_eval_duration": 9897763000,
+    "eval_duration": 59785745000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "ced75df7c4e9d9810aef1459091408ae76c01ebb8312f7bce45dba04309fec08",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "7140f4ae47cf2bb617463d966723ad9f9bd22dcda81b79b52d146f4c2df2a05c",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 5,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Patient: Mrs. Nandini Bose\"\n      },\n      \"text\": \"Mrs. Nandini Bose\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 5,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Patient: Mrs. Nandini Bose, 36 F\"\n      },\n      \"text\": \"36 F\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 5,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Patient: Mrs. Nandini Bose, 36 F\"\n      },\n      \"text\": \"F\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 5,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Patient: Mrs. Nandini Bose, 36 F, UHID SH-100236\"\n      },\n      \"text\": \"SH-100236\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 1,\n        \"last_line\": 1,\n        \"quote\": \"Pillai Family Clinic\"\n      },\n      \"text\": \"Pillai Family Clinic\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 2,\n          \"first_line\": 2,\n          \"last_line\": 2,\n          \"quote\": \"Dr. Suresh Pillai\"\n        },\n        \"text\": \"Dr. Suresh Pillai\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": {\n      \"citation\": {\n        \"page\": 5,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Patient: Mrs. Nandini Bose, 36 F, UHID SH-100236 | Date: 15.04.2025\"\n      },\n      \"text\": \"15.04.2025\"\n    }\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 16,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"1. Tab. Thyronorm 25 mcg — 1 tab — 1-0-0 — 8 weeks — Empty stomach\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Thyronorm\",\n      \"strength\": \"25 mcg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"1-0-0\",\n      \"route\": \"Empty stomach\",\n      \"duration\": \"8 weeks\",\n      \"instructions\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 17,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"2. Sachet Calcirol 60,000 IU — 1 sachet — Once a week — 8 weeks — With milk\"\n      },\n      \"form\": \"Sachet\",\n      \"name\": \"Calcirol\",\n      \"strength\": \"60,000 IU\",\n      \"dose\": \"1 sachet\",\n      \"frequency\": \"Once a week\",\n      \"route\": \"With milk\",\n      \"duration\": \"8 weeks\",\n      \"instructions\": null\n    },\n    {\n      \"citation\": {\n        \"page\": 18,\n        \"first_line\": 18,\n        \"last_line\": 18,\n        \"quote\": \"3. Tab. Folvite 5 mg — 1 tab — 0-1-0 — 8 weeks\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Folvite\",\n      \"strength\": \"5 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"0-1-0\",\n      \"route\": null,\n      \"duration\": \"8 weeks\",\n      \"instructions\": null\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 10,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"H/o: PCOS\"\n      },\n      \"text\": \"PCOS\",\n      \"kind\": \"history\"\n    },\n    {\n      \"citation\": {\n        \"page\": 11,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"Diagnosis: Hashimoto's thyroiditis\"\n      },\n      \"text\": \"Hashimoto's thyroiditis\",\n      \"kind\": \"diagnosis\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 12,\n        \"first_line\": 12,\n        \"last_line\": 12,\n        \"quote\": \"Advice: Repeat TSH after 8 weeks\"\n      },\n      \"text\": \"Repeat TSH after 8 weeks\",\n      \"kind\": \"advice\",\n      \"scope\": \"test\",\n      \"test_name\": \"TSH\",\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 9,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"BP: 122/80 mmHg | Pulse: 64/min | Wt: 71 kg\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"122/80\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 9,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"BP: 122/80 mmHg | Pulse: 64/min | Wt: 71 kg\"\n      },\n      \"name\": \"Pulse\",\n      \"value_text\": \"64/min\",\n      \"unit\": \"min\"\n    },\n    {\n      \"citation\": {\n        \"page\": 9,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"BP: 122/80 mmHg | Pulse: 64/min | Wt: 71 kg\"\n      },\n      \"name\": \"Wt\",\n      \"value_text\": \"71\",\n      \"unit\": \"kg\"\n    }\n  ],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3847,
+    "eval_count": 1707,
+    "total_duration": 58846751700,
+    "load_duration": 14110500,
+    "prompt_eval_duration": 164567000,
+    "eval_duration": 58631991000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "b32f26c302f9f20a25aa06c5b4c528d7b356e660550dabe63bb34452feefffd9",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "7d08a66c3900d09b3ef49e1b35bec2abc737bde9859bea097934f7511a3e20f0",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Mrs. Nandini Bose\"\n      },\"text\": \"Mrs. Nandini Bose\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"36 F\"\n      },\n      \"text\": \"36 F\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"36 F\"\n      },\n      \"text\": \"F\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"UHID SH-100236\"\n      },\n      \"text\": \"SH-100236\"\n    }\n  },\n  \"details\": {\n    \"facility\": null,\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 2,\n          \"last_line\": 3,\n          \"quote\": \"Dr. Suresh Pillai\"\n        },\n        \"text\": \"Dr. Suresh Pillai\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"15.04.2025\"\n      },\n      \"text\": \"15.04.2025\"\n    }\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 16,\n        \"last_line\": 16,\n        \"quote\": \"1. Tab. Thyronorm 25 mcg — 1 tab — 1-0-0 — 8 weeks — Empty stomach\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Thyronorm\",\n      \"strength\": \"25 mcg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"1-0-0\",\n      \"route\": null,\n      \"duration\": \"8 weeks\",\n      \"instructions\": \"Empty stomach\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"2. Sachet Calcirol 60,000 IU — 1 sachet — Once a week — 8 weeks — With milk\"\n      },\n      \"form\": \"Sachet\",\n      \"name\": \"Calcirol\",\n      \"strength\": \"60,000 IU\",\n      \"dose\": \"1 sachet\",\n      \"frequency\": \"Once a week\",\n      \"route\": null,\n      \"duration\": \"8 weeks\",\n      \"instructions\": \"With milk\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 18,\n        \"last_line\": 18,\n        \"quote\": \"3. Tab. Folvite 5 mg — 1 tab — 0-1-0 — 8 weeks\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Folvite\",\n      \"strength\": \"5 mg\",\n      \"dose\": \"1 tab\",\n      \"frequency\": \"0-1-0\",\n      \"route\": null,\n      \"duration\": \"8 weeks\",\n      \"instructions\": null\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"H/o: PCOS\"\n      },\n      \"text\": \"PCOS\",\n      \"kind\": \"history\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"Diagnosis: Hashimoto's thyroiditis\"\n      },\n      \"text\": \"Hashimoto's thyroiditis\",\n      \"kind\": \"diagnosis\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 12,\n        \"last_line\": 12,\n        \"quote\": \"Advice: Repeat TSH after 8 weeks\"\n      },\n      \"text\": \"Repeat TSH after 8 weeks\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"BP: 122/80 mmHg\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"122/80\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Pulse: 64/min\"\n      },\n      \"name\": \"Pulse\",\n      \"value_text\": \"64\",\n      \"unit\": \"/min\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Wt: 71 kg\"\n      },\n      \"name\": \"Wt\",\n      \"value_text\": \"71\",\n      \"unit\": \"kg\"\n    }\n  ],\n  \"allergies\": []\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1230,
+    "eval_count": 1513,
+    "total_duration": 183344251700,
+    "load_duration": 12325100,
+    "prompt_eval_duration": 16880325000,
+    "eval_duration": 165504676000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}
