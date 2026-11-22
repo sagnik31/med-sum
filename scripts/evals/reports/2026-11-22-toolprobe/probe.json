@@ -1,0 +1,553 @@
+{
+  "cases": [
+    "explicit_lines",
+    "finding_cites_a_line",
+    "finding_on_page_two",
+    "find_the_right_line",
+    "search_for_a_value",
+    "search_for_a_test_name",
+    "no_tool_needed"
+  ],
+  "models": {
+    "qwen3.5:4b": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+    "gemma4:e2b": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2"
+  },
+  "summary": {
+    "qwen3.5:4b": {
+      "passed": 6,
+      "cases": 7,
+      "called_when_needed": 6,
+      "on_target": 6,
+      "tool_cases": 6,
+      "seconds": 158.6
+    },
+    "gemma4:e2b": {
+      "passed": 7,
+      "cases": 7,
+      "called_when_needed": 6,
+      "on_target": 6,
+      "tool_cases": 6,
+      "seconds": 23.6
+    }
+  },
+  "results": [
+    {
+      "case": "explicit_lines",
+      "model": "qwen3.5:4b",
+      "called": true,
+      "right_tool": true,
+      "well_formed": true,
+      "exact_types": true,
+      "on_target": true,
+      "answered": null,
+      "passed": true,
+      "error": null,
+      "turns": [
+        {
+          "seconds": 21.1,
+          "prompt_tokens": 970,
+          "completion_tokens": 51,
+          "calls": [
+            {
+              "name": "get_lines",
+              "arguments": {
+                "page": 1,
+                "first": 8,
+                "last": 10
+              },
+              "tool": "get_lines",
+              "ok": true,
+              "lines_returned": 3,
+              "exact_types": true
+            }
+          ],
+          "content_chars": 0
+        }
+      ],
+      "final_reply": ""
+    },
+    {
+      "case": "finding_cites_a_line",
+      "model": "qwen3.5:4b",
+      "called": true,
+      "right_tool": true,
+      "well_formed": true,
+      "exact_types": true,
+      "on_target": true,
+      "answered": null,
+      "passed": true,
+      "error": null,
+      "turns": [
+        {
+          "seconds": 21.5,
+          "prompt_tokens": 1003,
+          "completion_tokens": 51,
+          "calls": [
+            {
+              "name": "get_lines",
+              "arguments": {
+                "page": 1,
+                "first": 7,
+                "last": 11
+              },
+              "tool": "get_lines",
+              "ok": true,
+              "lines_returned": 5,
+              "exact_types": true
+            }
+          ],
+          "content_chars": 0
+        }
+      ],
+      "final_reply": ""
+    },
+    {
+      "case": "finding_on_page_two",
+      "model": "qwen3.5:4b",
+      "called": true,
+      "right_tool": true,
+      "well_formed": true,
+      "exact_types": true,
+      "on_target": true,
+      "answered": null,
+      "passed": true,
+      "error": null,
+      "turns": [
+        {
+          "seconds": 21.7,
+          "prompt_tokens": 996,
+          "completion_tokens": 50,
+          "calls": [
+            {
+              "name": "get_lines",
+              "arguments": {
+                "page": 2,
+                "first": 4,
+                "last": 4
+              },
+              "tool": "get_lines",
+              "ok": true,
+              "lines_returned": 1,
+              "exact_types": true
+            }
+          ],
+          "content_chars": 0
+        }
+      ],
+      "final_reply": ""
+    },
+    {
+      "case": "find_the_right_line",
+      "model": "qwen3.5:4b",
+      "called": true,
+      "right_tool": true,
+      "well_formed": true,
+      "exact_types": true,
+      "on_target": true,
+      "answered": true,
+      "passed": true,
+      "error": null,
+      "turns": [
+        {
+          "seconds": 22.8,
+          "prompt_tokens": 1022,
+          "completion_tokens": 52,
+          "calls": [
+            {
+              "name": "get_lines",
+              "arguments": {
+                "page": 1,
+                "first": 11,
+                "last": 16
+              },
+              "tool": "get_lines",
+              "ok": true,
+              "lines_returned": 6,
+              "exact_types": true
+            }
+          ],
+          "content_chars": 0
+        },
+        {
+          "seconds": 4.3,
+          "prompt_tokens": 1249,
+          "completion_tokens": 3,
+          "calls": [],
+          "content_chars": 2
+        }
+      ],
+      "final_reply": "15"
+    },
+    {
+      "case": "search_for_a_value",
+      "model": "qwen3.5:4b",
+      "called": true,
+      "right_tool": true,
+      "well_formed": true,
+      "exact_types": true,
+      "on_target": true,
+      "answered": true,
+      "passed": true,
+      "error": null,
+      "turns": [
+        {
+          "seconds": 19.5,
+          "prompt_tokens": 1013,
+          "completion_tokens": 28,
+          "calls": [
+            {
+              "name": "search_transcription",
+              "arguments": {
+                "text": "6.9"
+              },
+              "tool": "search_transcription",
+              "ok": true,
+              "hits": 1,
+              "exact_types": true
+            }
+          ],
+          "content_chars": 0
+        },
+        {
+          "seconds": 2.3,
+          "prompt_tokens": 1107,
+          "completion_tokens": 6,
+          "calls": [],
+          "content_chars": 5
+        }
+      ],
+      "final_reply": "p1:10"
+    },
+    {
+      "case": "search_for_a_test_name",
+      "model": "qwen3.5:4b",
+      "called": true,
+      "right_tool": true,
+      "well_formed": true,
+      "exact_types": true,
+      "on_target": true,
+      "answered": true,
+      "passed": true,
+      "error": null,
+      "turns": [
+        {
+          "seconds": 19.5,
+          "prompt_tokens": 980,
+          "completion_tokens": 31,
+          "calls": [
+            {
+              "name": "search_transcription",
+              "arguments": {
+                "text": "Post Prandial Glucose"
+              },
+              "tool": "search_transcription",
+              "ok": true,
+              "hits": 1,
+              "exact_types": true
+            }
+          ],
+          "content_chars": 0
+        },
+        {
+          "seconds": 2.2,
+          "prompt_tokens": 1076,
+          "completion_tokens": 5,
+          "calls": [],
+          "content_chars": 4
+        }
+      ],
+      "final_reply": "p2:5"
+    },
+    {
+      "case": "no_tool_needed",
+      "model": "qwen3.5:4b",
+      "called": true,
+      "right_tool": false,
+      "well_formed": true,
+      "exact_types": true,
+      "on_target": false,
+      "answered": true,
+      "passed": false,
+      "error": null,
+      "turns": [
+        {
+          "seconds": 21.5,
+          "prompt_tokens": 985,
+          "completion_tokens": 50,
+          "calls": [
+            {
+              "name": "get_lines",
+              "arguments": {
+                "page": 2,
+                "first": 8,
+                "last": 8
+              },
+              "tool": "get_lines",
+              "ok": true,
+              "lines_returned": 1,
+              "exact_types": true
+            }
+          ],
+          "content_chars": 0
+        },
+        {
+          "seconds": 2.2,
+          "prompt_tokens": 1092,
+          "completion_tokens": 2,
+          "calls": [],
+          "content_chars": 2
+        }
+      ],
+      "final_reply": "No"
+    },
+    {
+      "case": "explicit_lines",
+      "model": "gemma4:e2b",
+      "called": true,
+      "right_tool": true,
+      "well_formed": true,
+      "exact_types": true,
+      "on_target": true,
+      "answered": null,
+      "passed": true,
+      "error": null,
+      "turns": [
+        {
+          "seconds": 16.0,
+          "prompt_tokens": 719,
+          "completion_tokens": 22,
+          "calls": [
+            {
+              "name": "get_lines",
+              "arguments": {
+                "first": 8,
+                "last": 10,
+                "page": 1
+              },
+              "tool": "get_lines",
+              "ok": true,
+              "lines_returned": 3,
+              "exact_types": true
+            }
+          ],
+          "content_chars": 0
+        }
+      ],
+      "final_reply": ""
+    },
+    {
+      "case": "finding_cites_a_line",
+      "model": "gemma4:e2b",
+      "called": true,
+      "right_tool": true,
+      "well_formed": true,
+      "exact_types": true,
+      "on_target": true,
+      "answered": null,
+      "passed": true,
+      "error": null,
+      "turns": [
+        {
+          "seconds": 1.1,
+          "prompt_tokens": 752,
+          "completion_tokens": 22,
+          "calls": [
+            {
+              "name": "get_lines",
+              "arguments": {
+                "first": 7,
+                "last": 11,
+                "page": 1
+              },
+              "tool": "get_lines",
+              "ok": true,
+              "lines_returned": 5,
+              "exact_types": true
+            }
+          ],
+          "content_chars": 0
+        }
+      ],
+      "final_reply": ""
+    },
+    {
+      "case": "finding_on_page_two",
+      "model": "gemma4:e2b",
+      "called": true,
+      "right_tool": true,
+      "well_formed": true,
+      "exact_types": true,
+      "on_target": true,
+      "answered": null,
+      "passed": true,
+      "error": null,
+      "turns": [
+        {
+          "seconds": 1.0,
+          "prompt_tokens": 744,
+          "completion_tokens": 21,
+          "calls": [
+            {
+              "name": "get_lines",
+              "arguments": {
+                "first": 4,
+                "last": 4,
+                "page": 2
+              },
+              "tool": "get_lines",
+              "ok": true,
+              "lines_returned": 1,
+              "exact_types": true
+            }
+          ],
+          "content_chars": 0
+        }
+      ],
+      "final_reply": ""
+    },
+    {
+      "case": "find_the_right_line",
+      "model": "gemma4:e2b",
+      "called": true,
+      "right_tool": true,
+      "well_formed": true,
+      "exact_types": true,
+      "on_target": true,
+      "answered": true,
+      "passed": true,
+      "error": null,
+      "turns": [
+        {
+          "seconds": 1.2,
+          "prompt_tokens": 770,
+          "completion_tokens": 23,
+          "calls": [
+            {
+              "name": "get_lines",
+              "arguments": {
+                "first": 11,
+                "last": 16,
+                "page": 1
+              },
+              "tool": "get_lines",
+              "ok": true,
+              "lines_returned": 6,
+              "exact_types": true
+            }
+          ],
+          "content_chars": 0
+        },
+        {
+          "seconds": 1.0,
+          "prompt_tokens": 964,
+          "completion_tokens": 3,
+          "calls": [],
+          "content_chars": 2
+        }
+      ],
+      "final_reply": "15"
+    },
+    {
+      "case": "search_for_a_value",
+      "model": "gemma4:e2b",
+      "called": true,
+      "right_tool": true,
+      "well_formed": true,
+      "exact_types": true,
+      "on_target": true,
+      "answered": true,
+      "passed": true,
+      "error": null,
+      "turns": [
+        {
+          "seconds": 0.9,
+          "prompt_tokens": 762,
+          "completion_tokens": 18,
+          "calls": [
+            {
+              "name": "search_transcription",
+              "arguments": {
+                "text": "6.9"
+              },
+              "tool": "search_transcription",
+              "ok": true,
+              "hits": 1,
+              "exact_types": true
+            }
+          ],
+          "content_chars": 0
+        },
+        {
+          "seconds": 0.6,
+          "prompt_tokens": 846,
+          "completion_tokens": 6,
+          "calls": [],
+          "content_chars": 5
+        }
+      ],
+      "final_reply": "p1:10"
+    },
+    {
+      "case": "search_for_a_test_name",
+      "model": "gemma4:e2b",
+      "called": true,
+      "right_tool": true,
+      "well_formed": true,
+      "exact_types": true,
+      "on_target": true,
+      "answered": true,
+      "passed": true,
+      "error": null,
+      "turns": [
+        {
+          "seconds": 0.9,
+          "prompt_tokens": 727,
+          "completion_tokens": 19,
+          "calls": [
+            {
+              "name": "search_transcription",
+              "arguments": {
+                "text": "Post Prandial Glucose"
+              },
+              "tool": "search_transcription",
+              "ok": true,
+              "hits": 1,
+              "exact_types": true
+            }
+          ],
+          "content_chars": 0
+        },
+        {
+          "seconds": 0.5,
+          "prompt_tokens": 809,
+          "completion_tokens": 5,
+          "calls": [],
+          "content_chars": 4
+        }
+      ],
+      "final_reply": "p2:5"
+    },
+    {
+      "case": "no_tool_needed",
+      "model": "gemma4:e2b",
+      "called": false,
+      "right_tool": false,
+      "well_formed": false,
+      "exact_types": false,
+      "on_target": false,
+      "answered": true,
+      "passed": true,
+      "error": null,
+      "turns": [
+        {
+          "seconds": 0.4,
+          "prompt_tokens": 734,
+          "completion_tokens": 2,
+          "calls": [],
+          "content_chars": 2
+        }
+      ],
+      "final_reply": "no"
+    }
+  ]
+}

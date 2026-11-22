@@ -1,0 +1,34 @@
+model | case | called | right tool | well formed | exact types | on target | answered | result | time | tokens | error
+qwen3.5:4b | explicit_lines | yes | yes | yes | yes | yes | - | PASS | 21s | 1021 | 
+qwen3.5:4b | finding_cites_a_line | yes | yes | yes | yes | yes | - | PASS | 22s | 1054 | 
+qwen3.5:4b | finding_on_page_two | yes | yes | yes | yes | yes | - | PASS | 22s | 1046 | 
+qwen3.5:4b | find_the_right_line | yes | yes | yes | yes | yes | yes | PASS | 27s | 2326 | 
+qwen3.5:4b | search_for_a_value | yes | yes | yes | yes | yes | yes | PASS | 22s | 2154 | 
+qwen3.5:4b | search_for_a_test_name | yes | yes | yes | yes | yes | yes | PASS | 22s | 2092 | 
+qwen3.5:4b | no_tool_needed | yes | no | yes | yes | no | yes | fail | 24s | 2129 | 
+gemma4:e2b | explicit_lines | yes | yes | yes | yes | yes | - | PASS | 16s | 741 | 
+gemma4:e2b | finding_cites_a_line | yes | yes | yes | yes | yes | - | PASS | 1s | 774 | 
+gemma4:e2b | finding_on_page_two | yes | yes | yes | yes | yes | - | PASS | 1s | 765 | 
+gemma4:e2b | find_the_right_line | yes | yes | yes | yes | yes | yes | PASS | 2s | 1760 | 
+gemma4:e2b | search_for_a_value | yes | yes | yes | yes | yes | yes | PASS | 2s | 1632 | 
+gemma4:e2b | search_for_a_test_name | yes | yes | yes | yes | yes | yes | PASS | 1s | 1560 | 
+gemma4:e2b | no_tool_needed | no | no | no | no | no | yes | PASS | 0s | 736 | 
+{
+  "qwen3.5:4b": {
+    "passed": 6,
+    "cases": 7,
+    "called_when_needed": 6,
+    "on_target": 6,
+    "tool_cases": 6,
+    "seconds": 158.6
+  },
+  "gemma4:e2b": {
+    "passed": 7,
+    "cases": 7,
+    "called_when_needed": 6,
+    "on_target": 6,
+    "tool_cases": 6,
+    "seconds": 23.6
+  }
+}
+wrote D:\Project\med-sum\scripts\evals\results\2026-11-22-tool-probe\probe.json
