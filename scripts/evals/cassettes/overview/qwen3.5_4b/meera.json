@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "1c6b78de1523b92d4a05ef58db036bde8ec87294f2c9d13c0013ddef496b02d5",
+   "prompt": "4e554a6e3b6abf62ab2e1af5c2164f21449ccecf0c9d7db0171f3797650415f4",
+   "input": "8f1e3ce8a510d7a417d9796534a956003b2085a5e8dc8d77f1149b7e4070210f",
+   "options": "9692a5b6e0734a49f4ed2a5addc0042013fb287216b171b27d4f69facfb2f4d4",
+   "reply": "Five documents from 2024-06-14 to 2025-04-12 include flagged values such as Haemoglobin 11.9 g/dL, PCV 33.2 %, MCV 81 fL, MCH 25.4 pg, MCHC 31.3 g/dL, RDW-CV 16.2 %, HbA1c 7.0 %, Fasting Plasma Glucose 132 mg/dL, Triglycerides 168 mg/dL, HDL Cholesterol 44 mg/dL, VLDL Cholesterol 33.6 mg/dL, Serum Iron 48 µg/dL, TIBC 412 µg/dL, Transferrin Saturation 11.7 %, and Serum Ferritin 9.8 ng/mL. Trends show Haemoglobin, MCV, and Platelet Count rising based on three or two reports, while HbA1c and Fasting Plasma Glucose are falling based on three or two reports. The latest prescription from 2025-01-10 holds Glycomet GP, Telma 40 mg, Orofer XT, Pan 40 mg, and Dolo 650 mg. Diagnoses stated include Hypertension, Type 2 diabetes mellitus, Microcytic anaemia, T2DM, and Iron deficiency anaemia.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1487,
+    "eval_count": 314,
+    "total_duration": 70764889800,
+    "load_duration": 12425272600,
+    "prompt_eval_duration": 24836415000,
+    "eval_duration": 33371667000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

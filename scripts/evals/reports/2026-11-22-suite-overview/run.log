@@ -1,0 +1,15 @@
+qwen3.5:4b/meera: 71 s, shown; 11 units left, about 13 min left
+qwen3.5:4b/rohan: 33 s, shown; 10 units left, about 9 min left
+qwen3.5:4b/fatima: 44 s, shown; 9 units left, about 7 min left
+qwen3.5:4b/arjun: 64 s, rejected; 8 units left, about 7 min left
+qwen3.5:4b/kabir: 34 s, shown; 7 units left, about 6 min left
+qwen3.5:4b/nandini: 51 s, shown; 6 units left, about 5 min left
+qwen3.5:4b: 6 patients
+gemma4:e2b/meera: 40 s, rejected; 5 units left, about 4 min left
+gemma4:e2b/rohan: 17 s, rejected; 4 units left, about 3 min left
+gemma4:e2b/fatima: 14 s, shown; 3 units left, about 2 min left
+gemma4:e2b/arjun: 14 s, rejected; 2 units left, about 1 min left
+gemma4:e2b/kabir: 17 s, rejected; 1 units left, about 1 min left
+gemma4:e2b/nandini: 14 s, rejected; 0 units left
+gemma4:e2b: 6 patients
+wrote D:\Project\med-sum\scripts\evals\reports\2026-11-22-suite-overview\report.json and D:\Project\med-sum\scripts\evals\reports\2026-11-22-suite-overview\report.md, and judge.json and judge.md to judge

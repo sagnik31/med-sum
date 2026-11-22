@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "ba2e4db9228437a962c1c28627b38ade4eeee0428f752b5d0696247993256a9f",
+   "prompt": "4e554a6e3b6abf62ab2e1af5c2164f21449ccecf0c9d7db0171f3797650415f4",
+   "input": "4a518d8171bcc0a5406720842f899a84e832ba8cbd0fa07d512746fc650f1766",
+   "options": "9692a5b6e0734a49f4ed2a5addc0042013fb287216b171b27d4f69facfb2f4d4",
+   "reply": "Three documents from 2025-04-12 to 2025-06-18 include flagged values for Anti-TPO Antibodies 142 IU/mL, Haemoglobin 11.9 g/dL, MCV 82 fL, and Vitamin B12 180 pg/mL, with trends showing TSH, Haemoglobin, and MCV falling or rising based on two reports. The latest prescription from 2025-04-15 holds Tab. Thyronorm 25 mcg, Sachet Calcirol 60,000 IU, and Tab. Folvite 5 mg, while stated history and diagnosis include PCOS and Hashimoto's thyroiditis.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 753,
+    "eval_count": 162,
+    "total_duration": 29831802200,
+    "load_duration": 8438500,
+    "prompt_eval_duration": 12866185000,
+    "eval_duration": 16892486000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "ef6880f465459dd173c5fbdb0eacc78110b8eb1a207642aff8075d12bc30f182",
+   "prompt": "4e554a6e3b6abf62ab2e1af5c2164f21449ccecf0c9d7db0171f3797650415f4",
+   "input": "35c080dbee135fd00129541fcde1ead569936784bc53a30734e247cb4452c6cd",
+   "options": "9692a5b6e0734a49f4ed2a5addc0042013fb287216b171b27d4f69facfb2f4d4",
+   "reply": "Three documents from 2025-04-12 to 2025-06-18 include flagged values for Anti-TPO Antibodies 142 IU/mL, Haemoglobin 11.9 g/dL, MCV 82 fL, and Vitamin B12 180 pg/mL, with trends for TSH, Haemoglobin, and MCV based on two reports. The latest prescription from 2025-04-15 holds Tab. Thyronorm 25 mcg, Sachet Calcirol 60,000 IU, and Tab. Folvite 5 mg, while stated history and diagnosis include PCOS and Hashimoto's thyroiditis.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 966,
+    "eval_count": 159,
+    "total_duration": 20636946400,
+    "load_duration": 8554900,
+    "prompt_eval_duration": 4079218000,
+    "eval_duration": 16538059000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

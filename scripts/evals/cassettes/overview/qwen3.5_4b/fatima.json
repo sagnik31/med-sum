@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "a3f88bd85da9bf2691d93536ce49ba7bfaee2cee21ec900bf7d92f0ba124dc1f",
+   "prompt": "4e554a6e3b6abf62ab2e1af5c2164f21449ccecf0c9d7db0171f3797650415f4",
+   "input": "df409087de04258c4e3fb88ea00787e584a70c36ddda009a1a8bbd2f789b3ce0",
+   "options": "9692a5b6e0734a49f4ed2a5addc0042013fb287216b171b27d4f69facfb2f4d4",
+   "reply": "Four documents from 2024-09-05 to 2025-03-15 include a latest report flagging Vitamin D (25-OH) at 18.4 ng/mL and a trend of falling TSH based on two reports. The latest prescription from 2025-03-15 holds Thyronorm 50 mcg and Uprise-D3 60K, while stated diagnoses include Hypothyroidism and Vitamin D deficiency. Allergies to Penicillin causing hives are recorded in 2024-09-09 and 2025-03-15.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 589,
+    "eval_count": 145,
+    "total_duration": 25023419800,
+    "load_duration": 6490100,
+    "prompt_eval_duration": 10044206000,
+    "eval_duration": 14915010000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "95963d045a938e54b70e66e0839c7f9143ae8e64ec0af216d6e5beb5411423e1",
+   "prompt": "4e554a6e3b6abf62ab2e1af5c2164f21449ccecf0c9d7db0171f3797650415f4",
+   "input": "46898d5f7c0d8b826e1c3457c451873d8995508db1bd534d9f74194a3b2b84a3",
+   "options": "9692a5b6e0734a49f4ed2a5addc0042013fb287216b171b27d4f69facfb2f4d4",
+   "reply": "Four documents from 2024-09-05 to 2025-03-15 include a latest report with Vitamin D (25-OH) 18.4 ng/mL and a trend of falling TSH based on two reports. The latest prescription from 2025-03-15 holds Thyronorm 50 mcg and Uprise-D3 60K, while stated diagnoses include Hypothyroidism and Vitamin D deficiency. Allergies to Penicillin - hives are recorded in 2024-09-09 and 2025-03-15.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 788,
+    "eval_count": 143,
+    "total_duration": 18558949000,
+    "load_duration": 16100300,
+    "prompt_eval_duration": 3706428000,
+    "eval_duration": 14813765000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

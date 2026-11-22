@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "17252c72380c566fe76a84c91dc8d138bfdc2c1edc077d7e4c5c9f51a5cabe0e",
+   "prompt": "4e554a6e3b6abf62ab2e1af5c2164f21449ccecf0c9d7db0171f3797650415f4",
+   "input": "4a518d8171bcc0a5406720842f899a84e832ba8cbd0fa07d512746fc650f1766",
+   "options": "9692a5b6e0734a49f4ed2a5addc0042013fb287216b171b27d4f69facfb2f4d4",
+   "reply": "Three documents were reviewed between 2025-04-12 and 2025-06-18. The latest reports flag Anti-TPO Antibodies at 142 IU/mL, Haemoglobin at 11.9 g/dL, MCV at 82 fL, and Vitamin B12 at 180 pg/mL. The TSH shows a falling trend based on 2 reports, and Haemoglobin, MCV, and Vitamin B12 show rising trends based on 2 reports. The latest prescription includes Tab. Thyronorm 25 mcg, Sachet Calcirol 60,000 IU, and Tab. Folvite 5 mg. Diagnoses stated include PCOS and Hashimoto's thyroiditis.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 744,
+    "eval_count": 166,
+    "total_duration": 8461788100,
+    "load_duration": 12611600,
+    "prompt_eval_duration": 2308240000,
+    "eval_duration": 6115886000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "d088ce9419e692bc580336d2e103c91f135c7945baa34cfb5cd053bb59293079",
+   "prompt": "4e554a6e3b6abf62ab2e1af5c2164f21449ccecf0c9d7db0171f3797650415f4",
+   "input": "c44209961a7e30ac785ce2cb7dfdc1e1f2f322d28ec982e97c2b99af53fe2081",
+   "options": "9692a5b6e0734a49f4ed2a5addc0042013fb287216b171b27d4f69facfb2f4d4",
+   "reply": "Three documents were reviewed between 2025-04-12 and 2025-06-18. The latest reports flag Anti-TPO Antibodies at 142 IU/mL, Haemoglobin at 11.9 g/dL, MCV at 82 fL, and Vitamin B12 at 180 pg/mL. The TSH shows a falling trend based on 2 reports, and Haemoglobin, MCV, and Vitamin B12 show rising trends based on 2 reports. The latest prescription includes Tab. Thyronorm 25 mcg, Sachet Calcirol 60,000 IU, and Tab. Folvite 5 mg. Diagnoses stated include PCOS and Hashimoto's thyroiditis.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 979,
+    "eval_count": 166,
+    "total_duration": 5666840100,
+    "load_duration": 7279400,
+    "prompt_eval_duration": 494706000,
+    "eval_duration": 5151769000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

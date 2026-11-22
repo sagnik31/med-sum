@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "a7f00d0d95b2a314fd1262a79629c321a408a1f4d25e3b81a9a0406ed5f758f2",
+   "prompt": "4e554a6e3b6abf62ab2e1af5c2164f21449ccecf0c9d7db0171f3797650415f4",
+   "input": "f83848f82cecf8e1ff3261b68a93e2b74c8e3f4cf555ef16ceb13687f73f611f",
+   "options": "9692a5b6e0734a49f4ed2a5addc0042013fb287216b171b27d4f69facfb2f4d4",
+   "reply": "Three documents were reviewed between 2025-02-03 and 2025-05-20. The latest report from 2025-02-03 flagged Blood Urea at 46 mg/dL, Blood Urea Nitrogen (BUN) at 21.5 mg/dL, Serum Creatinine at 1.6 mg/dL, eGFR at 54 mL/min/1.73m², and Uric Acid at 7.8 mg/dL. The SGPT (ALT) was flagged at 48 U/L in the report dated 2025-05-20. The latest prescription includes Tab. Amlong 5 mg, Tab. Atorva 20 mg, and Tab. Pantocid 40 mg. Diagnoses stated include Hypertension (2025-02-10) and Chronic kidney disease, to be evaluated (2025-02-10).",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 750,
+    "eval_count": 216,
+    "total_duration": 9879844000,
+    "load_duration": 10963400,
+    "prompt_eval_duration": 2340823000,
+    "eval_duration": 7495828000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "9d8ee7a6facbd5e64d464f1c3488c7add854c1b3c04f49fafb0f7503826b90da",
+   "prompt": "4e554a6e3b6abf62ab2e1af5c2164f21449ccecf0c9d7db0171f3797650415f4",
+   "input": "3405e1a7145c8cfa3e3e4f01065a702cdf777675c9811b7d2f731a3df74e1217",
+   "options": "9692a5b6e0734a49f4ed2a5addc0042013fb287216b171b27d4f69facfb2f4d4",
+   "reply": "Three documents were reviewed between 2025-02-03 and 2025-05-20. The latest report from 2025-02-03 flagged Blood Urea at 46 mg/dL, Blood Urea Nitrogen (BUN) at 21.5 mg/dL, Serum Creatinine at 1.6 mg/dL, eGFR at 54 mL/min/1.73m², and Uric Acid at 7.8 mg/dL. The SGPT (ALT) was flagged at 48 U/L in the report dated 2025-05-20. The latest prescription includes Tab. Amlong 5 mg, Tab. Atorva 20 mg, and Tab. Pantocid 40 mg. Diagnoses stated include Hypertension (2025-02-10) and Chronic kidney disease, to be evaluated (2025-02-10).",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1035,
+    "eval_count": 216,
+    "total_duration": 6564288700,
+    "load_duration": 11508300,
+    "prompt_eval_duration": 464426000,
+    "eval_duration": 6073004000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

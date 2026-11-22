@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "d8611ff6087fc5072b53faa4325977299ad1fe156286d7552560fc905d505a27",
+   "prompt": "4e554a6e3b6abf62ab2e1af5c2164f21449ccecf0c9d7db0171f3797650415f4",
+   "input": "f83848f82cecf8e1ff3261b68a93e2b74c8e3f4cf555ef16ceb13687f73f611f",
+   "options": "9692a5b6e0734a49f4ed2a5addc0042013fb287216b171b27d4f69facfb2f4d4",
+   "reply": "Three documents from 2025-02-03 to 2025-05-20 include flagged values of Blood Urea 46 mg/dL, Blood Urea Nitrogen (BUN) 21.5 mg/dL, Serum Creatinine 1.6 mg/dL, eGFR 54 mL/min/1.73m², Uric Acid 7.8 mg/dL, and SGPT (ALT) 48 U/L, with no trends listed. The latest prescription from 2025-02-10 holds Tab. Amlong 5 mg, Tab. Atorva 20 mg, and Tab. Pantocid 40 mg. Stated diagnoses are Hypertension and Chronic kidney disease, to be evaluated, with an allergy to Sulfa drugs recorded.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 758,
+    "eval_count": 185,
+    "total_duration": 32626578400,
+    "load_duration": 23367100,
+    "prompt_eval_duration": 13268153000,
+    "eval_duration": 19239490000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "b9f2e11574285f1bd0a83c516adef29a3c828d2394f70b894fbfd4390d9ae161",
+   "prompt": "4e554a6e3b6abf62ab2e1af5c2164f21449ccecf0c9d7db0171f3797650415f4",
+   "input": "30278626a4d6003a3059fe526bbd20bfeac74612f79b86ef7b6e8904c570c4c3",
+   "options": "9692a5b6e0734a49f4ed2a5addc0042013fb287216b171b27d4f69facfb2f4d4",
+   "reply": "Four documents from 2025-03-03 to 2025-04-14 include flagged values for Triglycerides 210 mg/dL, HDL Cholesterol 36 mg/dL, LDL Cholesterol 160 mg/dL, Fasting Plasma Glucose 112 mg/dL, Blood Urea 44 mg/dL, Serum Creatinine 1.4 mg/dL, and eGFR 62 mL/min/1.73m², with no trends listed. The latest prescription from 2025-04-14 holds Telma-AM 40/5 mg, Rosuvas 20 mg, Glycomet 500 mg, and Omez 20 mg. Stated diagnoses include Essential hypertension and Dyslipidaemia, with an impression of Hypertension, better controlled.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 801,
+    "eval_count": 195,
+    "total_duration": 34042246300,
+    "load_duration": 9612100,
+    "prompt_eval_duration": 13805320000,
+    "eval_duration": 20154265000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

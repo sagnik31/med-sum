@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "ebbdb3775ea4fd3e42b4f57d81956e8145c5f4781498f34c47ad909c6beab548",
+   "prompt": "4e554a6e3b6abf62ab2e1af5c2164f21449ccecf0c9d7db0171f3797650415f4",
+   "input": "30278626a4d6003a3059fe526bbd20bfeac74612f79b86ef7b6e8904c570c4c3",
+   "options": "9692a5b6e0734a49f4ed2a5addc0042013fb287216b171b27d4f69facfb2f4d4",
+   "reply": "Four documents were reviewed between 2025-03-03 and 2025-04-14. The latest report flagged Triglycerides at 210 mg/dL, HDL Cholesterol at 36 mg/dL, LDL Cholesterol at 160 mg/dL, Fasting Plasma Glucose at 112 mg/dL, Blood Urea at 44 mg/dL, Serum Creatinine at 1.4 mg/dL, and eGFR at 62 mL/min/1.73m². No trends were listed. The latest prescription includes Tab. Telma-AM 40/5 mg OD 30 days Morning, Tab. Rosuvas 20 mg OD 30 days Night, Tab. Glycomet 500 mg BD 30 days After food, and Cap. Omez 20 mg OD 14 days Before breakfast. Diagnoses stated include Essential hypertension (2025-03-05) and Dyslipidaemia (2025-03-05).",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 790,
+    "eval_count": 233,
+    "total_duration": 9935952900,
+    "load_duration": 23295600,
+    "prompt_eval_duration": 2592057000,
+    "eval_duration": 7283332000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "669c507bcba20ae9567c8a7da6cc473593009ee0bc56429e71f087b0befe7a45",
+   "prompt": "4e554a6e3b6abf62ab2e1af5c2164f21449ccecf0c9d7db0171f3797650415f4",
+   "input": "c86b04b5982c18a883db7984e0dae8036ce7026147f44b91f89eb461440c804c",
+   "options": "9692a5b6e0734a49f4ed2a5addc0042013fb287216b171b27d4f69facfb2f4d4",
+   "reply": "Four documents were reviewed between 2025-03-03 and 2025-04-14. The latest report flagged Triglycerides at 210 mg/dL, HDL Cholesterol at 36 mg/dL, LDL Cholesterol at 160 mg/dL, Fasting Plasma Glucose at 112 mg/dL, Blood Urea at 44 mg/dL, Serum Creatinine at 1.4 mg/dL, and eGFR at 62 mL/min/1.73m². No trends were listed. The latest prescription includes Tab. Telma-AM 40/5 mg OD 30 days Morning, Tab. Rosuvas 20 mg OD 30 days Night, Tab. Glycomet 500 mg BD 30 days After food, and Cap. Omez 20 mg OD 14 days Before breakfast. Diagnoses stated include Essential hypertension (2025-03-05) and Dyslipidaemia (2025-03-05).",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1100,
+    "eval_count": 233,
+    "total_duration": 7221423700,
+    "load_duration": 8971700,
+    "prompt_eval_duration": 507546000,
+    "eval_duration": 6690687000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

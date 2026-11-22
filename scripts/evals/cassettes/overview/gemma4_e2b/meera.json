@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "07e8992586e49abf1a0b6d84456e8e1789f0ac003ef3d5682514bf1d0cd663ec",
+   "prompt": "4e554a6e3b6abf62ab2e1af5c2164f21449ccecf0c9d7db0171f3797650415f4",
+   "input": "8f1e3ce8a510d7a417d9796534a956003b2085a5e8dc8d77f1149b7e4070210f",
+   "options": "9692a5b6e0734a49f4ed2a5addc0042013fb287216b171b27d4f69facfb2f4d4",
+   "reply": "Five documents were reviewed between 2024-06-14 and 2025-04-12. Flagged values in the latest report include Haemoglobin 11.9 g/dL, PCV 33.2 %, MCV 81 fL, MCH 25.4 pg, MCHC 31.3 g/dL, RDW-CV 16.2 %, HbA1c 7.0 %, Fasting Plasma Glucose 132 mg/dL, Triglycerides 168 mg/dL, HDL Cholesterol 44 mg/dL, VLDL Cholesterol 33.6 mg/dL, Glucose Trace, Serum Iron 48 µg/dL, TIBC 412 µg/dL, Transferrin Saturation 11.7 %, and Serum Ferritin 9.8 ng/mL. The trend for Haemoglobin is rising based on 3 reports, and the trend for HbA1c is falling based on 3 reports. The latest prescription includes Tab. Glycomet GP 1, Tab. Telma 40 mg, Tab. Orofer XT, Tab. Pan 40 mg, and Tab. Dolo 650 mg. Diagnoses stated include Type 2 diabetes mellitus and Microcytic anaemia.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1461,
+    "eval_count": 285,
+    "total_duration": 30263228200,
+    "load_duration": 13746126100,
+    "prompt_eval_duration": 5408777000,
+    "eval_duration": 10980298000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "9fd9c1789e77cc73d15cc0647125f8162ec5a7f980cc9e26a3106f33461f81d6",
+   "prompt": "4e554a6e3b6abf62ab2e1af5c2164f21449ccecf0c9d7db0171f3797650415f4",
+   "input": "df3ab05558254823bfdd09e4bbded276eeb13d4ea9e9fd95cb51b304a2eb841f",
+   "options": "9692a5b6e0734a49f4ed2a5addc0042013fb287216b171b27d4f69facfb2f4d4",
+   "reply": "Five documents were reviewed between 2024-06-14 and 2025-04-12. Flagged values in the latest report include Haemoglobin 11.9 g/dL, PCV 33.2 %, MCV 81 fL, MCH 25.4 pg, MCHC 31.3 g/dL, RDW-CV 16.2 %, HbA1c 7.0 %, Fasting Plasma Glucose 132 mg/dL, Triglycerides 168 mg/dL, HDL Cholesterol 44 mg/dL, VLDL Cholesterol 33.6 mg/dL, Glucose Trace, Serum Iron 48 µg/dL, TIBC 412 µg/dL, Transferrin Saturation 11.7 %, and Serum Ferritin 9.8 ng/mL. The trend for Haemoglobin is rising based on 3 reports, and the trend for HbA1c is falling based on 3 reports. The latest prescription includes Tab. Glycomet GP 1, Tab. Telma 40 mg, Tab. Orofer XT, Tab. Pan 40 mg, and Tab. Dolo 650 mg. Diagnoses stated include Type 2 diabetes mellitus and Microcytic anaemia.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1815,
+    "eval_count": 285,
+    "total_duration": 9182918900,
+    "load_duration": 17483300,
+    "prompt_eval_duration": 576936000,
+    "eval_duration": 8564190000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

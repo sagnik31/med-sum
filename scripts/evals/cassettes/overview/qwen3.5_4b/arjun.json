@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "643c78b1167f481ae817ed11d52353576dce6981687c97421373cd669edef090",
+   "prompt": "4e554a6e3b6abf62ab2e1af5c2164f21449ccecf0c9d7db0171f3797650415f4",
+   "input": "69a3df833bc470090703b673f8e0dfcaa7e18a7f6b39d520bad71d827a3f23b4",
+   "options": "9692a5b6e0734a49f4ed2a5addc0042013fb287216b171b27d4f69facfb2f4d4",
+   "reply": "Six documents dated 2025-03-04 to 2025-09-20 include two undated items. The latest report from 2025-09-20 flags HDL Cholesterol 38 mg/dL and Fasting Plasma Glucose 108 mg/dL as high or low, while a report from 2025-03-04 flags Urine Protein Trace. Trends show Total Cholesterol, Triglycerides, LDL Cholesterol, HbA1c, Total PSA, and Haemoglobin falling based on two reports each. The latest prescription from 2025-03-11 holds Rosuvas 10 mg, Ecosprin 75 mg, and Metformin 500 mg. Stated history includes CAD post PTCA from 2019 and a stated diagnosis of Dyslipidaemia from 2025-03-11.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 847,
+    "eval_count": 210,
+    "total_duration": 36442521600,
+    "load_duration": 10000300,
+    "prompt_eval_duration": 14573546000,
+    "eval_duration": 21797145000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "2b90f1f2af5bac94e76051dc599258dd11355a9f3f6341b742ab31e876e89042",
+   "prompt": "4e554a6e3b6abf62ab2e1af5c2164f21449ccecf0c9d7db0171f3797650415f4",
+   "input": "f8206073b580bbff66e5a560f55b35751757e5a29f85d1540668c79474418daa",
+   "options": "9692a5b6e0734a49f4ed2a5addc0042013fb287216b171b27d4f69facfb2f4d4",
+   "reply": "Six documents dated 2025-03-04 to 2025-09-20 include two undated documents. The latest report from 2025-09-20 flags HDL Cholesterol 38 mg/dL and Fasting Plasma Glucose 108 mg/dL as low or high, while a report from 2025-03-04 flags Urine Protein Trace. Trends show Total Cholesterol, Triglycerides, LDL Cholesterol, HbA1c, Total PSA, and Haemoglobin falling based on two reports each. The latest prescription from 2025-03-11 holds Rosuvas 10 mg, Ecosprin 75 mg, and Metformin 500 mg. Stated history includes CAD post PTCA from 2019 and a stated diagnosis of Dyslipidaemia from 2025-03-11.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 1110,
+    "eval_count": 210,
+    "total_duration": 27034688700,
+    "load_duration": 8296000,
+    "prompt_eval_duration": 4864963000,
+    "eval_duration": 22141030000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

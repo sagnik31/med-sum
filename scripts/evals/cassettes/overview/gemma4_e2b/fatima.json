@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "7a59f480e5bd26c09f726142351c97a3e3514fd532fff7c5e8a2d191ed926a00",
+   "prompt": "4e554a6e3b6abf62ab2e1af5c2164f21449ccecf0c9d7db0171f3797650415f4",
+   "input": "df409087de04258c4e3fb88ea00787e584a70c36ddda009a1a8bbd2f789b3ce0",
+   "options": "9692a5b6e0734a49f4ed2a5addc0042013fb287216b171b27d4f69facfb2f4d4",
+   "reply": "Four documents were reviewed, dated from 2024-09-05 to 2025-03-15. The Vitamin D (25-OH) level was 18.4 ng/mL in the report dated 2025-01-08. The TSH showed a falling trend based on 2 reports from 2024-09-05 and 2025-01-08. The latest prescription includes Tab. Thyronorm 50 mcg 1 tab 1-0-0 for 3 months and Cap. Uprise-D3 60K 1 cap once a week for 8 weeks. Diagnoses stated include Hypothyroidism on 2024-09-09 and Hypothyroidism on 2025-03-15, and Vitamin D deficiency on 2025-03-15.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 578,
+    "eval_count": 204,
+    "total_duration": 8385845200,
+    "load_duration": 6562900,
+    "prompt_eval_duration": 1847137000,
+    "eval_duration": 6513868000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "gemma4:e2b",
+   "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+   "request": "8dfdb0f2a842c3dccf3e89e215bb35df5950f19e626a0840e73e3e9f625d1c6c",
+   "prompt": "4e554a6e3b6abf62ab2e1af5c2164f21449ccecf0c9d7db0171f3797650415f4",
+   "input": "26ddbc0077b3f0fc93181a07bcb11fae6d28a1d37d843a02c6cefd073802a74d",
+   "options": "9692a5b6e0734a49f4ed2a5addc0042013fb287216b171b27d4f69facfb2f4d4",
+   "reply": "Four documents were reviewed, dated from 2024-09-05 to 2025-03-15. The Vitamin D (25-OH) was 18.4 ng/mL in the report dated 2025-01-08. The TSH has a falling trend based on 2 reports from 2024-09-05 and 2025-01-08. The latest prescription includes Tab. Thyronorm 50 mcg 1 tab 1-0-0 for 3 months and Cap. Uprise-D3 60K 1 cap once a week for 8 weeks. Diagnoses stated include Hypothyroidism on 2024-09-09 and Hypothyroidism on 2025-03-15, and Vitamin D deficiency on 2025-03-15.",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 836,
+    "eval_count": 203,
+    "total_duration": 6006003200,
+    "load_duration": 12786700,
+    "prompt_eval_duration": 317470000,
+    "eval_duration": 5661232000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}

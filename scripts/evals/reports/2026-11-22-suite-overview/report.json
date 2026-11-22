@@ -1,0 +1,188 @@
+{
+  "report_version": 1,
+  "eval": "overview",
+  "label": "suite-overview",
+  "generated_at": "2026-11-22T13:21:50+00:00",
+  "dataset": "med-sum synthetic v2",
+  "models": {
+    "qwen3.5:4b": {
+      "overviews": 6,
+      "shown": {
+        "hits": 5,
+        "total": 6,
+        "rate": 0.8333333333333334,
+        "low": 0.4364971749742326,
+        "high": 0.969946630588185
+      },
+      "rejected": 1,
+      "empty": 0,
+      "attempts": 9,
+      "attention_named": {
+        "hits": 34,
+        "total": 34,
+        "rate": 1.0,
+        "low": 0.8984854444077807,
+        "high": 0.9999999999999999
+      },
+      "seconds_per_overview": 47.11788939998951,
+      "units": [
+        {
+          "patient": "meera",
+          "outcome": "shown",
+          "text": "Five documents from 2024-06-14 to 2025-04-12 include flagged values such as Haemoglobin 11.9 g/dL, PCV 33.2 %, MCV 81 fL, MCH 25.4 pg, MCHC 31.3 g/dL, RDW-CV 16.2 %, HbA1c 7.0 %, Fasting Plasma Glucose 132 mg/dL, Triglycerides 168 mg/dL, HDL Cholesterol 44 mg/dL, VLDL Cholesterol 33.6 mg/dL, Serum Iron 48 µg/dL, TIBC 412 µg/dL, Transferrin Saturation 11.7 %, and Serum Ferritin 9.8 ng/mL. Trends show Haemoglobin, MCV, and Platelet Count rising based on three or two reports, while HbA1c and Fasting Plasma Glucose are falling based on three or two reports. The latest prescription from 2025-01-10 holds Glycomet GP, Telma 40 mg, Orofer XT, Pan 40 mg, and Dolo 650 mg. Diagnoses stated include Hypertension, Type 2 diabetes mellitus, Microcytic anaemia, T2DM, and Iron deficiency anaemia.",
+          "attempts": 1,
+          "unknown_numbers": 0,
+          "unknown_words": 0,
+          "attention": 16,
+          "attention_named": 16,
+          "seconds": 70.93705450001289
+        },
+        {
+          "patient": "rohan",
+          "outcome": "shown",
+          "text": "Three documents from 2025-02-03 to 2025-05-20 include flagged values of Blood Urea 46 mg/dL, Blood Urea Nitrogen (BUN) 21.5 mg/dL, Serum Creatinine 1.6 mg/dL, eGFR 54 mL/min/1.73m², Uric Acid 7.8 mg/dL, and SGPT (ALT) 48 U/L, with no trends listed. The latest prescription from 2025-02-10 holds Tab. Amlong 5 mg, Tab. Atorva 20 mg, and Tab. Pantocid 40 mg. Stated diagnoses are Hypertension and Chronic kidney disease, to be evaluated, with an allergy to Sulfa drugs recorded.",
+          "attempts": 1,
+          "unknown_numbers": 0,
+          "unknown_words": 0,
+          "attention": 6,
+          "attention_named": 6,
+          "seconds": 32.75553850000142
+        },
+        {
+          "patient": "fatima",
+          "outcome": "shown",
+          "text": "Four documents from 2024-09-05 to 2025-03-15 include a latest report with Vitamin D (25-OH) 18.4 ng/mL and a trend of falling TSH based on two reports. The latest prescription from 2025-03-15 holds Thyronorm 50 mcg and Uprise-D3 60K, while stated diagnoses include Hypothyroidism and Vitamin D deficiency. Allergies to Penicillin - hives are recorded in 2024-09-09 and 2025-03-15.",
+          "attempts": 2,
+          "unknown_numbers": 0,
+          "unknown_words": 0,
+          "attention": 1,
+          "attention_named": 1,
+          "seconds": 43.68608349998249
+        },
+        {
+          "patient": "arjun",
+          "outcome": "rejected",
+          "text": null,
+          "attempts": 2,
+          "unknown_numbers": 0,
+          "unknown_words": 1,
+          "attention": 3,
+          "attention_named": 0,
+          "seconds": 63.592688100005034
+        },
+        {
+          "patient": "kabir",
+          "outcome": "shown",
+          "text": "Four documents from 2025-03-03 to 2025-04-14 include flagged values for Triglycerides 210 mg/dL, HDL Cholesterol 36 mg/dL, LDL Cholesterol 160 mg/dL, Fasting Plasma Glucose 112 mg/dL, Blood Urea 44 mg/dL, Serum Creatinine 1.4 mg/dL, and eGFR 62 mL/min/1.73m², with no trends listed. The latest prescription from 2025-04-14 holds Telma-AM 40/5 mg, Rosuvas 20 mg, Glycomet 500 mg, and Omez 20 mg. Stated diagnoses include Essential hypertension and Dyslipidaemia, with an impression of Hypertension, better controlled.",
+          "attempts": 1,
+          "unknown_numbers": 0,
+          "unknown_words": 0,
+          "attention": 7,
+          "attention_named": 7,
+          "seconds": 34.13126250001369
+        },
+        {
+          "patient": "nandini",
+          "outcome": "shown",
+          "text": "Three documents from 2025-04-12 to 2025-06-18 include flagged values for Anti-TPO Antibodies 142 IU/mL, Haemoglobin 11.9 g/dL, MCV 82 fL, and Vitamin B12 180 pg/mL, with trends for TSH, Haemoglobin, and MCV based on two reports. The latest prescription from 2025-04-15 holds Tab. Thyronorm 25 mcg, Sachet Calcirol 60,000 IU, and Tab. Folvite 5 mg, while stated history and diagnosis include PCOS and Hashimoto's thyroiditis.",
+          "attempts": 2,
+          "unknown_numbers": 0,
+          "unknown_words": 0,
+          "attention": 4,
+          "attention_named": 4,
+          "seconds": 50.54969529999653
+        }
+      ]
+    },
+    "gemma4:e2b": {
+      "overviews": 6,
+      "shown": {
+        "hits": 1,
+        "total": 6,
+        "rate": 0.16666666666666666,
+        "low": 0.030053369411815023,
+        "high": 0.5635028250257673
+      },
+      "rejected": 5,
+      "empty": 0,
+      "attempts": 12,
+      "attention_named": {
+        "hits": 1,
+        "total": 1,
+        "rate": 1.0,
+        "low": 0.2065493117918027,
+        "high": 1.0
+      },
+      "seconds_per_overview": 15.516889200007427,
+      "units": [
+        {
+          "patient": "meera",
+          "outcome": "rejected",
+          "text": null,
+          "attempts": 2,
+          "unknown_numbers": 1,
+          "unknown_words": 0,
+          "attention": 16,
+          "attention_named": 0,
+          "seconds": 39.620074200007366
+        },
+        {
+          "patient": "rohan",
+          "outcome": "rejected",
+          "text": null,
+          "attempts": 2,
+          "unknown_numbers": 1,
+          "unknown_words": 0,
+          "attention": 6,
+          "attention_named": 0,
+          "seconds": 16.553687900013756
+        },
+        {
+          "patient": "fatima",
+          "outcome": "shown",
+          "text": "Four documents were reviewed, dated from 2024-09-05 to 2025-03-15. The Vitamin D (25-OH) was 18.4 ng/mL in the report dated 2025-01-08. The TSH has a falling trend based on 2 reports from 2024-09-05 and 2025-01-08. The latest prescription includes Tab. Thyronorm 50 mcg 1 tab 1-0-0 for 3 months and Cap. Uprise-D3 60K 1 cap once a week for 8 weeks. Diagnoses stated include Hypothyroidism on 2024-09-09 and Hypothyroidism on 2025-03-15, and Vitamin D deficiency on 2025-03-15.",
+          "attempts": 2,
+          "unknown_numbers": 0,
+          "unknown_words": 0,
+          "attention": 1,
+          "attention_named": 1,
+          "seconds": 14.480090500001097
+        },
+        {
+          "patient": "arjun",
+          "outcome": "rejected",
+          "text": null,
+          "attempts": 2,
+          "unknown_numbers": 1,
+          "unknown_words": 0,
+          "attention": 3,
+          "attention_named": 0,
+          "seconds": 13.67633190000197
+        },
+        {
+          "patient": "kabir",
+          "outcome": "rejected",
+          "text": null,
+          "attempts": 2,
+          "unknown_numbers": 3,
+          "unknown_words": 0,
+          "attention": 7,
+          "attention_named": 0,
+          "seconds": 17.237881400011247
+        },
+        {
+          "patient": "nandini",
+          "outcome": "rejected",
+          "text": null,
+          "attempts": 2,
+          "unknown_numbers": 1,
+          "unknown_words": 0,
+          "attention": 4,
+          "attention_named": 0,
+          "seconds": 14.210603500017896
+        }
+      ]
+    }
+  },
+  "judge": null
+}
