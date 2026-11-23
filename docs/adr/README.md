@@ -12,11 +12,11 @@ Why Med-Sum is built the way it is: the decisions the rest of the design follows
 | [0006](0006-durable-traceable-runs.md) | Durable, traceable runs: LangGraph and a job queue in the application's Postgres | Built |
 | [0007](0007-pages-built-by-code.md) | Document pages and the patient summary are built by code, with one checked model overview | Built |
 | [0008](0008-patient-data-protection.md) | Patient data: protected where it must live, masked where it leaves, deleted with its document | Built |
-| [0009](0009-measured-evals.md) | Evals measure the safety net, on a committed synthetic dataset, with honest uncertainty | Built; live runs not made yet |
+| [0009](0009-measured-evals.md) | Evals measure the safety net, on a committed synthetic dataset, with honest uncertainty | Built; live suite run 2026-11-22, MCP client eval not run yet |
 | [0010](0010-staff-access-and-security.md) | Staff access: admin-issued accounts, server-side sessions, permissions in code, scope in SQL | Partly built (see its status) |
 | [0011](0011-clinician-review.md) | Clinician review: confirm or correct beside the reading, never over it | Built |
 | [0012](0012-shared-tool-layer.md) | One read-only tool layer, used in-process and served over MCP through the API | Built; client eval not run yet |
-| [0013](0013-model-choice-after-the-first-live-evals.md) | `qwen3.5:4b` stays primary; `gemma4:e2b` falls back for reading and parsing only; no auto-verification until the safety gate passes | Proposed, 2026-11-23; not built |
+| [0013](0013-model-choice-after-the-first-live-evals.md) | `qwen3.5:4b` stays primary; `gemma4:e2b` falls back for reading and parsing only; no auto-verification until the safety gate passes | Accepted, 2026-11-23; partly built (see its status) |
 
 Where patient data lives and the threats considered are on the [data-flow page](../data-and-threats.md).
 

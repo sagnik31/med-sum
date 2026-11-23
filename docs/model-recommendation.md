@@ -1,6 +1,6 @@
 # Model recommendation after the first live evals
 
-This page gives the recommendations of `claude-opus-5-5`, which judged the overview eval and reviewed the whole suite. The question was which of the two local models should be primary, and whether a better model is needed. The evidence is on [Live eval results](eval-results.md) and [Overview judge](eval-judge.md). The decision is recorded as a proposal in [ADR 0013](adr/0013-model-choice-after-the-first-live-evals.md) and is the owner's to accept.
+This page gives the recommendations of `claude-opus-5-5`, which judged the overview eval and reviewed the whole suite. The question was which of the two local models should be primary, and whether a better model is needed. The evidence is on [Live eval results](eval-results.md) and [Overview judge](eval-judge.md). The owner accepted them on 2026-11-23, and the decision is recorded in [ADR 0013](adr/0013-model-choice-after-the-first-live-evals.md).
 
 These are recommendations, not measurements. Each one names the numbers it rests on, and most of those numbers come from 25 documents or 6 patients.
 

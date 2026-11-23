@@ -17,7 +17,7 @@ The files are in [`scripts/evals/reports/2026-11-22-suite-overview/`](../scripts
 - **The rubric was written and its thresholds fixed before any item was judged.** `rubric.md` extends `judge.md`. Each wrong sentence gets an error type and a severity: critical, major or minor. Omissions are counted by group of results, not by value, and graded the same way. Two gates are safety gates (no misleading overview, no critical error, no critical omission) and two are quality gates (at most one major error, and one major omission, in any overview). Passing all of them makes a model **primary**, passing only the safety gates makes it **fallback**, and failing a safety gate makes it **not usable**.
 - **The judge read only the items and the rubric.** It didn't see the code, the answer keys, the eval's report or the source documents, and it judged each overview against its facts only, never against medical knowledge.
 - **The judge labels and the counts decide.** The judge gives no score and no ranking. The outcomes follow from the counts and the gates.
-- **The judge's verdicts don't gate anything in code.** What is shown is still the deterministic check's decision. The gates inform the model choice, which the owner makes in [ADR 0013](adr/0013-model-choice-after-the-first-live-evals.md).
+- **The judge's verdicts don't gate anything in code.** What is shown is still the deterministic check's decision. The gates informed the model choice, which the owner accepted in [ADR 0013](adr/0013-model-choice-after-the-first-live-evals.md).
 
 ## Verdicts
 

@@ -76,7 +76,7 @@ The first live eval suite ran on both local models on 2026-11-21 and 2026-11-22.
 | Shown overviews with a false sentence, by the judge | 0/5 / 0/1 |
 | Judge's outcome for the overview | primary / not usable (left out a drug allergy) |
 
-**The recommendation** ([ADR 0013](docs/adr/0013-model-choice-after-the-first-live-evals.md), proposed): keep `qwen3.5:4b` as primary, keep `gemma4:e2b` as the fallback for reading and parsing only, and send every document to a clinician until the safety gate passes. To close the gap, extend the checks first, then try a larger local model for parsing if needed. The numbers are on [Live eval results](docs/eval-results.md), the judging on [Overview judge](docs/eval-judge.md), the reasoning on [Model recommendation](docs/model-recommendation.md), and the full reports in [`scripts/evals/reports/`](scripts/evals/reports/README.md). The MCP client eval hasn't been run yet. What each eval measures is in [Development](docs/development.md#evals).
+**The decision** ([ADR 0013](docs/adr/0013-model-choice-after-the-first-live-evals.md), accepted 2026-11-23): keep `qwen3.5:4b` as primary, keep `gemma4:e2b` as the fallback for reading and parsing only, and send every document to a clinician until the safety gate passes. To close the gap, extend the checks first, then try a larger local model for parsing if needed. The numbers are on [Live eval results](docs/eval-results.md), the judging on [Overview judge](docs/eval-judge.md), the reasoning on [Model recommendation](docs/model-recommendation.md), and the full reports in [`scripts/evals/reports/`](scripts/evals/reports/README.md). The MCP client eval hasn't been run yet. What each eval measures is in [Development](docs/development.md#evals).
 
 ## Design trade-offs
 
@@ -125,7 +125,7 @@ Then install each service's dependencies, set the shared `INTERNAL_API_TOKEN`, s
 
 ## Roadmap
 
-- What ADR 0013 proposes: checks for the kinds of unsafe error the models make, an overview check for allergies and the latest prescription, and, if the checks aren't enough, a larger local model for parsing
+- What ADR 0013 decides: checks for the kinds of unsafe error the models make, an overview check for allergies and the latest prescription, and, if the checks aren't enough, a larger local model for parsing
 - The MCP client eval, and CI's eval replay and the demo from the recorded replies
 - A recorded walk-through of the app
 - A clinical pilot on a hospital's own documents, after the deployment work it needs (encryption at rest, TLS, single sign-on, integration with hospital systems)

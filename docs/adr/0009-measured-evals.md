@@ -1,6 +1,6 @@
 # 0009. Evals measure the safety net, on a committed synthetic dataset, with honest uncertainty
 
-- **Status:** Accepted, 2026-11-07 to 2026-11-12; resumable runs 2026-11-21; stages and the overview eval 2026-11-22. Built. The first live suite ran on both models on 2026-11-21 and 2026-11-22, all but the MCP client eval, and its overviews were judged on 2026-11-23. Results are on [Live eval results](../eval-results.md) and [Overview judge](../eval-judge.md), and the model choice they lead to is proposed in [0013](0013-model-choice-after-the-first-live-evals.md).
+- **Status:** Accepted, 2026-11-07 to 2026-11-12; resumable runs 2026-11-21; stages and the overview eval 2026-11-22. Built. The first live suite ran on both models on 2026-11-21 and 2026-11-22, all but the MCP client eval, and its overviews were judged on 2026-11-23. Results are on [Live eval results](../eval-results.md) and [Overview judge](../eval-judge.md), and the model choice they lead to is decided in [0013](0013-model-choice-after-the-first-live-evals.md).
 
 ## Context
 
