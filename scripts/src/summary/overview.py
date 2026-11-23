@@ -301,6 +301,9 @@ def facts_text(facts: Facts) -> FactLines:
         n = str(facts.awaiting)
         w.add(f"Values awaiting review: {n}.", (n, "values value awaiting review"))
 
+    # The latest value of each flagged test, with its own date: it can be on
+    # an earlier report than the latest one, so the line never says "in the
+    # latest report".
     for f in facts.attention:
         o = f.item.printed
         flag = []
@@ -315,14 +318,18 @@ def facts_text(facts: Facts) -> FactLines:
         said_of = f"{o.test_name} {o.value_text}"
         direction = f.item.derived.flag_computed
         w.add(
-            f"Flagged in the latest report: {o.test_name} {o.value_text}{unit}"
+            f"Latest flagged value: {o.test_name} {o.value_text}{unit}"
             f" ({'; '.join(flag)}), {when}.",
             (o.test_name, o.test_name),  # "Glucose (2 hr)"
             (o.value_text, o.test_name),
             (o.unit, o.test_name),
             (o.flag_printed, o.test_name),
             # A date is near its test's name, or its value and unit.
-            (when, f"{o.test_name} {o.value_text}{unit} latest report reports dated"),
+            (
+                when,
+                f"{o.test_name} {o.value_text}{unit}"
+                " latest value values report reports dated",
+            ),
             claims=(
                 ("flag flags flagged", said_of),
                 *(((direction.value, said_of),) if direction is not None else ()),
@@ -330,7 +337,7 @@ def facts_text(facts: Facts) -> FactLines:
             ),
         )
     if not facts.attention:
-        w.none_of("Flagged in the latest report: none.", "flagged flags values value")
+        w.none_of("Latest flagged values: none.", "flagged flags values value")
     for series in facts.labs:
         if series.trend is not None:
             dates = ", ".join(_when(v.doc) for v in series.trend.values)

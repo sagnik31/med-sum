@@ -1,6 +1,6 @@
 # 0013. `qwen3.5:4b` stays primary; `gemma4:e2b` falls back for reading and parsing only; no auto-verification until the safety gate passes
 
-- **Status:** Accepted, 2026-11-23, by the owner, from the recommendations of the overview judge (`claude-opus-5-5`) after the first live eval suite. Partly built. Already in place: `qwen3.5:4b` as primary and the fixed re-parse as the default repair, both the existing configuration. Not built yet: `gemma4:e2b` limited to reading and parsing (no overview fallback), no auto-verification until the safety gate passes, checks for the kinds of unsafe error `qwen3.5:4b` makes, the overview check for allergies and the latest prescription, and the facts' "latest flagged value" wording. Each part lands in its own commit with tests, and this status is updated as it does.
+- **Status:** Accepted, 2026-11-23, by the owner, from the recommendations of the overview judge (`claude-opus-5-5`) after the first live eval suite. Partly built. Already in place: `qwen3.5:4b` as primary and the fixed re-parse as the default repair, both the existing configuration. Built since: the facts' "latest flagged value" wording (2026-11-23). Not built yet: `gemma4:e2b` limited to reading and parsing (no overview fallback), no auto-verification until the safety gate passes, checks for the kinds of unsafe error `qwen3.5:4b` makes, and the overview check for allergies and the latest prescription. Each part lands in its own commit with tests, and this status is updated as it does.
 
 ## Context
 

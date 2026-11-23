@@ -360,6 +360,30 @@ def test_needs_attention_lists_the_latest_value_of_each_flagged_test():
     ]
 
 
+def test_a_flagged_value_is_given_as_the_latest_value_with_its_own_date():
+    # Meera's latest lab report is dated 2025-04-12, but some tests were
+    # last measured, and flagged, on 2024-06-14. Their lines must not say
+    # they are in the latest report.
+    facts = build_facts(inputs(*PATIENTS["meera"]))
+    lines = facts_text(facts).splitlines()
+    flagged = [line for line in lines if line.startswith("Latest flagged value: ")]
+
+    assert len(flagged) == len(facts.attention)
+    assert not [line for line in lines if "latest report" in line.lower()]
+    for f, line in zip(facts.attention, flagged):
+        assert f.item.printed.test_name in line
+        assert line.endswith(f", {f.doc.date.isoformat()}.")
+    assert {f.doc.date.isoformat() for f in facts.attention} >= {
+        "2024-06-14",
+        "2025-04-12",
+    }
+
+
+def test_no_flagged_value_is_said_as_none():
+    lines = facts_text(build_facts(inputs("d12")))  # a prescription only
+    assert "Latest flagged values: none." in lines.splitlines()
+
+
 def test_every_value_cites_its_document_page_and_lines():
     facts, _, soup = page(inputs(*PATIENTS["fatima"]))
     cites = soup.select("cite")
