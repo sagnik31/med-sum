@@ -19,8 +19,8 @@ survive a crash or a reboot.
 | 5 | repair (core) | suite-repair | done, exit 0 | ~2 h 16 min (18:53-21:09) | |
 | 6 | injection | suite-injection | done, exit 0 | ~2 h 03 min (21:11-23:14) | |
 | 7 | toolprobe | | done, exit 0 (output copied to reports/2026-11-22-toolprobe/) | ~3 min (23:16-23:18) | |
-| 8 | mcp_eval | | skipped by the owner | | |
-| - | judge verdicts (overview) | | deferred to the very end, after the e2e resume (owner's request) | | |
+| 8 | mcp_eval | | skipped by the owner; needs the API, the AI service and the dataset loaded first | | |
+| - | judge verdicts (overview) | | pending: to be judged in a later session from judge.json and judge.md in the overview's report directory | | |
 
 ## Order changed (2026-11-22, owner's request)
 
