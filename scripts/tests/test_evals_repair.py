@@ -9,7 +9,7 @@ import pytest
 from conftest import ToolReply
 
 import llm
-from evals import repair, repair_cases
+from evals import history, repair, repair_cases
 from evals.keys import answer_key, parse_of
 from evals.repair import CaseResult, summarise, verdict
 
@@ -20,6 +20,14 @@ CASE = "d04-date_swap-1"  # one part: one reply per repair
 # -------------------------------------------------------------------
 # The cases
 # -------------------------------------------------------------------
+@pytest.fixture(autouse=True)
+def own_history(tmp_path, monkeypatch):
+    # A replay expects the model build of the latest live run in the
+    # history; the committed history's real digests are not the fake
+    # model's, so each test has its own, empty history.
+    monkeypatch.setattr(history, "HISTORY_DIR", tmp_path / "history")
+
+
 @pytest.fixture(scope="module")
 def built():
     return repair_cases.build()
