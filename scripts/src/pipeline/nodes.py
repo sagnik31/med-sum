@@ -1000,13 +1000,18 @@ def finish(state: GraphState) -> dict:
     """
     The document's signals (docs/adr/0004-deterministic-checks-decide-routing.md), its record marked with them and
     saved, and its end state: needs_review when any signal routes, else
-    verified. Every item must trace back to the step that produced it; a
-    gap is a bug, so the record is not saved and the run fails.
+    checks_passed. Every item must trace back to the step that produced it;
+    a gap is a bug, so the record is not saved and the run fails.
+
+    A run never ends verified: only a clinician's sign-off makes a document
+    verified, until an eval run passes the safety gate. The first live evals
+    found unsafe errors in documents that passed every check. See
+    docs/adr/0013-model-choice-after-the-first-live-evals.md.
     """
     step = _step()
     record, hits, _ = marked_record(state, step.provenance)
     store.save_record(record, run_id=step.run.id, claim=step.run.claim)
-    end_state = "needs_review" if signals.needs_review(hits) else "verified"
+    end_state = "needs_review" if signals.needs_review(hits) else "checks_passed"
     return {"record": record, "signals": hits, "end_state": end_state}
 
 

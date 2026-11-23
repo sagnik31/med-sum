@@ -1,7 +1,7 @@
 """
 How well the low-confidence signals do in use, from clinicians' reviews:
 the precision of each signal (of the values it raised, how many a
-clinician corrected) and, from the audit samples, how often a verified
+clinician corrected) and, from the audit samples, how often a checks_passed
 document still held a wrong value (the escape rate). Read from the views
 review_signal_precision and audit_sample_outcomes, which hold counts and
 ids only. See docs/adr/0011-clinician-review.md.

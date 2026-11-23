@@ -32,7 +32,7 @@ def add_run(db, document_id):
     with db.cursor() as cur:
         cur.execute(
             "INSERT INTO pipeline_runs (document_id, graph_version, ended_at, end_state)"
-            " VALUES (%s, 'test', now(), 'verified') RETURNING id::text",
+            " VALUES (%s, 'test', now(), 'checks_passed') RETURNING id::text",
             (document_id,),
         )
         return cur.fetchone()[0]

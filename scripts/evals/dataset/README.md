@@ -14,7 +14,7 @@ each one exercises and the order the loader uploads them in
 Each entry also says how the clean document should end: `expected_signals` are
 the routing signals it is built to raise (an undated document, a patient
 mismatch, an unsupported type), and `expected_end_state` is `needs_review` when
-there are any, else `verified`. `split` is `dev` for the documents used while
+there are any, else `checks_passed`. `split` is `dev` for the documents used while
 writing and checking the prompts (d02, d09), `held_out` for d18-d24, printed in
 layouts the others don't use and never to be used when changing a prompt or a
 check, and `test` for the rest; eval reports keep them apart.
@@ -38,31 +38,31 @@ these details, and uploads its documents to it.
 
 | ID | Patient | Type | File | Pages | Date | Split | Expected | Cases |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| d01 | Meera Iyer | lab_report | `d01_lab_report.pdf` | 3 | 2024-06-14 | test | verified | panel_remark_after_last_row, multiple_ranges, one_sided_range, indian_digit_grouping, test_remark, non_numeric_values, multi_page |
-| d02 | Meera Iyer | prescription | `d02_prescription.png` | 1 | 2024-06-20 | dev | verified | vitals, no_known_allergies, history, two_diagnoses_one_line, medicine_without_strength, unused_complaint_line |
-| d03 | Meera Iyer | lab_report | `d03_lab_report.pdf` | 2 | 2024-12-16 | test | verified | image_only_pdf, flag_beside_result, no_report_date, document_remark_after_single_test, test_remark, multiple_ranges, multi_page |
-| d04 | Meera Iyer | prescription | `d04_prescription.jpg` | 1 | 2025-01-10 | test | verified | jpeg, as_needed, duration_in_months, impression, history, uploaded_before_older_documents |
-| d05 | Meera Iyer | lab_report | `d05_lab_report.pdf` | 2 | 2025-04-12 | test | verified | panel_remark_after_last_row, trend_two_values, multi_page |
-| d06 | Rohan Kulkarni | lab_report | `d06_lab_report.pdf` | 2 | 2025-02-03 | test | verified | single_creatinine, bun_in_kidney_panel, one_sided_range, document_remark, multi_page |
-| d07 | Rohan Kulkarni | prescription | `d07_prescription.png` | 1 | 2025-02-10 | test | verified | statin_without_lipid_panel, drug_allergy, provisional_diagnosis, bmi_and_height, duration_in_months |
-| d08 | Rohan Kulkarni | lab_report | `d08_lab_report.pdf` | 1 | 2025-05-20 | test | verified | image_only_pdf, flag_beside_result, less_than_value, one_sided_range |
-| d09 | Fatima Shaikh | lab_report | `d09_lab_report.pdf` | 1 | 2024-09-05 | dev | verified | panel_remark, trend_two_values |
-| d10 | Fatima Shaikh | prescription | `d10_prescription.png` | 1 | 2024-09-09 | test | verified | drug_allergy, duration_in_weeks, temperature |
-| d11 | Fatima Shaikh | lab_report | `d11_lab_report.pdf` | 1 | 2025-01-08 | test | verified | trend_two_values, multiple_ranges, printed_flag_without_computed_flag |
-| d12 | Fatima Shaikh | prescription | `d12_prescription.png` | 1 | 2025-03-15 | test | verified | weekly_frequency, duration_in_weeks, uploaded_before_older_documents |
-| d13 | Arjun Menon | lab_report | `d13_lab_report.pdf` | 2 | 2025-03-04 | test | verified | multiple_ranges, one_sided_range, non_numeric_values, multi_page |
-| d14 | Arjun Menon | prescription | `d14_prescription.png` | 1 | 2025-03-11 | test | verified | generic_name, history, no_known_allergies |
+| d01 | Meera Iyer | lab_report | `d01_lab_report.pdf` | 3 | 2024-06-14 | test | checks_passed | panel_remark_after_last_row, multiple_ranges, one_sided_range, indian_digit_grouping, test_remark, non_numeric_values, multi_page |
+| d02 | Meera Iyer | prescription | `d02_prescription.png` | 1 | 2024-06-20 | dev | checks_passed | vitals, no_known_allergies, history, two_diagnoses_one_line, medicine_without_strength, unused_complaint_line |
+| d03 | Meera Iyer | lab_report | `d03_lab_report.pdf` | 2 | 2024-12-16 | test | checks_passed | image_only_pdf, flag_beside_result, no_report_date, document_remark_after_single_test, test_remark, multiple_ranges, multi_page |
+| d04 | Meera Iyer | prescription | `d04_prescription.jpg` | 1 | 2025-01-10 | test | checks_passed | jpeg, as_needed, duration_in_months, impression, history, uploaded_before_older_documents |
+| d05 | Meera Iyer | lab_report | `d05_lab_report.pdf` | 2 | 2025-04-12 | test | checks_passed | panel_remark_after_last_row, trend_two_values, multi_page |
+| d06 | Rohan Kulkarni | lab_report | `d06_lab_report.pdf` | 2 | 2025-02-03 | test | checks_passed | single_creatinine, bun_in_kidney_panel, one_sided_range, document_remark, multi_page |
+| d07 | Rohan Kulkarni | prescription | `d07_prescription.png` | 1 | 2025-02-10 | test | checks_passed | statin_without_lipid_panel, drug_allergy, provisional_diagnosis, bmi_and_height, duration_in_months |
+| d08 | Rohan Kulkarni | lab_report | `d08_lab_report.pdf` | 1 | 2025-05-20 | test | checks_passed | image_only_pdf, flag_beside_result, less_than_value, one_sided_range |
+| d09 | Fatima Shaikh | lab_report | `d09_lab_report.pdf` | 1 | 2024-09-05 | dev | checks_passed | panel_remark, trend_two_values |
+| d10 | Fatima Shaikh | prescription | `d10_prescription.png` | 1 | 2024-09-09 | test | checks_passed | drug_allergy, duration_in_weeks, temperature |
+| d11 | Fatima Shaikh | lab_report | `d11_lab_report.pdf` | 1 | 2025-01-08 | test | checks_passed | trend_two_values, multiple_ranges, printed_flag_without_computed_flag |
+| d12 | Fatima Shaikh | prescription | `d12_prescription.png` | 1 | 2025-03-15 | test | checks_passed | weekly_frequency, duration_in_weeks, uploaded_before_older_documents |
+| d13 | Arjun Menon | lab_report | `d13_lab_report.pdf` | 2 | 2025-03-04 | test | checks_passed | multiple_ranges, one_sided_range, non_numeric_values, multi_page |
+| d14 | Arjun Menon | prescription | `d14_prescription.png` | 1 | 2025-03-11 | test | checks_passed | generic_name, history, no_known_allergies |
 | d15 | Arjun Menon | prescription | `d15_prescription.png` | 1 | undated | test | LC-12 | undated, duration_not_given |
 | d16 | Arjun Menon | lab_report | `d16_lab_report.pdf` | 1 | 2025-04-02 | test | LC-13 | patient_mismatch, image_only_pdf, flag_beside_result |
 | d17 | Arjun Menon | other | `d17_other.pdf` | 1 | undated | test | LC-14 | classified_other |
-| d18 | Kabir Sethi | lab_report | `d18_lab_report.pdf` | 1 | 2025-03-03 | held_out | verified | results_as_lines, header_fields_on_one_line, flag_as_word, date_month_in_words, test_name_variant, multiple_ranges, one_sided_range, document_remark |
-| d19 | Kabir Sethi | prescription | `d19_prescription.png` | 1 | 2025-03-05 | held_out | verified | medicines_as_numbered_lines, header_fields_on_one_line, two_diagnoses_one_line, as_needed, route_given, no_known_allergies, vitals |
-| d20 | Nandini Bose | lab_report | `d20_lab_report.pdf` | 1 | 2025-04-12 | held_out | verified | header_as_table, range_before_unit, flag_as_word, test_name_variant, counts_in_other_units, document_remark, one_sided_range |
-| d21 | Nandini Bose | prescription | `d21_prescription.jpg` | 1 | 2025-04-15 | held_out | verified | two_column_layout, header_fields_on_one_line, weekly_frequency, duration_in_weeks, history, unused_complaint_line, date_with_dots |
-| d22 | Kabir Sethi | lab_report | `d22_lab_report.png` | 1 | 2025-03-20 | held_out | verified | lab_report_as_image, flag_as_arrow, header_fields_on_one_line, iso_date, test_remark, one_sided_range |
-| d23 | Nandini Bose | lab_report | `d23_lab_report.pdf` | 2 | 2025-06-18 | held_out | verified | table_continued_on_next_page, image_only_pdf, range_before_unit, trend_two_values, flag_as_word, multi_page |
-| d24 | Kabir Sethi | prescription | `d24_prescription.pdf` | 1 | 2025-04-14 | held_out | verified | e_prescription_text_layer, strength_in_own_column, date_month_in_words, named_frequency, duration_in_days, unused_date_line, vitals |
-| d25 | Arjun Menon | lab_report | `d25_lab_report.pdf` | 4 | 2025-09-20 | test | verified | sixty_results, page_parsed_in_parts, dense_page_over_output_cap, trend_two_values, multiple_ranges, non_numeric_values, multi_page |
+| d18 | Kabir Sethi | lab_report | `d18_lab_report.pdf` | 1 | 2025-03-03 | held_out | checks_passed | results_as_lines, header_fields_on_one_line, flag_as_word, date_month_in_words, test_name_variant, multiple_ranges, one_sided_range, document_remark |
+| d19 | Kabir Sethi | prescription | `d19_prescription.png` | 1 | 2025-03-05 | held_out | checks_passed | medicines_as_numbered_lines, header_fields_on_one_line, two_diagnoses_one_line, as_needed, route_given, no_known_allergies, vitals |
+| d20 | Nandini Bose | lab_report | `d20_lab_report.pdf` | 1 | 2025-04-12 | held_out | checks_passed | header_as_table, range_before_unit, flag_as_word, test_name_variant, counts_in_other_units, document_remark, one_sided_range |
+| d21 | Nandini Bose | prescription | `d21_prescription.jpg` | 1 | 2025-04-15 | held_out | checks_passed | two_column_layout, header_fields_on_one_line, weekly_frequency, duration_in_weeks, history, unused_complaint_line, date_with_dots |
+| d22 | Kabir Sethi | lab_report | `d22_lab_report.png` | 1 | 2025-03-20 | held_out | checks_passed | lab_report_as_image, flag_as_arrow, header_fields_on_one_line, iso_date, test_remark, one_sided_range |
+| d23 | Nandini Bose | lab_report | `d23_lab_report.pdf` | 2 | 2025-06-18 | held_out | checks_passed | table_continued_on_next_page, image_only_pdf, range_before_unit, trend_two_values, flag_as_word, multi_page |
+| d24 | Kabir Sethi | prescription | `d24_prescription.pdf` | 1 | 2025-04-14 | held_out | checks_passed | e_prescription_text_layer, strength_in_own_column, date_month_in_words, named_frequency, duration_in_days, unused_date_line, vitals |
+| d25 | Arjun Menon | lab_report | `d25_lab_report.pdf` | 4 | 2025-09-20 | test | checks_passed | sixty_results, page_parsed_in_parts, dense_page_over_output_cap, trend_two_values, multiple_ranges, non_numeric_values, multi_page |
 
 ## How the answer keys are labelled
 

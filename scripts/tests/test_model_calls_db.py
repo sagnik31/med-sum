@@ -77,7 +77,7 @@ def test_each_round_trip_is_a_row_of_its_step(db, document_id, model_client):
     model_client.replies[llm.FALLBACK_MODEL].insert(0, ConnectionError("down"))
     with start_run(document_id, GRAPH_VERSION) as run:
         parse({})
-        run.finish("verified")
+        run.finish("checks_passed")
 
     rows = call_rows(db, run.id)
     assert [(r["seq"], r["role"], r["status"], r["error_type"]) for r in rows] == [
@@ -119,7 +119,7 @@ def test_step_totals_are_the_sums_of_the_call_rows(db, document_id, model_client
     with start_run(document_id, GRAPH_VERSION) as run:
         parse({})
         validate({})
-        run.finish("verified")
+        run.finish("checks_passed")
 
     assert step_totals(db, run.id) == [(220, 4399, 220, 4399), (None, None, None, None)]
 
@@ -133,7 +133,7 @@ def test_a_stop_marker_call_is_stored_with_its_counts(db, document_id, model_cli
 
     with start_run(document_id, GRAPH_VERSION) as run:
         assert transcribe({}) == {"text": "Page"}
-        run.finish("verified")
+        run.finish("checks_passed")
 
     (row,) = call_rows(db, run.id)
     assert row["status"] == "stopped"
@@ -210,7 +210,7 @@ def test_parallel_steps_number_their_calls_on_their_own(
             ]
             for f in futures:
                 f.result()
-        run.finish("verified")
+        run.finish("checks_passed")
 
     rows = call_rows(db, run.id)
     by_step = {}
@@ -229,7 +229,7 @@ def test_calls_outside_a_step_store_nothing(db, document_id, model_client):
 
     with start_run(document_id, GRAPH_VERSION) as run:
         llm.chat(MESSAGES, max_tokens=10)  # in the run, but in no step
-        run.finish("verified")
+        run.finish("checks_passed")
 
     assert call_rows(db, run.id) == []
 
@@ -247,7 +247,7 @@ def test_image_sizes_are_stored_as_pairs(db, document_id, model_client):
 
     with start_run(document_id, GRAPH_VERSION) as run:
         transcribe({})
-        run.finish("verified")
+        run.finish("checks_passed")
 
     (row,) = call_rows(db, run.id)
     assert (row["image_count"], row["image_pixels"]) == (2, [[12, 34], None])
@@ -306,7 +306,7 @@ def test_a_run_ends_with_its_model_totals(db, document_id, model_client, json_lo
     with start_run(document_id, GRAPH_VERSION) as run:
         transcribe({})
         parse({})
-        run.finish("verified")
+        run.finish("checks_passed")
 
     assert without_wall(run.model_totals) == EXPECTED_TOTALS
     assert run.model_totals["model_wall_ms"] >= 0
@@ -316,7 +316,7 @@ def test_a_run_ends_with_its_model_totals(db, document_id, model_client, json_lo
         )
         view = cur.fetchone()
     assert view["document_id"] == uuid.UUID(document_id)
-    assert view["end_state"] == "verified"
+    assert view["end_state"] == "checks_passed"
     assert {k: view[k] for k in EXPECTED_TOTALS} == EXPECTED_TOTALS
 
     lines = [json.loads(s) for s in json_log.getvalue().splitlines()]

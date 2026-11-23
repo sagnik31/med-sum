@@ -79,7 +79,7 @@ What the models could do with such text, and what stops it:
 
 - **Change a value or invent one.** The parse copies values as printed, and code checks each one against the page's transcription and, where the PDF has one, its own text layer ([0003](adr/0003-printed-and-derived-values.md), [0004](adr/0004-deterministic-checks-decide-routing.md)). A value that isn't on its cited line is a finding, and the document goes to review.
 - **Decide a flag, a range or a date.** These are derived in code from the printed text, never taken from the model ([0003](adr/0003-printed-and-derived-values.md)).
-- **Mark the document verified.** The end state comes from deterministic signals, not from the model.
+- **Mark the document verified.** The end state comes from deterministic signals, not from the model, and no run ends `verified`: only a clinician's sign-off makes a document verified ([0013](adr/0013-model-choice-after-the-first-live-evals.md)).
 - **Run a tool, call a URL or read another record.** Only the optional tool repair (`MEDSUM_REPAIR=tools`) gives a model tools, and they are read-only and read only the document being repaired. Each call sees only its prompt and its own page or part.
 - **Inject markup into the page.** Every value from a document is HTML-escaped where it is inserted.
 - **Steer the patient summary.** The overview model reads computed facts, not transcriptions, and code rejects an overview that states anything outside those facts.

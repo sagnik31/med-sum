@@ -46,7 +46,7 @@ from record.common import Provenance
 
 logger = logging.getLogger("medsum.pipeline")
 
-END_STATES = ("verified", "needs_review", "failed")
+END_STATES = ("checks_passed", "needs_review", "failed")
 RUNNING, OK, FAILED = "running", "ok", "failed"
 
 LEFT_RUNNING_AT_END = "the run ended while this step was still running"

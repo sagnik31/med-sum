@@ -6,7 +6,7 @@ Run from scripts/src:
 
     python -m demo [--model M] [--docs d09,d15] [--cassettes DIR]
 
-The defaults are d09 (a one-page lab report that ends verified) and d15 (a
+The defaults are d09 (a one-page lab report that ends checks_passed) and d15 (a
 prescription with no date, which a clinician must review). The cassettes
 are the eval runner's (scripts/evals/cassettes/<model>/<doc>.json), written
 by its first live run; until they exist the demo says which are missing and

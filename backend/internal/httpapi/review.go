@@ -29,6 +29,7 @@ const (
 	actFieldConfirmed    = "field_confirmed"
 	actFieldCorrected    = "field_corrected"
 	actAuditCompleted    = "audit_completed"
+	actDocumentSignedOff = "document_signed_off"
 )
 
 // ----- GET /review/queue -----
@@ -101,7 +102,7 @@ type reviewApplied struct {
 
 type reviewResponse struct {
 	DocumentID      string          `json:"document_id"`
-	Status          string          `json:"status"` // needs_review or verified
+	Status          string          `json:"status"` // checks_passed, needs_review or verified
 	RecordUpdatedAt time.Time       `json:"record_updated_at"`
 	Flagged         int             `json:"flagged"`
 	Findings        []reviewFinding `json:"findings"`
@@ -202,7 +203,9 @@ func (s *Server) handleReviewDocument(w http.ResponseWriter, r *http.Request, do
 		v := strings.TrimSpace(*req.Value)
 		corrected = &v
 	}
-	verified := applied.Flagged == 0
+	// A review verifies a needs_review document once nothing flagged is
+	// left; a checks_passed one stays so until it is signed off.
+	verified := applied.Flagged == 0 && ins.Status == "needs_review"
 	details := map[string]any{"item_id": req.ItemID, "signals": applied.Signals, "verified": verified}
 	if req.Field != nil {
 		details["field"] = *req.Field
@@ -248,10 +251,10 @@ func (s *Server) handleReviewDocument(w http.ResponseWriter, r *http.Request, do
 
 // ----- POST /documents/{id}/audit-complete -----
 
-// handleCompleteAudit finishes the audit of a verified document sampled
-// for one, once the clinician has checked it (confirming or correcting
-// values as in any review). The document leaves the queue; whether the
-// audit found an error comes from its reviews. See
+// handleCompleteAudit finishes the audit of a checks_passed document
+// sampled for one, once the clinician has checked it (confirming or
+// correcting values as in any review). The document leaves the queue,
+// verified; whether the audit found an error comes from its reviews. See
 // docs/adr/0011-clinician-review.md.
 func (s *Server) handleCompleteAudit(w http.ResponseWriter, r *http.Request, docID string) {
 	p, _ := principalFromContext(r.Context())
@@ -278,6 +281,42 @@ func (s *Server) handleCompleteAudit(w http.ResponseWriter, r *http.Request, doc
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"document_id": docID, "completed_at": now})
+}
+
+// ----- POST /documents/{id}/sign-off -----
+
+// handleSignOff makes a document that passed every check verified: a
+// clinician has read it and signs it off, and the sign-off is in the
+// audit log. No run ends verified until an eval run passes the safety
+// gate. An audit sample is signed off by finishing its audit instead. See
+// docs/adr/0013-model-choice-after-the-first-live-evals.md.
+func (s *Server) handleSignOff(w http.ResponseWriter, r *http.Request, docID string) {
+	p, _ := principalFromContext(r.Context())
+	doc := s.loadDocument(w, r, docID)
+	if doc == nil {
+		return
+	}
+	now := s.now().UTC()
+	err := s.db.SignOff(r.Context(), p.OrgID, docID, now, s.documentEvent(r, actDocumentSignedOff, doc))
+	if errors.Is(err, db.ErrNotAwaitingSignOff) {
+		http.Error(w, "this document is not waiting for a sign-off", http.StatusConflict)
+		return
+	}
+	if errors.Is(err, db.ErrAuditBeforeSignOff) {
+		http.Error(w, "this document is an audit sample: check every value, then finish the audit", http.StatusConflict)
+		return
+	}
+	if err != nil {
+		log.Printf("SignOff error: %v", err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+	// The summary names each document's status: rebuild it. The sign-off
+	// stands if that fails.
+	if err := s.requestPatientSummary(r, doc.PatientID); err != nil {
+		log.Printf("could not rebuild the summary after signing off document %s: %v", docID, err)
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"document_id": docID, "status": "verified", "signed_off_at": now})
 }
 
 // problem says what is wrong with the request's shape, or "".

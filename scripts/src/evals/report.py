@@ -7,8 +7,12 @@ reading.
 
 Given each document's outcome (its end state and routing signals), it also
 scores routing against the manifest's expected end state, and gives the
-risk-coverage line: the share of documents that ended verified (no
-clinician looks at them), and the unsafe errors inside that share. Counts
+risk-coverage line: the share of documents that ended checks_passed
+(the ones auto-verification would let through with no clinician), and the
+unsafe errors inside that share. Runs ended verified before
+docs/adr/0013-model-choice-after-the-first-live-evals.md; the JSON keeps
+the keys auto_verified and unsafe_in_verified, so reports compare across
+the change. Counts
 carry Wilson intervals (stats.py), and the dev documents (manifest
 `split`) are reported apart from the test documents.
 
@@ -189,7 +193,7 @@ def _routing(run: ModelRun, entries: dict[str, dict], outcomes: dict | None):
             "record_model_role": o.get("record_model_role"),
             "error": o.get("error"),
         })  # fmt: skip
-        if o["end_state"] == "verified":
+        if o["end_state"] == "checks_passed":
             verified.append(d)
     n = len(rows)
     in_verified = summarise(_records(verified))
@@ -254,8 +258,10 @@ def render_markdown(report: dict) -> str:
     if any(models[n]["routing"] for n in names):
         out += ["", "## Routing and risk coverage", ""]
         out.append(
-            "Auto-verified documents reach no clinician; the unsafe errors "
-            "inside them are what the safety net let through."
+            "Documents that pass every check wait for a clinician's sign-off "
+            "until the safety gate passes; with auto-verification they would "
+            "reach no clinician, so the unsafe errors inside them are what the "
+            "checks let through."
         )
         out += [""] + _table(["Metric", *names], _routing_rows(models, names))
         wrong = [
@@ -453,9 +459,11 @@ def _routing_rows(models: dict, names: list[str]) -> list[list[str]]:
     return [
         row("End state right", lambda r: _interval(r["end_state_right"])),
         row("Signals as expected", lambda r: _interval(r["signals_right"])),
-        row("Auto-verified", lambda r: _interval(r["auto_verified"])),
         row(
-            "Items with an unsafe error, verified",
+            "Checks passed (would auto-verify)", lambda r: _interval(r["auto_verified"])
+        ),
+        row(
+            "Items with an unsafe error, checks passed",
             lambda r: _interval(r["unsafe_in_verified"]),
         ),
         row("Records by the fallback", lambda r: str(r["fallback_records"])),

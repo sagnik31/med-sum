@@ -192,11 +192,11 @@ def test_the_gate_fails_for_a_fault_without_a_baseline(check):
 
 def test_the_gate_fails_when_a_clean_document_ends_elsewhere(check):
     broken = fc.FaultCheck(
-        clean=[fc.CleanResult("d01", "verified", "needs_review", [], ["LC-04"])],
+        clean=[fc.CleanResult("d01", "checks_passed", "needs_review", [], ["LC-04"])],
         results=check.results,
     )
     assert fc.gate(broken, fc.baseline_of(check)) == [
-        "d01 ends needs_review ['LC-04'], expected verified []"
+        "d01 ends needs_review ['LC-04'], expected checks_passed []"
     ]
 
 

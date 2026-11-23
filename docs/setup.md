@@ -151,7 +151,7 @@ The API stops gracefully on Ctrl+C or SIGTERM: it takes no new requests and give
 | `MEDSUM_WORKER` | AI service | `1`; `0` starts the service without its document worker (nothing queued is processed) |
 | `MEDSUM_REPAIR`, `MEDSUM_REPAIR_TOOL_TURNS` | AI service | `fixed`, `3`; `tools` lets a repair read the document with read-only tools first, within that many model turns per repair (the fix's included) |
 | `MEDSUM_BREAKER_FAILURES`, `MEDSUM_BREAKER_COOLDOWN_S` | AI service | `3`, `900`; consecutive model errors or timeouts that disable a model, and how long it stays disabled before it is tried again |
-| `MEDSUM_AUDIT_SAMPLE_RATE` | AI service | `0.10`; the share of verified documents sent back to a clinician as an audit (0 to 1) |
+| `MEDSUM_AUDIT_SAMPLE_RATE` | AI service | `0.10`; the share of `checks_passed` documents sent to a clinician as an audit, every value checked before the sign-off (0 to 1) |
 | `MEDSUM_JOB_LEASE`, `MEDSUM_JOB_HEARTBEAT_S`, `MEDSUM_JOB_MAX_ATTEMPTS` | AI service | `5 minutes`, `60`, `3`; how long a claim lasts, how often it is renewed, and how many claims a job gets before it is set aside |
 | `MEDSUM_LOG_FILE` | AI service logs (`observability`) | `scripts/logs/medsum.jsonl`; JSON log lines (ids, events, timings) without patient content, also on stderr. Set up when the service starts |
 | `VITE_API_BASE_URL` | Frontend | `/api`, set in the committed `frontend/.env` (it holds no secret; a `frontend/.env.local` overrides it and stays untracked); the Vite dev server proxies it to the backend |

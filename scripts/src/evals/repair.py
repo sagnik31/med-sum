@@ -164,7 +164,7 @@ def repair_case(rc, case, document_id: str, model: str, variant: str) -> CaseRes
         result.repaired = result.error is None and result.errors_after == 0
         result.unsafe_after = len(score_document(state["record"], key).unsafe)
         result.log = [r.model_dump(mode="json") for r in state.get("repair_log", [])]
-        run.finish("verified" if result.repaired else "needs_review")
+        run.finish("checks_passed" if result.repaired else "needs_review")
     result.seconds = round(time.monotonic() - start, 1)
     return result
 

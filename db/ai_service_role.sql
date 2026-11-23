@@ -27,7 +27,7 @@
 --   prompts            reads and adds (a prompt's text is written once, on
 --                      first use, and never changed)
 --   pipeline_* views   reads
---   audit_samples      adds them (a share of verified runs, sampled for audit);
+--   audit_samples      adds them (a share of checks_passed runs, sampled for audit);
 --                      never reads or changes one
 --   review_signal_precision, audit_sample_outcomes  reads (counts and
 --                      ids for the review report; record_reviews itself,

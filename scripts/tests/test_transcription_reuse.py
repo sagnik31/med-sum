@@ -40,7 +40,7 @@ def opened(document_id: str, doc: str = "d09") -> dict:
 def transcribe_in_a_run(document_id: str, doc: str = "d09"):
     with start_run(document_id, "test-reuse") as run:
         out = nodes.transcribe(opened(document_id, doc))
-        run.finish("verified")
+        run.finish("checks_passed")
     return run, out["transcriptions"][0]
 
 

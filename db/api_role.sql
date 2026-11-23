@@ -27,7 +27,8 @@
 --                      (deleted_at, deleted_by); never deletes a row
 --   insights, document_records  reads them (the AI service writes them);
 --                      stores a clinician's review: the reviewed record, the
---                      page built from it and the verified status
+--                      page built from it and the verified status (a review
+--                      or a sign-off)
 --   record_reviews     adds review rows and reads them; never changes one
 --   audit_samples      reads them (the AI service adds them); finishes an
 --                      audit (completed_at, completed_by)

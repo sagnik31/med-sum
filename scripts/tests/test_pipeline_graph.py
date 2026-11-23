@@ -140,7 +140,7 @@ def test_the_graph_of_one_stage_has_only_its_nodes():
 # -------------------------------------------------------------------
 # Paths through it
 # -------------------------------------------------------------------
-def test_a_clean_prescription_is_verified(db, document, model_client):
+def test_a_clean_prescription_passes_its_checks(db, document, model_client):
     state = document("d02")
     model_client.replies[PRIMARY] = [
         *pages_of("d02"), classified("d02"), good_parse("d02"),
@@ -148,10 +148,10 @@ def test_a_clean_prescription_is_verified(db, document, model_client):
 
     final = run(state)
 
-    assert final["end_state"] == "verified"
+    assert final["end_state"] == "checks_passed"
     row = run_row(db, state["document_id"])
     assert (row["end_state"], row["graph_version"]) == (
-        "verified", pipeline_graph.GRAPH_VERSION
+        "checks_passed", pipeline_graph.GRAPH_VERSION
     )  # fmt: skip
     assert nodes_run(db, row["id"]) == [
         "open", "transcribe", "classify", "parse", "validate", "render", "finish",
@@ -176,7 +176,7 @@ def test_every_page_of_a_lab_report_is_transcribed(db, document, model_client):
 
     final = run(state)
 
-    assert final["end_state"] == "verified"
+    assert final["end_state"] == "checks_passed"
     assert len(final["record"].pages) == DOCS["d01"]["pages"] == 3
     steps = nodes_run(db, run_row(db, state["document_id"])["id"])
     assert steps.count("transcribe") == 3
@@ -228,7 +228,7 @@ def test_a_long_page_is_parsed_in_parts_between_rows(
 
     final = run(state)
 
-    assert final["end_state"] == "verified"
+    assert final["end_state"] == "checks_passed"
     assert final["parse"] == parse_of(key("d06"))
     second = model_client.calls[len(pages_of("d06")) + 2]["messages"][1]["content"]
     # Page 1's second part starts inside the kidney table, so it is shown
@@ -248,14 +248,14 @@ def test_only_the_refused_part_is_parsed_again(db, document, model_client):
 
     final = run(state)
 
-    assert final["end_state"] == "verified"
+    assert final["end_state"] == "checks_passed"
     assert final["repairs"] == 1
     repair = model_client.calls[-1]["messages"]
     assert repair[1]["content"].startswith("=== Page 2 ===")
     assert repair[2] == {"role": "assistant", "content": '{"patient":'}
 
 
-def test_a_page_capped_then_read_again_in_halves_ends_verified(
+def test_a_page_capped_then_read_again_in_halves_passes_its_checks(
     db, document, model_client
 ):
     # d09's one page hits the cap on both models; its two halves, read
@@ -272,7 +272,7 @@ def test_a_page_capped_then_read_again_in_halves_ends_verified(
 
     final = run(state)
 
-    assert final["end_state"] == "verified"
+    assert final["end_state"] == "checks_passed"
     assert final["transcriptions"][0].lines == lines
     assert not [h for h in final["signals"] if h.signal == "LC-02"]
 
@@ -325,7 +325,7 @@ def test_an_error_is_repaired(db, document, model_client):
 
     final = run(state)
 
-    assert final["end_state"] == "verified"
+    assert final["end_state"] == "checks_passed"
     assert final["repairs"] == 1
     assert nodes_run(db, run_row(db, state["document_id"])["id"])[3:7] == [
         "parse", "validate", "repair", "validate"
@@ -347,7 +347,7 @@ def test_the_fallback_takes_over_when_the_primary_s_tries_are_used(
 
     final = run(state)
 
-    assert final["end_state"] == "verified"
+    assert final["end_state"] == "checks_passed"
     steps = nodes_run(db, run_row(db, state["document_id"])["id"])
     assert steps.count("repair") == MAX_PARSE_ATTEMPTS - 1
     assert steps[-5:] == ["fallback", "parse", "validate", "render", "finish"]
@@ -387,7 +387,7 @@ def test_a_dropped_lab_row_is_repaired(db, document, model_client):
 
     final = run(state)
 
-    assert final["end_state"] == "verified"
+    assert final["end_state"] == "checks_passed"
     assert final["repairs"] == 1
     repair_prompt = model_client.calls[-1]["messages"][-1]["content"]
     assert "results table has no result" in repair_prompt
@@ -425,7 +425,7 @@ def test_a_result_parsed_twice_is_repaired(db, document, model_client):
 
     final = run(state)
 
-    assert final["end_state"] == "verified"
+    assert final["end_state"] == "checks_passed"
     assert final["repairs"] == 1
     assert len(final["record"].observations) == len(key("d09").observations)
 

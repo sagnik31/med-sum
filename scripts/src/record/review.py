@@ -21,7 +21,10 @@ Rules:
   sets the item's status, `reviewed_by` and `reviewed_at`; its
   low-confidence reasons stay, so it is known afterwards what the review
   answered. There is no second approver.
-- A document is verified when nothing in it is low confidence any more.
+- Nothing in a reviewed record is low confidence any more when every
+  flagged value was confirmed or corrected (the API then makes a
+  needs_review document verified; a checks_passed one needs a
+  clinician's sign-off, docs/adr/0013-model-choice-after-the-first-live-evals.md).
 """
 
 import re

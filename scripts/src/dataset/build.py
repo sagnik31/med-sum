@@ -64,7 +64,9 @@ def _entry(doc: Doc, key) -> dict:
         "cases": doc.cases,
         "notes": doc.notes,
         "split": _split(doc.id),
-        "expected_end_state": "needs_review" if doc.expected_signals else "verified",
+        "expected_end_state": "needs_review"
+        if doc.expected_signals
+        else "checks_passed",
         "expected_signals": doc.expected_signals,
     }
 
@@ -130,7 +132,7 @@ def readme(data: dict) -> str:
     rows = "\n".join(
         f"| {d['id']} | {names[d['patient']]} | {d['type']} | "
         f"`{d['file'].split('/')[-1]}` | {d['pages']} | {d['document_date'] or 'undated'} | "
-        f"{d['split']} | {', '.join(d['expected_signals']) or 'verified'} | "
+        f"{d['split']} | {', '.join(d['expected_signals']) or 'checks_passed'} | "
         f"{', '.join(d['cases'])} |"
         for d in data["documents"]
     )
@@ -155,7 +157,7 @@ each one exercises and the order the loader uploads them in
 Each entry also says how the clean document should end: `expected_signals` are
 the routing signals it is built to raise (an undated document, a patient
 mismatch, an unsupported type), and `expected_end_state` is `needs_review` when
-there are any, else `verified`. `split` is `dev` for the documents used while
+there are any, else `checks_passed`. `split` is `dev` for the documents used while
 writing and checking the prompts (d02, d09), `held_out` for d18-d24, printed in
 layouts the others don't use and never to be used when changing a prompt or a
 check, and `test` for the rest; eval reports keep them apart.

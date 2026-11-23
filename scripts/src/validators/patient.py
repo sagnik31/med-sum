@@ -98,7 +98,7 @@ def check_patient_match(
     uploaded to. A mismatch is a flag on the field. When the patient is
     known but nothing that names them (name, patient ID, date of birth) was
     read, the document can't be tied to them: a flag on the document with
-    no field, so it goes to review instead of ending verified. See
+    no field, so it goes to review instead of ending checks_passed. See
     docs/adr/0004-deterministic-checks-decide-routing.md.
     """
     if expected is None:

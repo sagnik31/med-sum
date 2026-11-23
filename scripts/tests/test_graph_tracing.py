@@ -79,7 +79,7 @@ def test_sequential_nodes_see_the_run_and_their_own_step(db, document_id):
 
     with start_run(document_id, GRAPH_VERSION) as run:
         result = graph.invoke({"seen": []})
-        run.finish("verified")
+        run.finish("checks_passed")
 
     seen = result["seen"]
     assert [s["node"] for s in seen] == ["classify", "parse"]
@@ -116,7 +116,7 @@ def test_parallel_branches_in_other_threads_see_the_run(db, document_id):
 
     with start_run(document_id, GRAPH_VERSION) as run:
         result = graph.invoke({"seen": []})
-        run.finish("verified")
+        run.finish("checks_passed")
 
     by_node = {s["node"]: s for s in result["seen"]}
     assert set(by_node) == {"page_1", "page_2", "join"}
@@ -157,7 +157,7 @@ def test_a_model_call_in_a_node_is_reported_to_its_step(db, document_id, model_c
 
     with start_run(document_id, GRAPH_VERSION) as run:
         result = builder.compile().invoke({"seen": []})
-        run.finish("verified")
+        run.finish("checks_passed")
 
     assert result["seen"] == [{"label": "lab_report"}]
     assert steps(db, run.id) == [
@@ -210,7 +210,7 @@ def test_a_resumed_run_continues_from_the_checkpoint(db, database_url, document_
     with resume_run(run.id) as resumed:
         with checkpoints.open_checkpointer(database_url) as saver:
             result = build(saver).invoke(None, config)
-        resumed.finish("verified")
+        resumed.finish("checks_passed")
 
     assert [s["node"] for s in result["seen"]] == ["classify", "parse"]
     assert [row[:4] for row in steps(db, run.id)] == [

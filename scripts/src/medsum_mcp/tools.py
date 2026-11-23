@@ -202,9 +202,10 @@ class DocumentEntry(ToolOutput):
     original_name: str
     uploaded_at: str
     insight_status: str | None = Field(
-        description="verified (every value passed its checks or a clinician "
-        "reviewed it), needs_review (some values await a clinician), "
-        "processing, failed or not_started."
+        description="checks_passed (every value passed its checks; awaiting a "
+        "clinician's sign-off), verified (a clinician signed it off or "
+        "reviewed every flagged value), needs_review (some values await a "
+        "clinician), processing, failed or not_started."
     )
     duplicate_of: str | None = Field(
         description="The earlier upload this one is an exact copy of, if any."

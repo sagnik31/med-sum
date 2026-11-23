@@ -34,7 +34,8 @@ from validators import Finding
 from validators.patient import ExpectedPatient
 
 ModelRole = Literal["primary", "fallback"]
-EndState = Literal["verified", "needs_review", "failed"]
+# No run ends verified: see finish() in pipeline/nodes.py.
+EndState = Literal["checks_passed", "needs_review", "failed"]
 
 
 class PageImage(Strict):

@@ -68,7 +68,7 @@
       ],
       "notes": "Health check-up. The CBC comment follows the table whose last row is the WBC count; it belongs to the panel, not to WBC.",
       "split": "test",
-      "expected_end_state": "verified",
+      "expected_end_state": "checks_passed",
       "expected_signals": []
     },
     {
@@ -92,7 +92,7 @@
       ],
       "notes": "First visit after the June labs.",
       "split": "dev",
-      "expected_end_state": "verified",
+      "expected_end_state": "checks_passed",
       "expected_signals": []
     },
     {
@@ -117,7 +117,7 @@
       ],
       "notes": "A different lab, printed date only for collection. 'Suggest iron studies' is a pathologist's note under its own heading after the HbA1c section; it belongs to the document, not to HbA1c.",
       "split": "test",
-      "expected_end_state": "verified",
+      "expected_end_state": "checks_passed",
       "expected_signals": []
     },
     {
@@ -141,7 +141,7 @@
       ],
       "notes": "Uploaded first although it is dated after the 2024 labs (upload order is not document order).",
       "split": "test",
-      "expected_end_state": "verified",
+      "expected_end_state": "checks_passed",
       "expected_signals": []
     },
     {
@@ -162,7 +162,7 @@
       ],
       "notes": "Follow-up: second Haemoglobin, HbA1c and creatinine for trends.",
       "split": "test",
-      "expected_end_state": "verified",
+      "expected_end_state": "checks_passed",
       "expected_signals": []
     },
     {
@@ -185,7 +185,7 @@
       ],
       "notes": "The only creatinine this patient has: one raised value must not become 'acute kidney injury' or a trend. BUN sits in the kidney panel, not under an organ system.",
       "split": "test",
-      "expected_end_state": "verified",
+      "expected_end_state": "checks_passed",
       "expected_signals": []
     },
     {
@@ -208,7 +208,7 @@
       ],
       "notes": "Atorvastatin is prescribed but the patient has no lipid panel: the summary must not invent a lipid status.",
       "split": "test",
-      "expected_end_state": "verified",
+      "expected_end_state": "checks_passed",
       "expected_signals": []
     },
     {
@@ -230,7 +230,7 @@
       ],
       "notes": "Liver and thyroid tests; no creatinine, so d06's stays the only one.",
       "split": "test",
-      "expected_end_state": "verified",
+      "expected_end_state": "checks_passed",
       "expected_signals": []
     },
     {
@@ -250,7 +250,7 @@
       ],
       "notes": "First TSH (raised).",
       "split": "dev",
-      "expected_end_state": "verified",
+      "expected_end_state": "checks_passed",
       "expected_signals": []
     },
     {
@@ -271,7 +271,7 @@
       ],
       "notes": "Started on levothyroxine after d09.",
       "split": "test",
-      "expected_end_state": "verified",
+      "expected_end_state": "checks_passed",
       "expected_signals": []
     },
     {
@@ -292,7 +292,7 @@
       ],
       "notes": "Second TSH (now in range; 'falling' is allowed, 'improving' is not). Vitamin D has a printed L but several ranges, so no computed flag.",
       "split": "test",
-      "expected_end_state": "verified",
+      "expected_end_state": "checks_passed",
       "expected_signals": []
     },
     {
@@ -313,7 +313,7 @@
       ],
       "notes": "A weekly dose has no daily schedule. Uploaded first, before older documents.",
       "split": "test",
-      "expected_end_state": "verified",
+      "expected_end_state": "checks_passed",
       "expected_signals": []
     },
     {
@@ -335,7 +335,7 @@
       ],
       "notes": "Lipid profile, HbA1c in the prediabetes band (no flag printed), urine.",
       "split": "test",
-      "expected_end_state": "verified",
+      "expected_end_state": "checks_passed",
       "expected_signals": []
     },
     {
@@ -356,7 +356,7 @@
       ],
       "notes": "Statin with a lipid panel on record (contrast with d07).",
       "split": "test",
-      "expected_end_state": "verified",
+      "expected_end_state": "checks_passed",
       "expected_signals": []
     },
     {
@@ -448,7 +448,7 @@
       ],
       "notes": "Held out. Results printed one per line with the range in brackets, no table; name, age and sex on one line; dates as '03 Mar 2025'.",
       "split": "held_out",
-      "expected_end_state": "verified",
+      "expected_end_state": "checks_passed",
       "expected_signals": []
     },
     {
@@ -473,7 +473,7 @@
       ],
       "notes": "Held out. A clinic letterhead, the patient's details on one line, and medicines as numbered lines instead of a table.",
       "split": "held_out",
-      "expected_end_state": "verified",
+      "expected_end_state": "checks_passed",
       "expected_signals": []
     },
     {
@@ -498,7 +498,7 @@
       ],
       "notes": "Held out. Patient details in a key-value table; results as Investigation | Observed Value | Flag | Biological Reference Interval | Units.",
       "split": "held_out",
-      "expected_end_state": "verified",
+      "expected_end_state": "checks_passed",
       "expected_signals": []
     },
     {
@@ -523,7 +523,7 @@
       ],
       "notes": "Held out. Clinical notes in the left column, the medicines in the right; the transcription reads the left column first.",
       "split": "held_out",
-      "expected_end_state": "verified",
+      "expected_end_state": "checks_passed",
       "expected_signals": []
     },
     {
@@ -547,7 +547,7 @@
       ],
       "notes": "Held out. A lab report uploaded as a picture (no text layer), flags as arrows after the value, dates as 2025-03-20.",
       "split": "held_out",
-      "expected_end_state": "verified",
+      "expected_end_state": "checks_passed",
       "expected_signals": []
     },
     {
@@ -571,7 +571,7 @@
       ],
       "notes": "Held out. A scan whose haematology table runs onto page 2 under 'HAEMATOLOGY (contd.)'; the rows there still belong to HAEMATOLOGY. Second TSH for Nandini (after d20).",
       "split": "held_out",
-      "expected_end_state": "verified",
+      "expected_end_state": "checks_passed",
       "expected_signals": []
     },
     {
@@ -596,7 +596,7 @@
       ],
       "notes": "Held out. A typed e-prescription with a text layer; the strength in its own column, dates with the month in words, and a 'Next visit' date that is not the prescription date.",
       "split": "held_out",
-      "expected_end_state": "verified",
+      "expected_end_state": "checks_passed",
       "expected_signals": []
     },
     {
@@ -621,7 +621,7 @@
       ],
       "notes": "Sixty results on three pages, 27 on each of the first two: more than one parse call reads, so those pages are parsed in parts cut between rows. The fourth page is the laboratory's test menu in small print, whose transcription runs past a page call's output cap, so it is read again in two halves. Lipids lower than d13's on the statin; HbA1c still in the prediabetes band.",
       "split": "test",
-      "expected_end_state": "verified",
+      "expected_end_state": "checks_passed",
       "expected_signals": []
     }
   ],

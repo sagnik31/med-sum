@@ -10,11 +10,19 @@ import {
   pollDelay,
   reprocessDocument,
   reviewDocument,
+  signOffDocument,
   triggerInsightGeneration,
 } from "../api/client.js";
 import { useAuth } from "../auth/context.js";
 import { PERM, can } from "../auth/permissions.js";
-import { auditProgress, flaggedCount, isPdfName, reprocessQuestion, reviewOutcome } from "../record/review.js";
+import {
+  auditProgress,
+  flaggedCount,
+  isPdfName,
+  pageStatus,
+  reprocessQuestion,
+  reviewOutcome,
+} from "../record/review.js";
 import OriginalFile from "../components/OriginalFile.jsx";
 import ProcessingPanel from "../components/ProcessingPanel.jsx";
 import TracePanel from "../components/TracePanel.jsx";
@@ -57,6 +65,8 @@ function InsightPage() {
   const [audit, setAudit] = useState(null);
   const [auditError, setAuditError] = useState(null);
   const [auditDone, setAuditDone] = useState(false);
+  const [signingOff, setSigningOff] = useState(false);
+  const [signOffError, setSignOffError] = useState(null);
   const auditing = audit !== null && !auditDone;
   const auditLeft = audit?.unreviewed?.length ?? 0;
   // The original upload beside the transcription; always on in review mode.
@@ -101,12 +111,9 @@ function InsightPage() {
         const data = await getInsight(id, { background: !isFirstCheck });
         if (cancelled) return;
 
-        if (
-          (data?.status === "verified" || data?.status === "needs_review") &&
-          data.insights_html
-        ) {
+        if (pageStatus(data?.status) && data.insights_html) {
           setInsight(data.insights_html);
-          setStatus(data.status === "needs_review" ? "needs_review" : "ready");
+          setStatus(pageStatus(data.status));
         } else if (data?.status === "failed") {
           setFailure(data.error_message || "Unknown error.");
           setStatus("failed");
@@ -140,13 +147,14 @@ function InsightPage() {
   // Load the record when the document is processed. A 404 means the
   // pipeline stored none (it can't happen for a finished document, but the
   // page then shows the insight alone).
-  const processed = status === "ready" || status === "needs_review";
+  const processed = status === "ready" || status === "needs_review" || status === "checks_passed";
   // Another document: drop the last one's record.
   useEffect(() => {
     setRecord(null);
     setRecordUpdatedAt(null);
     setAudit(null);
     setAuditDone(false);
+    setSignOffError(null);
   }, [id]);
   // A reload after a review keeps the list on screen until the new record
   // arrives, so the scroll position, the selected source and any open
@@ -197,8 +205,24 @@ function InsightPage() {
     try {
       await completeAudit(id);
       setAuditDone(true);
+      setStatus("ready"); // finishing the audit signs the document off
     } catch (err) {
       setAuditError(err);
+    }
+  }
+
+  // A document that passed every check is verified only by a clinician's
+  // sign-off (docs/adr/0013-model-choice-after-the-first-live-evals.md).
+  async function handleSignOff() {
+    setSignOffError(null);
+    setSigningOff(true);
+    try {
+      await signOffDocument(id);
+      setStatus("ready");
+    } catch (err) {
+      setSignOffError(err);
+    } finally {
+      setSigningOff(false);
     }
   }
 
@@ -247,6 +271,27 @@ function InsightPage() {
         </div>
       )}
 
+      {!loading && !error && status === "checks_passed" && (
+        <div className="mb-4 text-sm bg-sky-50 border border-sky-100 rounded-md px-3 py-2 text-sky-800">
+          Every value in this document passed its checks, but it is not verified until a clinician signs it
+          off: the models have not yet passed the safety gate, and the first evaluations found wrong values
+          that passed every check. Read it against the source document before relying on it.
+          {canReview && !auditing && (
+            <div className="mt-2">
+              <button
+                type="button"
+                onClick={handleSignOff}
+                disabled={signingOff || saving}
+                className="rounded px-3 py-1 border font-medium bg-white text-emerald-700 border-emerald-300 disabled:opacity-50"
+              >
+                Sign off as verified
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+      <ApiErrorNotice error={signOffError} />
+
       {!loading && !error && processed && canReview && record && (
         <div className="mb-4 flex items-center gap-3 text-sm">
           <button
@@ -280,20 +325,21 @@ function InsightPage() {
 
       {auditing && (
         <p className="mb-4 text-sm bg-sky-50 border border-sky-100 rounded-md px-3 py-2 text-sky-800">
-          This verified document is an audit sample: a share of verified runs is set aside, by a fixed rule
-          on the run, to measure what the checks let through. Check every value against the original:
+          This document passed every check and is an audit sample: a share of such runs is set aside, by a
+          fixed rule on the run, to measure what the checks let through. Check every value against the original:
           confirm each one that matches and correct any that are wrong. The audit can be finished once every
-          value is confirmed or corrected. <strong>{auditProgress(audit)}</strong>
+          value is confirmed or corrected, which also signs it off.{" "}
+          <strong>{auditProgress(audit)}</strong>
         </p>
       )}
       {auditDone && (
         <p className="mb-4 text-sm bg-emerald-50 border border-emerald-100 rounded-md px-3 py-2 text-emerald-800">
-          Audit finished. The document has left the review queue.
+          Audit finished. The document is verified and has left the review queue.
         </p>
       )}
       <ApiErrorNotice error={auditError} />
 
-      {!loading && !error && (status === "ready" || status === "needs_review") && (
+      {!loading && !error && processed && (
         <div className="mb-4">
           <h2 className="text-sm font-semibold text-slate-700 mb-2">
             Insight

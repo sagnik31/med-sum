@@ -258,6 +258,7 @@ func TestGetInsightReportsTheJobStatus(t *testing.T) {
 	}{
 		{"no job yet", nil, "not_started", false, false},
 		{"processing", &db.Insight{Status: "processing", HTMLInsights: "<p>old</p>"}, "processing", false, false},
+		{"checks passed", &db.Insight{Status: "checks_passed", HTMLInsights: "<h2>Summary</h2>"}, "checks_passed", true, false},
 		{"verified", &db.Insight{Status: "verified", HTMLInsights: "<h2>Summary</h2>"}, "verified", true, false},
 		{"needs review", &db.Insight{Status: "needs_review", HTMLInsights: "<h2>Summary</h2>"}, "needs_review", true, false},
 		{"failed", &db.Insight{Status: "failed", ErrorMessage: strPtr("model down")}, "failed", false, true},

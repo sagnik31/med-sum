@@ -186,11 +186,16 @@ CREATE INDEX documents_patient_id_sha256_idx ON documents (patient_id, sha256, u
 -- Where a document's processing stands: at most one row per document, and
 -- its status is what the API reports; no row means not started. processing
 -- while a job is queued or running (see jobs), then the run's end state.
+-- No run ends verified: a checks_passed document becomes verified only
+-- when a clinician signs it off (or finishes its audit), and a
+-- needs_review one when every flagged value was reviewed. See
+-- docs/adr/0013-model-choice-after-the-first-live-evals.md.
 CREATE TABLE insights (
     id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     document_id   uuid NOT NULL UNIQUE REFERENCES documents (id) ON DELETE CASCADE,
     status        text NOT NULL DEFAULT 'processing'
-                  CHECK (status IN ('processing', 'verified', 'needs_review', 'failed')),
+                  CHECK (status IN ('processing', 'checks_passed', 'verified',
+                                    'needs_review', 'failed')),
     html_insights text,
     error_message text,
     created_at    timestamptz NOT NULL DEFAULT now(),
@@ -220,7 +225,7 @@ CREATE TABLE pipeline_runs (
     started_at    timestamptz NOT NULL DEFAULT now(),
     ended_at      timestamptz,
     -- Null while the run is going; then one of the pipeline's end states.
-    end_state     text CHECK (end_state IN ('verified', 'needs_review', 'failed')),
+    end_state     text CHECK (end_state IN ('checks_passed', 'needs_review', 'failed')),
     models_used   text[] NOT NULL DEFAULT '{}',
     error         text,
     -- What the run was made with: the git commit (null when unknown);
@@ -697,10 +702,11 @@ CREATE TABLE record_reviews (
 );
 CREATE INDEX record_reviews_document_idx ON record_reviews (document_id, reviewed_at);
 
--- A share of the documents the pipeline verified go back to a clinician
--- as an audit: a verified document was never looked at, so only a sample
--- can tell how many errors get through unflagged. The AI service picks
--- them when a run ends verified, from a hash of the run's id (so a
+-- A share of the documents that passed every check go back to a
+-- clinician as an audit, every value checked before it is finished:
+-- nothing in them raised a signal, so only a sample checked value by
+-- value can tell how many errors get through unflagged. The AI service
+-- picks them when a run ends checks_passed, from a hash of the run's id (so a
 -- resumed run picks the same way), at MEDSUM_AUDIT_SAMPLE_RATE. A sample
 -- is open until a clinician finishes the audit; reviews made while it is
 -- open are stored with audit set. A reprocess makes a new run, and the
@@ -740,7 +746,7 @@ FROM outcomes
 GROUP BY org_id, signal;
 
 -- Each audit sample and whether an error got through: a correction made
--- during the audit means the verified document held a wrong value that no
+-- during the audit means the document held a wrong value that no
 -- signal raised. finished is false while the audit is open. Only reviews
 -- of the sample's run count: a reprocessed document's later audit is of
 -- another run and has its own sample.

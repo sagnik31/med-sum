@@ -1,13 +1,16 @@
 // src/pages/ReviewQueuePage.jsx
 //
 // The organisation's documents waiting for a clinician, longest waiting
-// first, each with how many of its values await review. Any clinician of
+// first, each with how many of its values await review (or that it passed
+// every check and awaits a sign-off). Any clinician of
 // the organisation may review any of them. See docs/adr/0011-clinician-review.md.
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { fetchReviewQueue } from "../api/client.js";
 import ApiErrorNotice from "../components/ApiErrorNotice.jsx";
 import { queueLabel, reviewLink } from "../record/review.js";
+
+const QUEUE_COLOURS = { audit: "text-purple-700", checks_passed: "text-sky-700" };
 
 const TYPE_LABELS = { lab_report: "Lab report", prescription: "Prescription", other: "Other" };
 
@@ -64,7 +67,7 @@ function ReviewQueuePage() {
                     {e.document_date ? ` · ${e.document_date}` : " · undated"}
                   </div>
                 </td>
-                <td className={`py-2 ${e.reason === "audit" ? "text-purple-700" : "text-amber-800"}`}>
+                <td className={`py-2 ${QUEUE_COLOURS[e.reason] || "text-amber-800"}`}>
                   {queueLabel(e)}
                 </td>
               </tr>

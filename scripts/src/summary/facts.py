@@ -76,7 +76,7 @@ class DocEntry:
     type: DocumentType
     date: date | None
     date_source: str
-    status: str  # verified or needs_review
+    status: str  # checks_passed, verified or needs_review
     record: DocumentRecord = field(repr=False)
     awaiting: int = 0  # items and header values awaiting review
     reasons: list[PlainReason] = field(default_factory=list)  # document-level
@@ -197,7 +197,8 @@ def order_documents(inputs: list[SummaryInput]) -> tuple[list[DocEntry], int]:
     usable = [
         i
         for i in inputs
-        if i.record is not None and i.status in ("verified", "needs_review")
+        if i.record is not None
+        and i.status in ("checks_passed", "verified", "needs_review")
     ]
     usable.sort(
         key=lambda i: (

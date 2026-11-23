@@ -9,12 +9,12 @@ import (
 	"backend/internal/db"
 )
 
-// A verified document sampled for an audit waits in the queue, marked
-// audit, until a clinician finishes the audit.
+// A checks_passed document sampled for an audit waits in the queue, marked
+// audit, until a clinician finishes the audit, which verifies it.
 func TestAnAuditSampleWaitsInTheQueueUntilItsAuditIsFinished(t *testing.T) {
 	re := newReviewEnv(t)
 	sampled := recordTime.Add(time.Hour)
-	re.store.insights[re.doc] = &db.Insight{DocumentID: re.doc, Status: "verified", UpdatedAt: &sampled}
+	re.store.insights[re.doc] = &db.Insight{DocumentID: re.doc, Status: "checks_passed", UpdatedAt: &sampled}
 	re.store.auditOpen[re.doc] = true
 
 	resp := decodeJSON[struct {
@@ -53,7 +53,7 @@ func TestAnAuditSampleWaitsInTheQueueUntilItsAuditIsFinished(t *testing.T) {
 func TestAnotherOrganisationsAuditCantBeFinished(t *testing.T) {
 	re := newReviewEnv(t)
 	theirs := re.store.addDocument(re.store.addPatient("org-2", "OT-1"), re.userID, "b.pdf")
-	re.store.insights[theirs] = &db.Insight{DocumentID: theirs, Status: "verified"}
+	re.store.insights[theirs] = &db.Insight{DocumentID: theirs, Status: "checks_passed"}
 	re.store.auditOpen[theirs] = true
 	if rec := re.postJSON("/documents/"+theirs+"/audit-complete", re.auth, map[string]any{}); rec.Code != http.StatusNotFound {
 		t.Fatalf("status = %d", rec.Code)
@@ -137,5 +137,17 @@ func TestTheRecordNamesItsOpenAudit(t *testing.T) {
 	rec := re.do(http.MethodGet, "/documents/"+re.doc+"/record", re.auth, nil, "")
 	if !strings.Contains(rec.Body.String(), `"unreviewed":[]`) {
 		t.Errorf("body = %s", rec.Body)
+	}
+}
+
+func TestAFinishedAuditVerifiesTheDocument(t *testing.T) {
+	re := newReviewEnv(t)
+	re.store.insights[re.doc].Status = "checks_passed"
+	re.store.auditOpen[re.doc] = true
+	if rec := re.postJSON("/documents/"+re.doc+"/audit-complete", re.auth, map[string]any{}); rec.Code != http.StatusOK {
+		t.Fatalf("status = %d: %s", rec.Code, rec.Body)
+	}
+	if re.store.insights[re.doc].Status != "verified" {
+		t.Errorf("status = %s, want verified", re.store.insights[re.doc].Status)
 	}
 }

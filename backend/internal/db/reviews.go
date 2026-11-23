@@ -11,6 +11,11 @@ import (
 )
 
 // ----- Clinician review. See docs/adr/0011-clinician-review.md. -----
+//
+// No run ends verified: a document that passed every check is
+// checks_passed and waits for a clinician's sign-off (SignOff, or
+// CompleteAudit for an audit sample), until an eval run passes the safety
+// gate. See docs/adr/0013-model-choice-after-the-first-live-evals.md.
 
 // ErrReviewConflict is returned by ApplyReview when the record changed
 // since the caller read it (another review, or a reprocess), or the
@@ -39,15 +44,16 @@ type ReviewQueueEntry struct {
 	UploadedAt   time.Time  `json:"uploaded_at"`
 	QueuedAt     time.Time  `json:"queued_at"` // when it began waiting
 	Flagged      int        `json:"flagged"`   // values still awaiting review
-	Reason       string     `json:"reason"`    // needs_review, or audit (a sampled verified document)
+	Reason       string     `json:"reason"`    // needs_review, checks_passed (awaiting sign-off), or audit (a checks_passed document sampled for an audit)
 	UpdatedAt    *time.Time `json:"-"`
 }
 
 // ListReviewQueue lists the organisation's documents that wait for a
-// review, longest waiting first: every live document whose processing
-// ended in needs_review, and every verified one sampled for an audit
-// whose audit is still open (only a sample of the document's current
-// record: a reprocess leaves the old one behind).
+// clinician, longest waiting first: every live document whose processing
+// ended in needs_review, and every one that ended checks_passed, which
+// waits for a sign-off. A checks_passed one with an open audit sample of
+// its current record (a reprocess leaves the old one behind) is listed
+// as audit.
 func (s *Store) ListReviewQueue(ctx context.Context, orgID string) ([]ReviewQueueEntry, error) {
 	rows, err := s.pool.Query(ctx, `
 SELECT d.id, d.patient_id, p.full_name, p.mrn, d.original_name,
@@ -55,14 +61,10 @@ SELECT d.id, d.patient_id, p.full_name, p.mrn, d.original_name,
        r.record -> 'document' -> 'derived' ->> 'document_date',
        d.uploaded_at, w.queued_at, COALESCE(`+flaggedCount+`, 0), w.reason
 FROM (
-    SELECT i.document_id, i.updated_at AS queued_at, 'needs_review' AS reason
-    FROM insights i WHERE i.status = 'needs_review'
-    UNION ALL
-    SELECT a.document_id, a.sampled_at, 'audit'
-    FROM audit_samples a
-    JOIN insights i ON i.document_id = a.document_id AND i.status = 'verified'
-    JOIN document_records dr ON dr.document_id = a.document_id AND dr.run_id = a.run_id
-    WHERE a.completed_at IS NULL
+    SELECT i.document_id, i.updated_at AS queued_at,
+           CASE WHEN i.status = 'checks_passed' AND `+openAuditOf+`
+                THEN 'audit' ELSE i.status END AS reason
+    FROM insights i WHERE i.status IN ('needs_review', 'checks_passed')
 ) w
 JOIN documents d ON d.id = w.document_id
 JOIN patients p ON p.id = d.patient_id
@@ -91,7 +93,7 @@ LIMIT $2`, orgID, MaxReviewQueue)
 type RecordReview struct {
 	Record     json.RawMessage
 	HTML       string
-	Verified   bool // nothing awaits review any more: the document becomes verified
+	Verified   bool // nothing flagged awaits review: a needs_review document becomes verified
 	RunID      *string
 	ItemID     string
 	Field      *string
@@ -107,9 +109,11 @@ type RecordReview struct {
 
 // ApplyReview stores a review of a live document of the organisation in
 // one transaction: the record (only if its updated_at is still
-// recordUpdatedAt), the page and, when Verified, the verified status
-// (only while the document's processing has ended: insights is
-// processing from the moment a job is queued until its run ends),
+// recordUpdatedAt), the page and, when Verified, the verified status of
+// a needs_review document (a checks_passed one stays so until it is
+// signed off; a review is allowed only while the document's processing
+// has ended: insights is processing from the moment a job is queued
+// until its run ends),
 // the record_reviews row (marked audit while the document is an open
 // audit sample) and ev. It returns the record's new updated_at,
 // or ErrReviewConflict, writing nothing.
@@ -120,11 +124,11 @@ func (s *Store) ApplyReview(ctx context.Context, orgID, docID string, recordUpda
 		tag, err := tx.Exec(ctx, `
 UPDATE insights i
 SET html_insights = $3,
-    status = CASE WHEN $4 THEN 'verified' ELSE i.status END,
-    updated_at = CASE WHEN $4 AND i.status <> 'verified' THEN $5 ELSE i.updated_at END
+    status = CASE WHEN $4 AND i.status = 'needs_review' THEN 'verified' ELSE i.status END,
+    updated_at = CASE WHEN $4 AND i.status = 'needs_review' THEN $5 ELSE i.updated_at END
 FROM documents d JOIN patients p ON p.id = d.patient_id
 WHERE i.document_id = $1 AND d.id = i.document_id AND p.org_id = $2
-  AND d.deleted_at IS NULL AND i.status IN ('verified', 'needs_review')`,
+  AND d.deleted_at IS NULL AND i.status IN ('checks_passed', 'verified', 'needs_review')`,
 			docID, orgID, rv.HTML, rv.Verified, rv.At)
 		if err != nil {
 			return err
@@ -176,6 +180,56 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
 const openAuditOfTheRecord = `EXISTS (SELECT 1 FROM audit_samples a
     JOIN document_records dr ON dr.document_id = a.document_id AND dr.run_id = a.run_id
     WHERE a.document_id = $1 AND a.completed_at IS NULL)`
+
+// openAuditOf is the same test for the document of insights row i.
+const openAuditOf = `EXISTS (SELECT 1 FROM audit_samples a
+    JOIN document_records dr ON dr.document_id = a.document_id AND dr.run_id = a.run_id
+    WHERE a.document_id = i.document_id AND a.completed_at IS NULL)`
+
+// ErrNotAwaitingSignOff is returned by SignOff when the document is not
+// checks_passed (it needs a review, is verified already, or is being
+// processed), or is not a live document of the organisation.
+var ErrNotAwaitingSignOff = errors.New("the document is not awaiting a sign-off")
+
+// ErrAuditBeforeSignOff is returned by SignOff while the document is an
+// open audit sample: finishing its audit, which checks every value, is
+// its sign-off.
+var ErrAuditBeforeSignOff = errors.New("the document is an open audit sample")
+
+// SignOff makes a checks_passed live document of the organisation
+// verified, with ev, in one transaction: a clinician has read it and
+// signs it off. No run ends verified until an eval run passes the safety
+// gate, so this and finishing an audit are the only ways such a document
+// becomes verified. See
+// docs/adr/0013-model-choice-after-the-first-live-evals.md.
+func (s *Store) SignOff(ctx context.Context, orgID, docID string, at time.Time, ev *AuditEvent) error {
+	return pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
+		var audit bool
+		err := tx.QueryRow(ctx, `
+SELECT `+openAuditOfTheRecord+`
+FROM insights i
+JOIN documents d ON d.id = i.document_id
+JOIN patients p ON p.id = d.patient_id
+WHERE i.document_id = $1 AND p.org_id = $2 AND d.deleted_at IS NULL
+  AND i.status = 'checks_passed'
+FOR UPDATE OF i`, docID, orgID).Scan(&audit)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrNotAwaitingSignOff
+		}
+		if err != nil {
+			return err
+		}
+		if audit {
+			return ErrAuditBeforeSignOff
+		}
+		if _, err := tx.Exec(ctx, `
+UPDATE insights SET status = 'verified', updated_at = $2
+WHERE document_id = $1 AND status = 'checks_passed'`, docID, at); err != nil {
+			return err
+		}
+		return writeAudit(ctx, tx, ev)
+	})
+}
 
 // ErrNoOpenAudit is returned by CompleteAudit when the document has no
 // audit sample left open for the run its record is from.
@@ -245,7 +299,8 @@ WHERE a.document_id = $1 AND a.completed_at IS NULL`, docID).Scan(&a.SampledAt, 
 // organisation, with ev, in one transaction. Every value must have been
 // confirmed or corrected during the audit first, or it returns an
 // *AuditIncompleteError and writes nothing. Reviews after it are no
-// longer audit reviews, and the document leaves the queue. It returns
+// longer audit reviews, and the document leaves the queue: finishing the
+// audit signs a checks_passed document off, so it becomes verified. It returns
 // ErrNoOpenAudit, writing nothing, when there is no open sample of the
 // record's run (an older run's sample is dead, as in openAuditOfTheRecord).
 func (s *Store) CompleteAudit(ctx context.Context, orgID, docID, userID string, at time.Time, ev *AuditEvent) error {
@@ -275,6 +330,11 @@ FOR UPDATE OF a`, docID, orgID).Scan(&unreviewed, &runID)
 		if _, err := tx.Exec(ctx, `
 UPDATE audit_samples SET completed_at = $3, completed_by = $2
 WHERE document_id = $1 AND run_id = $4 AND completed_at IS NULL`, docID, userID, at, runID); err != nil {
+			return err
+		}
+		if _, err := tx.Exec(ctx, `
+UPDATE insights SET status = 'verified', updated_at = $2
+WHERE document_id = $1 AND status = 'checks_passed'`, docID, at); err != nil {
 			return err
 		}
 		return writeAudit(ctx, tx, ev)

@@ -37,7 +37,7 @@ def load_inputs(conn, patient_id: str) -> list[SummaryInput]:
     record (if any). A deleted document is left out. A file uploaded again
     (the same SHA-256) is left out too, so its values don't count twice in
     trends: one copy stands for the file, the earliest that finished
-    processing (verified or needs_review), else the earliest. So a copy
+    processing (checks_passed, verified or needs_review), else the earliest. So a copy
     that failed doesn't hide a later one that worked.
     See docs/adr/0008-patient-data-protection.md.
     """
@@ -49,7 +49,8 @@ def load_inputs(conn, patient_id: str) -> list[SummaryInput]:
                        i.status, r.record,
                        row_number() OVER (
                            PARTITION BY coalesce(d.sha256, d.id::text)
-                           ORDER BY coalesce(i.status IN ('verified', 'needs_review'),
+                           ORDER BY coalesce(i.status IN ('checks_passed', 'verified',
+                                                         'needs_review'),
                                              false) DESC,
                                     d.uploaded_at, d.id
                        ) AS copy

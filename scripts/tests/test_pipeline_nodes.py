@@ -60,7 +60,7 @@ def fixed_today(monkeypatch):
 
 @pytest.fixture
 def run(db):
-    """An open pipeline run on a fresh documents row; ended as verified."""
+    """An open pipeline run on a fresh documents row; ended as checks_passed."""
     with db.cursor() as cur:
         cur.execute(
             "INSERT INTO documents (patient_id, original_name, content_type, storage_path)"
@@ -71,7 +71,7 @@ def run(db):
     with start_run(document_id, "test-nodes") as r:
         yield r
         if not r.ended:
-            r.finish("verified")
+            r.finish("checks_passed")
 
 
 def step_rows(db, run) -> list[dict]:
@@ -957,12 +957,12 @@ def saved_record(db, run) -> dict:
         return cur.fetchone()
 
 
-def test_finish_a_clean_document_is_verified_and_saved(db, run, model_client):
+def test_finish_a_clean_document_passes_its_checks_and_is_saved(db, run, model_client):
     state = parsed_and_validated(run, model_client, "d09")
 
     out = nodes.finish(state)
 
-    assert out["end_state"] == "verified"
+    assert out["end_state"] == "checks_passed"
     assert not any(h.routes for h in out["signals"])
     record = out["record"]
     assert all(i.provenance.status is ItemStatus.VALIDATED for i in record.items())
@@ -973,7 +973,7 @@ def test_finish_a_clean_document_is_verified_and_saved(db, run, model_client):
     assert DocumentRecord.model_validate(stored) == record
     finish_row = step_rows(db, run)[-1]
     assert finish_row["node"] == "finish"
-    assert finish_row["output"]["end_state"] == "verified"
+    assert finish_row["output"]["end_state"] == "checks_passed"
     # The state's record is left as validate made it.
     assert state["record"].observations[0].provenance is None
 
@@ -986,7 +986,7 @@ def test_finish_raises_op3_for_the_runs_breaker_switches_without_routing(
 
     out = nodes.finish(state)
 
-    assert out["end_state"] == "verified"  # operational: stored, not routed
+    assert out["end_state"] == "checks_passed"  # operational: stored, not routed
     [hit] = [h for h in out["signals"] if h.signal == "OP-3"]
     assert hit.details == {
         "event": "model_disabled", "model": llm.PRIMARY_MODEL, "model_role": "primary"

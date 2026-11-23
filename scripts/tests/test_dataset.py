@@ -409,5 +409,5 @@ def test_the_dev_documents_are_d02_and_d09():
 def test_expected_signals_are_routing_signals_and_set_the_end_state():
     for entry in DOCS.values():
         assert all(SIGNALS[s].routes for s in entry["expected_signals"])
-        expected = "needs_review" if entry["expected_signals"] else "verified"
+        expected = "needs_review" if entry["expected_signals"] else "checks_passed"
         assert entry["expected_end_state"] == expected

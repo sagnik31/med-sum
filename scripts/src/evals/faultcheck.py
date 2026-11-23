@@ -111,7 +111,7 @@ class Outcome:
 
     @property
     def end_state(self) -> str:
-        return "needs_review" if signals.needs_review(self.hits) else "verified"
+        return "needs_review" if signals.needs_review(self.hits) else "checks_passed"
 
     def routing(self) -> set[tuple]:
         return {(h.signal, h.item_id, h.field) for h in self.hits if h.routes}

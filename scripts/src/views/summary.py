@@ -87,6 +87,7 @@ TEXT = {
     "lab_report": "Lab report",
     "prescription": "Prescription",
     "other": "Unsupported type",
+    "checks_passed": "checks passed, awaiting sign-off",
     "verified": "verified",
     "needs_review": "awaiting review",
     "undated": "undated",

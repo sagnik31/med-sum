@@ -188,7 +188,7 @@ def run(db):
     with start_run(document_id, "test-breaker") as r:
         yield r
         if not r.ended:
-            r.finish("verified")
+            r.finish("checks_passed")
 
 
 def test_a_run_notes_each_switch_made_during_its_calls(model_client, clock, run):

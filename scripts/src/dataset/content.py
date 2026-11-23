@@ -80,7 +80,7 @@ class Doc:
     cases: list[str] = field(default_factory=list)
     notes: str = ""
     # The routing signals (LC-nn) the clean document raises: what it is built
-    # to send to review. None of them means it should end verified.
+    # to send to review. None of them means it should end checks_passed.
     expected_signals: list[str] = field(default_factory=list)
 
     def page_blocks(self) -> list[list]:

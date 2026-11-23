@@ -85,6 +85,7 @@ type Store interface {
 	ListReviewQueue(ctx context.Context, orgID string) ([]db.ReviewQueueEntry, error)
 	ApplyReview(ctx context.Context, orgID, docID string, recordUpdatedAt time.Time, rv db.RecordReview, ev *db.AuditEvent) (time.Time, error)
 	CompleteAudit(ctx context.Context, orgID, docID, userID string, at time.Time, ev *db.AuditEvent) error
+	SignOff(ctx context.Context, orgID, docID string, at time.Time, ev *db.AuditEvent) error
 }
 
 // Config is what the server needs besides its store.
@@ -534,6 +535,19 @@ func (s *Server) handleDocumentByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// /documents/{id}/sign-off: a clinician signs off a document that
+	// passed every check
+	if len(parts) == 2 && parts[1] == "sign-off" {
+		if r.Method != http.MethodPost {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		if s.permit(w, r, authz.ReviewWrite) {
+			s.handleSignOff(w, r, docID)
+		}
+		return
+	}
+
 	// /documents/{id}/reprocess: process again, from the start, as a new run
 	if len(parts) == 2 && parts[1] == "reprocess" {
 		if r.Method != http.MethodPost {
@@ -631,8 +645,8 @@ func (s *Server) handleDeleteDocument(w http.ResponseWriter, r *http.Request, do
 
 type insightResponse struct {
 	DocumentID   string  `json:"document_id"`
-	Status       string  `json:"status"`                  // "not_started" | "processing" | "verified" | "needs_review" | "failed"
-	InsightsHTML *string `json:"insights_html,omitempty"` // present when verified or needs_review
+	Status       string  `json:"status"`                  // "not_started" | "processing" | "checks_passed" | "verified" | "needs_review" | "failed"
+	InsightsHTML *string `json:"insights_html,omitempty"` // present when checks_passed, verified or needs_review
 	ErrorMessage *string `json:"error_message,omitempty"` // present when failed
 }
 
@@ -684,10 +698,11 @@ func (s *Server) handleGetDocumentInsight(w http.ResponseWriter, r *http.Request
 }
 
 // insightEnded reports whether a document's processing reached an end
-// state with a result to show: verified, or needs_review (some values
-// await a clinician's review; the page is shown with that warning).
+// state with a result to show: checks_passed (awaiting a clinician's
+// sign-off), verified, or needs_review (some values await a clinician's
+// review; the page is shown with that warning).
 func insightEnded(status string) bool {
-	return status == "verified" || status == "needs_review"
+	return status == "checks_passed" || status == "verified" || status == "needs_review"
 }
 
 // ----- Start insight generation: POST /documents/{id}/insight -----

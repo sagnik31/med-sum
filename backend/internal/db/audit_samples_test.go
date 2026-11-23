@@ -13,7 +13,7 @@ func mustRun(t *testing.T, s *Store, docID string) string {
 	var id string
 	if err := s.pool.QueryRow(context.Background(), `
 INSERT INTO pipeline_runs (document_id, graph_version, ended_at, end_state)
-VALUES ($1, 'test', now(), 'verified') RETURNING id::text`, docID).Scan(&id); err != nil {
+VALUES ($1, 'test', now(), 'checks_passed') RETURNING id::text`, docID).Scan(&id); err != nil {
 		t.Fatal(err)
 	}
 	return id
@@ -23,7 +23,7 @@ func TestAnAuditSampleIsQueuedReviewedAsAnAuditAndFinished(t *testing.T) {
 	s := store(t)
 	ctx := context.Background()
 	at := time.Date(2026, 11, 10, 9, 0, 0, 0, time.UTC).Truncate(time.Microsecond)
-	me, d := reviewFixture(t, s, "verified", at)
+	me, d := reviewFixture(t, s, "checks_passed", at)
 	run := mustRun(t, s, d.ID)
 	if _, err := s.pool.Exec(ctx, `UPDATE document_records SET run_id = $2 WHERE document_id = $1`, d.ID, run); err != nil {
 		t.Fatal(err)
@@ -38,7 +38,7 @@ func TestAnAuditSampleIsQueuedReviewedAsAnAuditAndFinished(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(queue) != 1 || queue[0].Reason != "audit" || !queue[0].QueuedAt.Equal(sampled) {
+	if len(queue) != 1 || queue[0].Reason != "audit" || !queue[0].QueuedAt.Equal(at) {
 		t.Fatalf("queue = %+v", queue)
 	}
 
@@ -53,6 +53,14 @@ func TestAnAuditSampleIsQueuedReviewedAsAnAuditAndFinished(t *testing.T) {
 	var audit bool
 	if err := s.pool.QueryRow(ctx, `SELECT audit FROM record_reviews WHERE document_id = $1`, d.ID).Scan(&audit); err != nil || !audit {
 		t.Errorf("the review during an audit has audit = %v (%v)", audit, err)
+	}
+	// A review leaves it checks_passed, and it can't be signed off while
+	// its audit is open.
+	if ins, _ := s.GetInsightByDocumentID(ctx, d.ID); ins == nil || ins.Status != "checks_passed" {
+		t.Errorf("insight after a review = %+v", ins)
+	}
+	if err := s.SignOff(ctx, me.OrgID, d.ID, sampled, ev(me.OrgID, me.ID, "document_signed_off")); !errors.Is(err, ErrAuditBeforeSignOff) {
+		t.Errorf("a sign-off during the audit: err = %v", err)
 	}
 
 	// Another organisation can't finish it.
@@ -99,6 +107,9 @@ VALUES ($1, $2, $3, 'confirm', true, $4, $5)`, d.ID, run, item, me.ID, sampled.A
 	}
 	if queue, _ = s.ListReviewQueue(ctx, me.OrgID); len(queue) != 0 {
 		t.Errorf("a finished audit is still queued: %+v", queue)
+	}
+	if ins, _ := s.GetInsightByDocumentID(ctx, d.ID); ins == nil || ins.Status != "verified" {
+		t.Errorf("a finished audit did not verify the document: %+v", ins)
 	}
 	var finished, escaped bool
 	if err := s.pool.QueryRow(ctx, `SELECT finished, escaped FROM audit_sample_outcomes WHERE run_id = $1`, run).

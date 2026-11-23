@@ -89,7 +89,7 @@ def test_a_document_job_runs_as_the_role(db, as_role, model_client):
     jobs.process(job, "A")
 
     status, html, error = insight_row(db, doc)
-    assert (status, error) == ("verified", None)
+    assert (status, error) == ("checks_passed", None)
     # The role wrote the run's checkpoints as it went (a refused write fails
     # the job), and deleted them when the run ended.
     with db.cursor() as cur:

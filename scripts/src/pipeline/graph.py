@@ -10,7 +10,7 @@ pipeline/nodes.py joined by the routing of pipeline/routing.py.
     fallback -> parse                   (the fallback model, from the start)
 
 run_document() runs it for one document inside a pipeline run, and ends
-the run with the end state the finish node set (verified or
+the run with the end state the finish node set (checks_passed or
 needs_review). Anything that raises (an unreadable file, no model
 answering, a record that doesn't trace to its steps) ends the run as
 failed with the error, and is raised again for the caller.

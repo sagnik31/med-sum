@@ -327,7 +327,7 @@ def test_a_resumed_run_notes_the_identifiers_its_checkpoint_holds():
     import document_jobs
 
     record = key("d09")
-    saved = {"record": record, "end_state": "verified", "uploaded_by": "Dr Test"}
+    saved = {"record": record, "end_state": "checks_passed", "uploaded_by": "Dr Test"}
 
     class Graph:
         def get_state(self, config):

@@ -82,12 +82,12 @@ def step_rows(db, run_id) -> list[dict]:
 def test_a_run_writes_its_row_and_its_end_state(db, document_id):
     with start_run(document_id, GRAPH_VERSION) as run:
         assert run_row(db, run.id)["ended"] is False
-        run.finish("verified")
+        run.finish("checks_passed")
 
     row = run_row(db, run.id)
     assert row["document_id"] == document_id
     assert row["graph_version"] == GRAPH_VERSION
-    assert row["end_state"] == "verified" and row["ended"]
+    assert row["end_state"] == "checks_passed" and row["ended"]
     assert len(row["trace_id"]) == 32 and int(row["trace_id"], 16) >= 0
     assert run.conn.closed
 
@@ -117,7 +117,7 @@ def test_a_run_ends_once_with_a_known_end_state(document_id):
             run.finish("completed")
         run.finish("needs_review")
         with pytest.raises(RunError):
-            run.finish("verified")
+            run.finish("checks_passed")
         with pytest.raises(RunError):
             with run.step("parse"):
                 pass
@@ -169,7 +169,7 @@ def test_the_whole_state_is_the_default_input(db, document_id):
 
     with start_run(document_id, GRAPH_VERSION) as run:
         classify({"document_id": document_id, "image": b"\x89PNG"})
-        run.finish("verified")
+        run.finish("checks_passed")
 
     (step,) = step_rows(db, run.id)
     assert step["input"]["document_id"] == document_id
@@ -185,7 +185,7 @@ def test_a_node_can_store_its_own_output_and_replace_its_input(db, document_id):
 
     with start_run(document_id, GRAPH_VERSION) as run:
         transcribe({"everything": "x"})
-        run.finish("verified")
+        run.finish("checks_passed")
 
     (step,) = step_rows(db, run.id)
     assert step["input"] == {"page": 1}
@@ -208,7 +208,7 @@ def test_attempts_count_per_node_and_page_and_seq_runs_across_the_run(db, docume
         parse({})
         with run.step("parse", attempt=7):
             pass
-        run.finish("verified")
+        run.finish("checks_passed")
 
     rows = [
         (s["seq"], s["node"], s["page"], s["attempt"]) for s in step_rows(db, run.id)
@@ -271,7 +271,7 @@ def test_a_step_inside_a_step_records_its_parent(db, document_id):
     with start_run(document_id, GRAPH_VERSION) as run:
         parse({})
         validate({})
-        run.finish("verified")
+        run.finish("checks_passed")
 
     parse_step, inner, outer = step_rows(db, run.id)
     assert inner["parent"] == parse_step["id"]
@@ -288,7 +288,7 @@ def test_the_fallback_model_is_recorded_with_its_role(db, document_id, model_cli
 
     with start_run(document_id, GRAPH_VERSION) as run:
         summarise({})
-        run.finish("verified")
+        run.finish("checks_passed")
 
     (step,) = step_rows(db, run.id)
     assert (step["model"], step["model_role"]) == (llm.FALLBACK_MODEL, "fallback")
@@ -312,7 +312,7 @@ def test_models_used_lists_each_model_once_in_order_of_first_use(
             llm.PRIMARY_MODEL,
             llm.FALLBACK_MODEL,
         ]
-        run.finish("verified")
+        run.finish("checks_passed")
 
 
 def test_values_postgres_would_reject_are_stored(db, document_id):
@@ -322,7 +322,7 @@ def test_values_postgres_would_reject_are_stored(db, document_id):
 
     with start_run(document_id, GRAPH_VERSION) as run:
         transcribe({})
-        run.finish("verified")
+        run.finish("checks_passed")
 
     (step,) = step_rows(db, run.id)
     assert step["output"] == {"text": "line�one", "score": "nan"}
@@ -341,7 +341,7 @@ def test_parallel_nodes_get_distinct_sequence_numbers(db, document_id):
             ]
             for f in futures:
                 f.result()
-        run.finish("verified")
+        run.finish("checks_passed")
 
     rows = step_rows(db, run.id)
     assert [s["seq"] for s in rows] == list(range(1, 13))
@@ -380,7 +380,7 @@ def test_a_resumed_run_closes_interrupted_steps_and_continues_the_sequence(
     with resume_run(crashed.id) as run:
         assert run.trace_id == crashed.trace_id
         transcribe({"page": 2})
-        run.finish("verified")
+        run.finish("checks_passed")
 
     rows = [
         (s["seq"], s["page"], s["attempt"], s["status"], s["error"])
@@ -391,12 +391,12 @@ def test_a_resumed_run_closes_interrupted_steps_and_continues_the_sequence(
         (2, 2, 1, "failed", LEFT_RUNNING_AT_RESUME),
         (3, 2, 2, "ok", None),
     ]
-    assert run_row(db, run.id)["end_state"] == "verified"
+    assert run_row(db, run.id)["end_state"] == "checks_passed"
 
 
 def test_only_an_open_run_can_be_resumed(document_id):
     with start_run(document_id, GRAPH_VERSION) as run:
-        run.finish("verified")
+        run.finish("checks_passed")
 
     with pytest.raises(RunError, match="already ended"):
         resume_run(run.id)
@@ -413,7 +413,7 @@ def test_a_run_can_use_a_given_connection_factory(db, database_url, document_id)
         return conn
 
     with start_run(document_id, GRAPH_VERSION, connect=connect) as run:
-        run.finish("verified")
+        run.finish("checks_passed")
 
     assert len(opened) == 1 and opened[0].closed
 
@@ -432,7 +432,7 @@ def test_items_stamped_by_a_step_trace_back_to_it(db, document_id):
 
     with start_run(document_id, GRAPH_VERSION) as run:
         parse({})
-        run.finish("verified")
+        run.finish("checks_passed")
 
     (step,) = step_rows(db, run.id)
     first = next(record.items())
@@ -447,7 +447,7 @@ def test_check_provenance_names_each_broken_link(db, document_id):
     with start_run(document_id, GRAPH_VERSION) as run:
         with run.step("parse") as step:
             stamp(record, step.provenance())
-        run.finish("verified")
+        run.finish("checks_passed")
 
     items = list(record.items())
     items[0].provenance = None

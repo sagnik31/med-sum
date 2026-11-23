@@ -18,7 +18,8 @@ All model inference runs on the hospital's own machine through [Ollama](https://
 
 1. **Deterministic checks decide what a clinician must see.** A value that doesn't trace to its line, doesn't match the PDF's own text, disagrees with its printed range, or carries an impossible date sends the document to `needs_review` with the reason in plain words ([ADR 0004](docs/adr/0004-deterministic-checks-decide-routing.md)).
 2. **A clinician confirms or corrects, beside the reading.** A value is confirmed only with its own lines and its page of the original upload on screen. The correction is kept next to what the model read, never over it, and from then on every page shows the corrected value with its derived values worked out again ([ADR 0011](docs/adr/0011-clinician-review.md)).
-3. **A share of verified documents is audited**, so the rate of errors that slip through is measured in use, not assumed.
+3. **No document is verified without a clinician** until the models pass the safety gate. One that passes every check is `checks_passed` and waits for a sign-off ([ADR 0013](docs/adr/0013-model-choice-after-the-first-live-evals.md)).
+4. **A share of the documents that pass every check is audited** value by value, so the rate of errors that slip through is measured in use, not assumed.
 
 ## The approach
 
@@ -46,7 +47,7 @@ flowchart LR
     V -->|error findings left| F
     F --> P
     V --> RE[render] --> FI[finish]
-    FI --> E1([verified])
+    FI --> E1([checks_passed])
     FI --> E2([needs_review])
 ```
 

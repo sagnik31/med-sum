@@ -188,7 +188,7 @@ def _of(c: dict | None) -> str:
 def scoreboard(entries: list[dict]) -> str:
     """Every entry's numbers per model, newest first, as a Markdown table."""
     header = ("| Date | Run | Stage | Commit | Model | Field F1 | Unsafe "
-              "| Value recall | End state right | Auto-verified | Unsafe in verified "
+              "| Value recall | End state right | Passed every check | Unsafe in those "
               "| Report |")  # fmt: skip
     lines = [header, "| " + " | ".join("---" for _ in range(12)) + " |"]
     for e in reversed(entries):

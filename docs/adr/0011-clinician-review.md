@@ -1,6 +1,6 @@
 # 0011. Clinician review: confirm or correct beside the reading, never over it
 
-- **Status:** Accepted, 2026-11-14; acknowledgement by name 2026-11-21.
+- **Status:** Accepted, 2026-11-14; acknowledgement by name 2026-11-21. Amended 2026-11-23 by [0013](0013-model-choice-after-the-first-live-evals.md): no run ends verified; a document that passes every check is `checks_passed` and is verified only by a clinician's sign-off, and the audit samples are drawn from those documents.
 
 ## Context
 

@@ -66,10 +66,10 @@ def good_parse(doc_id: str) -> str:
 
 @pytest.fixture
 def ran(db, document, model_client):
-    """A verified run of DOC; returns {node: step id}."""
+    """A run of DOC that passes every check; returns {node: step id}."""
     state = document(DOC)
     model_client.replies[PRIMARY] = [page_text(DOC), classified(DOC), good_parse(DOC)]
-    assert pipeline_graph.run_document(state)["end_state"] == "verified"
+    assert pipeline_graph.run_document(state)["end_state"] == "checks_passed"
     with db.cursor() as cur:
         cur.execute(
             "SELECT s.node, s.id::text FROM pipeline_steps s"
@@ -322,7 +322,7 @@ def repaired(db, document, model_client):
     model_client.replies[PRIMARY] = [
         page_text(DOC), classified(DOC), bad_parse(DOC), good_parse(DOC),
     ]  # fmt: skip
-    assert pipeline_graph.run_document(state)["end_state"] == "verified"
+    assert pipeline_graph.run_document(state)["end_state"] == "checks_passed"
     (repair_call,) = [c for c in model_client.calls if len(c["messages"]) == 4]
     (step,) = _all(
         db,

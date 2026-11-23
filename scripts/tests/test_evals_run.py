@@ -49,7 +49,7 @@ def test_a_live_run_scores_and_routes_each_document(recorded):
     (result,) = run.documents
     assert result.record.all_fields.f1 == 1.0
     assert result.transcription.values.value == 1.0
-    assert outcomes["d09"] == runner.Outcome("verified", [], "primary")
+    assert outcomes["d09"] == runner.Outcome("checks_passed", [], "primary")
     # One page, classify, parse.
     assert len(cassette.entries) == 3
 
@@ -444,7 +444,7 @@ def test_a_reasoning_run_parses_the_expected_transcription(db, model_client):
     (result,) = run.documents
     assert result.transcription is None
     assert result.record.all_fields.f1 == 1.0
-    assert outcomes["d09"] == runner.Outcome("verified", [], "primary")
+    assert outcomes["d09"] == runner.Outcome("checks_passed", [], "primary")
     # Classify and parse; no page was read.
     assert len(cassette.entries) == 2
     assert not any(m.get("images") for c in model_client.calls for m in c["messages"])

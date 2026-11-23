@@ -23,7 +23,8 @@ Insights Generation Service (FastAPI)
   worker thread started with the app takes jobs one at a time and runs each
   document through the pipeline graph (pipeline.graph): transcribe,
   classify, parse with repair and the fallback model, validate, render.
-  The document ends verified or needs_review, or failed with its error.
+  The document ends checks_passed or needs_review, or failed with its
+  error; only a clinician's sign-off makes it verified.
   MEDSUM_WORKER=0 starts the app without the worker (tests).
 
 - Logs: structured JSON lines on stderr and in config.LOG_FILE, set up when

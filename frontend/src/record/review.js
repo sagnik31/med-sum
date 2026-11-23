@@ -175,14 +175,26 @@ export function flaggedCount(record) {
   return holders.filter((h) => h?.provenance?.status === "low_confidence").length;
 }
 
+// A document's status as the insight page names it: "ready" once
+// verified, "checks_passed" (every check passed, awaiting a clinician's
+// sign-off), "needs_review", or null for one with nothing to show yet. No
+// run ends verified until the models pass the safety gate, so only a
+// clinician makes a document "ready"
+// (docs/adr/0013-model-choice-after-the-first-live-evals.md).
+export function pageStatus(status) {
+  if (status === "verified") return "ready";
+  if (status === "checks_passed" || status === "needs_review") return status;
+  return null;
+}
+
 // What a saved review changes on the page, from the API's answer
 // ({ status, record_updated_at, flagged }): the document's status as the
-// page names it ("ready" once verified) and the record's new updated_at,
-// which the next review must send. Taken from the answer itself, so a
-// second review needs no reload of the record first.
+// page names it and the record's new updated_at, which the next review
+// must send. Taken from the answer itself, so a second review needs no
+// reload of the record first.
 export function reviewOutcome(result, status) {
   return {
-    status: result?.status === "verified" ? "ready" : status,
+    status: pageStatus(result?.status) ?? status,
     recordUpdatedAt: result?.record_updated_at ?? null,
   };
 }
@@ -211,6 +223,7 @@ export function reprocessQuestion(record) {
 // A queue entry's wait, in plain words: "3 values to review", "audit".
 export function queueLabel(entry) {
   if (entry.reason === "audit") return "audit sample: check every value";
+  if (entry.reason === "checks_passed") return "checks passed, awaiting sign-off";
   const n = entry.flagged;
   return n === 1 ? "1 value to review" : `${n} values to review`;
 }

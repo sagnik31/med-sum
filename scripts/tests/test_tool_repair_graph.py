@@ -63,7 +63,7 @@ def test_the_fixed_re_parse_is_the_default(db, document, model_client):
 
     final = run(state)
 
-    assert final["end_state"] == "verified"
+    assert final["end_state"] == "checks_passed"
     assert all("tools" not in c for c in model_client.calls)
     (log,) = final["repair_log"]
     assert (log.variant, log.turns, log.tool_calls) == ("fixed", 1, 0)
@@ -80,7 +80,7 @@ def test_a_clean_document_never_reaches_the_tools(
 
     final = run(state)
 
-    assert final["end_state"] == "verified"
+    assert final["end_state"] == "checks_passed"
     assert all("tools" not in c for c in model_client.calls)
     assert "repair_log" not in final
 
@@ -94,7 +94,7 @@ def test_a_fix_the_model_finds_with_a_tool(db, document, model_client, tools_rep
 
     final = run(state)
 
-    assert final["end_state"] == "verified"
+    assert final["end_state"] == "checks_passed"
     assert final["repairs"] == 1
     first, second = repair_calls(model_client)
     offered = {t["function"]["name"] for t in first["tools"]}
@@ -145,7 +145,7 @@ def test_when_the_reading_turns_are_used_the_last_turn_must_be_the_fix(
 
     final = run(state)
 
-    assert final["end_state"] == "verified"
+    assert final["end_state"] == "checks_passed"
     *reading, last = repair_calls(model_client)
     assert len(reading) == 2 and all("tools" in c for c in reading)
     # The last turn offers no tools and enforces the parse schema, with the
@@ -177,7 +177,7 @@ def test_a_malformed_call_uses_its_turn_and_its_error_goes_back(
 
     final = run(state)
 
-    assert final["end_state"] == "verified"
+    assert final["end_state"] == "checks_passed"
     _, second, last = repair_calls(model_client)
     error = json.loads(second["messages"][-1]["content"])
     assert error["error"] == "malformed_arguments"
@@ -203,7 +203,7 @@ def test_a_fix_that_still_has_errors_is_judged_like_any_parse(
 
     final = run(state)
 
-    assert final["end_state"] == "verified"
+    assert final["end_state"] == "checks_passed"
     assert final["record"].document.provenance.model == FALLBACK
     assert [r.attempt for r in final["repair_log"]] == [2, 3]
     steps = nodes_run(db, run_row(db, state["document_id"])["id"])

@@ -251,10 +251,18 @@ export function fetchReviewQueue() {
   return apiRequest("/review/queue");
 }
 
-// Finish the audit of a verified document sampled for one; it leaves the
-// queue. 409 when it is not waiting for an audit.
+// Finish the audit of a document that passed its checks and was sampled
+// for one; it leaves the queue, verified. 409 when it is not waiting for an
+// audit.
 export function completeAudit(documentId) {
   return apiRequest(`/documents/${enc(documentId)}/audit-complete`, { method: "POST" });
+}
+
+// Sign off a document that passed every check: it becomes verified. 409
+// when it is not waiting for a sign-off, or is an audit sample (finish the
+// audit instead). See docs/adr/0013-model-choice-after-the-first-live-evals.md.
+export function signOffDocument(documentId) {
+  return apiRequest(`/documents/${enc(documentId)}/sign-off`, { method: "POST" });
 }
 
 // Confirm an item's reading ({ action: "confirm", item_id }) or correct one

@@ -128,7 +128,7 @@ def test_a_document_with_an_open_job_is_not_queued_twice(db):
     assert jobs.enqueue(db, doc, reprocess=True) == "already_queued"
 
 
-@pytest.mark.parametrize("status", ["verified", "needs_review"])
+@pytest.mark.parametrize("status", ["checks_passed", "verified", "needs_review"])
 def test_a_finished_document_is_left_alone_unless_reprocessed(db, status):
     doc = add_document(db)
     set_insight(db, doc, status)
@@ -224,7 +224,7 @@ def test_a_parked_job_s_run_is_ended(db, monkeypatch):
     [
         lambda db, job, w: jobs.renew_lease(db, job, w),
         lambda db, job, w: jobs.set_run(db, job, w, None),
-        lambda db, job, w: jobs.complete(db, job, w, {"end_state": "verified"}),
+        lambda db, job, w: jobs.complete(db, job, w, {"end_state": "checks_passed"}),
         lambda db, job, w: jobs.fail(db, job, w, "late error"),
     ],
     ids=["renew", "set-run", "complete", "fail"],
@@ -337,8 +337,8 @@ def test_a_worker_that_loses_its_job_mid_run_stops_and_leaves_the_run_to_the_new
     model_client.chat = chat
     jobs.process(b, "B")
 
-    assert insight_row(db, doc)[0] == "verified"
-    assert run_row(db, run_id) == ("verified", False)
+    assert insight_row(db, doc)[0] == "checks_passed"
+    assert run_row(db, run_id) == ("checks_passed", False)
 
 
 def test_a_record_save_or_run_end_without_the_claim_is_refused(db):
@@ -353,7 +353,7 @@ def test_a_record_save_or_run_end_without_the_claim_is_refused(db):
         jobs.claim_next(db, "B")
 
         with pytest.raises(LostClaim):
-            run.finish("verified")
+            run.finish("checks_passed")
         with pytest.raises(LostClaim), run.step("open"):
             pass
     assert beat.lost.is_set()
@@ -373,7 +373,7 @@ def test_a_job_runs_the_document_through_the_graph(db, model_client):
     jobs.process(job, "A")
 
     status, html, error = insight_row(db, doc)
-    assert (status, error) == ("verified", None)
+    assert (status, error) == ("checks_passed", None)
     assert "<h1>Prescription</h1>" in html
     row = job_row(db, doc)
     assert (row["status"], row["claimed_by"]) == ("done", None)
@@ -381,7 +381,7 @@ def test_a_job_runs_the_document_through_the_graph(db, model_client):
         cur.execute(
             "SELECT end_state FROM pipeline_runs WHERE id = %s", (row["run_id"],)
         )
-        assert cur.fetchone() == ("verified",)
+        assert cur.fetchone() == ("checks_passed",)
         cur.execute("SELECT extracted_markdown FROM documents WHERE id = %s", (doc,))
         assert cur.fetchone()[0] == "\n".join(key("d02").pages[0].lines)
         cur.execute("SELECT run_id::text FROM document_records WHERE document_id = %s",
@@ -475,7 +475,7 @@ def test_a_crashed_worker_s_run_is_resumed_by_the_next_and_its_late_write_refuse
     assert (taken.run_id, taken.attempts) == (run.id, 2)
     jobs.process(taken, "B")
 
-    assert insight_row(db, doc)[0] == "verified"
+    assert insight_row(db, doc)[0] == "checks_passed"
     with db.cursor() as cur:
         cur.execute(
             "SELECT node FROM pipeline_steps WHERE run_id = %s ORDER BY seq", (run.id,)
@@ -484,13 +484,13 @@ def test_a_crashed_worker_s_run_is_resumed_by_the_next_and_its_late_write_refuse
             "open", "transcribe", "classify", "parse", "validate", "render", "finish",
         ]  # fmt: skip
         cur.execute("SELECT end_state FROM pipeline_runs WHERE id = %s", (run.id,))
-        assert cur.fetchone() == ("verified",)
+        assert cur.fetchone() == ("checks_passed",)
     # The page was transcribed once: B went on from A's checkpoint.
     vision_calls = [c for c in model_client.calls if c["messages"][-1].get("images")]
     assert len(vision_calls) == 1
     with pytest.raises(LostClaim):
         jobs.fail(db, job, "A", "A's late error")
-    assert insight_row(db, doc)[0] == "verified"
+    assert insight_row(db, doc)[0] == "checks_passed"
 
 
 # -------------------------------------------------------------------
@@ -511,7 +511,7 @@ def test_the_worker_takes_queued_jobs_until_stopped(db, model_client):
     finally:
         worker.stop(timeout=10)
 
-    assert insight_row(db, doc)[0] == "verified"
+    assert insight_row(db, doc)[0] == "checks_passed"
     assert job_row(db, doc)["status"] == "done"
 
 
@@ -528,7 +528,7 @@ def test_a_reprocess_is_a_new_run_whose_record_replaces_the_last(db, model_clien
 
     second = job_row(db, doc)["run_id"]
     assert second != first
-    assert insight_row(db, doc)[0] == "verified"
+    assert insight_row(db, doc)[0] == "checks_passed"
     with db.cursor() as cur:
         cur.execute("SELECT run_id::text FROM document_records WHERE document_id = %s",
                     (doc,))  # fmt: skip
@@ -614,7 +614,7 @@ def test_a_finished_job_leaves_no_checkpoints(db, model_client):
 
     jobs.process(job, "A")
 
-    assert insight_row(db, doc)[0] == "verified"
+    assert insight_row(db, doc)[0] == "checks_passed"
     assert thread_rows(db, job_row(db, doc)["run_id"]) == 0
 
 
@@ -699,7 +699,7 @@ def audit_samples_of(db, document_id):
 
 
 @pytest.mark.parametrize("rate, sampled", [(1.0, True), (0.0, False)])
-def test_a_verified_run_picked_for_audit_is_stored_with_its_result(
+def test_a_run_that_passed_its_checks_picked_for_audit_is_stored_with_it(
     db, model_client, monkeypatch, json_log, rate, sampled
 ):
     monkeypatch.setattr(jobs, "AUDIT_SAMPLE_RATE", rate)
@@ -710,7 +710,7 @@ def test_a_verified_run_picked_for_audit_is_stored_with_its_result(
 
     jobs.process(job, "A")
 
-    assert insight_row(db, doc)[0] == "verified"
+    assert insight_row(db, doc)[0] == "checks_passed"
     run_id = job_row(db, doc)["run_id"]
     assert audit_samples_of(db, doc) == ([(run_id, None)] if sampled else [])
     assert line_with(json_log, "job_completed")["audit_sampled"] is sampled
@@ -727,3 +727,14 @@ def test_a_run_that_needs_review_is_never_sampled(db, monkeypatch):
     assert not jobs.complete(db, job, "A", {"end_state": "needs_review"},
                              run_id=run.id)  # fmt: skip
     assert audit_samples_of(db, doc) == []
+
+
+def test_no_run_ends_verified():
+    # Only a clinician's sign-off makes a document verified, until an eval
+    # run passes the safety gate (docs/adr/0013-model-choice-after-the-first-live-evals.md).
+    from observability import tracing
+    from pipeline.state import EndState
+
+    assert "verified" not in tracing.END_STATES
+    assert "verified" not in EndState.__args__
+    assert "checks_passed" in jobs.END_STATES and "verified" in jobs.END_STATES

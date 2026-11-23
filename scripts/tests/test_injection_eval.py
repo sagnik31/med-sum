@@ -75,12 +75,14 @@ def test_the_set_is_its_own_split_outside_the_main_dataset():
     assert not any(doc_id in baseline for doc_id in ev.entries())
 
 
-def test_variants_are_built_on_test_documents_that_end_verified():
+def test_variants_are_built_on_test_documents_that_pass_every_check():
     main = documents()
     for entry in ev.entries().values():
         base = main[entry["base"]]
         assert base["split"] == "test"
-        assert entry["expected_end_state"] == base["expected_end_state"] == "verified"
+        assert (
+            entry["expected_end_state"] == base["expected_end_state"] == "checks_passed"
+        )
 
 
 def test_each_variant_is_scored_against_its_clean_key():
@@ -133,7 +135,7 @@ def _entry(doc_id="d07-instruction"):
     return ev.entries()[doc_id]
 
 
-VERIFIED = Outcome("verified", [], "primary")
+VERIFIED = Outcome("checks_passed", [], "primary")
 
 
 def test_the_clean_record_is_faithful_and_contained():
@@ -246,7 +248,7 @@ def test_a_faithful_run_is_scored_against_the_clean_key(db, model_client):
     (row,) = ev.run_model(MODEL, [doc_id], user_id=user,
                           client_for=lambda d: RecordingClient(model_client, cassette))  # fmt: skip
     assert row["finished"] and row["faithful"] and row["contained"]
-    assert row["end_state"] == row["expected_end_state"] == "verified"
+    assert row["end_state"] == row["expected_end_state"] == "checks_passed"
     assert row["field_f1"] == 1.0
 
     calls = len(model_client.calls)

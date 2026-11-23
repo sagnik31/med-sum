@@ -22,9 +22,12 @@ thread per AI service process, one document at a time.
   without a renewal (the database unreachable) counts its claim as lost.
   A worker that lost its claim leaves the run and its checkpoints alone:
   they now belong to the worker that took the job over.
-- A run that ends verified is picked for a clinician's audit at
+- A run that ends checks_passed is picked for a clinician's audit at
   MEDSUM_AUDIT_SAMPLE_RATE (default 0.10), in the same transaction as its
-  result: see audit_sampled.
+  result: see audit_sampled. No run ends verified: every checks_passed
+  document waits for a clinician's sign-off, and an audit sample is one
+  whose sign-off checks every value
+  (docs/adr/0013-model-choice-after-the-first-live-evals.md).
 
 Log lines carry ids, counts and statuses only; error messages go to the
 database (jobs.error, insights.error_message), never the log.
@@ -63,11 +66,13 @@ def _sample_rate(raw: str) -> float:
     return rate
 
 
-# The share of verified documents that go back to a clinician as an audit.
+# The share of checks_passed documents that go back to a clinician as an
+# audit: every value checked before the sign-off.
 AUDIT_SAMPLE_RATE = _sample_rate(os.environ.get("MEDSUM_AUDIT_SAMPLE_RATE", "0.10"))
 
-# Insight statuses a document stays in until it is reprocessed.
-END_STATES = ("verified", "needs_review")
+# Insight statuses a document stays in until it is reprocessed: the
+# run's end states, and verified (a clinician signed it off).
+END_STATES = ("checks_passed", "verified", "needs_review")
 PARKED = "stopped after {n} attempts: the worker died each time"
 
 
@@ -246,12 +251,13 @@ def set_run(conn, job: Job, worker: str, run_id: str) -> None:
 
 def audit_sampled(run_id: str, rate: float | None = None) -> bool:
     """
-    Whether a verified run goes back to a clinician as an audit. The pick
-    comes from a hash of the run's id, not a random draw, so a run resumed
-    by another worker is picked the same way; over many runs it picks the
-    given share (default AUDIT_SAMPLE_RATE). A verified document was never
-    looked at by anyone, so only such a sample can show how many wrong
-    values get through without a signal. See docs/adr/0011-clinician-review.md.
+    Whether a checks_passed run goes back to a clinician as an audit. The
+    pick comes from a hash of the run's id, not a random draw, so a run
+    resumed by another worker is picked the same way; over many runs it
+    picks the given share (default AUDIT_SAMPLE_RATE). Nothing in such a
+    document raised a signal, so only a sample checked value by value shows
+    how many wrong values get through without one. See
+    docs/adr/0011-clinician-review.md.
     """
     rate = AUDIT_SAMPLE_RATE if rate is None else rate
     digest = hashlib.sha256(f"audit-sample:{run_id}".encode()).digest()
@@ -266,11 +272,11 @@ def complete(
     end state and insight page on insights, the transcription as plain
     text in documents.extracted_markdown (a copy for reading; a reprocess
     reuses the transcribe steps of earlier runs, not this column), and,
-    for a verified run picked by audit_sampled, its audit sample. Returns
+    for a checks_passed run picked by audit_sampled, its audit sample. Returns
     whether it was picked.
     """
     sampled = (
-        final["end_state"] == "verified"
+        final["end_state"] == "checks_passed"
         and run_id is not None
         and audit_sampled(run_id)
     )

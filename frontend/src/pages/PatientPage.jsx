@@ -19,6 +19,7 @@ import { describePatient } from "../patients.js";
 const STATUS_BADGES = {
   not_started: { label: "Not started", className: "bg-slate-100 text-slate-600" },
   processing: { label: "Processing", className: "bg-yellow-100 text-yellow-800" },
+  checks_passed: { label: "Checks passed, awaiting sign-off", className: "bg-sky-100 text-sky-800" },
   verified: { label: "Verified", className: "bg-emerald-100 text-emerald-800" },
   needs_review: { label: "Needs review", className: "bg-amber-100 text-amber-800" },
   failed: { label: "Failed", className: "bg-red-100 text-red-700" },

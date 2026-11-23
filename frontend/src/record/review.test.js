@@ -8,6 +8,7 @@ import {
   addableDates,
   auditMark,
   auditProgress,
+  pageStatus,
   correctableFields,
   correctionsOf,
   currentValue,
@@ -139,6 +140,7 @@ test("queue entries say what waits", () => {
   assert.equal(queueLabel({ reason: "needs_review", flagged: 1 }), "1 value to review");
   assert.equal(queueLabel({ reason: "needs_review", flagged: 3 }), "3 values to review");
   assert.match(queueLabel({ reason: "audit", flagged: 0 }), /audit/);
+  assert.equal(queueLabel({ reason: "checks_passed", flagged: 0 }), "checks passed, awaiting sign-off");
 });
 
 test("the original opens at the cited page", () => {
@@ -174,6 +176,11 @@ test("a saved review gives the next one its record time, and verifies the page",
     status: "ready",
     recordUpdatedAt: at,
   });
+  // A review of a document that passed its checks leaves it awaiting the sign-off.
+  assert.deepEqual(reviewOutcome({ status: "checks_passed", record_updated_at: at, flagged: 0 }, "checks_passed"), {
+    status: "checks_passed",
+    recordUpdatedAt: at,
+  });
   // An answer without a time leaves the page to reload the record.
   assert.deepEqual(reviewOutcome(null, "ready"), { status: "ready", recordUpdatedAt: null });
 });
@@ -191,4 +198,12 @@ test("reprocessing asks first and says how many reviews it discards", () => {
   reviewed.document.corrections = [];
   assert.match(reprocessQuestion(reviewed), /The review made on it will be discarded/);
   assert.equal(reviewedCount(null), 0);
+});
+
+test("only a clinician makes a document ready: a run that passed its checks awaits a sign-off", () => {
+  assert.equal(pageStatus("verified"), "ready");
+  assert.equal(pageStatus("checks_passed"), "checks_passed");
+  assert.equal(pageStatus("needs_review"), "needs_review");
+  assert.equal(pageStatus("processing"), null);
+  assert.equal(pageStatus("failed"), null);
 });

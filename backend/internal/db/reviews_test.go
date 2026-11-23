@@ -158,3 +158,50 @@ func TestApplyReviewRefusesWhileProcessingAndAcrossOrganisations(t *testing.T) {
 		t.Errorf("own organisation: %v", err)
 	}
 }
+
+// No run ends verified: a document that passed every check is queued as
+// checks_passed and becomes verified only when a clinician signs it off.
+func TestADocumentThatPassedItsChecksIsQueuedUntilSignedOff(t *testing.T) {
+	s := store(t)
+	ctx := context.Background()
+	at := time.Date(2026, 11, 10, 9, 0, 0, 0, time.UTC)
+	me, d := reviewFixture(t, s, "checks_passed", at)
+
+	queue, err := s.ListReviewQueue(ctx, me.OrgID)
+	if err != nil || len(queue) != 1 || queue[0].Reason != "checks_passed" || queue[0].Flagged != 4 {
+		t.Fatalf("queue = %+v (%v)", queue, err)
+	}
+	// A review with nothing left flagged doesn't verify it.
+	if _, err := s.ApplyReview(ctx, me.OrgID, d.ID, at, RecordReview{Record: []byte(`{"schema_version": 1}`),
+		HTML: "<p></p>", Verified: true, ItemID: "obs-1", Action: "confirm", ReviewerID: me.ID,
+		At: at.Add(time.Minute)}, ev(me.OrgID, me.ID, "field_confirmed")); err != nil {
+		t.Fatal(err)
+	}
+	if ins, _ := s.GetInsightByDocumentID(ctx, d.ID); ins.Status != "checks_passed" {
+		t.Fatalf("status after a review = %s", ins.Status)
+	}
+
+	otherOrg, them := mustOtherOrg(t, s)
+	if err := s.SignOff(ctx, otherOrg, d.ID, at, ev(otherOrg, them.ID, "document_signed_off")); !errors.Is(err, ErrNotAwaitingSignOff) {
+		t.Errorf("another organisation: err = %v", err)
+	}
+	done := at.Add(time.Hour)
+	if err := s.SignOff(ctx, me.OrgID, d.ID, done, ev(me.OrgID, me.ID, "document_signed_off")); err != nil {
+		t.Fatal(err)
+	}
+	ins, _ := s.GetInsightByDocumentID(ctx, d.ID)
+	if ins.Status != "verified" || ins.UpdatedAt == nil || !ins.UpdatedAt.Equal(done) {
+		t.Errorf("insight = %+v", ins)
+	}
+	if queue, _ = s.ListReviewQueue(ctx, me.OrgID); len(queue) != 0 {
+		t.Errorf("a signed-off document is still queued: %+v", queue)
+	}
+	if err := s.SignOff(ctx, me.OrgID, d.ID, done, ev(me.OrgID, me.ID, "document_signed_off")); !errors.Is(err, ErrNotAwaitingSignOff) {
+		t.Errorf("signed off twice: err = %v", err)
+	}
+	var n int
+	_ = s.pool.QueryRow(ctx, `SELECT count(*) FROM audit_events WHERE action = 'document_signed_off'`).Scan(&n)
+	if n != 1 {
+		t.Errorf("%d document_signed_off events, want 1", n)
+	}
+}

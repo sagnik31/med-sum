@@ -10,7 +10,7 @@ The first versions had the model write each document's page and the patient summ
 
 **Pages are code** (`scripts/src/views/`), built from the stored records with no model call. Every value is shown exactly as printed, escaped, in an element of its own; derived values are marked; all fixed wording comes from one table. Nothing the record doesn't hold is shown: no "abnormal", no severity, no organ-system grouping. A value awaiting review shows its reasons in plain words. The render node marks the record exactly as the finish node saves it. The UI shows pages in a sandboxed iframe with scripts off and a content security policy that blocks remote loads.
 
-**The summary's facts are computed** (`scripts/src/summary/`) from every finished document (`verified` or `needs_review`), ordered by printed date, undated last, numbered D1..Dn; every value cites `Dn pP:L`.
+**The summary's facts are computed** (`scripts/src/summary/`) from every finished document (`checks_passed`, `verified` or `needs_review`), ordered by printed date, undated last, numbered D1..Dn; every value cites `Dn pP:L`.
 
 - **Sections:** the patient and warnings (undated documents, values awaiting review, documents not included); values flagged or out of range in the latest report of each test, and allergies; the medicines "on the latest prescription" (never "current"), then earlier ones; diagnoses exactly as printed; results and vitals over time under their printed panels; remarks with what they are printed on; every document with its review state.
 - **Trends are only "rising" or "falling"**: two or more dated values of a test in one printed unit, not awaiting review, one per date, each higher (or lower) than the last. Never "improving" or "worsening".

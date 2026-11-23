@@ -821,6 +821,33 @@ func (f *fakeStore) CompleteAudit(_ context.Context, orgID, docID, _ string, at 
 		f.auditDone = map[string]time.Time{}
 	}
 	f.auditDone[docID] = at
+	if ins := f.insights[docID]; ins != nil && ins.Status == "checks_passed" {
+		ins.Status = "verified"
+	}
+	f.logAudit(ev)
+	return nil
+}
+
+// SignOff follows the real method's rules: a checks_passed live document
+// of the organisation, not an open audit sample, becomes verified.
+func (f *fakeStore) SignOff(_ context.Context, orgID, docID string, at time.Time, ev *db.AuditEvent) error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return f.failWith
+	}
+	ins := f.insights[docID]
+	if f.documentIn(orgID, docID) == nil || ins == nil || ins.Status != "checks_passed" {
+		return db.ErrNotAwaitingSignOff
+	}
+	if f.auditOpen[docID] {
+		return db.ErrAuditBeforeSignOff
+	}
+	if f.failAudit != nil {
+		return f.failAudit
+	}
+	ins.Status = "verified"
+	ins.UpdatedAt = &at
 	f.logAudit(ev)
 	return nil
 }
@@ -894,8 +921,9 @@ func (f *fakeStore) GetProcessing(_ context.Context, docID string) (*db.Processi
 	return f.processing[docID], nil
 }
 
-// ListReviewQueue lists the organisation's documents in needs_review,
-// oldest first, with the flagged count the test set in flagged.
+// ListReviewQueue lists the organisation's documents in needs_review or
+// checks_passed (audit when auditOpen), oldest first, with the flagged
+// count the test set in flagged.
 func (f *fakeStore) ListReviewQueue(_ context.Context, orgID string) ([]db.ReviewQueueEntry, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
@@ -909,10 +937,10 @@ func (f *fakeStore) ListReviewQueue(_ context.Context, orgID string) ([]db.Revie
 		if ins == nil || p == nil || p.OrgID != orgID {
 			continue
 		}
-		reason := "needs_review"
-		if ins.Status == "verified" && f.auditOpen[id] {
+		reason := ins.Status
+		if ins.Status == "checks_passed" && f.auditOpen[id] {
 			reason = "audit"
-		} else if ins.Status != "needs_review" {
+		} else if ins.Status != "needs_review" && ins.Status != "checks_passed" {
 			continue
 		}
 		e := db.ReviewQueueEntry{DocumentID: id, PatientID: p.ID, PatientName: p.FullName,
@@ -944,7 +972,8 @@ func (f *fakeStore) ApplyReview(_ context.Context, orgID, docID string, recordUp
 	d := f.documentIn(orgID, docID)
 	ins := f.insights[docID]
 	rec := f.records[docID]
-	if d == nil || ins == nil || rec == nil || (ins.Status != "verified" && ins.Status != "needs_review") ||
+	if d == nil || ins == nil || rec == nil ||
+		(ins.Status != "checks_passed" && ins.Status != "verified" && ins.Status != "needs_review") ||
 		!rec.UpdatedAt.Equal(recordUpdatedAt) {
 		return time.Time{}, db.ErrReviewConflict
 	}
@@ -954,7 +983,7 @@ func (f *fakeStore) ApplyReview(_ context.Context, orgID, docID string, recordUp
 	rec.Record = rv.Record
 	rec.UpdatedAt = rv.At
 	ins.HTMLInsights = rv.HTML
-	if rv.Verified {
+	if rv.Verified && ins.Status == "needs_review" {
 		ins.Status = "verified"
 	}
 	f.reviews = append(f.reviews, rv)

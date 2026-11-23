@@ -54,7 +54,7 @@ def test_the_demo_runs_both_documents_from_cassettes(cassettes, model_client):
     assert code == 0, text
     assert len(model_client.calls) == calls  # no model was called
     assert "== d09: lab_report" in text and "== d15: prescription" in text
-    assert "End state: verified (the dataset expects verified)" in text
+    assert "End state: checks_passed (the dataset expects checks_passed)" in text
     assert "End state: needs_review (the dataset expects needs_review)" in text
     # d15 has no date: its signal and plain reason are printed.
     assert "LC-12:" in text
