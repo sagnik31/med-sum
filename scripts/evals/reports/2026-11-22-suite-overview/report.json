@@ -210,7 +210,19 @@
           "low": 0.0,
           "high": 0.43448246865939283
         },
-        "omissions": 3
+        "omissions": 3,
+        "omissions_by_severity": {
+          "critical": 0,
+          "major": 0,
+          "minor": 3,
+          "unrated": 0
+        },
+        "unsupported_by_severity": {
+          "critical": 0,
+          "major": 0,
+          "minor": 0,
+          "unrated": 0
+        }
       },
       "gemma4:e2b": {
         "overviews": 1,
@@ -235,7 +247,19 @@
           "low": 0.0,
           "high": 0.7934506882081973
         },
-        "omissions": 1
+        "omissions": 1,
+        "omissions_by_severity": {
+          "critical": 1,
+          "major": 0,
+          "minor": 0,
+          "unrated": 0
+        },
+        "unsupported_by_severity": {
+          "critical": 0,
+          "major": 0,
+          "minor": 0,
+          "unrated": 0
+        }
       }
     },
     "verdicts": [

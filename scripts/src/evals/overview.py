@@ -283,6 +283,39 @@ class VerdictError(ValueError):
     """Verdicts that don't answer the packet in the rubric's format."""
 
 
+# A judge's severities, worst first (the rubric beside a judged report:
+# an omitted allergy or latest prescription is critical, a whole group of
+# flagged values major, a trend or "no known allergies" minor). An
+# omission is a string starting "[critical] ..." (judge.md keeps
+# omissions as strings), or an object with a "severity" field; an
+# unsupported sentence carries a "severity" field. Anything else is
+# counted as unrated, never dropped.
+SEVERITIES = ("critical", "major", "minor")
+UNRATED = "unrated"
+_SEVERITY_PREFIX = re.compile(r"^\s*\[(?P<severity>[a-z]+)\]", re.IGNORECASE)
+
+
+def severity_of(item) -> str:
+    """The severity a judge gave an omission or a sentence, or unrated."""
+    if isinstance(item, dict):
+        given = item.get("severity")
+    elif isinstance(item, str):
+        prefix = _SEVERITY_PREFIX.match(item)
+        given = prefix["severity"] if prefix else None
+    else:
+        given = None
+    given = given.strip().casefold() if isinstance(given, str) else ""
+    return given if given in SEVERITIES else UNRATED
+
+
+def by_severity(items) -> dict[str, int]:
+    """Counts per severity, worst first, with unrated last."""
+    counts = dict.fromkeys((*SEVERITIES, UNRATED), 0)
+    for item in items:
+        counts[severity_of(item)] += 1
+    return counts
+
+
 def _check_verdict(v: dict) -> None:
     if not isinstance(v.get("sentences"), list) or not v["sentences"]:
         raise VerdictError(f"{v.get('id')}: no sentences judged")
@@ -331,6 +364,12 @@ def apply_verdicts(report: dict, packet: dict, verdicts: dict) -> dict:
                 sum(v["misleading"] for v in mine), len(mine)
             ).as_dict(),
             "omissions": sum(len(v["omissions"]) for v in mine),
+            "omissions_by_severity": by_severity(
+                o for v in mine for o in v["omissions"]
+            ),
+            "unsupported_by_severity": by_severity(
+                s for s in sentences if not s["supported"]
+            ),
         }
     return {
         **report,
@@ -340,6 +379,15 @@ def apply_verdicts(report: dict, packet: dict, verdicts: dict) -> dict:
             "verdicts": [got[i] for i in sorted(got)],
         },
     }
+
+
+def _severity_cell(key: str, severity: str):
+    # A report judged before the severity counts has none: "-".
+    def cell(r: dict) -> str:
+        counts = r.get(key)
+        return "-" if counts is None else str(counts.get(severity, 0))
+
+    return cell
 
 
 def _interval(d: dict) -> str:
@@ -390,7 +438,21 @@ def render_markdown(report: dict) -> str:
              lambda r: _interval(r["all_supported"])),
             ("Misleading overviews", lambda r: _interval(r["misleading"])),
             ("Omissions", lambda r: str(r["omissions"])),
+            *[(f"Omissions, {s}", _severity_cell("omissions_by_severity", s))
+              for s in SEVERITIES],
+            *[(f"Unsupported sentences, {s}",
+               _severity_cell("unsupported_by_severity", s)) for s in SEVERITIES],
         ]  # fmt: skip
+        if any(
+            (r.get(k) or {}).get(UNRATED)
+            for r in judge["models"].values()
+            for k in ("omissions_by_severity", "unsupported_by_severity")
+        ):
+            jrows += [
+                ("Omissions, unrated", _severity_cell("omissions_by_severity", UNRATED)),
+                ("Unsupported sentences, unrated",
+                 _severity_cell("unsupported_by_severity", UNRATED)),
+            ]  # fmt: skip
         out += [""] + _table(["Metric", *names], [
             [label, *(get(judge["models"][n]) if n in judge["models"] else "-"
                       for n in names)]

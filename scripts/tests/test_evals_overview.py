@@ -164,6 +164,74 @@ def test_the_judges_verdicts_are_counted_in_the_report(judged_run, places):
 
 
 @pytest.mark.parametrize(
+    ("item", "severity"),
+    [("[critical] penicillin allergy", "critical"), ("[Major] lipids", "major"),
+     (" [minor] TSH trend", "minor"), ("TSH trend", "unrated"),
+     ("[urgent] x", "unrated"), ("a [critical] in the middle", "unrated"),
+     ({"text": "s", "supported": False, "severity": "critical"}, "critical"),
+     ({"text": "s", "supported": False, "severity": ""}, "unrated"),
+     ({"text": "s", "supported": False}, "unrated"), (None, "unrated")],
+)  # fmt: skip
+def test_a_judges_severity_is_read_from_its_prefix_or_field(item, severity):
+    assert ov.severity_of(item) == severity
+
+
+def test_the_judge_table_counts_omissions_and_errors_by_severity(judged_run, places):
+    sentences = [
+        {"text": "a", "supported": True, "why": "", "severity": ""},
+        {"text": "b", "supported": False, "why": "x", "severity": "major"},
+        {"text": "c", "supported": False, "why": "y", "severity": "critical"},
+    ]
+    data = {"judge": "a review session", "verdicts": [
+        {**verdict(f"{MODEL}/fatima"), "sentences": sentences,
+         "omissions": ["[critical] penicillin allergy", "[minor] TSH trend",
+                       "[minor] NKDA"]},
+    ]}  # fmt: skip
+    path = write_verdicts(places, data)
+    assert ov.main(["--verdicts", path, "--report", str(judged_run)]) == 0
+    report = json.loads((judged_run / "report.json").read_text(encoding="utf-8"))
+    row = report["judge"]["models"][MODEL]
+    assert row["omissions"] == 3
+    assert row["omissions_by_severity"] == {
+        "critical": 1, "major": 0, "minor": 2, "unrated": 0
+    }  # fmt: skip
+    assert row["unsupported_by_severity"] == {
+        "critical": 1, "major": 1, "minor": 0, "unrated": 0
+    }  # fmt: skip
+    md = (judged_run / "report.md").read_text(encoding="utf-8")
+    assert "| Omissions, critical | 1 |" in md
+    assert "| Omissions, minor | 2 |" in md
+    assert "| Unsupported sentences, major | 1 |" in md
+    # Nothing unrated: no unrated rows.
+    assert "unrated" not in md
+
+
+def test_an_omission_without_a_severity_is_counted_as_unrated(judged_run, places):
+    data = {"judge": "j", "verdicts": [
+        verdict(f"{MODEL}/fatima", omissions=["TSH trend"])
+    ]}  # fmt: skip
+    path = write_verdicts(places, data)
+    assert ov.main(["--verdicts", path, "--report", str(judged_run)]) == 0
+    md = (judged_run / "report.md").read_text(encoding="utf-8")
+    assert "| Omissions, unrated | 1 |" in md
+    assert "| Omissions, critical | 0 |" in md
+
+
+def test_a_report_judged_before_the_severity_counts_still_renders():
+    report = {"label": "old", "generated_at": "t", "dataset": "d",
+              "models": {MODEL: {"overviews": 0, "shown": {"hits": 0, "total": 0},
+                                 "rejected": 0, "empty": 0, "attempts": 0,
+                                 "attention_named": {"hits": 0, "total": 0},
+                                 "seconds_per_overview": None, "units": []}},
+              "judge": {"judge": "j", "models": {MODEL: {
+                  "overviews": 1, "sentences_supported": {"hits": 1, "total": 1},
+                  "all_supported": {"hits": 1, "total": 1},
+                  "misleading": {"hits": 0, "total": 1}, "omissions": 2}}}}  # fmt: skip
+    md = ov.render_markdown(report)
+    assert "| Omissions | 2 |" in md and "| Omissions, critical | - |" in md
+
+
+@pytest.mark.parametrize(
     ("verdicts", "why"),
     [
         ({"verdicts": [verdict(f"{MODEL}/fatima")]}, "who judged"),

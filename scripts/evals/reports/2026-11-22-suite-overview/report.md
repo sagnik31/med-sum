@@ -25,6 +25,12 @@ Judged by claude-opus-5-5. Reported only; the check decides what is shown.
 | Overviews with every sentence supported | 5/5 (100.0%, 95% CI 56.6%-100.0%) | 1/1 (100.0%, 95% CI 20.7%-100.0%) |
 | Misleading overviews | 0/5 (0.0%, 95% CI 0.0%-43.4%) | 0/1 (0.0%, 95% CI 0.0%-79.3%) |
 | Omissions | 3 | 1 |
+| Omissions, critical | 0 | 1 |
+| Omissions, major | 0 | 0 |
+| Omissions, minor | 3 | 0 |
+| Unsupported sentences, critical | 0 | 0 |
+| Unsupported sentences, major | 0 | 0 |
+| Unsupported sentences, minor | 0 | 0 |
 
 ## By patient
 
