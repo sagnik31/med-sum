@@ -39,6 +39,19 @@
    "subset": null
   },
   {
+   "id": "d01-flag_in_value-1",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-1",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:5a6fa2b5a1879632",
+   "subset": null
+  },
+  {
    "id": "d01-dropped_result-1",
    "doc_id": "d01",
    "split": "test",
@@ -111,6 +124,19 @@
    "subset": null
   },
   {
+   "id": "d01-flag_in_value-2",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-3",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:50341626c8d0ec11",
+   "subset": null
+  },
+  {
    "id": "d01-dropped_result-3",
    "doc_id": "d01",
    "split": "test",
@@ -156,6 +182,19 @@
     "source_text"
    ],
    "fingerprint": "sha256:437b435d9d195d4f",
+   "subset": null
+  },
+  {
+   "id": "d01-flag_in_value-3",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-4",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:f4d29433d04e11c2",
    "subset": null
   },
   {
@@ -207,6 +246,19 @@
    "subset": null
   },
   {
+   "id": "d01-flag_in_value-4",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-5",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:ae02566f7a8eaa9d",
+   "subset": null
+  },
+  {
    "id": "d01-dropped_result-5",
    "doc_id": "d01",
    "split": "test",
@@ -255,6 +307,19 @@
    "subset": null
   },
   {
+   "id": "d01-flag_in_value-5",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-6",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:0d021974bbbb8d0d",
+   "subset": null
+  },
+  {
    "id": "d01-dropped_result-6",
    "doc_id": "d01",
    "split": "test",
@@ -300,6 +365,19 @@
     "source_text"
    ],
    "fingerprint": "sha256:93c6427c9b7563e7",
+   "subset": null
+  },
+  {
+   "id": "d01-flag_in_value-6",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-7",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:7630574517572e26",
    "subset": null
   },
   {
@@ -411,6 +489,19 @@
    "subset": null
   },
   {
+   "id": "d01-flag_in_value-7",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-10",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:c5f4d9bb374f99d7",
+   "subset": null
+  },
+  {
    "id": "d01-dropped_result-10",
    "doc_id": "d01",
    "split": "test",
@@ -457,6 +548,19 @@
     "source_text"
    ],
    "fingerprint": "sha256:05a67bc4a619b289",
+   "subset": null
+  },
+  {
+   "id": "d01-flag_in_value-8",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-11",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:11019d8467ab2f53",
    "subset": null
   },
   {
@@ -568,6 +672,19 @@
    "subset": null
   },
   {
+   "id": "d01-flag_in_value-9",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-13",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:2150cc1eba56c800",
+   "subset": null
+  },
+  {
    "id": "d01-dropped_result-13",
    "doc_id": "d01",
    "split": "test",
@@ -613,6 +730,19 @@
     "source_text"
    ],
    "fingerprint": "sha256:60da128066537f9c",
+   "subset": null
+  },
+  {
+   "id": "d01-flag_in_value-10",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-14",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:2aa14c4fc8d4ef8a",
    "subset": null
   },
   {
@@ -709,6 +839,19 @@
     "source_text"
    ],
    "fingerprint": "sha256:28e21a4c2592cc58",
+   "subset": null
+  },
+  {
+   "id": "d01-flag_in_value-11",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-16",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:ab3e6b414a2332c2",
    "subset": null
   },
   {
@@ -1009,7 +1152,7 @@
     "result_coverage"
    ],
    "fingerprint": "sha256:d3ddee093d44746d",
-   "subset": null
+   "subset": "core"
   },
   {
    "id": "d01-values_swapped-2",
@@ -1264,6 +1407,18 @@
    "subset": null
   },
   {
+   "id": "d01-header_row_as_result-1",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "header_row_as_result",
+   "target": "obs-27",
+   "errors": [
+    "header_row"
+   ],
+   "fingerprint": "sha256:2a8a9605b6d9e035",
+   "subset": null
+  },
+  {
    "id": "d01-remark_moved-1",
    "doc_id": "d01",
    "split": "test",
@@ -1285,6 +1440,30 @@
     "source_text"
    ],
    "fingerprint": "sha256:8dd08041b0da20fe",
+   "subset": null
+  },
+  {
+   "id": "d02-strength_in_name-1",
+   "doc_id": "d02",
+   "split": "dev",
+   "fault": "strength_in_name",
+   "target": "med-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:7b2f5360561a22b8",
+   "subset": null
+  },
+  {
+   "id": "d02-frequency_as_dose-1",
+   "doc_id": "d02",
+   "split": "dev",
+   "fault": "frequency_as_dose",
+   "target": "med-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:2ed52739dc796eed",
    "subset": null
   },
   {
@@ -1324,6 +1503,30 @@
    "subset": null
   },
   {
+   "id": "d02-strength_in_name-2",
+   "doc_id": "d02",
+   "split": "dev",
+   "fault": "strength_in_name",
+   "target": "med-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:cf9f8beee309df17",
+   "subset": null
+  },
+  {
+   "id": "d02-frequency_as_dose-2",
+   "doc_id": "d02",
+   "split": "dev",
+   "fault": "frequency_as_dose",
+   "target": "med-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:1ff0aa35c6d78ec1",
+   "subset": null
+  },
+  {
    "id": "d02-frequency_change-2",
    "doc_id": "d02",
    "split": "dev",
@@ -1345,6 +1548,18 @@
     "medicine_coverage"
    ],
    "fingerprint": "sha256:d972620a57d05ea4",
+   "subset": null
+  },
+  {
+   "id": "d02-frequency_as_dose-3",
+   "doc_id": "d02",
+   "split": "dev",
+   "fault": "frequency_as_dose",
+   "target": "med-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:66f35c81e79cb13e",
    "subset": null
   },
   {
@@ -1417,6 +1632,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:e3c24812c5a5d863",
+   "subset": null
+  },
+  {
+   "id": "d03-flag_in_value-1",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:caadb5a7f7c28e62",
    "subset": null
   },
   {
@@ -1552,6 +1779,18 @@
    "subset": null
   },
   {
+   "id": "d03-flag_in_value-2",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-4",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:d8a214a7239f5ffc",
+   "subset": null
+  },
+  {
    "id": "d03-dropped_result-4",
    "doc_id": "d03",
    "split": "test",
@@ -1585,6 +1824,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:68580c9b6fa1fdbd",
+   "subset": null
+  },
+  {
+   "id": "d03-flag_in_value-3",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-5",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:746269d5a6fd7fb1",
    "subset": null
   },
   {
@@ -1634,6 +1885,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:a476537bf7e9345e",
+   "subset": null
+  },
+  {
+   "id": "d03-flag_in_value-4",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-6",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:5c28dd0f6a831b8b",
    "subset": null
   },
   {
@@ -1709,6 +1972,18 @@
    "subset": null
   },
   {
+   "id": "d03-header_row_as_result-1",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "header_row_as_result",
+   "target": "obs-7",
+   "errors": [
+    "header_row"
+   ],
+   "fingerprint": "sha256:ca585f70a7b704a4",
+   "subset": null
+  },
+  {
    "id": "d03-remark_moved-1",
    "doc_id": "d03",
    "split": "test",
@@ -1718,6 +1993,18 @@
     "remark_placement"
    ],
    "fingerprint": "sha256:e92061e1dab4ef48",
+   "subset": null
+  },
+  {
+   "id": "d04-frequency_as_dose-1",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "frequency_as_dose",
+   "target": "med-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:9c5f7cd823b6cc09",
    "subset": null
   },
   {
@@ -1754,6 +2041,30 @@
     "source_text"
    ],
    "fingerprint": "sha256:7db35b0dd1f97543",
+   "subset": "core"
+  },
+  {
+   "id": "d04-strength_in_name-1",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "strength_in_name",
+   "target": "med-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:4aa8c85c95d437e9",
+   "subset": "core"
+  },
+  {
+   "id": "d04-frequency_as_dose-2",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "frequency_as_dose",
+   "target": "med-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:d2b4b859e6e9400e",
    "subset": null
   },
   {
@@ -1778,6 +2089,18 @@
     "medicine_coverage"
    ],
    "fingerprint": "sha256:2c6847fd0f079fd4",
+   "subset": null
+  },
+  {
+   "id": "d04-frequency_as_dose-3",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "frequency_as_dose",
+   "target": "med-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:4be2d052864141ed",
    "subset": null
   },
   {
@@ -1817,6 +2140,30 @@
    "subset": null
   },
   {
+   "id": "d04-strength_in_name-2",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "strength_in_name",
+   "target": "med-4",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:7fad0c63acb22a08",
+   "subset": null
+  },
+  {
+   "id": "d04-frequency_as_dose-4",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "frequency_as_dose",
+   "target": "med-4",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:e5989e91fbe36295",
+   "subset": null
+  },
+  {
    "id": "d04-frequency_change-4",
    "doc_id": "d04",
    "split": "test",
@@ -1850,6 +2197,30 @@
     "source_text"
    ],
    "fingerprint": "sha256:94e1213d6875d424",
+   "subset": null
+  },
+  {
+   "id": "d04-strength_in_name-3",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "strength_in_name",
+   "target": "med-5",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:80c476e9ad2651bd",
+   "subset": null
+  },
+  {
+   "id": "d04-frequency_as_dose-5",
+   "doc_id": "d04",
+   "split": "test",
+   "fault": "frequency_as_dose",
+   "target": "med-5",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:edd14435e3b09a0b",
    "subset": null
   },
   {
@@ -1937,6 +2308,19 @@
    "subset": null
   },
   {
+   "id": "d05-flag_in_value-1",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-1",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:172faf4abf881117",
+   "subset": null
+  },
+  {
    "id": "d05-dropped_result-1",
    "doc_id": "d05",
    "split": "test",
@@ -1982,6 +2366,19 @@
     "source_text"
    ],
    "fingerprint": "sha256:ed543a1c87feb770",
+   "subset": null
+  },
+  {
+   "id": "d05-flag_in_value-2",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-2",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:a98d8407429665bc",
    "subset": null
   },
   {
@@ -2069,6 +2466,19 @@
    "subset": null
   },
   {
+   "id": "d05-flag_in_value-3",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-4",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:3dec0c49737ec2f7",
+   "subset": null
+  },
+  {
    "id": "d05-dropped_result-4",
    "doc_id": "d05",
    "split": "test",
@@ -2117,6 +2527,19 @@
    "subset": null
   },
   {
+   "id": "d05-flag_in_value-4",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-5",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:8714c4ed681957f0",
+   "subset": null
+  },
+  {
    "id": "d05-dropped_result-5",
    "doc_id": "d05",
    "split": "test",
@@ -2150,6 +2573,19 @@
     "source_text"
    ],
    "fingerprint": "sha256:409b237f269d4dcc",
+   "subset": null
+  },
+  {
+   "id": "d05-flag_in_value-5",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-6",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:0adef0f0f5fccd4f",
    "subset": null
   },
   {
@@ -2189,6 +2625,19 @@
    "subset": null
   },
   {
+   "id": "d05-flag_in_value-6",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-7",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:f9a23dbe8dce9618",
+   "subset": null
+  },
+  {
    "id": "d05-dropped_result-7",
    "doc_id": "d05",
    "split": "test",
@@ -2222,6 +2671,19 @@
     "source_text"
    ],
    "fingerprint": "sha256:74e943cde4490505",
+   "subset": null
+  },
+  {
+   "id": "d05-flag_in_value-7",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-8",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:3b80e3deda8381bd",
    "subset": null
   },
   {
@@ -2357,6 +2819,18 @@
    "subset": null
   },
   {
+   "id": "d05-header_row_as_result-1",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "header_row_as_result",
+   "target": "obs-10",
+   "errors": [
+    "header_row"
+   ],
+   "fingerprint": "sha256:a2915cc8b90ca12d",
+   "subset": null
+  },
+  {
    "id": "d05-date_swap-1",
    "doc_id": "d05",
    "split": "test",
@@ -2417,6 +2891,19 @@
    "subset": null
   },
   {
+   "id": "d06-flag_in_value-1",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-1",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:8f863d86e146d666",
+   "subset": null
+  },
+  {
    "id": "d06-dropped_result-1",
    "doc_id": "d06",
    "split": "test",
@@ -2465,6 +2952,19 @@
    "subset": null
   },
   {
+   "id": "d06-flag_in_value-2",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-2",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:b952ccb901ff2e81",
+   "subset": null
+  },
+  {
    "id": "d06-dropped_result-2",
    "doc_id": "d06",
    "split": "test",
@@ -2498,6 +2998,19 @@
     "source_text"
    ],
    "fingerprint": "sha256:a0245e39152c519e",
+   "subset": null
+  },
+  {
+   "id": "d06-flag_in_value-3",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-3",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:67e67f0ad590992f",
    "subset": null
   },
   {
@@ -2561,6 +3074,19 @@
    "subset": null
   },
   {
+   "id": "d06-flag_in_value-4",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-4",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:4da03afd9531fc00",
+   "subset": null
+  },
+  {
    "id": "d06-dropped_result-4",
    "doc_id": "d06",
    "split": "test",
@@ -2594,6 +3120,19 @@
     "source_text"
    ],
    "fingerprint": "sha256:e343cefc76b1f6c6",
+   "subset": null
+  },
+  {
+   "id": "d06-flag_in_value-5",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-5",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:7ecd54ad59134256",
    "subset": null
   },
   {
@@ -2885,6 +3424,18 @@
    "subset": "core"
   },
   {
+   "id": "d06-header_row_as_result-1",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "header_row_as_result",
+   "target": "obs-10",
+   "errors": [
+    "header_row"
+   ],
+   "fingerprint": "sha256:48aef118db403e4c",
+   "subset": null
+  },
+  {
    "id": "d06-date_swap-1",
    "doc_id": "d06",
    "split": "test",
@@ -2921,6 +3472,30 @@
    "subset": null
   },
   {
+   "id": "d07-strength_in_name-1",
+   "doc_id": "d07",
+   "split": "test",
+   "fault": "strength_in_name",
+   "target": "med-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:4dbaaf8f1ac6046e",
+   "subset": null
+  },
+  {
+   "id": "d07-frequency_as_dose-1",
+   "doc_id": "d07",
+   "split": "test",
+   "fault": "frequency_as_dose",
+   "target": "med-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:af245740961a442e",
+   "subset": null
+  },
+  {
    "id": "d07-frequency_change-1",
    "doc_id": "d07",
    "split": "test",
@@ -2942,7 +3517,7 @@
     "medicine_coverage"
    ],
    "fingerprint": "sha256:894a0f62e2682844",
-   "subset": "core"
+   "subset": null
   },
   {
    "id": "d07-strength_shift-2",
@@ -2954,6 +3529,30 @@
     "source_text"
    ],
    "fingerprint": "sha256:d4ba04ab177b0ea7",
+   "subset": null
+  },
+  {
+   "id": "d07-strength_in_name-2",
+   "doc_id": "d07",
+   "split": "test",
+   "fault": "strength_in_name",
+   "target": "med-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:109e73bdbc57251d",
+   "subset": null
+  },
+  {
+   "id": "d07-frequency_as_dose-2",
+   "doc_id": "d07",
+   "split": "test",
+   "fault": "frequency_as_dose",
+   "target": "med-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:a3c80c416c2ba806",
    "subset": null
   },
   {
@@ -2993,6 +3592,30 @@
    "subset": null
   },
   {
+   "id": "d07-strength_in_name-3",
+   "doc_id": "d07",
+   "split": "test",
+   "fault": "strength_in_name",
+   "target": "med-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:acf4aad9bf933b9c",
+   "subset": null
+  },
+  {
+   "id": "d07-frequency_as_dose-3",
+   "doc_id": "d07",
+   "split": "test",
+   "fault": "frequency_as_dose",
+   "target": "med-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:7728f4be68350eb2",
+   "subset": null
+  },
+  {
    "id": "d07-frequency_change-3",
    "doc_id": "d07",
    "split": "test",
@@ -3015,6 +3638,18 @@
    ],
    "fingerprint": "sha256:f6f890824abbf39c",
    "subset": null
+  },
+  {
+   "id": "d07-allergy_text_cut-1",
+   "doc_id": "d07",
+   "split": "test",
+   "fault": "allergy_text_cut",
+   "target": "alg-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:0c305624e6174054",
+   "subset": "core"
   },
   {
    "id": "d07-invented_medicine-1",
@@ -3207,6 +3842,18 @@
    ],
    "fingerprint": "sha256:316e835e315e217b",
    "subset": null
+  },
+  {
+   "id": "d08-flag_in_value-1",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-4",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:1bbd9a3f31978061",
+   "subset": "core"
   },
   {
    "id": "d08-dropped_result-4",
@@ -3494,7 +4141,7 @@
     "source_text"
    ],
    "fingerprint": "sha256:4a80d2d3d6df679f",
-   "subset": "core"
+   "subset": null
   },
   {
    "id": "d08-duplicated_item-1",
@@ -3506,6 +4153,18 @@
     "duplicates"
    ],
    "fingerprint": "sha256:9de7dbc96abfac5f",
+   "subset": null
+  },
+  {
+   "id": "d08-header_row_as_result-1",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "header_row_as_result",
+   "target": "obs-10",
+   "errors": [
+    "header_row"
+   ],
+   "fingerprint": "sha256:f089fa1d8ed63bd9",
    "subset": null
   },
   {
@@ -3602,6 +4261,19 @@
     "source_text"
    ],
    "fingerprint": "sha256:179397e5fbae7a57",
+   "subset": null
+  },
+  {
+   "id": "d09-flag_in_value-1",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "flag_in_value",
+   "target": "obs-3",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:af20836d5711bca0",
    "subset": null
   },
   {
@@ -3809,6 +4481,18 @@
    "subset": null
   },
   {
+   "id": "d09-header_row_as_result-1",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "header_row_as_result",
+   "target": "obs-7",
+   "errors": [
+    "header_row"
+   ],
+   "fingerprint": "sha256:d24a59c44ea36f99",
+   "subset": null
+  },
+  {
    "id": "d09-date_swap-1",
    "doc_id": "d09",
    "split": "dev",
@@ -3845,6 +4529,30 @@
    "subset": null
   },
   {
+   "id": "d10-strength_in_name-1",
+   "doc_id": "d10",
+   "split": "test",
+   "fault": "strength_in_name",
+   "target": "med-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:89b05dcd76025120",
+   "subset": null
+  },
+  {
+   "id": "d10-frequency_as_dose-1",
+   "doc_id": "d10",
+   "split": "test",
+   "fault": "frequency_as_dose",
+   "target": "med-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:1a66188ebf281244",
+   "subset": null
+  },
+  {
    "id": "d10-frequency_change-1",
    "doc_id": "d10",
    "split": "test",
@@ -3854,7 +4562,7 @@
     "source_text"
    ],
    "fingerprint": "sha256:0e253259f7466a94",
-   "subset": "core"
+   "subset": null
   },
   {
    "id": "d10-dropped_medicine-1",
@@ -3866,6 +4574,18 @@
     "medicine_coverage"
    ],
    "fingerprint": "sha256:baf48f7508698602",
+   "subset": "core"
+  },
+  {
+   "id": "d10-allergy_text_cut-1",
+   "doc_id": "d10",
+   "split": "test",
+   "fault": "allergy_text_cut",
+   "target": "alg-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:6057f663d6614410",
    "subset": null
   },
   {
@@ -3914,7 +4634,7 @@
     "source_text"
    ],
    "fingerprint": "sha256:7936f8d4a3cf5ff8",
-   "subset": "core"
+   "subset": null
   },
   {
    "id": "d11-dropped_result-1",
@@ -3965,6 +4685,19 @@
    "subset": null
   },
   {
+   "id": "d11-flag_in_value-1",
+   "doc_id": "d11",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-2",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:52fde659601be765",
+   "subset": null
+  },
+  {
    "id": "d11-dropped_result-2",
    "doc_id": "d11",
    "split": "test",
@@ -3999,6 +4732,18 @@
    ],
    "fingerprint": "sha256:a86d0179ba76b29f",
    "subset": null
+  },
+  {
+   "id": "d11-header_row_as_result-1",
+   "doc_id": "d11",
+   "split": "test",
+   "fault": "header_row_as_result",
+   "target": "obs-3",
+   "errors": [
+    "header_row"
+   ],
+   "fingerprint": "sha256:61c7b883bd5b4162",
+   "subset": "core"
   },
   {
    "id": "d11-date_swap-1",
@@ -4037,6 +4782,30 @@
    "subset": null
   },
   {
+   "id": "d12-strength_in_name-1",
+   "doc_id": "d12",
+   "split": "test",
+   "fault": "strength_in_name",
+   "target": "med-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:3a9556b8e5f37338",
+   "subset": null
+  },
+  {
+   "id": "d12-frequency_as_dose-1",
+   "doc_id": "d12",
+   "split": "test",
+   "fault": "frequency_as_dose",
+   "target": "med-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:833929f492289457",
+   "subset": "core"
+  },
+  {
    "id": "d12-frequency_change-1",
    "doc_id": "d12",
    "split": "test",
@@ -4073,6 +4842,18 @@
    "subset": null
   },
   {
+   "id": "d12-strength_in_name-2",
+   "doc_id": "d12",
+   "split": "test",
+   "fault": "strength_in_name",
+   "target": "med-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:250bf263605bd32e",
+   "subset": null
+  },
+  {
    "id": "d12-dropped_medicine-2",
    "doc_id": "d12",
    "split": "test",
@@ -4085,6 +4866,18 @@
    "subset": null
   },
   {
+   "id": "d12-allergy_text_cut-1",
+   "doc_id": "d12",
+   "split": "test",
+   "fault": "allergy_text_cut",
+   "target": "alg-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:b95bae8417660df4",
+   "subset": null
+  },
+  {
    "id": "d12-invented_medicine-1",
    "doc_id": "d12",
    "split": "test",
@@ -4094,7 +4887,7 @@
     "source_text"
    ],
    "fingerprint": "sha256:93e2a67e6850f902",
-   "subset": "core"
+   "subset": null
   },
   {
    "id": "d12-duplicated_item-1",
@@ -4142,6 +4935,19 @@
     "source_text"
    ],
    "fingerprint": "sha256:ce8b4a147acc7cc2",
+   "subset": null
+  },
+  {
+   "id": "d13-flag_in_value-1",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-1",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:e8ac8a1ff6463b3d",
    "subset": null
   },
   {
@@ -4202,7 +5008,20 @@
     "source_text"
    ],
    "fingerprint": "sha256:33d7f0ca7d01f0be",
-   "subset": "core"
+   "subset": null
+  },
+  {
+   "id": "d13-flag_in_value-2",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-2",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:a5432167c8e46926",
+   "subset": null
   },
   {
    "id": "d13-dropped_result-2",
@@ -4265,6 +5084,19 @@
    "subset": null
   },
   {
+   "id": "d13-flag_in_value-3",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-3",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:5f5c09ae65581fc6",
+   "subset": null
+  },
+  {
    "id": "d13-dropped_result-3",
    "doc_id": "d13",
    "split": "test",
@@ -4310,6 +5142,19 @@
     "source_text"
    ],
    "fingerprint": "sha256:626bfa2759d59ac8",
+   "subset": null
+  },
+  {
+   "id": "d13-flag_in_value-4",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-4",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:f04f0ca1527a0afd",
    "subset": null
   },
   {
@@ -4526,7 +5371,7 @@
     "source_text"
    ],
    "fingerprint": "sha256:482fa4537da6ba2f",
-   "subset": null
+   "subset": "core"
   },
   {
    "id": "d13-duplicated_item-1",
@@ -4538,6 +5383,18 @@
     "duplicates"
    ],
    "fingerprint": "sha256:69a5760e1006cd0b",
+   "subset": null
+  },
+  {
+   "id": "d13-header_row_as_result-1",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "header_row_as_result",
+   "target": "obs-10",
+   "errors": [
+    "header_row"
+   ],
+   "fingerprint": "sha256:27d881ece3afa3a4",
    "subset": null
   },
   {
@@ -4574,7 +5431,31 @@
     "source_text"
    ],
    "fingerprint": "sha256:994e677defe04931",
-   "subset": "core"
+   "subset": null
+  },
+  {
+   "id": "d14-strength_in_name-1",
+   "doc_id": "d14",
+   "split": "test",
+   "fault": "strength_in_name",
+   "target": "med-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:8f051e5e1ddef256",
+   "subset": null
+  },
+  {
+   "id": "d14-frequency_as_dose-1",
+   "doc_id": "d14",
+   "split": "test",
+   "fault": "frequency_as_dose",
+   "target": "med-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:d0c3d146eff1b602",
+   "subset": null
   },
   {
    "id": "d14-frequency_change-1",
@@ -4586,7 +5467,7 @@
     "source_text"
    ],
    "fingerprint": "sha256:0f224fa8299b3ca0",
-   "subset": null
+   "subset": "core"
   },
   {
    "id": "d14-dropped_medicine-1",
@@ -4610,6 +5491,30 @@
     "source_text"
    ],
    "fingerprint": "sha256:c02b1512558c84c7",
+   "subset": null
+  },
+  {
+   "id": "d14-strength_in_name-2",
+   "doc_id": "d14",
+   "split": "test",
+   "fault": "strength_in_name",
+   "target": "med-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:b44ece71b09ab409",
+   "subset": null
+  },
+  {
+   "id": "d14-frequency_as_dose-2",
+   "doc_id": "d14",
+   "split": "test",
+   "fault": "frequency_as_dose",
+   "target": "med-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:dd513ddc0ce6ae45",
    "subset": null
   },
   {
@@ -4646,6 +5551,30 @@
     "source_text"
    ],
    "fingerprint": "sha256:55e54599a1bb304b",
+   "subset": null
+  },
+  {
+   "id": "d14-strength_in_name-3",
+   "doc_id": "d14",
+   "split": "test",
+   "fault": "strength_in_name",
+   "target": "med-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:b410c38ae775e57b",
+   "subset": null
+  },
+  {
+   "id": "d14-frequency_as_dose-3",
+   "doc_id": "d14",
+   "split": "test",
+   "fault": "frequency_as_dose",
+   "target": "med-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:05502298bba93495",
    "subset": null
   },
   {
@@ -4721,6 +5650,30 @@
    "subset": null
   },
   {
+   "id": "d15-strength_in_name-1",
+   "doc_id": "d15",
+   "split": "test",
+   "fault": "strength_in_name",
+   "target": "med-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:10052d1c4f8dc94b",
+   "subset": null
+  },
+  {
+   "id": "d15-frequency_as_dose-1",
+   "doc_id": "d15",
+   "split": "test",
+   "fault": "frequency_as_dose",
+   "target": "med-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:ca2b0070e775f0c3",
+   "subset": null
+  },
+  {
    "id": "d15-frequency_change-1",
    "doc_id": "d15",
    "split": "test",
@@ -4757,6 +5710,30 @@
    "subset": null
   },
   {
+   "id": "d15-strength_in_name-2",
+   "doc_id": "d15",
+   "split": "test",
+   "fault": "strength_in_name",
+   "target": "med-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:cfba9c0f7d668887",
+   "subset": null
+  },
+  {
+   "id": "d15-frequency_as_dose-2",
+   "doc_id": "d15",
+   "split": "test",
+   "fault": "frequency_as_dose",
+   "target": "med-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:03f6a5d83e753af8",
+   "subset": null
+  },
+  {
    "id": "d15-frequency_change-2",
    "doc_id": "d15",
    "split": "test",
@@ -4790,7 +5767,7 @@
     "source_text"
    ],
    "fingerprint": "sha256:0ab7da40110b796b",
-   "subset": null
+   "subset": "core"
   },
   {
    "id": "d15-duplicated_item-1",
@@ -4838,7 +5815,7 @@
     "source_text"
    ],
    "fingerprint": "sha256:684d3481a868e95c",
-   "subset": null
+   "subset": "core"
   },
   {
    "id": "d16-dropped_result-1",
@@ -4946,7 +5923,7 @@
     "result_coverage"
    ],
    "fingerprint": "sha256:9a57ead2a08228e6",
-   "subset": "core"
+   "subset": null
   },
   {
    "id": "d16-values_swapped-2",
@@ -4982,6 +5959,18 @@
     "duplicates"
    ],
    "fingerprint": "sha256:b85dbf9a39f967e2",
+   "subset": null
+  },
+  {
+   "id": "d16-header_row_as_result-1",
+   "doc_id": "d16",
+   "split": "test",
+   "fault": "header_row_as_result",
+   "target": "obs-4",
+   "errors": [
+    "header_row"
+   ],
+   "fingerprint": "sha256:a39001ca37b7609b",
    "subset": null
   },
   {
@@ -5069,6 +6058,19 @@
    "subset": "extended"
   },
   {
+   "id": "d18-flag_in_value-1",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "flag_in_value",
+   "target": "obs-2",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:db9964c9cdeea303",
+   "subset": "extended"
+  },
+  {
    "id": "d18-digit_swap-3",
    "doc_id": "d18",
    "split": "held_out",
@@ -5117,6 +6119,19 @@
    "subset": null
   },
   {
+   "id": "d18-flag_in_value-2",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "flag_in_value",
+   "target": "obs-3",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:a1e06afbf44704f8",
+   "subset": null
+  },
+  {
    "id": "d18-digit_swap-4",
    "doc_id": "d18",
    "split": "held_out",
@@ -5153,6 +6168,19 @@
    "subset": null
   },
   {
+   "id": "d18-flag_in_value-3",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "flag_in_value",
+   "target": "obs-4",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:3fbf58a322224701",
+   "subset": null
+  },
+  {
    "id": "d18-digit_swap-5",
    "doc_id": "d18",
    "split": "held_out",
@@ -5186,6 +6214,19 @@
     "source_text"
    ],
    "fingerprint": "sha256:1ccc8d07b90079bb",
+   "subset": null
+  },
+  {
+   "id": "d18-flag_in_value-4",
+   "doc_id": "d18",
+   "split": "held_out",
+   "fault": "flag_in_value",
+   "target": "obs-5",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:d4f2db85a93a0f0a",
    "subset": null
   },
   {
@@ -5249,6 +6290,30 @@
    "subset": "extended"
   },
   {
+   "id": "d19-strength_in_name-1",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "strength_in_name",
+   "target": "med-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:fcd0c27588c87b9b",
+   "subset": "extended"
+  },
+  {
+   "id": "d19-frequency_as_dose-1",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "frequency_as_dose",
+   "target": "med-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:249b6350a6d0edfb",
+   "subset": null
+  },
+  {
    "id": "d19-frequency_change-1",
    "doc_id": "d19",
    "split": "held_out",
@@ -5258,7 +6323,7 @@
     "source_text"
    ],
    "fingerprint": "sha256:fd2a31fbaf4f0d88",
-   "subset": null
+   "subset": "extended"
   },
   {
    "id": "d19-dropped_medicine-1",
@@ -5282,6 +6347,30 @@
     "source_text"
    ],
    "fingerprint": "sha256:2909fcb076aa3773",
+   "subset": null
+  },
+  {
+   "id": "d19-strength_in_name-2",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "strength_in_name",
+   "target": "med-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:d96f4dd1c3b3a5d7",
+   "subset": null
+  },
+  {
+   "id": "d19-frequency_as_dose-2",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "frequency_as_dose",
+   "target": "med-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:969b7f9ddc4c50db",
    "subset": null
   },
   {
@@ -5321,6 +6410,30 @@
    "subset": null
   },
   {
+   "id": "d19-strength_in_name-3",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "strength_in_name",
+   "target": "med-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:00ffdce4c4cc7b6f",
+   "subset": null
+  },
+  {
+   "id": "d19-frequency_as_dose-3",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "frequency_as_dose",
+   "target": "med-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:7e948bf11b84eb0f",
+   "subset": null
+  },
+  {
    "id": "d19-frequency_change-3",
    "doc_id": "d19",
    "split": "held_out",
@@ -5354,6 +6467,30 @@
     "source_text"
    ],
    "fingerprint": "sha256:8e5a6b1127eb674c",
+   "subset": null
+  },
+  {
+   "id": "d19-strength_in_name-4",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "strength_in_name",
+   "target": "med-4",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:256c25444df63dda",
+   "subset": null
+  },
+  {
+   "id": "d19-frequency_as_dose-4",
+   "doc_id": "d19",
+   "split": "held_out",
+   "fault": "frequency_as_dose",
+   "target": "med-4",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:96988a329e2e9e6d",
    "subset": null
   },
   {
@@ -5489,6 +6626,19 @@
    "subset": null
   },
   {
+   "id": "d20-flag_in_value-1",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "flag_in_value",
+   "target": "obs-2",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:8ee1a174a1cc12db",
+   "subset": null
+  },
+  {
    "id": "d20-dropped_result-2",
    "doc_id": "d20",
    "split": "held_out",
@@ -5549,6 +6699,19 @@
    "subset": null
   },
   {
+   "id": "d20-flag_in_value-2",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "flag_in_value",
+   "target": "obs-3",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:682b587948e1411d",
+   "subset": null
+  },
+  {
    "id": "d20-dropped_result-3",
    "doc_id": "d20",
    "split": "held_out",
@@ -5582,6 +6745,19 @@
     "source_text"
    ],
    "fingerprint": "sha256:9a05718c0142b7a7",
+   "subset": null
+  },
+  {
+   "id": "d20-flag_in_value-3",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "flag_in_value",
+   "target": "obs-4",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:f23d44546576fb89",
    "subset": null
   },
   {
@@ -5630,6 +6806,19 @@
     "source_text"
    ],
    "fingerprint": "sha256:f0b5f4b1710b43da",
+   "subset": null
+  },
+  {
+   "id": "d20-flag_in_value-4",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "flag_in_value",
+   "target": "obs-5",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:ef077811c22df2c3",
    "subset": null
   },
   {
@@ -5813,6 +7002,18 @@
    "subset": null
   },
   {
+   "id": "d20-header_row_as_result-1",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "header_row_as_result",
+   "target": "obs-8",
+   "errors": [
+    "header_row"
+   ],
+   "fingerprint": "sha256:7b45e6287b362124",
+   "subset": "extended"
+  },
+  {
    "id": "d20-date_swap-1",
    "doc_id": "d20",
    "split": "held_out",
@@ -5849,6 +7050,30 @@
    "subset": null
   },
   {
+   "id": "d21-strength_in_name-1",
+   "doc_id": "d21",
+   "split": "held_out",
+   "fault": "strength_in_name",
+   "target": "med-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:9b66a3c0ccba2ed8",
+   "subset": null
+  },
+  {
+   "id": "d21-frequency_as_dose-1",
+   "doc_id": "d21",
+   "split": "held_out",
+   "fault": "frequency_as_dose",
+   "target": "med-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:cd65612dfcccaee9",
+   "subset": null
+  },
+  {
    "id": "d21-frequency_change-1",
    "doc_id": "d21",
    "split": "held_out",
@@ -5873,6 +7098,18 @@
    "subset": "extended"
   },
   {
+   "id": "d21-strength_in_name-2",
+   "doc_id": "d21",
+   "split": "held_out",
+   "fault": "strength_in_name",
+   "target": "med-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:b4ad81e3cac64a56",
+   "subset": null
+  },
+  {
    "id": "d21-dropped_medicine-2",
    "doc_id": "d21",
    "split": "held_out",
@@ -5894,6 +7131,30 @@
     "source_text"
    ],
    "fingerprint": "sha256:edf7fc62e9425eac",
+   "subset": null
+  },
+  {
+   "id": "d21-strength_in_name-3",
+   "doc_id": "d21",
+   "split": "held_out",
+   "fault": "strength_in_name",
+   "target": "med-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:2ff901160802c2cc",
+   "subset": null
+  },
+  {
+   "id": "d21-frequency_as_dose-2",
+   "doc_id": "d21",
+   "split": "held_out",
+   "fault": "frequency_as_dose",
+   "target": "med-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:940e7ccf31a1709a",
    "subset": null
   },
   {
@@ -5969,6 +7230,18 @@
    "subset": null
   },
   {
+   "id": "d22-flag_in_value-1",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "flag_in_value",
+   "target": "obs-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:702bd3f1fb1e5932",
+   "subset": null
+  },
+  {
    "id": "d22-dropped_result-1",
    "doc_id": "d22",
    "split": "held_out",
@@ -6002,6 +7275,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:b184421e9d965bce",
+   "subset": null
+  },
+  {
+   "id": "d22-flag_in_value-2",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "flag_in_value",
+   "target": "obs-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:1a446db9462eea8c",
    "subset": null
   },
   {
@@ -6062,6 +7347,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:26908f2b99978425",
+   "subset": null
+  },
+  {
+   "id": "d22-flag_in_value-3",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "flag_in_value",
+   "target": "obs-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:36f8535a2a15e6fd",
    "subset": null
   },
   {
@@ -6270,6 +7567,18 @@
    "subset": null
   },
   {
+   "id": "d22-header_row_as_result-1",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "header_row_as_result",
+   "target": "obs-7",
+   "errors": [
+    "header_row"
+   ],
+   "fingerprint": "sha256:46da78d9f88766b6",
+   "subset": null
+  },
+  {
    "id": "d22-remark_moved-1",
    "doc_id": "d22",
    "split": "held_out",
@@ -6303,6 +7612,19 @@
     "source_text"
    ],
    "fingerprint": "sha256:f25625ed149252cc",
+   "subset": null
+  },
+  {
+   "id": "d23-flag_in_value-1",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "flag_in_value",
+   "target": "obs-1",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:cf6a0c946940f2fb",
    "subset": null
   },
   {
@@ -6435,6 +7757,19 @@
     "source_text"
    ],
    "fingerprint": "sha256:889c79fc005a7fe3",
+   "subset": null
+  },
+  {
+   "id": "d23-flag_in_value-2",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "flag_in_value",
+   "target": "obs-4",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:199847a5385e997a",
    "subset": null
   },
   {
@@ -6642,6 +7977,19 @@
    "subset": null
   },
   {
+   "id": "d23-flag_in_value-3",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "flag_in_value",
+   "target": "obs-9",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:c77eab756e8d57ca",
+   "subset": null
+  },
+  {
    "id": "d23-dropped_result-9",
    "doc_id": "d23",
    "split": "held_out",
@@ -6750,6 +8098,18 @@
    "subset": "extended"
   },
   {
+   "id": "d23-header_row_as_result-1",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "header_row_as_result",
+   "target": "obs-10",
+   "errors": [
+    "header_row"
+   ],
+   "fingerprint": "sha256:c6896ce534f6aca5",
+   "subset": null
+  },
+  {
    "id": "d24-strength_shift-1",
    "doc_id": "d24",
    "split": "held_out",
@@ -6762,6 +8122,31 @@
    "subset": null
   },
   {
+   "id": "d24-strength_in_name-1",
+   "doc_id": "d24",
+   "split": "held_out",
+   "fault": "strength_in_name",
+   "target": "med-1",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:df869bdc61a9e344",
+   "subset": null
+  },
+  {
+   "id": "d24-frequency_as_dose-1",
+   "doc_id": "d24",
+   "split": "held_out",
+   "fault": "frequency_as_dose",
+   "target": "med-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:f8a296422fc660ab",
+   "subset": "extended"
+  },
+  {
    "id": "d24-frequency_change-1",
    "doc_id": "d24",
    "split": "held_out",
@@ -6771,7 +8156,7 @@
     "source_text"
    ],
    "fingerprint": "sha256:1a2badcfb6d97168",
-   "subset": "extended"
+   "subset": null
   },
   {
    "id": "d24-dropped_medicine-1",
@@ -6795,6 +8180,31 @@
     "source_text"
    ],
    "fingerprint": "sha256:2c607037daf37502",
+   "subset": null
+  },
+  {
+   "id": "d24-strength_in_name-2",
+   "doc_id": "d24",
+   "split": "held_out",
+   "fault": "strength_in_name",
+   "target": "med-2",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:7fc21529d2234a5d",
+   "subset": null
+  },
+  {
+   "id": "d24-frequency_as_dose-2",
+   "doc_id": "d24",
+   "split": "held_out",
+   "fault": "frequency_as_dose",
+   "target": "med-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:31c47b9afbccd089",
    "subset": null
   },
   {
@@ -6834,6 +8244,31 @@
    "subset": null
   },
   {
+   "id": "d24-strength_in_name-3",
+   "doc_id": "d24",
+   "split": "held_out",
+   "fault": "strength_in_name",
+   "target": "med-3",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:af7c1058ad568215",
+   "subset": null
+  },
+  {
+   "id": "d24-frequency_as_dose-3",
+   "doc_id": "d24",
+   "split": "held_out",
+   "fault": "frequency_as_dose",
+   "target": "med-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:e96b362fafbe40e4",
+   "subset": null
+  },
+  {
    "id": "d24-frequency_change-3",
    "doc_id": "d24",
    "split": "held_out",
@@ -6867,6 +8302,31 @@
     "source_text"
    ],
    "fingerprint": "sha256:fc22f9846f784d93",
+   "subset": null
+  },
+  {
+   "id": "d24-strength_in_name-4",
+   "doc_id": "d24",
+   "split": "held_out",
+   "fault": "strength_in_name",
+   "target": "med-4",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:ce020bf9fbd78d7f",
+   "subset": null
+  },
+  {
+   "id": "d24-frequency_as_dose-4",
+   "doc_id": "d24",
+   "split": "held_out",
+   "fault": "frequency_as_dose",
+   "target": "med-4",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:b9001a562154cb2c",
    "subset": null
   },
   {
@@ -7602,6 +9062,19 @@
    "subset": null
   },
   {
+   "id": "d25-flag_in_value-1",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-16",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:3515e4e499af58c8",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-16",
    "doc_id": "d25",
    "split": "test",
@@ -7743,7 +9216,7 @@
     "source_text"
    ],
    "fingerprint": "sha256:5810cbe6ca575373",
-   "subset": null
+   "subset": "core"
   },
   {
    "id": "d25-dropped_result-19",
@@ -7803,6 +9276,19 @@
     "source_text"
    ],
    "fingerprint": "sha256:07a2edc9b1871e7b",
+   "subset": null
+  },
+  {
+   "id": "d25-flag_in_value-2",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "flag_in_value",
+   "target": "obs-20",
+   "errors": [
+    "field_placement",
+    "source_text"
+   ],
+   "fingerprint": "sha256:7f051b3e2a743edb",
    "subset": null
   },
   {
@@ -10059,6 +11545,18 @@
     "duplicates"
    ],
    "fingerprint": "sha256:6786fd510a774d47",
+   "subset": null
+  },
+  {
+   "id": "d25-header_row_as_result-1",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "header_row_as_result",
+   "target": "obs-61",
+   "errors": [
+    "header_row"
+   ],
+   "fingerprint": "sha256:06ba606759caf2bf",
    "subset": null
   }
  ]
