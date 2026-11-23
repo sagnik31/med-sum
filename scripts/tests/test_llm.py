@@ -7,6 +7,7 @@ import ollama
 import pytest
 
 import llm
+import model_health
 
 MESSAGES = [{"role": "user", "content": "Transcribe this page."}]
 
@@ -200,6 +201,46 @@ def test_a_failing_fallback_has_no_model_after_it(model_client):
     with pytest.raises(llm.ModelOutputError, match=f"{llm.FALLBACK_MODEL}: refused"):
         llm.chat(MESSAGES, max_tokens=10, model_role="fallback")
     assert models_called(model_client) == [llm.FALLBACK_MODEL]
+
+
+def test_a_call_that_refuses_the_fallback_runs_only_the_primary(model_client):
+    model_client.replies[llm.PRIMARY_MODEL] = ["from the primary"]
+
+    assert llm.chat(MESSAGES, max_tokens=10, fallback=False) == "from the primary"
+    assert models_called(model_client) == [llm.PRIMARY_MODEL]
+
+
+@pytest.mark.parametrize(
+    "failure, error",
+    [
+        (ConnectionError("refused"), llm.ModelsDownError),
+        (("cut", "length"), llm.OutputCappedError),
+    ],
+)
+def test_a_failing_primary_with_no_fallback_fails_the_call(
+    model_client, failure, error
+):
+    model_client.replies[llm.PRIMARY_MODEL] = [failure]
+    model_client.replies[llm.FALLBACK_MODEL] = ["never asked"]
+
+    with pytest.raises(error):
+        llm.chat(MESSAGES, max_tokens=10, fallback=False)
+    assert models_called(model_client) == [llm.PRIMARY_MODEL]
+
+
+def test_a_primary_switched_off_with_no_fallback_has_no_model(model_client):
+    for _ in range(model_health.FAILURES):
+        model_health.failed(llm.PRIMARY_MODEL, "primary", ConnectionError("down"))
+    model_client.replies[llm.FALLBACK_MODEL] = ["never asked"]
+
+    with pytest.raises(llm.ModelUnavailableError):
+        llm.chat(MESSAGES, max_tokens=10, fallback=False)
+    assert model_client.calls == []
+
+
+def test_a_call_cant_start_at_the_fallback_and_refuse_it(model_client):
+    with pytest.raises(ValueError):
+        llm.chat(MESSAGES, max_tokens=10, model_role="fallback", fallback=False)
 
 
 def test_an_unknown_role_is_refused(model_client):

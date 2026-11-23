@@ -627,6 +627,14 @@ def write_overview(facts: Facts, system_prompt: str, *, chat=None) -> Overview:
     The model's overview of the facts, checked. A reply that fails the
     check is sent back RETRIES times with what failed. Never raises for a
     model failure.
+
+    Only the primary model writes it: the fallback model never does. When
+    the primary can't (down, switched off by its breaker, or out of
+    tokens), the summary is shown without an overview. The overview is the
+    one model text a clinician reads as written, and the fallback's one
+    overview the check showed in the first live evals left out a recorded
+    allergy; the page built by code holds every value either way. See
+    docs/adr/0013-model-choice-after-the-first-live-evals.md.
     """
     import llm
 
@@ -640,7 +648,7 @@ def write_overview(facts: Facts, system_prompt: str, *, chat=None) -> Overview:
     attempts = 0
     for _ in range(1 + RETRIES):
         try:
-            reply = chat(list(messages), max_tokens=MAX_TOKENS)
+            reply = chat(list(messages), max_tokens=MAX_TOKENS, fallback=False)
         except (llm.ModelOutputError, *llm.MODEL_ERRORS):
             if result is not None:  # the retry got no answer
                 return Overview(None, "rejected", result, attempts)

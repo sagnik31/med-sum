@@ -620,11 +620,40 @@ def test_the_overview_reads_only_the_facts(model_client):
 def test_no_model_answering_leaves_the_overview_out(model_client):
     facts = build_facts(inputs(*PATIENTS["fatima"]))
     model_client.replies[llm.PRIMARY_MODEL] = [ConnectionError("down")]
-    model_client.replies[llm.FALLBACK_MODEL] = [ConnectionError("down")]
 
     overview = write_overview(facts, "p")
 
     assert overview.outcome == "no_model"
+
+
+@pytest.mark.parametrize("failure", [ConnectionError("down"), ("cut off", "length")])
+def test_the_fallback_model_never_writes_the_overview(model_client, failure):
+    # The primary is down, or runs out of tokens: the fallback could
+    # answer, but the overview is left out instead.
+    facts = build_facts(inputs(*PATIENTS["fatima"]))
+    model_client.replies[llm.PRIMARY_MODEL] = [failure]
+    model_client.replies[llm.FALLBACK_MODEL] = ["TSH is falling." + NAMED]
+
+    overview = write_overview(facts, "p")
+
+    assert (overview.outcome, overview.text) == ("no_model", None)
+    assert [c["model"] for c in model_client.calls] == [llm.PRIMARY_MODEL]
+    html = summary_html(facts, overview, generated_at=NOW)
+    assert 'data-overview="no_model"' in html and "TSH is falling" not in html
+
+
+def test_the_retry_goes_to_the_primary_only(model_client):
+    facts = build_facts(inputs(*PATIENTS["fatima"]))
+    model_client.replies[llm.PRIMARY_MODEL] = [
+        "TSH is improving." + NAMED,
+        ConnectionError("down"),
+    ]
+    model_client.replies[llm.FALLBACK_MODEL] = ["TSH is falling." + NAMED]
+
+    overview = write_overview(facts, "p")
+
+    assert (overview.outcome, overview.text) == ("rejected", None)
+    assert [c["model"] for c in model_client.calls] == [llm.PRIMARY_MODEL] * 2
 
 
 def test_an_empty_reply_leaves_the_overview_out():

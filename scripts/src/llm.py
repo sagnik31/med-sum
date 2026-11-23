@@ -20,8 +20,12 @@ outage and none replied, the call raises ModelsDownError.
 
 A caller can start at the fallback (`model_role="fallback"`), e.g. when the
 graph re-runs a parse the primary kept getting wrong; there is then no
-model after it. `format` is Ollama's structured output: a JSON schema the
-reply is constrained to.
+model after it. A caller can also refuse the fallback (`fallback=False`):
+only the primary runs, and its failure is the call's. The patient
+overview does, because the fallback falls back for reading and parsing
+only, whose output the checks and routing judge: see
+docs/adr/0013-model-choice-after-the-first-live-evals.md. `format` is
+Ollama's structured output: a JSON schema the reply is constrained to.
 
 chat_with_tools() is one turn of a tool-using exchange: the model may answer
 with tool calls (Ollama's `tools`), which the caller runs and sends back.
@@ -239,10 +243,12 @@ def chat(
     stop_marker: str | None = None,
     format: dict | None = None,
     model_role: ModelRole = "primary",
+    fallback: bool = True,
 ) -> str:
     """
     Run `messages` on the primary model, then the fallback if needed, and
-    return the reply text. With model_role="fallback" only the fallback runs.
+    return the reply text. With model_role="fallback" only the fallback runs;
+    with fallback=False only the primary does.
 
     If `stop_marker` is given, the text before it is returned, and Ollama is
     asked to stop generating there (its `stop` option). `format` (a JSON
@@ -250,7 +256,12 @@ def chat(
     """
     if model_role not in _MODELS:
         raise ValueError(f"unknown model role {model_role!r}")
-    roles = ("primary", "fallback") if model_role == "primary" else ("fallback",)
+    if model_role == "fallback" and not fallback:
+        raise ValueError("a call can't start at the fallback and refuse it")
+    if model_role == "fallback":
+        roles = ("fallback",)
+    else:
+        roles = ("primary", "fallback") if fallback else ("primary",)
     options = _options(max_tokens, stop_marker)
     request = request_of(max_tokens, stop_marker=stop_marker, format=format)
     sizes = _message_sizes(messages)
