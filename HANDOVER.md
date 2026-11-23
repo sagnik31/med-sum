@@ -19,7 +19,25 @@ reports and cassettes are public). The live eval suite has run (item 13), and it
 the owner's answer on ADR 0013, and the MCP eval, which needs the app stack
 set up first (item 13).
 
+**Update 2026-11-23, later:** `main` at `ea449de`, pushed to origin. ADR 0013
+was accepted and every part of it is built (item 14). Full suites run once
+after the last part: pytest 2578 passed and 1 failed (a test that already
+failed at HEAD, fixed in `ea449de`, its file then 17/17), go build/vet/test
+with the database required, gofmt, npm lint/test (54)/build, ruff, faultcheck
+1249/1275 (98.0%), gate pass. Open: the MCP eval (item 13), and the follow-ups
+under item 14.
+
 ## 0. Start here
+
+14. **2026-11-23: ADR 0013 built (the recommendations from the eval run and its judging).** One commit per part, on `main`, pushed. Each part's commit is in ADR 0013's status, and the `docs/` pages whose behaviour changed were updated with it.
+    - **1. Facts wording, `e6b42a8`.** "Flagged in the latest report" is now "Latest flagged value", with its date: the judge found older values under the old heading. The overview prompt says the same. The overview cassettes miss on replay (the facts are in the request) and were not re-recorded.
+    - **2. Overview must name allergies and the latest prescription, `50d5c19`.** The overview check also rejects an overview that leaves out a recorded allergy to a named substance or any medicine on the latest prescription ("No known allergies" needs nothing). A rejection takes the existing retry, then no overview. The service log and the overview eval record `missing_facts` (a count). The judged overviews: qwen's five still pass; gemma's fatima is now rejected, for the penicillin allergy only.
+    - **3. No overview fallback, `1d66177`.** `llm.chat(..., fallback=False)`; the overview calls the primary only, so `gemma4:e2b` answers reading and parsing calls only.
+    - **4. Checks for qwen's unsafe errors, `89a8f50`; repair cases rebuilt in `8beea24`.** Validators 11 (field placement: a strength left in a medicine's name, a frequency as the dose, a printed flag left in a value, an allergy's text without its own substance or reaction) and 12 (a result read from a table's header row), signals LC-23 and LC-24, five fault-check classes, all 121 injected faults caught. Of the 8 unsafe items in qwen's e2e auto-verified documents, 7 were of a kind these catch. The eighth, a medicine brand misread by one letter on an image page, no deterministic check can catch (no text layer, no list of medicine names); it is in `docs/limitations.md`. Not in the ADR: most "unsafe" items were a field in the wrong place, which the scorer's name pairing counts as one invented plus one missed item, so the gate overstates clinical risk. Not changed.
+    - **5. No auto-verification until the safety gate passes, `18760ec`** (design proposed and approved before coding). No run ends `verified`: a document that passes every check ends `checks_passed`, waits in the review queue as "Checks passed, awaiting sign-off", and becomes `verified` only when a clinician signs it off (`POST /documents/{id}/sign-off`, permission `review.write`, audited as `document_signed_off`) or finishes its audit. An open audit sample can't be signed off without its audit. A rule in code, not a setting. Schema, Go API, AI service and frontend changed together. The evals count `checks_passed` where they counted `verified`, under the same report keys (`auto_verified`, `unsafe_in_verified`), so history and compare line up. ADR 0011 is marked amended by 0013.
+    - **6. Judge severity, `a54ea83`.** The overview judge table counts omissions by their "[critical]"/"[major]"/"[minor]" prefix and unsupported sentences by their `severity` field (unrated is counted, never dropped). `2026-11-22-suite-overview` was regenerated from its verdicts, no model call: gemma 1 critical omission, qwen 3 minor.
+    - **Test fix, `ea449de`.** `test_evals_repair.py` read the committed history, so its replay expected the real qwen digest and refused the fake model's; failing since the live repair results were committed. Its tests now get an empty history in a temporary folder, as the other eval tests do.
+    - **Follow-ups, not done.** (1) The repair eval's cassettes miss on the new and moved cases of `8beea24`, and the overview cassettes on part 1's wording, until live runs re-record them (no live run without the owner's go-ahead). (2) Not covered by the ADR: a `needs_review` document still becomes `verified` once its flagged values are reviewed, though its unflagged values could be as wrong as a `checks_passed` one's. Needs the owner's decision. (3) The sign-off was tested in Go and the frontend's module tests, not clicked through in a browser against a running stack.
 
 13. **2026-11-22/23: the live eval suite (everything but mcp_eval).** All runs exited 0 and are committed, one commit per run. Progress, timings and notes are in `scripts/evals/reports/SUITE-PROGRESS.md`.
     - **Commits.** vision `0e12b0a` (~2.5 h), reasoning `8a9bbd4` (~10.5 h), e2e `3c0bd89` (~9 h 47 min; paused after qwen's half at the owner's request, resumed for gemma's), overview `4bfe38f` (~6 min, not judged yet), repair core `7e7c8af` (~2 h 16 min), injection `cf73479` (~2 h), toolprobe `53a7849` (~3 min).
@@ -96,6 +114,15 @@ set up first (item 13).
 | `0746ed7` | test(scripts): no <meta> from a document reaches a built page |
 | `133cafe` | fix(backend): the login limit keys on the browser behind a trusted proxy |
 | `403595b` | fix(backend): the served upload's CSP sets sandbox |
+| `f77b571` | docs(adr): accept ADR 0013, the model choice after the first live evals |
+| `e6b42a8` | fix(scripts): give flagged facts as the latest flagged value with its date |
+| `50d5c19` | feat(scripts): reject an overview that leaves out an allergy or the latest prescription |
+| `1d66177` | feat(scripts): no fallback model for the patient overview |
+| `89a8f50` | feat(scripts): checks for the misplaced parts qwen3.5:4b's unsafe errors came from |
+| `8beea24` | fix(evals): rebuild the repair cases for the misplaced-part faults |
+| `18760ec` | feat: no auto-verification until the safety gate passes |
+| `a54ea83` | feat(evals): count the overview judge's omissions and errors by severity |
+| `ea449de` | test(evals): give the repair eval tests their own history |
 
 ## 7. Decisions behind the plan
 
@@ -109,6 +136,13 @@ set up first (item 13).
 | 108 | Full suites once, at the end (2026-11-22, owner) | Per commit, run the item's own tests plus ruff/lint and the fault check; run the full pytest, Go and npm suites once after every item is implemented, and fix any regression in its own commit. |
 
 ## 11. Open questions for the owner
+
+- **2026-11-23: does a reviewed `needs_review` document still need a
+  sign-off?** Today it becomes `verified` once every flagged value is
+  confirmed or corrected; ADR 0013 only stops runs that pass every check from
+  ending `verified`. See item 14's follow-ups.
+- **E-c and the default repair variant are answered** by ADR 0013
+  (`qwen3.5:4b` stays primary; the fixed re-parse stays the default repair).
 
 - **E-a to E-e wait for the live run** and are decided from its results: E-a
   rewording the safety and F1 gates, E-b `compare` tolerances (`MAY_FALL`),
