@@ -103,6 +103,7 @@ LOG_FIELDS = frozenset(
         "attempts",
         "unknown_numbers",
         "unknown_words",
+        "missing_facts",
         # Document jobs (document_jobs): ids and flags only.
         "job_id",
         "reprocess",

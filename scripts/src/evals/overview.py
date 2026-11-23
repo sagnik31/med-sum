@@ -214,6 +214,7 @@ def run_one(patient: str, prompt: str, dataset_dir: Path = DATASET_DIR) -> dict:
         "attempts": overview.attempts,
         "unknown_numbers": check.unknown_numbers if check else 0,
         "unknown_words": check.unknown_words if check else 0,
+        "missing_facts": check.missing_facts if check else 0,
         "attention": len(names),
         "attention_named": sum(named(n, text) for n in names),
         "seconds": seconds,

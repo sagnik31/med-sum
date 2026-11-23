@@ -31,7 +31,15 @@ reply is checked token by token:
   system, severity, judgement, negation or direction.
 So a test, medicine or diagnosis that isn't in the facts can't get
 through, whatever it is called, and neither can "improving", "worsening",
-"abnormal" or a confidence label. A reply that fails is sent back once
+"abnormal" or a confidence label.
+
+The check also rejects an overview that leaves out what a clinician must
+read (REQUIRED): every recorded allergy to a named substance, by its
+substance, and every medicine on the latest prescription, by its name. A
+recorded "NKDA" or "No known allergies" is not one of them. See
+docs/adr/0013-model-choice-after-the-first-live-evals.md.
+
+A reply that fails is sent back once
 with what failed (RETRIES); if the second reply fails too, no overview
 is shown: the summary says it was left out and why (counts only), and
 the service logs the counts. The check never edits a reply.
@@ -174,7 +182,7 @@ def _values_near(segment: list[str]):
 class FactLines(str):
     """
     The facts as text (a str, what the model reads), knowing what each
-    word or value in it may stand beside:
+    word or value in it may stand beside, and what an overview must name:
     - `subjects[value]`: the words of what the value is, one set per place;
     - `claims[word]`: for a claim word (CLAIMS), what it is said of;
     - `absent`: the words for kinds of fact the facts have none of, which
@@ -183,7 +191,9 @@ class FactLines(str):
       allergy, a medicine's instructions), the other words of that text;
       it may be used only beside one of them;
     - `vocabulary`: every other word of the facts (fixed wording, test,
-      medicine and unit names), usable anywhere.
+      medicine and unit names), usable anywhere;
+    - `required`: each fact the overview must name, as (what it is, the
+      words that name it), in the facts' order.
     """
 
     subjects: dict[str, list[set[str]]]
@@ -191,6 +201,7 @@ class FactLines(str):
     absent: set[str]
     phrases: dict[str, list[set[str]]]
     vocabulary: set[str]
+    required: list[tuple[str, tuple[str, ...]]]
 
 
 def _subject_words(text: str) -> set[str]:
@@ -205,6 +216,7 @@ class _Writer:
         self.absent: set[str] = set()
         self.phrases: dict[str, list[set[str]]] = {}
         self.vocabulary: set[str] = set()
+        self.required: list[tuple[str, tuple[str, ...]]] = []
 
     def add(
         self,
@@ -251,6 +263,11 @@ class _Writer:
         self.vocabulary |= words(line) - NEGATIONS
         self.absent |= _subject_words(kind)
 
+    def require(self, what: str, name: tuple[str, ...]) -> None:
+        """A fact the overview must name, by every word of `name`."""
+        if name and all(name != n for _, n in self.required):
+            self.required.append((what, name))
+
     def done(self) -> FactLines:
         out = FactLines("\n".join(self.lines))
         out.subjects = self.subjects
@@ -258,6 +275,7 @@ class _Writer:
         out.absent = self.absent
         out.phrases = self.phrases
         out.vocabulary = self.vocabulary
+        out.required = self.required
         return out
 
 
@@ -367,6 +385,9 @@ def facts_text(facts: Facts) -> FactLines:
             ),
             free=tuple(_free_parts(m.item) for m, _ in lines),
         )
+        for m in rx.medicines:
+            name = m.item.printed.name
+            w.require(f"the medicine {name} on the latest prescription", _named(name))
     else:
         w.none_of("Prescriptions: none.", "prescriptions prescription medicines")
     for c in facts.conditions:
@@ -389,9 +410,53 @@ def facts_text(facts: Facts) -> FactLines:
             free=(text,),
             free_beside="allergy allergies allergic",
         )
+        substance = _allergy_substance(a.item)
+        if substance:
+            w.require(f"the recorded allergy to {substance}", _named(substance))
     if not facts.allergies:
         w.none_of("Allergies recorded: none.", "allergies allergy")
     return w.done()
+
+
+# -------------------------------------------------------------------
+# What an overview must name (REQUIRED)
+# -------------------------------------------------------------------
+REQUIRED = ("a recorded allergy to a named substance", "the latest prescription")
+# Words of an allergy's printed text that name no substance: what is left
+# of "Not known" or "No known drug allergy" without them is nothing.
+_NOT_A_SUBSTANCE = frozenset(
+    "known unknown drug drugs allergy allergies allergic reaction reactions"
+    " history".split()
+)
+
+
+def _named(text: str) -> tuple[str, ...]:
+    """
+    The words that name a medicine or a substance: its tokens with a
+    letter. A strength in the name ("Glycomet GP 1") is not needed to
+    name it, but a name with digits ("Uprise-D3") is needed whole.
+    """
+    return tuple(
+        t
+        for t in _tokens(text)
+        if any(c.isalpha() for c in t) and t not in FILLERS | _NOT_A_SUBSTANCE
+    )
+
+
+def _allergy_substance(allergy) -> str | None:
+    """
+    The substance a recorded allergy names, or None for a "no known
+    allergies" record (derived by code) or a text that names none ("Not
+    known"). The printed substance when the parse found one, else the
+    allergy's whole printed text.
+    """
+    if allergy.derived.no_known_allergies:
+        return None
+    p = allergy.printed
+    text = p.substance or p.text
+    if not [t for t in _named(text) if t not in NEGATIONS]:
+        return None
+    return text
 
 
 _DIRECTION_WORDS = {
@@ -424,6 +489,11 @@ class CheckResult:
     # logged or shown.
     numbers: tuple[str, ...] = ()
     words: tuple[str, ...] = ()
+    # What the overview must name and doesn't (REQUIRED), as "the
+    # recorded allergy to ..." or "the medicine ... on the latest
+    # prescription". These name facts, so like the above they are sent
+    # back to the model only.
+    missing: tuple[str, ...] = ()
 
     @property
     def unknown_numbers(self) -> int:
@@ -434,16 +504,25 @@ class CheckResult:
         return len(self.words)
 
     @property
-    def ok(self) -> bool:
+    def missing_facts(self) -> int:
+        return len(self.missing)
+
+    @property
+    def follows_facts(self) -> bool:
+        """Whether everything the overview says follows from the facts."""
         return not self.numbers and not self.words
+
+    @property
+    def ok(self) -> bool:
+        """Shown only when it says nothing else and leaves nothing out."""
+        return self.follows_facts and not self.missing
 
 
 def check(overview: str, facts_lines: FactLines) -> CheckResult:
     """
     Whether every name with a digit of the overview is one of the facts,
     every value is a value of the facts near a word of what it is there,
-    and
-    every other word is known.
+    every other word is known, and every fact it must name is named.
     """
     if not isinstance(facts_lines, FactLines):
         raise TypeError("check needs the facts as facts_text writes them")
@@ -464,7 +543,11 @@ def check(overview: str, facts_lines: FactLines) -> CheckResult:
                 segment, i, facts_lines, vocabulary
             ):
                 bad_words.add(token)
-    return CheckResult(tuple(sorted(bad_numbers)), tuple(sorted(bad_words)))
+    said = {f for t in _tokens(overview) for f in _forms(t)}
+    missing = tuple(
+        what for what, name in facts_lines.required if not set(name) <= said
+    )
+    return CheckResult(tuple(sorted(bad_numbers)), tuple(sorted(bad_words)), missing)
 
 
 def _near(segment: list[str], i: int, span: int = CONTEXT) -> tuple[list, list]:
@@ -515,11 +598,16 @@ def retry_message(result: CheckResult) -> str:
         )
     if result.words:
         parts.append("these words are not in the facts: " + ", ".join(result.words))
+    if result.missing:
+        parts.append(
+            "it leaves out what the doctor must read: " + "; ".join(result.missing)
+        )
     return (
         "Your overview can't be shown: "
         + "; ".join(parts)
         + ". Write it again using only the facts, with every number next to"
-        " what it is in the facts, spelled the same way."
+        " what it is in the facts, spelled the same way, and name every"
+        " recorded allergy and every medicine on the latest prescription."
     )
 
 

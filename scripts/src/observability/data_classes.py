@@ -161,7 +161,8 @@ LOG_FIELDS: dict[str, str] = {
                        " model_wall_ms model_total_ms steps_left_running"
                        " steps_interrupted documents markdown_chars html_chars"
                        " not_included awaiting overview unknown_numbers"
-                       " unknown_words reprocess result action flagged"
+                       " unknown_words missing_facts reprocess result"
+                       " action flagged"
                        " audit_sampled tool ok error_kind"),
 }  # fmt: skip
 

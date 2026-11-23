@@ -4,7 +4,9 @@ the overview check, and the page. One test per accuracy bug that the
 model-written summary showed, plus the summary's rules.
 """
 
+import json
 from datetime import date, datetime, timezone
+from pathlib import Path
 
 import pytest
 from bs4 import BeautifulSoup
@@ -20,6 +22,9 @@ from summary.overview import Overview, check, facts_text, write_overview
 from views.summary import summary_html
 
 NOW = datetime(2026, 11, 12, 9, 30, tzinfo=timezone.utc)
+JUDGED = (
+    Path(__file__).parents[1] / "evals/reports/2026-11-22-suite-overview/judge.json"
+)
 PATIENTS = {
     "meera": ["d01", "d02", "d03", "d04", "d05"],
     "rohan": ["d06", "d07", "d08"],
@@ -99,7 +104,9 @@ def test_a_single_creatinine_never_becomes_a_diagnosis():
         "Hypertension", "Chronic kidney disease, to be evaluated",
     ]  # fmt: skip
     lines = facts_text(facts)
-    assert not check("The raised creatinine indicates acute kidney injury.", lines).ok
+    assert not check(
+        "The raised creatinine indicates acute kidney injury.", lines
+    ).follows_facts
 
 
 # -------------------------------------------------------------------
@@ -111,7 +118,7 @@ def test_one_value_has_no_trend():
     creatinine = series(facts, "creatinine")
     assert len(creatinine.values) == 1 and creatinine.trend is None
     assert "data-trend" not in html
-    assert not check("Creatinine is worsening.", facts_text(facts)).ok
+    assert not check("Creatinine is worsening.", facts_text(facts)).follows_facts
 
 
 # -------------------------------------------------------------------
@@ -126,7 +133,9 @@ def test_no_confidence_labels_only_counts_of_reports():
     assert "confidence" not in soup.get_text().lower()
     # Each value the trend counts is cited.
     assert len(tsh.select("cite")) == 2
-    assert not check("TSH is falling with high confidence.", facts_text(facts)).ok
+    assert not check(
+        "TSH is falling with high confidence.", facts_text(facts)
+    ).follows_facts
 
 
 # -------------------------------------------------------------------
@@ -180,7 +189,7 @@ def test_a_statin_without_a_lipid_panel_gives_no_lipid_facts():
     assert "Atorva" in lines  # the statin is listed as printed
     assert "lipid" not in lines.lower() and "cholesterol" not in lines.lower()
     assert "lipid" not in html.lower() and "cholesterol" not in html.lower()
-    assert not check("Lipids are controlled on Atorva.", lines).ok
+    assert not check("Lipids are controlled on Atorva.", lines).follows_facts
 
 
 @pytest.mark.parametrize("patient", sorted(PATIENTS))
@@ -419,7 +428,7 @@ FATIMA_LINES = facts_text(build_facts(inputs(*PATIENTS["fatima"])))
     ],
 )
 def test_an_overview_made_of_the_facts_passes(text):
-    assert check(text, FATIMA_LINES).ok
+    assert check(text, FATIMA_LINES).follows_facts
 
 
 def test_a_live_overview_of_one_report_passes():
@@ -430,7 +439,7 @@ def test_a_live_overview_of_one_report_passes():
         "TSH at 8.9 µIU/mL as high. No trends are listed. No prescriptions or "
         "diagnoses are stated."
     )
-    assert check(reply, lines).ok
+    assert check(reply, lines).follows_facts
 
 
 @pytest.mark.parametrize(
@@ -453,7 +462,7 @@ def test_a_live_overview_of_one_report_passes():
 )
 def test_an_overview_with_anything_outside_the_facts_fails(text, numbers, words):
     result = check(text, FATIMA_LINES)
-    assert not result.ok
+    assert not result.follows_facts
     assert (result.unknown_numbers, result.unknown_words) == (numbers, words)
 
 
@@ -468,6 +477,14 @@ def test_a_failed_check_leaves_the_overview_out_and_says_why():
     assert (overview.outcome, overview.text) == ("rejected", None)
     assert "kidney injury" not in html.lower()
     assert 'data-overview="rejected"' in html
+
+
+# What every overview of Fatima's facts must name: her recorded allergy
+# and the medicines on her latest prescription.
+NAMED = (
+    " An allergy to Penicillin is recorded, and the latest prescription"
+    " lists Thyronorm and Uprise-D3."
+)
 
 
 class Replies:
@@ -493,7 +510,7 @@ def test_live_overviews_of_several_documents_pass():
         " and Serum Ferritin 9.8 ng/mL as low, while RDW-CV 16.2 % is flagged"
         " high. Diagnoses stated include Type 2 diabetes mellitus.",
         meera,
-    ).ok
+    ).follows_facts
     assert check(
         "The patient has 4 documents dated from 2024-09-05 to 2025-03-15. The"
         " latest report from 2025-01-08 flags Vitamin D (25-OH) at 18.4 ng/mL."
@@ -501,7 +518,7 @@ def test_live_overviews_of_several_documents_pass():
         " 2025-01-08. Diagnoses stated are Hypothyroidism from 2024-09-09 and"
         " 2025-03-15.",
         FATIMA_LINES,
-    ).ok
+    ).follows_facts
 
 
 def test_a_value_beside_the_wrong_item_in_a_list_fails():
@@ -510,7 +527,9 @@ def test_a_value_beside_the_wrong_item_in_a_list_fails():
     assert check("The latest report flags Haemoglobin 33.2 %.", meera).numbers == (
         "33.2",
     )
-    assert not check("Iron deficiency anaemia was stated on 2025-04-12.", meera).ok
+    assert not check(
+        "Iron deficiency anaemia was stated on 2025-04-12.", meera
+    ).follows_facts
 
 
 def test_the_check_needs_the_facts_as_facts_text_writes_them():
@@ -520,16 +539,22 @@ def test_the_check_needs_the_facts_as_facts_text_writes_them():
 
 def test_a_rejected_overview_is_sent_back_once_with_what_failed():
     facts = build_facts(inputs(*PATIENTS["fatima"]))
-    chat = Replies("TSH is improving at 2.5.", "TSH is falling, based on 2 reports.")
+    chat = Replies(
+        "TSH is improving at 2.5." + NAMED,
+        "TSH is falling, based on 2 reports." + NAMED,
+    )
 
     overview = write_overview(facts, "p", chat=chat)
 
     assert (overview.outcome, overview.text, overview.attempts) == (
-        "shown", "TSH is falling, based on 2 reports.", 2
+        "shown", "TSH is falling, based on 2 reports." + NAMED, 2
     )  # fmt: skip
     first, second = chat.sent
     assert second[:2] == first
-    assert second[2] == {"role": "assistant", "content": "TSH is improving at 2.5."}
+    assert second[2] == {
+        "role": "assistant",
+        "content": "TSH is improving at 2.5." + NAMED,
+    }
     assert second[3]["role"] == "user"
     assert "2.5" in second[3]["content"] and "improving" in second[3]["content"]
 
@@ -556,7 +581,7 @@ def test_a_retry_with_no_answer_leaves_the_first_rejection(retry):
 
 def test_a_passing_overview_is_not_sent_again():
     facts = build_facts(inputs(*PATIENTS["fatima"]))
-    chat = Replies("TSH is falling.")
+    chat = Replies("TSH is falling." + NAMED)
 
     overview = write_overview(facts, "p", chat=chat)
 
@@ -565,11 +590,13 @@ def test_a_passing_overview_is_not_sent_again():
 
 def test_a_passing_overview_is_shown_escaped():
     facts = build_facts(inputs(*PATIENTS["fatima"]))
-    overview = write_overview(facts, "p", chat=lambda *a, **k: "TSH is falling <b>")
+    reply = "TSH is falling <b>" + NAMED
+    overview = write_overview(facts, "p", chat=lambda *a, **k: reply)
 
     assert overview.outcome == "rejected"  # "b" is not a word of the facts, twice
-    overview = write_overview(facts, "p", chat=lambda *a, **k: "  TSH is\nfalling. ")
-    assert (overview.outcome, overview.text) == ("shown", "TSH is falling.")
+    reply = "  TSH is\nfalling. " + NAMED
+    overview = write_overview(facts, "p", chat=lambda *a, **k: reply)
+    assert (overview.outcome, overview.text) == ("shown", "TSH is falling." + NAMED)
     html = summary_html(
         facts, Overview("TSH <i>falling</i>", "shown"), generated_at=NOW
     )
@@ -578,7 +605,7 @@ def test_a_passing_overview_is_shown_escaped():
 
 def test_the_overview_reads_only_the_facts(model_client):
     facts = build_facts(inputs(*PATIENTS["fatima"]))
-    model_client.replies[llm.PRIMARY_MODEL] = ["TSH is falling."]
+    model_client.replies[llm.PRIMARY_MODEL] = ["TSH is falling." + NAMED]
 
     overview = write_overview(facts, "the prompt")
 
@@ -753,7 +780,7 @@ ROHAN_LINES = facts_text(build_facts(inputs(*PATIENTS["rohan"])))
 )
 def test_an_overview_that_contradicts_the_facts_fails(lines, text):
     facts_lines = {"rohan": ROHAN_LINES, "fatima": FATIMA_LINES}[lines]
-    assert not check(text, facts_lines).ok
+    assert not check(text, facts_lines).follows_facts
 
 
 @pytest.mark.parametrize(
@@ -767,11 +794,117 @@ def test_an_overview_that_contradicts_the_facts_fails(lines, text):
 )
 def test_the_same_words_pass_where_the_facts_say_them(lines, text):
     facts_lines = {"rohan": ROHAN_LINES, "fatima": FATIMA_LINES}[lines]
-    assert check(text, facts_lines).ok
+    assert check(text, facts_lines).follows_facts
 
 
 def test_a_word_of_a_printed_diagnosis_is_known_only_beside_it():
     # "evaluated" is printed in "Chronic kidney disease, to be evaluated";
     # it can't be said of anything else.
-    assert check("Chronic kidney disease, to be evaluated, is stated.", ROHAN_LINES).ok
-    assert not check("Serum Creatinine is to be evaluated.", ROHAN_LINES).ok
+    assert check(
+        "Chronic kidney disease, to be evaluated, is stated.", ROHAN_LINES
+    ).follows_facts
+    assert not check("Serum Creatinine is to be evaluated.", ROHAN_LINES).follows_facts
+
+
+# -------------------------------------------------------------------
+# The overview check: what an overview must name
+# -------------------------------------------------------------------
+def test_an_overview_that_names_no_recorded_allergy_is_rejected():
+    text = "TSH is falling. The latest prescription lists Thyronorm and Uprise-D3."
+    result = check(text, FATIMA_LINES)
+
+    assert result.follows_facts and not result.ok
+    assert result.missing == ("the recorded allergy to Penicillin",)
+    assert check(text + " An allergy to Penicillin is recorded.", FATIMA_LINES).ok
+
+
+def test_an_overview_that_leaves_out_the_latest_prescription_is_rejected():
+    text = "TSH is falling. An allergy to Penicillin is recorded."
+    result = check(text, FATIMA_LINES)
+
+    assert result.follows_facts and not result.ok
+    assert result.missing == (
+        "the medicine Thyronorm on the latest prescription",
+        "the medicine Uprise-D3 on the latest prescription",
+    )
+    # Every medicine on it must be named, not just one.
+    assert check(text + " It lists Thyronorm.", FATIMA_LINES).missing == (
+        "the medicine Uprise-D3 on the latest prescription",
+    )
+
+
+def test_a_strength_in_a_medicine_name_is_not_needed_to_name_it():
+    # Meera's latest prescription prints "Glycomet GP 1"; "Glycomet GP" names it.
+    meera = facts_text(build_facts(inputs(*PATIENTS["meera"])))
+    text = (
+        "The latest prescription lists Glycomet GP, Telma 40 mg, Orofer XT,"
+        " Pan 40 mg and Dolo 650 mg."
+    )
+    assert check(text, meera).missing == ()
+    assert check(text.replace("Glycomet GP", "Glycomet"), meera).missing == (
+        "the medicine Glycomet GP 1 on the latest prescription",
+    )
+
+
+@pytest.mark.parametrize("text", ["NKDA", "None known", "No known drug allergies"])
+def test_no_known_allergies_need_not_be_named(text):
+    # Meera's prescriptions record "NKDA"; a record of no allergy names
+    # no substance, so the overview may leave it out.
+    meera = facts_text(build_facts(inputs(*PATIENTS["meera"])))
+    assert not [what for what, _ in meera.required if "allergy" in what]
+
+    record = key("d12").model_copy(deep=True)
+    [allergy] = record.allergies
+    allergy.printed.text, allergy.printed.substance = text, None
+    allergy.derived.no_known_allergies = True
+    lines = facts_text(build_facts(inputs("d12", records={"d12": record})))
+    assert not [what for what, _ in lines.required if "allergy" in what]
+
+
+def test_an_allergy_with_no_substance_parsed_is_named_by_its_text():
+    record = key("d07").model_copy(deep=True)
+    [allergy] = record.allergies
+    allergy.printed.substance = None  # "Sulfa drugs (rash)"
+    lines = facts_text(build_facts(inputs("d07", records={"d07": record})))
+
+    assert ("the recorded allergy to Sulfa drugs (rash)", ("sulfa", "rash")) in (
+        lines.required
+    )
+    # "Not known" says nobody asked: it names no substance either.
+    allergy.printed.text = "Not known"
+    lines = facts_text(build_facts(inputs("d07", records={"d07": record})))
+    assert not [what for what, _ in lines.required if "allergy" in what]
+
+
+def test_what_is_missing_is_sent_back_on_the_retry():
+    facts = build_facts(inputs(*PATIENTS["fatima"]))
+    left_out = "TSH is falling. The latest prescription lists Thyronorm and Uprise-D3."
+    chat = Replies(left_out, left_out)
+
+    overview = write_overview(facts, "p", chat=chat)
+
+    assert (overview.outcome, overview.text, overview.attempts) == ("rejected", None, 2)
+    assert overview.check.missing_facts == 1
+    retry = chat.sent[1][3]["content"]
+    assert "the recorded allergy to Penicillin" in retry
+
+
+def test_the_judged_overviews_pass_or_fail_as_the_judge_found():
+    # The six overviews the check showed in the first live overview eval,
+    # and the facts they were written from. The judge found one critical
+    # omission: gemma4:e2b's fatima overview leaves out the recorded
+    # penicillin allergy. Only that one may now be rejected, and only for it.
+    from evals.overview import patient_facts
+
+    packet = json.loads(JUDGED.read_text(encoding="utf-8"))
+    outcomes = {}
+    for item in packet["items"]:
+        model, patient = item["id"].split("/")
+        result = check(item["overview"], facts_text(patient_facts(patient)))
+        outcomes[item["id"]] = (result.follows_facts, result.missing)
+
+    assert outcomes.pop("gemma4:e2b/fatima") == (
+        True,
+        ("the recorded allergy to Penicillin",),
+    )
+    assert set(outcomes.values()) == {(True, ())}

@@ -614,6 +614,7 @@ def _build_patient_summary(patient_id: str, claim: datetime) -> datetime | None:
                     overview=result.overview.outcome,
                     unknown_numbers=check.unknown_numbers if check else None,
                     unknown_words=check.unknown_words if check else None,
+                    missing_facts=check.missing_facts if check else None,
                     attempts=result.overview.attempts,
                 ),
             )

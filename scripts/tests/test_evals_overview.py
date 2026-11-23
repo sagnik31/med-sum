@@ -13,7 +13,8 @@ from evals.keys import documents, manifest
 MODEL = llm.PRIMARY_MODEL
 SHOWN = (
     "Stated diagnosis: Vitamin D deficiency (2025-03-15). "
-    "Allergy recorded: Penicillin - hives (2025-03-15)."
+    "Allergy recorded: Penicillin - hives (2025-03-15). "
+    "The latest prescription lists Thyronorm and Uprise-D3."
 )
 
 

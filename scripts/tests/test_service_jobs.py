@@ -161,6 +161,14 @@ def test_a_stale_summary_job_is_taken_over(db, client, summary_jobs):
     assert request_summary(client, user).json() == {"status": "accepted"}
 
 
+# An overview that names the medicines on d04, the latest prescription,
+# which the overview check requires.
+COVERS_D04 = (
+    "The documents cover lab reports. The latest prescription lists"
+    " Glycomet GP, Telma, Orofer XT, Pan and Dolo."
+)
+
+
 def test_the_summary_is_built_from_records_in_document_date_order(db, model_client):
     user = add_user(db)
     other = add_user(db, email="other@hospital.test")
@@ -170,7 +178,7 @@ def test_the_summary_is_built_from_records_in_document_date_order(db, model_clie
     add_processed(db, user, "d02", "2025-06-02 10:00+05:30", status="needs_review")
     add_document(db, user, "/x/new", None)  # not processed yet
     add_processed(db, other, "d09", "2025-06-03 10:00+05:30")
-    model_client.replies[llm.PRIMARY_MODEL] = ["The documents cover lab reports."]
+    model_client.replies[llm.PRIMARY_MODEL] = [COVERS_D04]
 
     run_summary(user)
 
@@ -186,9 +194,7 @@ def test_the_summary_is_built_from_records_in_document_date_order(db, model_clie
     # The model read the computed facts, not the transcriptions.
     [call] = model_client.calls
     assert call["messages"][1]["content"].startswith("Documents: 3 (")
-    assert soup.select_one('[data-overview="shown"]').get_text() == (
-        "The documents cover lab reports."
-    )
+    assert soup.select_one('[data-overview="shown"]').get_text() == COVERS_D04
 
 
 def test_a_file_uploaded_twice_counts_once(db, model_client):
@@ -275,7 +281,7 @@ def test_a_rejected_overview_leaves_the_summary_complete_without_it(
     assert 'data-overview="rejected"' in html
     left_out = line_with(json_log, "summary_overview_left_out")
     assert (left_out["overview"], left_out["unknown_words"]) == ("rejected", 3)
-    assert left_out["attempts"] == 2
+    assert (left_out["missing_facts"], left_out["attempts"]) == (0, 2)
 
 
 def test_a_summary_with_no_processed_documents_fails_with_a_reason(db, model_client):
@@ -401,7 +407,10 @@ def test_a_request_during_a_run_builds_the_summary_again_from_fresh_inputs(
     user = add_user(db)
     add_processed(db, user, "d01", "2025-06-01 10:00+05:30")
     gone = add_processed(db, user, "d04", "2025-06-06 10:00+05:30")
-    model_client.replies[llm.PRIMARY_MODEL] = ["The documents cover lab reports."] * 2
+    model_client.replies[llm.PRIMARY_MODEL] = [
+        COVERS_D04,  # with d04's prescription
+        "The documents cover lab reports.",  # d04 deleted meanwhile
+    ]
     real_build = service_build()
     builds = []
 
