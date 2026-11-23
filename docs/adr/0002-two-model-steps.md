@@ -1,6 +1,6 @@
 # 0002. Two model steps: transcribe each page, then parse it in parts
 
-- **Status:** Accepted, 2026-11-08; repair narrowed, parsing in parts and the half-page re-read added 2026-11-13; a tool-using repair added behind config 2026-11-13, not yet measured. Built.
+- **Status:** Accepted, 2026-11-08; repair narrowed, parsing in parts and the half-page re-read added 2026-11-13; a tool-using repair added behind config 2026-11-13, measured by the repair eval 2026-11-22, which supports the fixed re-parse as the default ([0013](0013-model-choice-after-the-first-live-evals.md)). Built.
 
 ## Context
 

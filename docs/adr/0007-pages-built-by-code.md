@@ -1,6 +1,6 @@
 # 0007. Document pages and the patient summary are built by code, with one checked model overview
 
-- **Status:** Accepted, 2026-11-09 (summary rules) and 2026-11-12 (built); layout kept as built, 2026-11-13.
+- **Status:** Accepted, 2026-11-09 (summary rules) and 2026-11-12 (built); layout kept as built, 2026-11-13; the overview must name allergies and the latest prescription, and has no fallback model, 2026-11-23 ([0013](0013-model-choice-after-the-first-live-evals.md)).
 
 ## Context
 
@@ -18,7 +18,7 @@ The first versions had the model write each document's page and the patient summ
 - **Flagged documents are included**, each flagged value marked "awaiting review" with its reason and left out of trends. Leaving them out would hide what most needs a look. A document printed for another patient (LC-13) has every value marked so, with the document's reason, until a clinician confirms it: none of them is "the latest" of a test or prescription, and the patient details at the top are never taken from it. Other document-level reasons (a page or row possibly missing, no date) are shown at the document and leave its checked values in place.
 - A file uploaded twice for a patient counts once.
 
-**The overview** is the only model-written text: a few sentences from the computed facts alone. Code checks it: every number must be a value of the facts and stand near a word of what it belongs to, a name with digits ("T4") must appear whole, and every word must be a word of the facts or of a fixed list of ordinary words. A failed reply is sent back once with what failed; if it fails again it is **dropped, never edited**, and the summary says why.
+**The overview** is the only model-written text: a few sentences from the computed facts alone. Code checks it: every number must be a value of the facts and stand near a word of what it belongs to, a name with digits ("T4") must appear whole, and every word must be a word of the facts or of a fixed list of ordinary words. It must also name every recorded allergy to a named substance and every medicine on the latest prescription, since an overview a clinician reads as written must not leave those out. The facts give each flagged value as the latest flagged value of its test, with its own date. Only the primary model writes it. A failed reply is sent back once with what failed; if it fails again it is **dropped, never edited**, and the summary says why.
 
 ## Alternatives rejected
 

@@ -4,7 +4,7 @@ Why Med-Sum is built the way it is: the decisions the rest of the design follows
 
 | # | Decision | Status |
 |---|---|---|
-| [0001](0001-extract-and-display.md) | Extract and display for hospital staff; never infer | Built; patient records not yet |
+| [0001](0001-extract-and-display.md) | Extract and display for hospital staff; never infer | Built |
 | [0002](0002-two-model-steps.md) | Two model steps: transcribe each page, then parse it in parts | Built |
 | [0003](0003-printed-and-derived-values.md) | Printed values from the model, derived values from code, in one versioned record | Built |
 | [0004](0004-deterministic-checks-decide-routing.md) | Deterministic checks decide what a clinician must review | Built |

@@ -1,6 +1,6 @@
 # 0001. Extract and display for hospital staff; never infer
 
-- **Status:** Accepted, 2026-11-07 and 2026-11-08; scope settled 2026-11-13. Built, except patients as records of their own: until then each document belongs to the account that uploaded it.
+- **Status:** Accepted, 2026-11-07 and 2026-11-08; scope settled 2026-11-13. Built; patients became records of their own, shared by an organisation's clinicians, on 2026-11-14 ([0010](0010-staff-access-and-security.md)).
 
 ## Context
 

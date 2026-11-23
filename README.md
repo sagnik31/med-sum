@@ -77,7 +77,7 @@ The first live eval suite ran on both local models on 2026-11-21 and 2026-11-22.
 | Shown overviews with a false sentence, by the judge | 0/5 / 0/1 |
 | Judge's outcome for the overview | primary / not usable (left out a drug allergy) |
 
-**The decision** ([ADR 0013](docs/adr/0013-model-choice-after-the-first-live-evals.md), accepted 2026-11-23): keep `qwen3.5:4b` as primary, keep `gemma4:e2b` as the fallback for reading and parsing only, and send every document to a clinician until the safety gate passes. To close the gap, extend the checks first, then try a larger local model for parsing if needed. The numbers are on [Live eval results](docs/eval-results.md), the judging on [Overview judge](docs/eval-judge.md), the reasoning on [Model recommendation](docs/model-recommendation.md), and the full reports in [`scripts/evals/reports/`](scripts/evals/reports/README.md). The MCP client eval hasn't been run yet. What each eval measures is in [Development](docs/development.md#evals).
+**The decision** ([ADR 0013](docs/adr/0013-model-choice-after-the-first-live-evals.md), accepted 2026-11-23): keep `qwen3.5:4b` as primary, keep `gemma4:e2b` as the fallback for reading and parsing only, and send every document to a clinician until the safety gate passes. To close the gap, extend the checks first, then try a larger local model for parsing if needed. All of it is built: two new checks catch the kinds of misplaced field 7 of `qwen3.5:4b`'s 8 unsafe items in auto-verified documents came from, and the overview check now rejects an overview that leaves out an allergy or the latest prescription. No live run has measured those changes yet; the numbers above are from before them. The numbers are on [Live eval results](docs/eval-results.md), the judging on [Overview judge](docs/eval-judge.md), the reasoning on [Model recommendation](docs/model-recommendation.md), and the full reports in [`scripts/evals/reports/`](scripts/evals/reports/README.md). The MCP client eval hasn't been run yet. What each eval measures is in [Development](docs/development.md#evals).
 
 ## Design trade-offs
 
@@ -106,7 +106,7 @@ createdb -U postgres med_sum && psql -U postgres -d med_sum -f db/schema.sql
 ollama pull qwen3.5:4b && ollama pull gemma4:e2b
 ```
 
-Then install each service's dependencies, set the shared `INTERNAL_API_TOKEN`, start the three services and create the development accounts, as [Setup](docs/setup.md) describes. To see the pipeline without Ollama, `python -m demo` from `scripts/src` runs two dataset documents through the real graph from recorded model replies (once the first live eval run has recorded them).
+Then install each service's dependencies, set the shared `INTERNAL_API_TOKEN`, start the three services and create the development accounts, as [Setup](docs/setup.md) describes. To see the pipeline without Ollama, `python -m demo` from `scripts/src` (with PostgreSQL running and `MEDSUM_ENV=dev`) runs two dataset documents through the real graph from the recorded model replies of the first live eval run.
 
 ## Documentation
 
@@ -126,8 +126,8 @@ Then install each service's dependencies, set the shared `INTERNAL_API_TOKEN`, s
 
 ## Roadmap
 
-- What ADR 0013 decides: checks for the kinds of unsafe error the models make, an overview check for allergies and the latest prescription, and, if the checks aren't enough, a larger local model for parsing
-- The MCP client eval, and CI's eval replay and the demo from the recorded replies
+- A second live eval run, to measure ADR 0013's new checks and re-record the replies they changed; then, if the checks aren't enough, a larger local model for parsing
+- The MCP client eval
 - A recorded walk-through of the app
 - A clinical pilot on a hospital's own documents, after the deployment work it needs (encryption at rest, TLS, single sign-on, integration with hospital systems)
 

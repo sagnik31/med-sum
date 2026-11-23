@@ -2,6 +2,8 @@
 
 This page gives the recommendations of `claude-opus-5-5`, which judged the overview eval and reviewed the whole suite. The question was which of the two local models should be primary, and whether a better model is needed. The evidence is on [Live eval results](eval-results.md) and [Overview judge](eval-judge.md). The owner accepted them on 2026-11-23, and the decision is recorded in [ADR 0013](adr/0013-model-choice-after-the-first-live-evals.md).
 
+All of recommendations 1 to 6 are built; ADR 0013's status names each commit. A larger parse model (4.2) waits on a live run that measures the new checks, and the stronger judging (7) on the next judging.
+
 These are recommendations, not measurements. Each one names the numbers it rests on, and most of those numbers come from 25 documents or 6 patients.
 
 ## In short
@@ -33,7 +35,7 @@ A fallback is there so a down primary doesn't stop the service. When `gemma4:e2b
 
 ### 3. No auto-verification until a model and the checks pass the safety gate
 
-Both models make unsafe errors several times over the 1% limit. `qwen3.5:4b`'s documents that end `verified`, which no clinician reviews, still hold unsafe errors in 8 of 149 items (5.4%, 95% CI 2.7%-10.2%). Until a run passes the gate, every document should reach a clinician. A document whose checks pass could still be marked as such for the reviewer, but it shouldn't skip review.
+Both models make unsafe errors several times over the 1% limit. `qwen3.5:4b`'s documents that ended `verified`, which no clinician reviewed, still held unsafe errors in 8 of 149 items (5.4%, 95% CI 2.7%-10.2%). Until a run passes the gate, every document should reach a clinician. A document whose checks pass could still be marked as such for the reviewer, but it shouldn't skip review.
 
 ### 4. A better parse is needed, and the checks come first
 

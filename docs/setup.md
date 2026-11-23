@@ -124,7 +124,7 @@ The API stops gracefully on Ctrl+C or SIGTERM: it takes no new requests and give
 1. Open http://localhost:5173 and log in as `dev-clinician@med-sum.test` with your `MEDSUM_DEV_PASSWORD`.
 2. On **Patients**, choose **New patient** and give at least an MRN and a name (synthetic ones: see [Synthetic dataset](development.md#synthetic-dataset)), or open an existing patient.
 3. Upload a lab report or prescription as a PDF, JPG or PNG to the patient. Processing starts straight away; the document list shows its status and updates itself. On a CPU each page takes a few minutes.
-4. Open the document once it shows **Verified** or **Needs review** to read the values extracted from it; a document that needs review says which values to check and why. **Processing details** and **Full trace** below show how it was produced.
+4. Open the document once it shows **Checks passed, awaiting sign-off** or **Needs review** to read the values extracted from it; a document that needs review says which values to check and why, and one whose checks passed waits for a clinician to read it against the upload and sign it off. **Processing details** and **Full trace** below show how it was produced.
 5. Open the patient's **Patient summary** and choose **Generate summary** to combine every processed document.
 
 ## Configuration
