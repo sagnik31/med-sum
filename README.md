@@ -63,7 +63,20 @@ Measured on a committed synthetic dataset of 25 documents for 6 fictional patien
 | Dropped lab results caught | 161/167 |
 | Value misreads in the transcription caught | 110/130 (all 20 missed were on pages without a text layer) |
 
-The live evals (reading, parsing and the whole pipeline measured apart per model, unsafe errors inside `verified` documents, the patient overview with a judge, repair, prompt injection and an MCP client) are built and have not been run yet; their reports will be committed to [`scripts/evals/reports/`](scripts/evals/reports/README.md). What each eval measures is in [Development](docs/development.md#evals).
+The first live eval suite ran on both local models on 2026-11-21 and 2026-11-22. A stronger model, `claude-opus-5-5`, then judged the patient overviews against a rubric whose thresholds were fixed before judging.
+
+| Live evals (`qwen3.5:4b` / `gemma4:e2b`) | Result |
+|---|---|
+| Transcription value recall (gate: 95%) | 99.9% / 98.3% |
+| Unsafe errors, whole pipeline (gate: 1%) | 10/204 / 27/204: **neither passes** |
+| Unsafe errors inside auto-verified documents | 8/149 / 9/78 |
+| Records the other model had to finish as fallback | 2/25 / 23/25 |
+| Prompt-injection attacks followed | 0/6 / 1/6 |
+| Overviews the check showed | 5/6 / 1/6 |
+| Shown overviews with a false sentence, by the judge | 0/5 / 0/1 |
+| Judge's outcome for the overview | primary / not usable (left out a drug allergy) |
+
+**The recommendation** ([ADR 0013](docs/adr/0013-model-choice-after-the-first-live-evals.md), proposed): keep `qwen3.5:4b` as primary, keep `gemma4:e2b` as the fallback for reading and parsing only, and send every document to a clinician until the safety gate passes. To close the gap, extend the checks first, then try a larger local model for parsing if needed. The numbers are on [Live eval results](docs/eval-results.md), the judging on [Overview judge](docs/eval-judge.md), the reasoning on [Model recommendation](docs/model-recommendation.md), and the full reports in [`scripts/evals/reports/`](scripts/evals/reports/README.md). The MCP client eval hasn't been run yet. What each eval measures is in [Development](docs/development.md#evals).
 
 ## Design trade-offs
 
@@ -104,12 +117,16 @@ Then install each service's dependencies, set the shared `INTERNAL_API_TOKEN`, s
 | [Setup and configuration](docs/setup.md) | Installation, every setting, the least-privilege database roles |
 | [API and MCP server](docs/api.md) | REST routes, internal routes, the MCP server's tools and how to connect a client |
 | [Development](docs/development.md) | Repository layout, checks and tests, the synthetic dataset, the evals |
+| [Live eval results](docs/eval-results.md) | Every live eval on both models, side by side, and what they show |
+| [Overview judge](docs/eval-judge.md) | How the overviews were judged, the verdicts and the findings |
+| [Model recommendation](docs/model-recommendation.md) | Which model to use where, and whether a better one is needed |
 | [Limitations](docs/limitations.md) | What isn't built, and what the checks let through |
 | [CLAUDE.md](CLAUDE.md) | How to work on the code: commands, the rules the code depends on, conventions (for Claude Code and for people) |
 
 ## Roadmap
 
-- Live eval runs on both models, which fill in the results and turn on CI's eval replay and the demo
+- What ADR 0013 proposes: checks for the kinds of unsafe error the models make, an overview check for allergies and the latest prescription, and, if the checks aren't enough, a larger local model for parsing
+- The MCP client eval, and CI's eval replay and the demo from the recorded replies
 - A recorded walk-through of the app
 - A clinical pilot on a hospital's own documents, after the deployment work it needs (encryption at rest, TLS, single sign-on, integration with hospital systems)
 

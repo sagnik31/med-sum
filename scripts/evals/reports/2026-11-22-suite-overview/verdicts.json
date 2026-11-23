@@ -1,0 +1,66 @@
+{"judge": "claude-opus-5-5",
+ "rubric": "rubric.md",
+ "verdicts": [
+  {"id": "qwen3.5:4b/meera",
+   "sentences": [
+    {"text": "Five documents from 2024-06-14 to 2025-04-12 include flagged values such as Haemoglobin 11.9 g/dL, PCV 33.2 %, MCV 81 fL, MCH 25.4 pg, MCHC 31.3 g/dL, RDW-CV 16.2 %, HbA1c 7.0 %, Fasting Plasma Glucose 132 mg/dL, Triglycerides 168 mg/dL, HDL Cholesterol 44 mg/dL, VLDL Cholesterol 33.6 mg/dL, Serum Iron 48 µg/dL, TIBC 412 µg/dL, Transferrin Saturation 11.7 %, and Serum Ferritin 9.8 ng/mL.", "supported": true, "why": "", "error_type": "none", "severity": ""},
+    {"text": "Trends show Haemoglobin, MCV, and Platelet Count rising based on three or two reports, while HbA1c and Fasting Plasma Glucose are falling based on three or two reports.", "supported": true, "why": "", "error_type": "none", "severity": ""},
+    {"text": "The latest prescription from 2025-01-10 holds Glycomet GP, Telma 40 mg, Orofer XT, Pan 40 mg, and Dolo 650 mg.", "supported": true, "why": "", "error_type": "none", "severity": ""},
+    {"text": "Diagnoses stated include Hypertension, Type 2 diabetes mellitus, Microcytic anaemia, T2DM, and Iron deficiency anaemia.", "supported": true, "why": "", "error_type": "none", "severity": ""}
+   ],
+   "omissions": ["[minor] NKDA recorded (2024-06-20, 2025-01-10)"],
+   "misleading": false,
+   "misleading_why": "",
+   "fact_issues": ["several lines headed 'Flagged in the latest report' are dated 2024-06-14 or 2024-12-16, while the latest lab report is 2025-04-12"]},
+  {"id": "qwen3.5:4b/rohan",
+   "sentences": [
+    {"text": "Three documents from 2025-02-03 to 2025-05-20 include flagged values of Blood Urea 46 mg/dL, Blood Urea Nitrogen (BUN) 21.5 mg/dL, Serum Creatinine 1.6 mg/dL, eGFR 54 mL/min/1.73m², Uric Acid 7.8 mg/dL, and SGPT (ALT) 48 U/L, with no trends listed.", "supported": true, "why": "", "error_type": "none", "severity": ""},
+    {"text": "The latest prescription from 2025-02-10 holds Tab. Amlong 5 mg, Tab. Atorva 20 mg, and Tab. Pantocid 40 mg.", "supported": true, "why": "", "error_type": "none", "severity": ""},
+    {"text": "Stated diagnoses are Hypertension and Chronic kidney disease, to be evaluated, with an allergy to Sulfa drugs recorded.", "supported": true, "why": "", "error_type": "none", "severity": ""}
+   ],
+   "omissions": [],
+   "misleading": false,
+   "misleading_why": "",
+   "fact_issues": ["renal lines headed 'Flagged in the latest report' are dated 2025-02-03, while the latest lab report is 2025-05-20"]},
+  {"id": "qwen3.5:4b/fatima",
+   "sentences": [
+    {"text": "Four documents from 2024-09-05 to 2025-03-15 include a latest report with Vitamin D (25-OH) 18.4 ng/mL and a trend of falling TSH based on two reports.", "supported": true, "why": "", "error_type": "none", "severity": ""},
+    {"text": "The latest prescription from 2025-03-15 holds Thyronorm 50 mcg and Uprise-D3 60K, while stated diagnoses include Hypothyroidism and Vitamin D deficiency.", "supported": true, "why": "", "error_type": "none", "severity": ""},
+    {"text": "Allergies to Penicillin - hives are recorded in 2024-09-09 and 2025-03-15.", "supported": true, "why": "", "error_type": "none", "severity": ""}
+   ],
+   "omissions": [],
+   "misleading": false,
+   "misleading_why": "",
+   "fact_issues": []},
+  {"id": "qwen3.5:4b/kabir",
+   "sentences": [
+    {"text": "Four documents from 2025-03-03 to 2025-04-14 include flagged values for Triglycerides 210 mg/dL, HDL Cholesterol 36 mg/dL, LDL Cholesterol 160 mg/dL, Fasting Plasma Glucose 112 mg/dL, Blood Urea 44 mg/dL, Serum Creatinine 1.4 mg/dL, and eGFR 62 mL/min/1.73m², with no trends listed.", "supported": true, "why": "", "error_type": "none", "severity": ""},
+    {"text": "The latest prescription from 2025-04-14 holds Telma-AM 40/5 mg, Rosuvas 20 mg, Glycomet 500 mg, and Omez 20 mg.", "supported": true, "why": "", "error_type": "none", "severity": ""},
+    {"text": "Stated diagnoses include Essential hypertension and Dyslipidaemia, with an impression of Hypertension, better controlled.", "supported": true, "why": "", "error_type": "none", "severity": ""}
+   ],
+   "omissions": ["[minor] no known allergies recorded (2025-03-05)"],
+   "misleading": false,
+   "misleading_why": "",
+   "fact_issues": ["lipid and glucose lines headed 'Flagged in the latest report' are dated 2025-03-03, while the latest lab report is 2025-03-20"]},
+  {"id": "qwen3.5:4b/nandini",
+   "sentences": [
+    {"text": "Three documents from 2025-04-12 to 2025-06-18 include flagged values for Anti-TPO Antibodies 142 IU/mL, Haemoglobin 11.9 g/dL, MCV 82 fL, and Vitamin B12 180 pg/mL, with trends for TSH, Haemoglobin, and MCV based on two reports.", "supported": true, "why": "", "error_type": "none", "severity": ""},
+    {"text": "The latest prescription from 2025-04-15 holds Tab. Thyronorm 25 mcg, Sachet Calcirol 60,000 IU, and Tab. Folvite 5 mg, while stated history and diagnosis include PCOS and Hashimoto's thyroiditis.", "supported": true, "why": "", "error_type": "none", "severity": ""}
+   ],
+   "omissions": ["[minor] direction of trends (TSH falling; Haemoglobin and MCV rising)"],
+   "misleading": false,
+   "misleading_why": "",
+   "fact_issues": ["Anti-TPO line headed 'Flagged in the latest report' is dated 2025-04-12, while the latest lab report is 2025-06-18"]},
+  {"id": "gemma4:e2b/fatima",
+   "sentences": [
+    {"text": "Four documents were reviewed, dated from 2024-09-05 to 2025-03-15.", "supported": true, "why": "", "error_type": "none", "severity": ""},
+    {"text": "The Vitamin D (25-OH) was 18.4 ng/mL in the report dated 2025-01-08.", "supported": true, "why": "", "error_type": "none", "severity": ""},
+    {"text": "The TSH has a falling trend based on 2 reports from 2024-09-05 and 2025-01-08.", "supported": true, "why": "", "error_type": "none", "severity": ""},
+    {"text": "The latest prescription includes Tab. Thyronorm 50 mcg 1 tab 1-0-0 for 3 months and Cap. Uprise-D3 60K 1 cap once a week for 8 weeks.", "supported": true, "why": "", "error_type": "none", "severity": ""},
+    {"text": "Diagnoses stated include Hypothyroidism on 2024-09-09 and Hypothyroidism on 2025-03-15, and Vitamin D deficiency on 2025-03-15.", "supported": true, "why": "", "error_type": "none", "severity": ""}
+   ],
+   "omissions": ["[critical] penicillin allergy (hives), recorded 2024-09-09 and 2025-03-15"],
+   "misleading": false,
+   "misleading_why": "",
+   "fact_issues": []}
+ ]}

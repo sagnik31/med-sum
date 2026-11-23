@@ -20,7 +20,7 @@ survive a crash or a reboot.
 | 6 | injection | suite-injection | done, exit 0 | ~2 h 03 min (21:11-23:14) | |
 | 7 | toolprobe | | done, exit 0 (output copied to reports/2026-11-22-toolprobe/) | ~3 min (23:16-23:18) | |
 | 8 | mcp_eval | | skipped by the owner; needs the API, the AI service and the dataset loaded first | | |
-| - | judge verdicts (overview) | | pending: to be judged in a later session from judge.json and judge.md in the overview's report directory | | |
+| - | judge verdicts (overview) | | done 2026-11-23 by claude-opus-5-5, with rubric.md; verdicts.json merged into the overview's report | | |
 
 ## Order changed (2026-11-22, owner's request)
 
@@ -45,7 +45,9 @@ one run per commit at the very end.
   one place and over 236 items in another; left as reported.
 - suite-overview: shown qwen 5/6, gemma 1/6 (rejected after the retry:
   qwen 1, gemma 5); attention tests named in shown overviews qwen 34/34,
-  gemma 1/1. Not judged yet: judge.json and judge.md are in its report dir.
+  gemma 1/1. Judged 2026-11-23: every sentence supported; qwen primary
+  (5 patients), gemma not usable (1 patient, left out a penicillin allergy).
+  See docs/eval-judge.md.
 - suite-repair (15 core cases): qwen fixed 14/15, tools 15/15, supports
   fixed (tools slower, 220 s vs 150 s per repair); unsafe errors 13 -> 1
   (fixed) and 13 -> 0 (tools). gemma fixed 14/15, tools 13/15, supports

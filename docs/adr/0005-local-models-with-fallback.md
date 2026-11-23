@@ -1,6 +1,6 @@
 # 0005. Local models with a fallback and a circuit breaker; cloud only for synthetic text
 
-- **Status:** Accepted, 2026-11-07 and 2026-11-09; cloud guard 2026-11-13, by host 2026-11-21; fixed seed 2026-11-21. Built. No cloud provider is configured; whether to add one is decided later.
+- **Status:** Accepted, 2026-11-07 and 2026-11-09; cloud guard 2026-11-13, by host 2026-11-21; fixed seed 2026-11-21. Built. No cloud provider is configured; whether to add one is decided later. The first live evals (2026-11-22) found that neither local model passes the safety gate, which is one of the triggers below. [0013](0013-model-choice-after-the-first-live-evals.md) proposes keeping `qwen3.5:4b` as primary and limiting `gemma4:e2b`'s fallback to reading and parsing.
 
 ## Context
 

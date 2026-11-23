@@ -12,3 +12,5 @@ Every document is fictional, so the reports contain no real patient data. The mo
 A replay, or a live run with `--no-history`, only reproduces or tries something and writes to `../results/`, which is not committed.
 
 A repair eval run (`python -m evals.repair --live`) is kept here too, with its own `report.md` and `report.json` (rows per model and repair, by fault, and every case). It has no history entry: its rows are compared within the report, fixed re-parse against tool repair. Its cassettes are under [`../cassettes/repair/`](../cassettes/repair/).
+
+An overview eval run (`python -m evals.overview --live`) also keeps what its judge needs and wrote: `judge.json` (each shown overview beside its facts), `judge.md` (the eval's rubric), `rubric.md` (an extended rubric with severities and gates, fixed before judging) and `verdicts.json` (the judge's verdicts, whose counts `--verdicts` added to `report.md`). What the first judge found is on [Overview judge](../../../docs/eval-judge.md), and the whole suite's results on [Live eval results](../../../docs/eval-results.md).

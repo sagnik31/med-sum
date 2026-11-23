@@ -16,7 +16,15 @@ Generated 2026-11-22T13:21:50+00:00 on dataset med-sum synthetic v2; facts from 
 
 ## Judge
 
-Not judged yet: judge.json and judge.md are beside this report; add the verdicts with `python -m evals.overview --verdicts FILE --report DIR`.
+Judged by claude-opus-5-5. Reported only; the check decides what is shown.
+
+| Metric | qwen3.5:4b | gemma4:e2b |
+| --- | --- | --- |
+| Overviews judged | 5 | 1 |
+| Sentences supported | 15/15 (100.0%, 95% CI 79.6%-100.0%) | 5/5 (100.0%, 95% CI 56.6%-100.0%) |
+| Overviews with every sentence supported | 5/5 (100.0%, 95% CI 56.6%-100.0%) | 1/1 (100.0%, 95% CI 20.7%-100.0%) |
+| Misleading overviews | 0/5 (0.0%, 95% CI 0.0%-43.4%) | 0/1 (0.0%, 95% CI 0.0%-79.3%) |
+| Omissions | 3 | 1 |
 
 ## By patient
 

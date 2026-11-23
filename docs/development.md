@@ -93,7 +93,7 @@ All of these run from `scripts/src`.
 - **`python -m evals.faultcheck`** measures the checks themselves, with no model. It takes each answer key, injects one fault at a time (a digit swapped, a decimal point moved, a unit swapped, a range bound taken for the value, a "<" or "Non-" dropped from the value, two rows' values swapped under one citation, a dropped row or medicine, an invented result or medicine, a result or medicine parsed twice, a remark moved to another test, a changed strength or frequency, a day and month swapped, the document uploaded to another patient, every detail naming the patient left unread, a value misread in the transcription itself), runs the validators and signals on the altered copy, and counts the faults that raise a routing signal. It runs in a few seconds. It fails when a clean document ends anywhere but where the manifest expects, or when a fault is caught less often than the committed baseline. It caught 1128 of 1154 faults. Every fault in a value, unit, strength, frequency or date was caught, and so were range bounds taken for the value, dropped comparators, swapped rows, invented and duplicated items, dropped medicines, wrong patients and unread patients, and 161 of 167 dropped lab results. What gets through is listed under [Limitations](limitations.md).
 - **`python -m evals.run --live`** runs every document through the real graph, with each model as the primary, in a throwaway database (`med_sum_evals`). It scores each record and transcription against the answer key and checks each end state against the manifest. The report gives field precision and recall, unsafe errors, transcription accuracy and routing. An unsafe error is a wrong or invented value a clinician could act on: an invented result, medicine or allergy, or a wrong test name, value, unit, flag, medicine name, strength, dose, frequency, allergen or document date. Missing values count against recall instead. The interval is over items: items with an unsafe error out of the items checked (the key's clinical items, invented ones and each document's dates), so it can't pass 100%. It also gives the **risk-coverage line**: the share of documents that ended `verified` (no clinician looks at them) and the unsafe errors inside that share. Every count carries a 95% Wilson interval, because 25 documents can't support a bare percentage (the self-check below shows how wide the interval is). A live run of the whole dataset takes hours on a CPU. It records every model reply as a cassette. Each live run is kept in the repository: its full report (`report.md` to read, `report.json` with every document's scores and each wrong, missed or invented value) goes to [`scripts/evals/reports/`](../scripts/evals/reports/README.md), and an entry with its counts and what produced it (code commit, prompt hashes, model digests, generation options with the seed) to `scripts/evals/history/`, both under the same name. A replay, or a live run with `--no-history`, writes its report to the gitignored `scripts/evals/results/` instead.
 - **`evals.run --stage vision|reasoning|e2e`** measures one part of the pipeline. `vision` only reads the pages (open, then transcribe) and scores the transcriptions: CER, line F1, value recall, layout, unreadable lines; it makes no record, and its report says which models read enough values to qualify. `reasoning` gives the graph the dataset's expected transcriptions and runs the rest (classify, parse, repair, validate, render, finish), so its field scores, unsafe errors and routing are the parse's alone. `e2e` (the default) is the whole graph. A live `e2e` run answers every request the vision and reasoning runs recorded: each page's reading, and, for a document the model read exactly as expected, its classify and parse as well. So after both stages it calls the model only for the documents whose reading differs, and only for their classify, parse and repair. The cassettes are in `scripts/evals/cassettes/vision/`, `reasoning/` and, for `e2e`, at the top as before. A full live suite is a vision run, a reasoning run and an e2e run, in that order.
-- **`python -m evals.overview --live`** measures the patient summary's overview on its own. Each dataset patient's facts are built by code from the answer keys, and each model writes the overview as the service does, check and retry included. Code scores the share shown (passed the check), rejected and empty, the model replies used, and, of the tests the facts list for attention, how many the shown overviews name. The run also writes `judge.json` (each shown overview beside its facts) and `judge.md` (the rubric) next to its report. A separate session, given only those two files, judges each sentence as supported by the facts or not, lists what a clinician needs and is left out, and says whether the overview misleads; `python -m evals.overview --verdicts verdicts.json --report <dir>` checks that every item is judged in the rubric's format and adds the counts, with intervals, to the report. The judge's numbers are reported, never gated on. `--replay` answers from `scripts/evals/cassettes/overview/`; `--resume` works as for `evals.run`. Six patients per model; it has not been run yet.
+- **`python -m evals.overview --live`** measures the patient summary's overview on its own. Each dataset patient's facts are built by code from the answer keys, and each model writes the overview as the service does, check and retry included. Code scores the share shown (passed the check), rejected and empty, the model replies used, and, of the tests the facts list for attention, how many the shown overviews name. The run also writes `judge.json` (each shown overview beside its facts) and `judge.md` (the rubric) next to its report. A separate session, given only those two files, judges each sentence as supported by the facts or not, lists what a clinician needs and is left out, and says whether the overview misleads; `python -m evals.overview --verdicts verdicts.json --report <dir>` checks that every item is judged in the rubric's format and adds the counts, with intervals, to the report. The judge's numbers are reported, never gated on. `--replay` answers from `scripts/evals/cassettes/overview/`; `--resume` works as for `evals.run`. Six patients per model. Its first run was judged with the rubric in its report folder (`rubric.md`), which adds severities and fixed gates; see [Overview judge](eval-judge.md).
 - **Long runs are checkpointed and resumable** (`evals/progress.py`). `evals.run`, `evals.injection`, `evals.repair`, `evals.overview` and `evals.mcp_eval` save each finished unit (a document per model, a patient's overview per model, a repair case per model and variant, an MCP question) to `scripts/evals/results/<label>/progress/`, beside a fingerprint of the run: code commit and uncommitted changes (eval outputs aside), prompt hashes, installed model digests, generation options with the seed, the dataset and the units. A unit is written right after its cassette, so a crash loses only the unit in flight. `--resume <label>` carries on from the last finished unit and refuses, saying what changed, when the fingerprint differs; the report is built from every unit's file, so it is the one an uninterrupted run would write. Starting a new run under a label that still has progress is refused. Each unit prints a line with its time, end state, the units left and an estimate of the time left. An outage of every model, a lost database connection or a full disk stops the run (exit 3) instead of being scored as a failed document; a live run won't start without the installed model digests (Ollama running). The progress directory is removed once the report is written.
 - **`python -m evals.run --replay`** runs the same graph from the cassettes, without Ollama. A changed prompt, page, option or output schema is a miss, and the run stops with a message naming what changed and asking for a re-record. So is a cassette recorded with another model build: a replay expects the digests of the latest committed live run's history entry (CI, which has no Ollama, checks against those alone), and refuses to start when the installed build differs from them.
 - **`python -m evals.repair --live`** compares the two repairs on the same parses. A clean dataset document rarely needs a repair, so its cases are made by injecting one fault into an answer key's parse (`scripts/evals/repair_cases.json`: 676 cases over 11 kinds of fault; `--subset core` takes one per fault from the test documents, `extended` adds one per fault from the held-out ones). Each case runs through the graph's own repair and validate nodes with each model and each repair. The report gives cases repaired (with an interval), model calls, tokens and seconds per repair, unsafe errors left after repair, and for the tool repair every tool call: by tool, malformed, unknown, not found. It says which repair the numbers support: the tool repair only if it repairs at least as many cases, leaves no more unsafe errors and is not slower per repair. `--replay` answers from its cassettes.
@@ -107,32 +107,33 @@ All of these run from `scripts/src`.
 
 ### What the evals report
 
-The README shows the measured results. These are the full tables; cells marked *pending* are filled from the first live eval run. None is estimated.
+The README shows the headline results. These tables are from the first live suite (2026-11-21 and 2026-11-22). The other evals, the overview judge and what the results recommend are on [Live eval results](eval-results.md), [Overview judge](eval-judge.md) and [Model recommendation](model-recommendation.md).
 
-**The document pipeline, per model** (`python -m evals.run --live`)
+**The document pipeline, per model** (`python -m evals.run --live`, the whole pipeline, [report](../scripts/evals/reports/2026-11-22-suite-e2e/report.md))
 
 | Measure | `qwen3.5:4b` | `gemma4:e2b` |
 |---|---|---|
-| Printed-field precision | *pending* | *pending* |
-| Printed-field recall | *pending* | *pending* |
-| Printed-field F1 | *pending* | *pending* |
-| Unsafe errors (a wrong value, unit, flag, date, strength or frequency) | *pending* | *pending* |
-| Documents ending `verified` | *pending* | *pending* |
-| Unsafe errors inside `verified` documents | *pending* | *pending* |
-| End state as the manifest expects | *pending* | *pending* |
-| Transcription value recall | *pending* | *pending* |
-| Transcription character error rate | *pending* | *pending* |
-| Seconds per page (CPU) | *pending* | *pending* |
+| Printed-field precision | 92.5% | 88.3% |
+| Printed-field recall | 90.3% | 90.4% |
+| Printed-field F1 | 91.4% | 89.3% |
+| Unsafe errors over clinical items (gate: 1%) | 10/204 (4.90%) | 27/204 (13.24%) |
+| Documents ending `verified` | 18/25 (72%) | 12/25 (48%) |
+| Items with an unsafe error inside `verified` documents | 8/149 (5.4%, 95% CI 2.7%-10.2%) | 9/78 (11.5%, 95% CI 6.2%-20.5%) |
+| End state as the manifest expects | 21/25 (84%) | 15/25 (60%) |
+| Records the other model finished as fallback | 2 | 23 |
+| Transcription value recall | 1443/1445 (99.9%) | 1420/1445 (98.3%) |
+| Transcription character error rate | 11.0% | 11.3% |
+| Median seconds per document (CPU) | 633 s | 637 s |
 
-**Repair** (`python -m evals.repair --live`, 676 injected-fault cases)
+**Repair** (`python -m evals.repair --live --subset core`, 15 injected-fault cases, [report](../scripts/evals/reports/2026-11-22-suite-repair/report.md))
 
-| Measure | Re-parse with the problems listed | Tool repair |
-|---|---|---|
-| Cases repaired | *pending* | *pending* |
-| Unsafe errors left after repair | *pending* | *pending* |
-| Model calls per repair | *pending* | *pending* |
-| Seconds per repair | *pending* | *pending* |
-| Tool calls malformed or unknown | n/a | *pending* |
+| Measure | `qwen3.5:4b` re-parse | `qwen3.5:4b` tools | `gemma4:e2b` re-parse | `gemma4:e2b` tools |
+|---|---|---|---|---|
+| Cases repaired | 14/15 | 15/15 | 14/15 | 13/15 |
+| Unsafe errors left after repair (13 before) | 1 | 0 | 2 | 2 |
+| Model calls per repair | 1.0 | 3.0 | 1.0 | 2.0 |
+| Seconds per repair | 150 s | 220 s | 43 s | 76 s |
+| Tool calls malformed or unknown | n/a | 0 of 32 | n/a | no tool calls |
 
 **The checks without a model** (`python -m evals.faultcheck`, measured)
 
@@ -159,10 +160,10 @@ The README shows the measured results. These are the full tables; cells marked *
 | Answers whose every number appears in what the tools returned | *pending* |
 | Questions with no answer in the records, declined | *pending* |
 
-**Prompt injection.** Text in a document aimed at the model (embedded instructions, hidden text, a remote image) is contained by design: pages are built by code with every value escaped, shown in a sandboxed frame with scripts off and no remote loads, and the overview is checked word by word. These defences are tested. The injection eval measures them on six attacked copies of dataset documents, two per kind of attack (an instruction in the text, hidden text, a remote image or script), each scored against its clean document's answer key, on a split of its own kept out of the main numbers. It is built and has not been run yet:
+**Prompt injection.** Text in a document aimed at the model (embedded instructions, hidden text, a remote image) is contained by design: pages are built by code with every value escaped, shown in a sandboxed frame with scripts off and no remote loads, and the overview is checked word by word. These defences are tested. The injection eval measures them on six attacked copies of dataset documents, two per kind of attack (an instruction in the text, hidden text, a remote image or script), each scored against its clean document's answer key, on a split of its own kept out of the main numbers. First live run ([report](../scripts/evals/reports/2026-11-22-suite-injection/report.md)):
 
-| Measure | Result |
-|---|---|
-| Records as faithful as the clean document's key | *pending* |
-| Attacks followed (the payload became a clinical value) | *pending* |
-| Pages with no live markup or remote load | *pending* |
+| Measure | `qwen3.5:4b` | `gemma4:e2b` |
+|---|---|---|
+| Records as faithful as the clean document's key | 5/6 | 2/6 |
+| Attacks followed (the payload became a clinical value) | 0/6 | 1/6 |
+| Pages with no live markup or remote load | 6/6 | 6/6 |
