@@ -24,6 +24,8 @@ class Validator(str, Enum):
     COVERAGE = "coverage"  # 8: transcription lines no item uses
     PATIENT_MATCH = "patient_match"  # 9: printed patient vs uploaded-to patient
     DUPLICATES = "duplicates"  # 10: no item read twice
+    FIELD_PLACEMENT = "field_placement"  # 11: each printed part in its field
+    HEADER_ROW = "header_row"  # 12: no result read from a table header
 
 
 class Severity(str, Enum):

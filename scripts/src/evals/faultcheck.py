@@ -9,7 +9,10 @@ A fault is the kind of mistake a model makes when it reads or parses a
 page: a digit swapped, a decimal point moved, a unit or a range bound taken
 for the value, a "<" or "Non-" dropped from it, two rows' values swapped under one citation, a result or medicine parsed
 twice, a row dropped, a medicine invented, a remark put on the
-wrong test, a day and month swapped. Each one is applied to one item of
+wrong test, a day and month swapped, and the misplaced parts the first
+live evals found: a medicine's strength left in its name, its frequency
+given as its dose, a printed flag left in a result's value, an allergy's
+text cut to its substance, a result read from a table's header row. Each one is applied to one item of
 one document's parse at a time, so every result names its document and
 item. Two faults are not the parse's: `transcription_misread` changes a
 value in the transcription as well, so every line agrees with it and only
@@ -47,6 +50,7 @@ from pathlib import Path
 
 from dataset.build import DATASET_DIR
 from derive import build_record
+from derive.medicines import parse_frequency
 from evals.keys import (
     answer_key,
     documents,
@@ -58,6 +62,7 @@ from evals.keys import (
 )
 from evals.stats import wilson
 from pipeline import signals
+from record.common import Citation
 from record.document import PageTranscription
 from record.printed import (
     DocumentType,
@@ -66,6 +71,7 @@ from record.printed import (
     PrintedLabResult,
 )
 from validators import ExpectedPatient, Finding, validate
+from validators.layout import is_table_furniture, results_table_rows
 
 RESULTS_DIR = DATASET_DIR.parent / "results"
 BASELINE = DATASET_DIR.parent / "faultcheck_baseline.json"
@@ -254,6 +260,12 @@ def _result_faults(case: Case) -> Iterator[Mutant]:
             yield changed("qualifier_dropped", value_text=v)
         if misread := _misread(case, i):
             yield misread
+        if r.flag_printed and _PLAIN.fullmatch(r.value_text.replace(",", "")):
+            yield changed(
+                "flag_in_value",
+                value_text=f"{r.value_text} {r.flag_printed}",
+                flag_printed=None,
+            )
 
         mutant = _copy(case)
         del mutant.parse.results[i]
@@ -281,6 +293,8 @@ def _result_faults(case: Case) -> Iterator[Mutant]:
         mutant = _copy(case)
         mutant.parse.results.append(mutant.parse.results[-1].model_copy(deep=True))
         yield Mutant("duplicated_item", case.doc_id, f"obs-{len(results) + 1}", mutant)
+        if header := _header_row_result(case):
+            yield header
 
     for i, remark in enumerate(case.parse.remarks):
         if remark.scope.value != "test" or remark.test_name is None:
@@ -291,6 +305,41 @@ def _result_faults(case: Case) -> Iterator[Mutant]:
         mutant = _copy(case)
         mutant.parse.remarks[i].test_name = other
         yield Mutant("remark_moved", case.doc_id, f"rem-{i + 1}", mutant)
+
+
+def _header_row_result(case: Case) -> Mutant | None:
+    """
+    A results table's header row read as one more result, its cells taken
+    for the test, value, unit and range: every value is on its cited line.
+    """
+    for p, page in enumerate(case.pages, start=1):
+        for n in results_table_rows(page.lines):
+            header = n - 1
+            while header > 1 and not is_table_furniture(page.lines, header):
+                header -= 1
+            if header < 2 or not is_table_furniture(page.lines, header - 1):
+                break
+            line = page.lines[header - 2]
+            cells = [c.strip() for c in line.strip().strip("|").split("|")]
+            if len(cells) < 2:
+                break
+            mutant = _copy(case)
+            mutant.parse.results.append(
+                PrintedLabResult(
+                    citation=Citation(
+                        page=p, first_line=header - 1, last_line=header - 1, quote=line
+                    ),
+                    panel=None,
+                    test_name=cells[0],
+                    value_text=cells[1],
+                    unit=None,
+                    reference_ranges=[],
+                    flag_printed=None,
+                )
+            )
+            target = f"obs-{len(mutant.parse.results)}"
+            return Mutant("header_row_as_result", case.doc_id, target, mutant)
+    return None
 
 
 def _values_swapped(case: Case, i: int) -> Mutant | None:
@@ -365,6 +414,12 @@ def _medicine_faults(case: Case) -> Iterator[Mutant]:
             if shifted is not None:
                 strength = m.strength[: n.start()] + shifted + m.strength[n.end() :]
                 yield changed("strength_shift", strength=strength)
+        if m.strength:
+            yield changed(
+                "strength_in_name", name=f"{m.name} {m.strength}", strength=None
+            )
+        if m.frequency and parse_frequency(m.frequency) is not None:
+            yield changed("frequency_as_dose", dose=m.frequency, frequency=None)
         if m.frequency:
             frequency = _FREQUENCIES.get(m.frequency.upper())
             if frequency is None and re.fullmatch(r"[01½](-[01½])+", m.frequency):
@@ -377,6 +432,12 @@ def _medicine_faults(case: Case) -> Iterator[Mutant]:
         mutant = _copy(case)
         del mutant.parse.medicines[i]
         yield Mutant("dropped_medicine", case.doc_id, None, mutant)
+
+    for i, a in enumerate(case.parse.allergies):
+        if a.substance and a.reaction and a.text != a.substance:
+            mutant = _copy(case)
+            mutant.parse.allergies[i].text = a.substance
+            yield Mutant("allergy_text_cut", case.doc_id, f"alg-{i + 1}", mutant)
 
     if medicines:
         mutant = _copy(case)

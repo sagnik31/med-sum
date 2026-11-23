@@ -313,7 +313,7 @@ def unused_lines(record: DocumentRecord) -> list[tuple[int, int]]:
     unused = []
     for p in record.pages:
         for n, line in enumerate(p.lines, start=1):
-            if (p.page, n) in used or is_blank(line) or _is_table_furniture(p.lines, n):
+            if (p.page, n) in used or is_blank(line) or is_table_furniture(p.lines, n):
                 continue
             if any(pattern.search(line) for pattern in _BOILERPLATE):
                 continue
@@ -333,7 +333,8 @@ def _heading_above(record: DocumentRecord, c: Citation, panel: str):
     return None
 
 
-def _is_table_furniture(lines: list[str], n: int) -> bool:
+def is_table_furniture(lines: list[str], n: int) -> bool:
+    """A table's header row (the row above its separator) or a separator."""
     line = lines[n - 1]
     if _TABLE_SEPARATOR.match(line):
         return True

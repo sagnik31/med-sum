@@ -12,6 +12,7 @@ import pytest
 
 from dataset_records import DOC_IDS, expected_patient, keyed_record, parse_of
 from derive import build_record
+from pipeline.signals import finding_signal
 from record.common import PrintedText
 from record.document import ComputedFlag, DocumentRecord, PageTranscription
 from record.printed import PrintedMedicine, RemarkScope
@@ -27,6 +28,7 @@ from validators.layout import (
 )
 from validators.duplicates import check_duplicates
 from validators.patient import check_patient_match, names_match, read_age, read_sex
+from validators.placement import check_field_placement, check_header_rows
 from validators.source import check_source_text, check_text_layer
 from validators.text import contains, squashed_in
 from validators.values import (
@@ -1227,3 +1229,109 @@ def test_one_printed_identifier_is_enough_to_compare():
     )
     findings = check_patient_match(record, expected_patient("d06"))
     assert all(f.field is not None for f in findings)
+
+
+# -------------------------------------------------------------------
+# 11 and 12: printed parts in their own fields, results from data rows.
+# Each case is one the first live evals found in a record that passed
+# every other check.
+# -------------------------------------------------------------------
+def med(record: DocumentRecord, name: str):
+    return next(m for m in record.medications if m.printed.name == name)
+
+
+def test_a_strength_left_in_a_medicine_name_is_an_error():
+    record = keyed_record("d04")
+    telma = med(record, "Telma")
+    telma.printed.name, telma.printed.strength = "Telma 40 mg", None
+
+    [finding] = check_field_placement(record)
+    assert (finding.validator, finding.severity) == (
+        Validator.FIELD_PLACEMENT,
+        Severity.ERROR,
+    )
+    assert (finding.item_id, finding.field) == (telma.id, "name")
+    assert finding.details == {"strength": "40 mg"}
+    assert finding_signal(finding) == "LC-23"
+
+
+@pytest.mark.parametrize(
+    "name, strength",
+    [("Glycomet GP 1", None),  # a number with no unit is part of a brand
+     ("Telma 40 mg", "40 mg")],  # the strength is in its field as well
+)  # fmt: skip
+def test_a_name_with_a_number_is_not_always_a_misplaced_strength(name, strength):
+    record = keyed_record("d04")
+    telma = med(record, "Telma")
+    telma.printed.name, telma.printed.strength = name, strength
+    assert check_field_placement(record) == []
+
+
+def test_a_frequency_given_as_the_dose_is_an_error():
+    record = keyed_record("d10")
+    [thyronorm] = record.medications
+    thyronorm.printed.dose, thyronorm.printed.frequency = "1-0-0", None
+
+    [finding] = check_field_placement(record)
+    assert (finding.item_id, finding.field) == (thyronorm.id, "dose")
+
+
+def test_a_flag_left_in_the_value_is_an_error():
+    record = keyed_record("d03")
+    hb = obs(record, "Haemoglobin")
+    hb.printed.value_text, hb.printed.flag_printed = "11.2 L", None
+
+    [finding] = check_field_placement(record)
+    assert (finding.item_id, finding.field) == (hb.id, "value_text")
+    assert finding.details == {"flag": "L"}
+
+
+@pytest.mark.parametrize(
+    "value, flag, unit",
+    [("11.2 L", "L", "g/dL"),  # the flag is in its field too
+     ("1.5 L", None, None)],  # a volume in litres, with no unit field
+)  # fmt: skip
+def test_a_value_ending_in_a_letter_is_not_always_a_misplaced_flag(value, flag, unit):
+    record = keyed_record("d03")
+    hb = obs(record, "Haemoglobin")
+    hb.printed.value_text, hb.printed.flag_printed, hb.printed.unit = value, flag, unit
+    assert check_field_placement(record) == []
+
+
+def test_an_allergy_text_that_leaves_out_its_reaction_is_an_error():
+    record = keyed_record("d07")
+    [allergy] = record.allergies
+    allergy.printed.text = "Sulfa drugs"  # printed "Sulfa drugs (rash)"
+
+    [finding] = check_field_placement(record)
+    assert (finding.item_id, finding.field) == (allergy.id, "text")
+    assert finding.details == {"part": "reaction"}
+
+
+def test_a_result_read_from_a_table_header_row_is_an_error():
+    record = keyed_record("d06")
+    page = record.pages[0]
+    n = next(
+        i for i, line in enumerate(page.lines, start=1) if line.startswith("| Test |")
+    )
+    header = record.observations[0].model_copy(deep=True)
+    header.id = "obs-99"
+    header.printed.citation = header.printed.citation.model_copy(
+        update={"page": 1, "first_line": n, "last_line": n, "quote": page.lines[n - 1]}
+    )
+    header.printed.test_name, header.printed.value_text = "Test", "Result"
+    record.observations.append(header)
+
+    [finding] = check_header_rows(record)
+    assert (finding.validator, finding.item_id) == (Validator.HEADER_ROW, "obs-99")
+    assert finding_signal(finding) == "LC-24"
+    # The separator row below it is no row of results either.
+    header.printed.citation.first_line = header.printed.citation.last_line = n + 1
+    assert [f.item_id for f in check_header_rows(record)] == ["obs-99"]
+
+
+def test_every_clean_dataset_document_has_its_parts_in_their_fields():
+    for doc_id in DOC_IDS:
+        record = keyed_record(doc_id)
+        assert check_field_placement(record) == [], doc_id
+        assert check_header_rows(record) == [], doc_id

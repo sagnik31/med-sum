@@ -92,7 +92,8 @@ def test_every_fault_is_injected_somewhere(check):
         "dropped_result", "duplicated_item", "frequency_change", "invented_medicine",
         "invented_result", "range_bound", "remark_moved", "strength_shift",
         "qualifier_dropped", "transcription_misread", "unit_swap", "values_swapped",
-        "wrong_patient", "patient_unread",
+        "wrong_patient", "patient_unread", "strength_in_name", "frequency_as_dose",
+        "flag_in_value", "allergy_text_cut", "header_row_as_result",
     }  # fmt: skip
 
 
@@ -101,11 +102,24 @@ def test_every_fault_is_injected_somewhere(check):
     ["digit_swap", "decimal_shift", "unit_swap", "strength_shift", "frequency_change",
      "invented_result", "invented_medicine", "dropped_medicine", "wrong_patient",
      "date_swap", "remark_moved", "range_bound", "qualifier_dropped", "values_swapped",
-     "duplicated_item"],
+     "duplicated_item", "strength_in_name", "frequency_as_dose", "flag_in_value",
+     "allergy_text_cut", "header_row_as_result"],
 )  # fmt: skip
 def test_these_faults_are_always_flagged(check, fault):
     rows = [r for r in check.results if r.fault == fault]
     assert rows and all(r.flagged for r in rows)
+
+
+@pytest.mark.parametrize(
+    "fault",
+    ["strength_in_name", "frequency_as_dose", "flag_in_value", "allergy_text_cut",
+     "header_row_as_result"],
+)  # fmt: skip
+def test_misplaced_parts_are_flagged_on_the_item_they_moved_in(check, fault):
+    # The kinds of unsafe error the first live evals found in records that
+    # passed every other check: validators 11 and 12 name the item.
+    rows = [r for r in check.results if r.fault == fault]
+    assert rows and all(r.on_target for r in rows)
 
 
 def test_a_value_change_is_flagged_on_the_item_it_changed(check):

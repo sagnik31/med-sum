@@ -11,6 +11,8 @@ info to the review screen.
   rows without a result, 8 unused lines
 - patient.py: 9 printed patient vs the patient uploaded to
 - duplicates.py: 10 an item read twice from the same lines
+- placement.py: 11 a printed part in the wrong field, 12 a result
+  read from a table's header or separator row
 """
 
 from datetime import date
@@ -26,6 +28,7 @@ from validators.layout import (
     check_result_coverage,
 )
 from validators.patient import ExpectedPatient, check_patient_match
+from validators.placement import check_field_placement, check_header_rows
 from validators.source import check_source_text, check_text_layer
 from validators.values import (
     check_dates,
@@ -68,4 +71,6 @@ def validate(
         *check_coverage(record),
         *check_patient_match(record, expected_patient),
         *check_duplicates(record),
+        *check_field_placement(record),
+        *check_header_rows(record),
     ]

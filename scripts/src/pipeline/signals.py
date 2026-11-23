@@ -87,6 +87,13 @@ SIGNALS = _signals(
         R,
         "No patient name, ID or date of birth was read; the patient is not confirmed.",
     ),
+    (
+        "LC-23",
+        R,
+        "A printed part is in the wrong field: a strength in the name, a frequency"
+        " as the dose, a flag in the value, or an allergy without its own parts.",
+    ),
+    ("LC-24", R, "The result is read from a table's header, not a row of results."),
     ("LC-I1", INFO, "No PDF text layer, so the reading has no independent check."),
     ("LC-I2", INFO, "Transcription lines that no extracted item uses."),
     ("LC-I3", INFO, "A range, flag or unit that code could not read."),
@@ -114,6 +121,8 @@ _BY_FINDING = {
     (Validator.COVERAGE, Severity.INFO): "LC-I2",
     (Validator.PATIENT_MATCH, Severity.FLAG): "LC-13",
     (Validator.DUPLICATES, Severity.ERROR): "LC-19",
+    (Validator.FIELD_PLACEMENT, Severity.ERROR): "LC-23",
+    (Validator.HEADER_ROW, Severity.ERROR): "LC-24",
 }
 
 # Hits on the document as a whole, whatever item the finding names.

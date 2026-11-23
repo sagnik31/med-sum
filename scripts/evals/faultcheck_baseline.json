@@ -1,4 +1,8 @@
 {
+  "allergy_text_cut": {
+    "injected": 3,
+    "flagged": 3
+  },
   "date_swap": {
     "injected": 16,
     "flagged": 16
@@ -23,9 +27,21 @@
     "injected": 24,
     "flagged": 24
   },
+  "flag_in_value": {
+    "injected": 50,
+    "flagged": 50
+  },
+  "frequency_as_dose": {
+    "injected": 28,
+    "flagged": 28
+  },
   "frequency_change": {
     "injected": 28,
     "flagged": 28
+  },
+  "header_row_as_result": {
+    "injected": 13,
+    "flagged": 13
   },
   "invented_medicine": {
     "injected": 10,
@@ -50,6 +66,10 @@
   "remark_moved": {
     "injected": 3,
     "flagged": 3
+  },
+  "strength_in_name": {
+    "injected": 27,
+    "flagged": 27
   },
   "strength_shift": {
     "injected": 26,
