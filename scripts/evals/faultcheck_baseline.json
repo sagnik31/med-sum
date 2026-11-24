@@ -79,6 +79,10 @@
     "injected": 130,
     "flagged": 110
   },
+  "unit_dropped": {
+    "injected": 154,
+    "flagged": 148
+  },
   "unit_swap": {
     "injected": 154,
     "flagged": 154

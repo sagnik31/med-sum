@@ -12,6 +12,8 @@ cited line:
     the derived schedule then never reads;
   - a printed flag left in the value ("11.2 L", no flag): the value is no
     longer a number, so no flag is computed or compared;
+  - a unit left out: the row's unit cell prints one and the result has none.
+    Without it the value is compared with nothing in another unit;
   - an allergy whose text leaves out its own substance or reaction (text
     "Sulfa drugs", reaction "rash"): the text is the whole statement, so
     its parts are in it.
@@ -32,7 +34,8 @@ import unicodedata
 from derive.medicines import parse_frequency
 from record.document import DocumentRecord
 from validators.findings import Finding, Severity, Validator
-from validators.layout import is_table_furniture
+from validators.layout import is_table_furniture, unit_cells
+from validators.text import cited_numbers, normalise
 
 # A strength at the end of a name: a number and a strength unit ("40 mg",
 # "40/5 mg", "60,000 IU", "60K", "1%"). A number with no unit ("Glycomet
@@ -75,6 +78,7 @@ def _finding(validator, message, item, field, **details) -> Finding:
 def check_field_placement(record: DocumentRecord) -> list[Finding]:
     findings = []
     v = Validator.FIELD_PLACEMENT
+    units = {p.page: unit_cells(p.lines) for p in record.pages}
     for m in record.medications:
         p = m.printed
         strength = _STRENGTH_AT_END.search(p.name)
@@ -99,6 +103,19 @@ def check_field_placement(record: DocumentRecord) -> list[Finding]:
                 v, f"result {p.test_name!r} has the flag {flag['flag']!r} in its "
                 f"value {p.value_text!r} and no printed flag: the flag goes in "
                 "its own field", o, "value_text", flag=flag["flag"]))  # fmt: skip
+        page = p.citation.page
+        printed = {
+            unit
+            for n in cited_numbers(record, p.citation)
+            if (unit := units.get(page, {}).get(n))
+        }
+        # Not one printed in the value as well ("10.4 g/dL").
+        if len(printed) == 1 and not p.unit:
+            (unit,) = printed
+            if normalise(unit) not in normalise(p.value_text):
+                findings.append(_finding(
+                    v, f"result {p.test_name!r} has no unit, and its row prints "
+                    f"{unit!r} in the unit column", o, "unit"))  # fmt: skip
     for a in record.allergies:
         p = a.printed
         text = _norm(p.text)

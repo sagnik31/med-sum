@@ -91,7 +91,8 @@ SIGNALS = _signals(
         "LC-23",
         R,
         "A printed part is in the wrong field: a strength in the name, a frequency"
-        " as the dose, a flag in the value, or an allergy without its own parts.",
+        " as the dose, a flag in the value, a unit left out, or an allergy without its"
+        " own parts.",
     ),
     ("LC-24", R, "The result is read from a table's header, not a row of results."),
     ("LC-I1", INFO, "No PDF text layer, so the reading has no independent check."),

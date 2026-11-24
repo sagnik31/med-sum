@@ -36,6 +36,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:fa137c744a1040ca",
+   "subset": "core"
+  },
+  {
+   "id": "d01-unit_dropped-1",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:8bcc00f9f92e0711",
    "subset": null
   },
   {
@@ -88,6 +100,18 @@
    "subset": null
   },
   {
+   "id": "d01-unit_dropped-2",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:598a80a81ef691ac",
+   "subset": null
+  },
+  {
    "id": "d01-dropped_result-2",
    "doc_id": "d01",
    "split": "test",
@@ -121,6 +145,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:6f6f70ba1b69e9e1",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_dropped-3",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:1d2e79b2aecdd6d2",
    "subset": null
   },
   {
@@ -185,6 +221,18 @@
    "subset": null
   },
   {
+   "id": "d01-unit_dropped-4",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-4",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:3dd58487926366f2",
+   "subset": null
+  },
+  {
    "id": "d01-flag_in_value-3",
    "doc_id": "d01",
    "split": "test",
@@ -243,6 +291,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:9f7eb768f0405622",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_dropped-5",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-5",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:8402864681e3bc93",
    "subset": null
   },
   {
@@ -307,6 +367,18 @@
    "subset": null
   },
   {
+   "id": "d01-unit_dropped-6",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-6",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:df41c5951fd811bc",
+   "subset": null
+  },
+  {
    "id": "d01-flag_in_value-5",
    "doc_id": "d01",
    "split": "test",
@@ -368,6 +440,18 @@
    "subset": null
   },
   {
+   "id": "d01-unit_dropped-7",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-7",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:d7afbf289d82f45f",
+   "subset": null
+  },
+  {
    "id": "d01-flag_in_value-6",
    "doc_id": "d01",
    "split": "test",
@@ -417,6 +501,18 @@
    "subset": null
   },
   {
+   "id": "d01-unit_dropped-8",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-8",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:a13ba4d561424b37",
+   "subset": null
+  },
+  {
    "id": "d01-dropped_result-8",
    "doc_id": "d01",
    "split": "test",
@@ -453,6 +549,18 @@
    "subset": null
   },
   {
+   "id": "d01-unit_dropped-9",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-9",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:785d025714c6f716",
+   "subset": null
+  },
+  {
    "id": "d01-dropped_result-9",
    "doc_id": "d01",
    "split": "test",
@@ -486,6 +594,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:949c4035d693de0d",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_dropped-10",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-10",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:1e2dcd2510cb9003",
    "subset": null
   },
   {
@@ -551,6 +671,18 @@
    "subset": null
   },
   {
+   "id": "d01-unit_dropped-11",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-11",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:b51e17f91a35efaa",
+   "subset": null
+  },
+  {
    "id": "d01-flag_in_value-8",
    "doc_id": "d01",
    "split": "test",
@@ -612,6 +744,18 @@
    "subset": null
   },
   {
+   "id": "d01-unit_dropped-12",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-12",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:e76c51f654c03913",
+   "subset": null
+  },
+  {
    "id": "d01-dropped_result-12",
    "doc_id": "d01",
    "split": "test",
@@ -657,6 +801,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:e9a889810c84dd55",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_dropped-13",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-13",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:7982aa4a0fd6cecf",
    "subset": null
   },
   {
@@ -718,6 +874,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:4d548680042f2337",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_dropped-14",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-14",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:fe00cbbd974dfe73",
    "subset": null
   },
   {
@@ -794,6 +962,18 @@
    "subset": null
   },
   {
+   "id": "d01-unit_dropped-15",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-15",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:5e8c842eaa6580c6",
+   "subset": null
+  },
+  {
    "id": "d01-dropped_result-15",
    "doc_id": "d01",
    "split": "test",
@@ -827,6 +1007,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:ff332aa29675029f",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_dropped-16",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-16",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:7fb35c712c4d87d2",
    "subset": null
   },
   {
@@ -903,6 +1095,18 @@
    "subset": null
   },
   {
+   "id": "d01-unit_dropped-17",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-17",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:d37c0520bac3f81c",
+   "subset": null
+  },
+  {
    "id": "d01-dropped_result-17",
    "doc_id": "d01",
    "split": "test",
@@ -951,6 +1155,18 @@
    "subset": null
   },
   {
+   "id": "d01-unit_dropped-18",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-18",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:91c954bb9e6a412e",
+   "subset": null
+  },
+  {
    "id": "d01-dropped_result-18",
    "doc_id": "d01",
    "split": "test",
@@ -987,6 +1203,18 @@
    "subset": null
   },
   {
+   "id": "d01-unit_dropped-19",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-19",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:4184d8a4c257feb3",
+   "subset": null
+  },
+  {
    "id": "d01-dropped_result-19",
    "doc_id": "d01",
    "split": "test",
@@ -1020,6 +1248,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:903c89440e059dc2",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_dropped-20",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-20",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:2bef45590dec3b4f",
    "subset": null
   },
   {
@@ -1128,6 +1368,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:78d8bbbcc19d3a9c",
+   "subset": null
+  },
+  {
+   "id": "d01-unit_dropped-21",
+   "doc_id": "d01",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-26",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:659274731b745789",
    "subset": null
   },
   {
@@ -1377,6 +1629,7 @@
    "fault": "values_swapped",
    "target": "obs-25",
    "errors": [
+    "field_placement",
     "result_coverage"
    ],
    "fingerprint": "sha256:8ddb2bfbfd2501d5",
@@ -1635,6 +1888,18 @@
    "subset": null
   },
   {
+   "id": "d03-unit_dropped-1",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:a5fcc9236c843642",
+   "subset": null
+  },
+  {
    "id": "d03-flag_in_value-1",
    "doc_id": "d03",
    "split": "test",
@@ -1680,6 +1945,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:9a105db0688a7962",
+   "subset": null
+  },
+  {
+   "id": "d03-unit_dropped-2",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:c554bd31d49e0a35",
    "subset": null
   },
   {
@@ -1731,6 +2008,18 @@
    "subset": null
   },
   {
+   "id": "d03-unit_dropped-3",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:74b2d6c46ee317be",
+   "subset": null
+  },
+  {
    "id": "d03-dropped_result-3",
    "doc_id": "d03",
    "split": "test",
@@ -1779,6 +2068,18 @@
    "subset": null
   },
   {
+   "id": "d03-unit_dropped-4",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-4",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:5ac1657e511820de",
+   "subset": null
+  },
+  {
    "id": "d03-flag_in_value-2",
    "doc_id": "d03",
    "split": "test",
@@ -1824,6 +2125,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:68580c9b6fa1fdbd",
+   "subset": null
+  },
+  {
+   "id": "d03-unit_dropped-5",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-5",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:1d18e370ee76e2c1",
    "subset": null
   },
   {
@@ -1885,6 +2198,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:a476537bf7e9345e",
+   "subset": null
+  },
+  {
+   "id": "d03-unit_dropped-6",
+   "doc_id": "d03",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-6",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:6c87dd9f25a3496c",
    "subset": null
   },
   {
@@ -2308,6 +2633,18 @@
    "subset": null
   },
   {
+   "id": "d05-unit_dropped-1",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:bec42164a015e800",
+   "subset": null
+  },
+  {
    "id": "d05-flag_in_value-1",
    "doc_id": "d05",
    "split": "test",
@@ -2369,6 +2706,18 @@
    "subset": null
   },
   {
+   "id": "d05-unit_dropped-2",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:72913b59fe6e8ad6",
+   "subset": null
+  },
+  {
    "id": "d05-flag_in_value-2",
    "doc_id": "d05",
    "split": "test",
@@ -2418,6 +2767,18 @@
    "subset": null
   },
   {
+   "id": "d05-unit_dropped-3",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:84aa3d9af97fbdb9",
+   "subset": null
+  },
+  {
    "id": "d05-dropped_result-3",
    "doc_id": "d05",
    "split": "test",
@@ -2463,6 +2824,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:a9a224638b46bd9c",
+   "subset": null
+  },
+  {
+   "id": "d05-unit_dropped-4",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-4",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:832343856b1c654c",
    "subset": null
   },
   {
@@ -2527,6 +2900,18 @@
    "subset": null
   },
   {
+   "id": "d05-unit_dropped-5",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-5",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:bef48d2b240a7bff",
+   "subset": null
+  },
+  {
    "id": "d05-flag_in_value-4",
    "doc_id": "d05",
    "split": "test",
@@ -2573,6 +2958,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:409b237f269d4dcc",
+   "subset": null
+  },
+  {
+   "id": "d05-unit_dropped-6",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-6",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:043a837e056d76d7",
    "subset": null
   },
   {
@@ -2625,6 +3022,18 @@
    "subset": null
   },
   {
+   "id": "d05-unit_dropped-7",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-7",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:549a5e7faddb3fe9",
+   "subset": null
+  },
+  {
    "id": "d05-flag_in_value-6",
    "doc_id": "d05",
    "split": "test",
@@ -2674,6 +3083,18 @@
    "subset": null
   },
   {
+   "id": "d05-unit_dropped-8",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-8",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:8915d3849290ca9a",
+   "subset": null
+  },
+  {
    "id": "d05-flag_in_value-7",
    "doc_id": "d05",
    "split": "test",
@@ -2720,6 +3141,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:d0793b33b40c4b56",
+   "subset": null
+  },
+  {
+   "id": "d05-unit_dropped-9",
+   "doc_id": "d05",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-9",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:bff0bf0e3129dca8",
    "subset": null
   },
   {
@@ -2891,6 +3324,18 @@
    "subset": null
   },
   {
+   "id": "d06-unit_dropped-1",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:5cfb0add20dfb513",
+   "subset": null
+  },
+  {
    "id": "d06-flag_in_value-1",
    "doc_id": "d06",
    "split": "test",
@@ -2952,6 +3397,18 @@
    "subset": null
   },
   {
+   "id": "d06-unit_dropped-2",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:c48c039497b2faca",
+   "subset": null
+  },
+  {
    "id": "d06-flag_in_value-2",
    "doc_id": "d06",
    "split": "test",
@@ -2998,6 +3455,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:a0245e39152c519e",
+   "subset": null
+  },
+  {
+   "id": "d06-unit_dropped-3",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:c300ed8b8d88ddb5",
    "subset": null
   },
   {
@@ -3062,6 +3531,18 @@
    "subset": null
   },
   {
+   "id": "d06-unit_dropped-4",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-4",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:7cba6ac58085277e",
+   "subset": null
+  },
+  {
    "id": "d06-range_bound-1",
    "doc_id": "d06",
    "split": "test",
@@ -3120,6 +3601,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:e343cefc76b1f6c6",
+   "subset": null
+  },
+  {
+   "id": "d06-unit_dropped-5",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-5",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:e335a6fb6ec86811",
    "subset": null
   },
   {
@@ -3184,6 +3677,18 @@
    "subset": null
   },
   {
+   "id": "d06-unit_dropped-6",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-6",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:f84ed7352ebf780f",
+   "subset": null
+  },
+  {
    "id": "d06-dropped_result-6",
    "doc_id": "d06",
    "split": "test",
@@ -3217,6 +3722,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:23fd91e83533f9cc",
+   "subset": null
+  },
+  {
+   "id": "d06-unit_dropped-7",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-7",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:676b89b4bc4466bf",
    "subset": null
   },
   {
@@ -3268,6 +3785,18 @@
    "subset": null
   },
   {
+   "id": "d06-unit_dropped-8",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-8",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:ffbb69247ac04e83",
+   "subset": null
+  },
+  {
    "id": "d06-dropped_result-8",
    "doc_id": "d06",
    "split": "test",
@@ -3313,6 +3842,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:24c19bc80fdb393e",
+   "subset": null
+  },
+  {
+   "id": "d06-unit_dropped-9",
+   "doc_id": "d06",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-9",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:c5c45ff8ee3f2a66",
    "subset": null
   },
   {
@@ -3712,6 +4253,18 @@
    "subset": null
   },
   {
+   "id": "d08-unit_dropped-1",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:9a1ccb8ef61859df",
+   "subset": null
+  },
+  {
    "id": "d08-dropped_result-1",
    "doc_id": "d08",
    "split": "test",
@@ -3745,6 +4298,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:c15fdf884689872b",
+   "subset": null
+  },
+  {
+   "id": "d08-unit_dropped-2",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:737b700fbd679c2c",
    "subset": null
   },
   {
@@ -3796,6 +4361,18 @@
    "subset": null
   },
   {
+   "id": "d08-unit_dropped-3",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:ea1fe1b1b6869d19",
+   "subset": null
+  },
+  {
    "id": "d08-dropped_result-3",
    "doc_id": "d08",
    "split": "test",
@@ -3841,6 +4418,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:316e835e315e217b",
+   "subset": null
+  },
+  {
+   "id": "d08-unit_dropped-4",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-4",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:1bbb0bb505cc2a21",
    "subset": null
   },
   {
@@ -3904,6 +4493,18 @@
    "subset": null
   },
   {
+   "id": "d08-unit_dropped-5",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-5",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:a4e0647fa341b1ed",
+   "subset": null
+  },
+  {
    "id": "d08-dropped_result-5",
    "doc_id": "d08",
    "split": "test",
@@ -3937,6 +4538,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:7fccb04128f0f926",
+   "subset": null
+  },
+  {
+   "id": "d08-unit_dropped-6",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-6",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:f57835b3ecfd190c",
    "subset": null
   },
   {
@@ -3976,6 +4589,18 @@
    "subset": null
   },
   {
+   "id": "d08-unit_dropped-7",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-7",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:91f263997f205e96",
+   "subset": null
+  },
+  {
    "id": "d08-dropped_result-7",
    "doc_id": "d08",
    "split": "test",
@@ -4012,6 +4637,18 @@
    "subset": null
   },
   {
+   "id": "d08-unit_dropped-8",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-8",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:8e9375f504013e78",
+   "subset": null
+  },
+  {
    "id": "d08-dropped_result-8",
    "doc_id": "d08",
    "split": "test",
@@ -4033,6 +4670,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:c6c8725ed9560f99",
+   "subset": null
+  },
+  {
+   "id": "d08-unit_dropped-9",
+   "doc_id": "d08",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-9",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:5676e6ef76df280b",
    "subset": null
   },
   {
@@ -4192,6 +4841,18 @@
    "subset": null
   },
   {
+   "id": "d09-unit_dropped-1",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "unit_dropped",
+   "target": "obs-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:e8c1501dd5d262e5",
+   "subset": null
+  },
+  {
    "id": "d09-dropped_result-1",
    "doc_id": "d09",
    "split": "dev",
@@ -4228,6 +4889,18 @@
    "subset": null
   },
   {
+   "id": "d09-unit_dropped-2",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "unit_dropped",
+   "target": "obs-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:feb203bdc867a825",
+   "subset": null
+  },
+  {
    "id": "d09-dropped_result-2",
    "doc_id": "d09",
    "split": "dev",
@@ -4261,6 +4934,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:179397e5fbae7a57",
+   "subset": null
+  },
+  {
+   "id": "d09-unit_dropped-3",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "unit_dropped",
+   "target": "obs-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:7c3484db31b53711",
    "subset": null
   },
   {
@@ -4325,6 +5010,18 @@
    "subset": null
   },
   {
+   "id": "d09-unit_dropped-4",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "unit_dropped",
+   "target": "obs-4",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:bda9f1cec1a325f1",
+   "subset": null
+  },
+  {
    "id": "d09-dropped_result-4",
    "doc_id": "d09",
    "split": "dev",
@@ -4361,6 +5058,18 @@
    "subset": null
   },
   {
+   "id": "d09-unit_dropped-5",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "unit_dropped",
+   "target": "obs-5",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:c6a45712f4290cea",
+   "subset": null
+  },
+  {
    "id": "d09-dropped_result-5",
    "doc_id": "d09",
    "split": "dev",
@@ -4394,6 +5103,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:a33b9c926bc922fc",
+   "subset": null
+  },
+  {
+   "id": "d09-unit_dropped-6",
+   "doc_id": "d09",
+   "split": "dev",
+   "fault": "unit_dropped",
+   "target": "obs-6",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:9d1d81763ea57e72",
    "subset": null
   },
   {
@@ -4637,6 +5358,18 @@
    "subset": null
   },
   {
+   "id": "d11-unit_dropped-1",
+   "doc_id": "d11",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:d4bc2be172e9850a",
+   "subset": null
+  },
+  {
    "id": "d11-dropped_result-1",
    "doc_id": "d11",
    "split": "test",
@@ -4682,6 +5415,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:570acc9c52867e08",
+   "subset": null
+  },
+  {
+   "id": "d11-unit_dropped-2",
+   "doc_id": "d11",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:572dbcf586e9b46f",
    "subset": null
   },
   {
@@ -4938,6 +5683,18 @@
    "subset": null
   },
   {
+   "id": "d13-unit_dropped-1",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:3ded240824df71f5",
+   "subset": null
+  },
+  {
    "id": "d13-flag_in_value-1",
    "doc_id": "d13",
    "split": "test",
@@ -4996,6 +5753,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:ccc4d04b1a78a882",
+   "subset": null
+  },
+  {
+   "id": "d13-unit_dropped-2",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:b07b375a1f70c866",
    "subset": null
   },
   {
@@ -5072,6 +5841,18 @@
    "subset": null
   },
   {
+   "id": "d13-unit_dropped-3",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:6157f05c9c7cdc06",
+   "subset": null
+  },
+  {
    "id": "d13-range_bound-2",
    "doc_id": "d13",
    "split": "test",
@@ -5145,6 +5926,18 @@
    "subset": null
   },
   {
+   "id": "d13-unit_dropped-4",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-4",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:8d02e3e24cbfdcc2",
+   "subset": null
+  },
+  {
    "id": "d13-flag_in_value-4",
    "doc_id": "d13",
    "split": "test",
@@ -5191,6 +5984,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:afe8cfb326ab7003",
+   "subset": null
+  },
+  {
+   "id": "d13-unit_dropped-5",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-5",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:9d94fa3e2f05b83f",
    "subset": null
   },
   {
@@ -5242,6 +6047,18 @@
    "subset": null
   },
   {
+   "id": "d13-unit_dropped-6",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-8",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:052a79fe2be03943",
+   "subset": null
+  },
+  {
    "id": "d13-dropped_result-8",
    "doc_id": "d13",
    "split": "test",
@@ -5275,6 +6092,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:6c6be9b1ca3c7a5b",
+   "subset": null
+  },
+  {
+   "id": "d13-unit_dropped-7",
+   "doc_id": "d13",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-9",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:994be857dce1c00d",
    "subset": null
   },
   {
@@ -5356,6 +6185,7 @@
    "fault": "values_swapped",
    "target": "obs-7",
    "errors": [
+    "field_placement",
     "result_coverage"
    ],
    "fingerprint": "sha256:ca305290c69e0402",
@@ -5815,6 +6645,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:684d3481a868e95c",
+   "subset": null
+  },
+  {
+   "id": "d16-unit_dropped-1",
+   "doc_id": "d16",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:50e0d9232d401f79",
    "subset": "core"
   },
   {
@@ -5851,6 +6693,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:54747d86a72964ad",
+   "subset": null
+  },
+  {
+   "id": "d16-unit_dropped-2",
+   "doc_id": "d16",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:1471b41f0a190dd2",
    "subset": null
   },
   {
@@ -5899,6 +6753,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:f0d3b1a987c2a93d",
+   "subset": null
+  },
+  {
+   "id": "d16-unit_dropped-3",
+   "doc_id": "d16",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:1a23f1ac63527401",
    "subset": null
   },
   {
@@ -6590,6 +7456,18 @@
    "subset": null
   },
   {
+   "id": "d20-unit_dropped-1",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "unit_dropped",
+   "target": "obs-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:34912038b62361b6",
+   "subset": "extended"
+  },
+  {
    "id": "d20-dropped_result-1",
    "doc_id": "d20",
    "split": "held_out",
@@ -6623,6 +7501,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:12d0c9f57d986bdd",
+   "subset": null
+  },
+  {
+   "id": "d20-unit_dropped-2",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "unit_dropped",
+   "target": "obs-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:2abf6348f8be4475",
    "subset": null
   },
   {
@@ -6687,6 +7577,18 @@
    "subset": null
   },
   {
+   "id": "d20-unit_dropped-3",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "unit_dropped",
+   "target": "obs-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:13ebb5d1e95bd3ce",
+   "subset": null
+  },
+  {
    "id": "d20-range_bound-1",
    "doc_id": "d20",
    "split": "held_out",
@@ -6745,6 +7647,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:9a05718c0142b7a7",
+   "subset": null
+  },
+  {
+   "id": "d20-unit_dropped-4",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "unit_dropped",
+   "target": "obs-4",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:91ca522bc6728842",
    "subset": null
   },
   {
@@ -6809,6 +7723,18 @@
    "subset": null
   },
   {
+   "id": "d20-unit_dropped-5",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "unit_dropped",
+   "target": "obs-5",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:0b2dbaad091429dd",
+   "subset": null
+  },
+  {
    "id": "d20-flag_in_value-4",
    "doc_id": "d20",
    "split": "held_out",
@@ -6858,6 +7784,18 @@
    "subset": null
   },
   {
+   "id": "d20-unit_dropped-6",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "unit_dropped",
+   "target": "obs-6",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:bee89e28f3fde7fe",
+   "subset": null
+  },
+  {
    "id": "d20-dropped_result-6",
    "doc_id": "d20",
    "split": "held_out",
@@ -6903,6 +7841,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:a8d9f0710effb38b",
+   "subset": null
+  },
+  {
+   "id": "d20-unit_dropped-7",
+   "doc_id": "d20",
+   "split": "held_out",
+   "fault": "unit_dropped",
+   "target": "obs-7",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:ddae06ab66007ec3",
    "subset": null
   },
   {
@@ -7230,6 +8180,18 @@
    "subset": null
   },
   {
+   "id": "d22-unit_dropped-1",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "unit_dropped",
+   "target": "obs-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:d52094439d92767c",
+   "subset": null
+  },
+  {
    "id": "d22-flag_in_value-1",
    "doc_id": "d22",
    "split": "held_out",
@@ -7275,6 +8237,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:b184421e9d965bce",
+   "subset": null
+  },
+  {
+   "id": "d22-unit_dropped-2",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "unit_dropped",
+   "target": "obs-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:d763b771ae307a80",
    "subset": null
   },
   {
@@ -7335,6 +8309,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:49e504ac32ad55a1",
+   "subset": null
+  },
+  {
+   "id": "d22-unit_dropped-3",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "unit_dropped",
+   "target": "obs-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:2f8233e944ed55ea",
    "subset": null
   },
   {
@@ -7411,6 +8397,18 @@
    "subset": null
   },
   {
+   "id": "d22-unit_dropped-4",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "unit_dropped",
+   "target": "obs-4",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:a3b5d83c0b8d9814",
+   "subset": null
+  },
+  {
    "id": "d22-dropped_result-4",
    "doc_id": "d22",
    "split": "held_out",
@@ -7444,6 +8442,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:aa3ea6b6c6f9be1f",
+   "subset": null
+  },
+  {
+   "id": "d22-unit_dropped-5",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "unit_dropped",
+   "target": "obs-5",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:e3abfe286d7abed2",
    "subset": null
   },
   {
@@ -7492,6 +8502,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:359c66fae971ceaa",
+   "subset": null
+  },
+  {
+   "id": "d22-unit_dropped-6",
+   "doc_id": "d22",
+   "split": "held_out",
+   "fault": "unit_dropped",
+   "target": "obs-6",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:cd2ecdecf39a8f9e",
    "subset": null
   },
   {
@@ -7615,6 +8637,18 @@
    "subset": null
   },
   {
+   "id": "d23-unit_dropped-1",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "unit_dropped",
+   "target": "obs-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:a2676342b3383265",
+   "subset": null
+  },
+  {
    "id": "d23-flag_in_value-1",
    "doc_id": "d23",
    "split": "held_out",
@@ -7676,6 +8710,18 @@
    "subset": null
   },
   {
+   "id": "d23-unit_dropped-2",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "unit_dropped",
+   "target": "obs-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:66f36c46a319cb9a",
+   "subset": null
+  },
+  {
    "id": "d23-dropped_result-2",
    "doc_id": "d23",
    "split": "held_out",
@@ -7709,6 +8755,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:4f2543ab9143ae0c",
+   "subset": null
+  },
+  {
+   "id": "d23-unit_dropped-3",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "unit_dropped",
+   "target": "obs-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:c289d00f83d23a8f",
    "subset": null
   },
   {
@@ -7757,6 +8815,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:889c79fc005a7fe3",
+   "subset": null
+  },
+  {
+   "id": "d23-unit_dropped-4",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "unit_dropped",
+   "target": "obs-4",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:bdacf6b09178966e",
    "subset": null
   },
   {
@@ -7821,6 +8891,18 @@
    "subset": null
   },
   {
+   "id": "d23-unit_dropped-5",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "unit_dropped",
+   "target": "obs-5",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:6712f3e554359335",
+   "subset": null
+  },
+  {
    "id": "d23-dropped_result-5",
    "doc_id": "d23",
    "split": "held_out",
@@ -7854,6 +8936,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:09e6120976e7e397",
+   "subset": null
+  },
+  {
+   "id": "d23-unit_dropped-6",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "unit_dropped",
+   "target": "obs-6",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:a769a0065e04ca54",
    "subset": null
   },
   {
@@ -7893,6 +8987,18 @@
    "subset": null
   },
   {
+   "id": "d23-unit_dropped-7",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "unit_dropped",
+   "target": "obs-7",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:06ce6c100acb14b9",
+   "subset": null
+  },
+  {
    "id": "d23-dropped_result-7",
    "doc_id": "d23",
    "split": "held_out",
@@ -7926,6 +9032,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:0b5a3d1255f531b9",
+   "subset": null
+  },
+  {
+   "id": "d23-unit_dropped-8",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "unit_dropped",
+   "target": "obs-8",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:a5b16abb9adf1ac0",
    "subset": null
   },
   {
@@ -7974,6 +9092,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:f734e218c2b8379f",
+   "subset": null
+  },
+  {
+   "id": "d23-unit_dropped-9",
+   "doc_id": "d23",
+   "split": "held_out",
+   "fault": "unit_dropped",
+   "target": "obs-9",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:a220cb29dd15f81b",
    "subset": null
   },
   {
@@ -8414,6 +9544,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-1",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-1",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:93cc961be7856807",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-1",
    "doc_id": "d25",
    "split": "test",
@@ -8447,6 +9589,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:76dbb067b0b4f694",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-2",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-2",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:8144284399081790",
    "subset": null
   },
   {
@@ -8498,6 +9652,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-3",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-3",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:7f36e552fbd62240",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-3",
    "doc_id": "d25",
    "split": "test",
@@ -8543,6 +9709,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:51fb33d88967f95a",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-4",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-4",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:c839e4bdb08e3942",
    "subset": null
   },
   {
@@ -8594,6 +9772,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-5",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-5",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:299051c447a537c2",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-5",
    "doc_id": "d25",
    "split": "test",
@@ -8639,6 +9829,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:e2f692fb5b1d8fbc",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-6",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-6",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:dcf1e8c97f58aef0",
    "subset": null
   },
   {
@@ -8690,6 +9892,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-7",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-7",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:9bd210c9860b0af0",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-7",
    "doc_id": "d25",
    "split": "test",
@@ -8726,6 +9940,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-8",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-8",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:d77a28cf60eeb05f",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-8",
    "doc_id": "d25",
    "split": "test",
@@ -8759,6 +9985,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:f97ceb9e89dc797d",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-9",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-9",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:7ec9274a342fb657",
    "subset": null
   },
   {
@@ -8810,6 +10048,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-10",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-10",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:1adfd94131bfb59e",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-10",
    "doc_id": "d25",
    "split": "test",
@@ -8858,6 +10108,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-11",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-11",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:ee618dac649bd971",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-11",
    "doc_id": "d25",
    "split": "test",
@@ -8891,6 +10153,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:738965e78c604b1e",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-12",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-12",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:2dfb5552252b259d",
    "subset": null
   },
   {
@@ -8930,6 +10204,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-13",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-13",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:d0b739fc62bea46d",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-13",
    "doc_id": "d25",
    "split": "test",
@@ -8963,6 +10249,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:493b6c288dadd1aa",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-14",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-14",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:f806aa7b15a8961a",
    "subset": null
   },
   {
@@ -9014,6 +10312,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-15",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-15",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:ddec352955acf4da",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-15",
    "doc_id": "d25",
    "split": "test",
@@ -9059,6 +10369,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:b0bbf3120bb0408e",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-16",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-16",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:d3f3585bf6defdeb",
    "subset": null
   },
   {
@@ -9111,6 +10433,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-17",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-17",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:97833288f6729903",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-17",
    "doc_id": "d25",
    "split": "test",
@@ -9159,6 +10493,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-18",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-18",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:1cd47104640bff02",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-18",
    "doc_id": "d25",
    "split": "test",
@@ -9204,6 +10550,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:4bc7a772e350e50b",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-19",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-19",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:245b48027d6715da",
    "subset": null
   },
   {
@@ -9264,6 +10622,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:28f47247910e3d5b",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-20",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-20",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:4505d27b490dae90",
    "subset": null
   },
   {
@@ -9340,6 +10710,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-21",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-21",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:d5465d2b88c927c7",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-21",
    "doc_id": "d25",
    "split": "test",
@@ -9385,6 +10767,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:58ab8996a8cd330c",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-22",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-22",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:cd6469d412bd56d1",
    "subset": null
   },
   {
@@ -9448,6 +10842,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-23",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-23",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:3ace92abeb6a02ba",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-23",
    "doc_id": "d25",
    "split": "test",
@@ -9496,6 +10902,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-24",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-24",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:c9933339941bea32",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-24",
    "doc_id": "d25",
    "split": "test",
@@ -9532,6 +10950,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-25",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-25",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:4f96383a9d9c1f41",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-25",
    "doc_id": "d25",
    "split": "test",
@@ -9565,6 +10995,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:ca61b466c5c209c4",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-26",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-26",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:ef3ed04a5089e2ab",
    "subset": null
   },
   {
@@ -9616,6 +11058,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-27",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-27",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:68528c6485d8a8ed",
+   "subset": null
+  },
+  {
    "id": "d25-range_bound-4",
    "doc_id": "d25",
    "split": "test",
@@ -9664,6 +11118,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-28",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-28",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:b3bacbed55087d69",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-28",
    "doc_id": "d25",
    "split": "test",
@@ -9697,6 +11163,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:d5cc1675b36a9d9f",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-29",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-29",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:73f59b28ac6a6677",
    "subset": null
   },
   {
@@ -9748,6 +11226,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-30",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-30",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:a99eb3f24d5df058",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-30",
    "doc_id": "d25",
    "split": "test",
@@ -9793,6 +11283,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:a0800e340c3d2c80",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-31",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-31",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:851b672df5c45f8f",
    "subset": null
   },
   {
@@ -9856,6 +11358,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-32",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-32",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:d66df47398c9a00a",
+   "subset": null
+  },
+  {
    "id": "d25-range_bound-7",
    "doc_id": "d25",
    "split": "test",
@@ -9901,6 +11415,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:ca2c4934b7c53dc7",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-33",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-33",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:78ced4e75424a9c5",
    "subset": null
   },
   {
@@ -9952,6 +11478,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-34",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-34",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:dd00a39e5681f72f",
+   "subset": null
+  },
+  {
    "id": "d25-range_bound-8",
    "doc_id": "d25",
    "split": "test",
@@ -10000,6 +11538,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-35",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-35",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:91fb1f9e69780c70",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-35",
    "doc_id": "d25",
    "split": "test",
@@ -10036,6 +11586,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-36",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-36",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:6c7072ba6be275b1",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-36",
    "doc_id": "d25",
    "split": "test",
@@ -10069,6 +11631,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:1dc42765e1ca2ed0",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-37",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-37",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:deeef64d7a717459",
    "subset": null
   },
   {
@@ -10144,6 +11718,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-38",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-39",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:131b22e94d7556b0",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-39",
    "doc_id": "d25",
    "split": "test",
@@ -10177,6 +11763,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:2a9c543e0a8f398c",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-39",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-40",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:59fb45574a152ef0",
    "subset": null
   },
   {
@@ -10228,6 +11826,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-40",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-41",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:431cb3333f8c244d",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-41",
    "doc_id": "d25",
    "split": "test",
@@ -10261,6 +11871,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:b9b9e669bb181319",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-41",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-42",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:23b61c1d143c3bef",
    "subset": null
   },
   {
@@ -10300,6 +11922,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-42",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-43",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:7189d94ab8008505",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-43",
    "doc_id": "d25",
    "split": "test",
@@ -10333,6 +11967,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:93a5c63b27e55fce",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-43",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-44",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:09f4c8c4c14986f5",
    "subset": null
   },
   {
@@ -10372,6 +12018,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-44",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-45",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:e086840ca2cfdacd",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-45",
    "doc_id": "d25",
    "split": "test",
@@ -10408,6 +12066,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-45",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-46",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:25edf27b241e0dd5",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-46",
    "doc_id": "d25",
    "split": "test",
@@ -10441,6 +12111,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:9505efacd782787c",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-46",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-47",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:b4542286a48c4772",
    "subset": null
   },
   {
@@ -10492,6 +12174,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-47",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-48",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:f4c7e4bb0581a2e8",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-48",
    "doc_id": "d25",
    "split": "test",
@@ -10537,6 +12231,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:814117cd5f531fcb",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-48",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-49",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:3d47040b8d47b24a",
    "subset": null
   },
   {
@@ -10588,6 +12294,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-49",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-50",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:cc2ee50f027bdec8",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-50",
    "doc_id": "d25",
    "split": "test",
@@ -10633,6 +12351,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:c56239813df81d7c",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-50",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-51",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:fdf3d9cbcc6356a3",
    "subset": null
   },
   {
@@ -10684,6 +12414,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-51",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-52",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:ae3bf6a738f80041",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-52",
    "doc_id": "d25",
    "split": "test",
@@ -10732,6 +12474,18 @@
    "subset": null
   },
   {
+   "id": "d25-unit_dropped-52",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-53",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:e85bfae0fc335690",
+   "subset": null
+  },
+  {
    "id": "d25-dropped_result-53",
    "doc_id": "d25",
    "split": "test",
@@ -10765,6 +12519,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:3879bd678990a502",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-53",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-54",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:166086561f786020",
    "subset": null
   },
   {
@@ -10885,6 +12651,18 @@
     "source_text"
    ],
    "fingerprint": "sha256:1f4d10c0f49289c5",
+   "subset": null
+  },
+  {
+   "id": "d25-unit_dropped-54",
+   "doc_id": "d25",
+   "split": "test",
+   "fault": "unit_dropped",
+   "target": "obs-60",
+   "errors": [
+    "field_placement"
+   ],
+   "fingerprint": "sha256:94e42657a110eec3",
    "subset": null
   },
   {
@@ -11302,6 +13080,7 @@
    "fault": "values_swapped",
    "target": "obs-37",
    "errors": [
+    "field_placement",
     "result_coverage"
    ],
    "fingerprint": "sha256:80949725227a8e3e",
@@ -11518,6 +13297,7 @@
    "fault": "values_swapped",
    "target": "obs-59",
    "errors": [
+    "field_placement",
     "result_coverage"
    ],
    "fingerprint": "sha256:2a7b2c17f83a6741",

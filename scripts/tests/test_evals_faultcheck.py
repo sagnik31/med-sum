@@ -91,7 +91,7 @@ def test_every_fault_is_injected_somewhere(check):
         "date_swap", "decimal_shift", "digit_swap", "dropped_medicine",
         "dropped_result", "duplicated_item", "frequency_change", "invented_medicine",
         "invented_result", "range_bound", "remark_moved", "strength_shift",
-        "qualifier_dropped", "transcription_misread", "unit_swap", "values_swapped",
+        "qualifier_dropped", "transcription_misread", "unit_dropped", "unit_swap", "values_swapped",
         "wrong_patient", "patient_unread", "strength_in_name", "frequency_as_dose",
         "flag_in_value", "allergy_text_cut", "header_row_as_result",
     }  # fmt: skip

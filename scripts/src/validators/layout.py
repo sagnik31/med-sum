@@ -254,6 +254,34 @@ def results_table_rows(lines: list[str]) -> list[int]:
     return found
 
 
+_UNIT_HEADER = re.compile(r"units?(?:\s*\(s\))?|unit\(s\)|uom", re.IGNORECASE)
+_NO_UNIT = {"na", "n/a", "nil", "none", "not applicable"}
+
+
+def unit_cells(lines: list[str]) -> dict[int, str]:
+    """
+    What a results table's unit column prints on each data row: line number
+    to text. A row with more or fewer cells than the header is left out,
+    as its cells can't be told apart, and so is a cell that says no unit.
+    """
+    found = {}
+    rows = set(results_table_rows(lines))
+    column = width = None
+    for n, line in enumerate(lines, start=1):
+        if n < len(lines) and _TABLE_SEPARATOR.match(lines[n]):
+            cells = _cells(line)
+            at = [i for i, c in enumerate(cells) if _UNIT_HEADER.fullmatch(c)]
+            column, width = (at[0] if len(at) == 1 else None), len(cells)
+        elif n in rows and column is not None:
+            cells = _cells(line)
+            if len(cells) == width:
+                cell = cells[column]
+                if any(c.isalpha() or c == "%" for c in cell):
+                    if cell.casefold() not in _NO_UNIT:
+                        found[n] = cell
+    return found
+
+
 def check_result_coverage(record: DocumentRecord) -> list[Finding]:
     """
     Every data row of a results table is cited by a result, and each

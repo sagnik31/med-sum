@@ -168,7 +168,7 @@ def test_a_medicine_may_cite_the_lines_that_continue_it():
 def test_a_result_is_not_read_from_the_header_its_citation_takes_in():
     lines = [WHO, WHEN, HEAD, RULE, "| Marker | 5 | U/L | |"]
     assert "LC-04" in routed(lines, [result(lines, "Test", "Result", 3, 5)])
-    assert not routed(lines, [result(lines, "Marker", "5", 3, 5)])
+    assert not routed(lines, [result(lines, "Marker", "5", 3, 5, unit="U/L")])
 
 
 PANELS = [WHO, WHEN, "## Serum", HEAD, RULE, "| Creatinine | 1.0 | mg/dL | |",
@@ -255,3 +255,29 @@ def test_a_citation_past_the_page_costs_no_more_than_the_page():
     assert all(len(f.lines) <= 51 for f in findings)
     _, found, _ = check(RX, [medicine(RX, "Synalpha", "1 tab", 3, 10**12)], rx=True)
     assert "LC-04" in found
+
+
+@pytest.mark.parametrize(
+    "header, row, routes",
+    [
+        (HEAD, "| Marker | 5 | U/L | |", True),
+        ("| Test | Result | Unit(s) | Range |", "| Marker | 5 | % | |", True),
+        (HEAD, "| Marker | 5 | | |", False),
+        (HEAD, "| Marker | 5 | - | |", False),
+        (HEAD, "| Marker | 5 | N/A | |", False),
+        (HEAD, "| Marker | 5 | U/L |", False),  # its cells can't be told apart
+        ("| Test | Result | Method | Range |", "| Marker | 5 | ELISA | |", False),
+    ],
+)
+def test_a_printed_unit_left_out_of_the_record_goes_to_review(header, row, routes):
+    lines = [WHO, WHEN, header, RULE, row]
+    found = routed(lines, [result(lines, "Marker", "5", 5)])
+    assert ("LC-23" in found) is routes
+
+
+def test_a_unit_read_with_its_value_is_not_left_out():
+    lines = [WHO, WHEN, HEAD, RULE, "| Marker | 5 U/L | U/L | |"]
+    found = routed(lines, [result(lines, "Marker", "5 U/L", 5)])
+    assert "LC-23" not in found
+    plain = [WHO, WHEN, HEAD, RULE, "| Marker | 5 | U/L | |"]
+    assert not routed(plain, [result(plain, "Marker", "5", 5, unit="U/L")])

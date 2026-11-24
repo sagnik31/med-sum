@@ -1307,7 +1307,7 @@ def test_a_value_ending_in_a_letter_is_not_always_a_misplaced_flag(value, flag, 
     record = keyed_record("d03")
     hb = obs(record, "Haemoglobin")
     hb.printed.value_text, hb.printed.flag_printed, hb.printed.unit = value, flag, unit
-    assert check_field_placement(record) == []
+    assert "value_text" not in {f.field for f in check_field_placement(record)}
 
 
 def test_an_allergy_text_that_leaves_out_its_reaction_is_an_error():

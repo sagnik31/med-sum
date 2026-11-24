@@ -251,6 +251,7 @@ def _result_faults(case: Case) -> Iterator[Mutant]:
             other = next((u for u in units if u != r.unit), None)
             other = other or ("mmol/L" if r.unit != "mmol/L" else "mg/dL")
             yield changed("unit_swap", unit=other)
+            yield changed("unit_dropped", unit=None)
         if r.reference_ranges and _PLAIN.fullmatch(r.value_text.replace(",", "")):
             bounds = _NUMBER.findall(r.reference_ranges[0])
             bound = next((b for b in bounds if b != r.value_text), None)
