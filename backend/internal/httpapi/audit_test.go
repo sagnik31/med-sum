@@ -445,6 +445,14 @@ func TestTheAuditLogFilters(t *testing.T) {
 	if got := decodeJSON[auditPage](t, e.do(http.MethodGet, "/admin/audit?from="+day+"&to="+day, admin, nil, "")); len(got.Events) == 0 {
 		t.Error("an event of today is outside from=today&to=today")
 	}
+	// Times: the last one is exclusive, so a day is its start to the next's.
+	at := func(d time.Duration) string { return e.now().UTC().Add(d).Format(time.RFC3339) }
+	if got := decodeJSON[auditPage](t, e.do(http.MethodGet, "/admin/audit?from="+at(-time.Hour)+"&to="+at(time.Hour), admin, nil, "")); len(got.Events) == 0 {
+		t.Error("an event of now is outside the hour either side")
+	}
+	if got := decodeJSON[auditPage](t, e.do(http.MethodGet, "/admin/audit?to="+at(-time.Hour), admin, nil, "")); len(got.Events) != 0 {
+		t.Errorf("until an hour ago = %+v", got.Events)
+	}
 	tomorrow := e.now().AddDate(0, 0, 1).Format(time.DateOnly)
 	if got := decodeJSON[auditPage](t, e.do(http.MethodGet, "/admin/audit?from="+tomorrow, admin, nil, "")); len(got.Events) != 0 {
 		t.Errorf("from tomorrow = %+v", got.Events)

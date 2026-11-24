@@ -117,7 +117,8 @@ export function issueStaffLink(id) {
 }
 
 // The organisation's audit log, newest first: { events, next_before }.
-// filters: any of { actor, patient, from, to (YYYY-MM-DD), before }.
+// filters: any of { actor, patient, from, to, before }; from is a time and to
+// the time after the last one wanted (see localDays in audit.js).
 export function fetchAuditEvents(filters = {}) {
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(filters)) {

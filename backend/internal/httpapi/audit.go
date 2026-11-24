@@ -145,8 +145,9 @@ type auditPage struct {
 }
 
 // handleListAudit returns the organisation's audit log, newest first,
-// filtered by ?actor=, ?patient=, ?from= and ?to= (dates, YYYY-MM-DD,
-// both inclusive) and paged with ?before=.
+// filtered by ?actor=, ?patient=, ?from= and ?to= (UTC dates, YYYY-MM-DD,
+// both inclusive, or times, RFC 3339, the last exclusive: the page sends
+// the days of its own time zone as times) and paged with ?before=.
 func (s *Server) handleListAudit(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	f := db.AuditFilter{ActorID: q.Get("actor"), PatientID: q.Get("patient")}
@@ -161,9 +162,13 @@ func (s *Server) handleListAudit(w http.ResponseWriter, r *http.Request) {
 		if v == "" {
 			continue
 		}
+		if at, err := time.Parse(time.RFC3339, v); err == nil {
+			*dst = &at
+			continue
+		}
 		day, err := time.Parse(time.DateOnly, v)
 		if err != nil {
-			http.Error(w, name+" must be a date, YYYY-MM-DD", http.StatusBadRequest)
+			http.Error(w, name+" must be a date, YYYY-MM-DD, or a time, RFC 3339", http.StatusBadRequest)
 			return
 		}
 		if name == "to" {

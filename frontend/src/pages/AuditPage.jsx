@@ -3,8 +3,9 @@
 // Admins read the organisation's audit log: who did what to which record,
 // newest first. Records are shown by id: the log holds no clinical
 // content, and admins see none.
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { fetchAuditEvents } from "../api/client.js";
+import { localDays } from "../audit.js";
 import ApiErrorNotice from "../components/ApiErrorNotice.jsx";
 
 const inputClass =
@@ -29,22 +30,32 @@ function AuditPage() {
   const [filters, setFilters] = useState({ actor: "", patient: "", from: "", to: "" });
   const [applied, setApplied] = useState(filters);
   const [events, setEvents] = useState([]);
-  const [hasMore, setHasMore] = useState(false);
+  const [nextBefore, setNextBefore] = useState(null); // the next page's cursor
+  // Only the last request's answer is shown: one for older filters, or for
+  // a page of them, says nothing about the ones applied now.
+  const request = useRef(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const load = useCallback(
     async (before) => {
+      request.current += 1;
+      const mine = request.current;
       setLoading(true);
       setError(null);
+      if (!before) {
+        setEvents([]);
+        setNextBefore(null);
+      }
       try {
-        const page = await fetchAuditEvents({ ...applied, before });
+        const page = await fetchAuditEvents({ ...applied, ...localDays(applied.from, applied.to), before });
+        if (mine !== request.current) return;
         setEvents((prev) => (before ? [...prev, ...page.events] : page.events));
-        setHasMore(Boolean(page.next_before));
+        setNextBefore(page.next_before ?? null);
       } catch (err) {
-        setError(err);
+        if (mine === request.current) setError(err);
       } finally {
-        setLoading(false);
+        if (mine === request.current) setLoading(false);
       }
     },
     [applied],
@@ -69,7 +80,7 @@ function AuditPage() {
       <h1 className="text-xl font-semibold mb-1">Audit log</h1>
       <p className="text-sm text-slate-600 mb-4">
         Every login, staff change, and read or change of patient data in your organisation. Entries cannot be edited or
-        deleted.
+        deleted. Dates and times are in your time zone.
       </p>
 
       <form onSubmit={handleFilter} className="flex flex-wrap items-end gap-3 mb-4 text-sm">
@@ -139,10 +150,10 @@ function AuditPage() {
 
       {loading && <p className="text-sm text-slate-600 mt-3">Loading...</p>}
       {!loading && events.length === 0 && !error && <p className="text-sm text-slate-500 mt-3">No entries match.</p>}
-      {!loading && hasMore && (
+      {!loading && nextBefore && (
         <button
           type="button"
-          onClick={() => load(events[events.length - 1].id)}
+          onClick={() => load(nextBefore)}
           className="mt-4 text-sm text-blue-600 hover:underline"
         >
           Older entries
