@@ -157,7 +157,7 @@ def invoke(tools: Mapping[str, Tool], name: str, arguments: Any, source: ToolSou
     if tool is None:
         known = ", ".join(sorted(tools))
         return ToolResult(
-            tool=str(name)[:64],
+            tool="unknown",  # not the name given: results are logged
             error=ToolError("unknown_tool", f"no tool by that name; tools: {known}"),
         )
     if isinstance(arguments, str):  # some models send the arguments as JSON text

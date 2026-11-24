@@ -550,3 +550,10 @@ def test_the_password_goes_only_over_https_or_to_this_machine(url, ok):
     else:
         with pytest.raises(mcp_api.ConfigError):
             mcp_api.credentials(env)
+
+
+def test_an_unknown_tool_s_name_is_not_logged():
+    name = "Hemoglobin 7.2 for Avery Reed"
+    answer = anyio.run(mcp_tools.call, None, name, {})
+    assert name not in json.dumps(mcp_tools.log_fields(answer, 0.0))
+    assert mcp_tools.log_fields(answer, 0.0)["tool"] == "unknown"

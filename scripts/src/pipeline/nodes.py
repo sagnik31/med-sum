@@ -401,7 +401,7 @@ def _parse_input(state: GraphState) -> dict:
     }
 
 
-def _store_answered(answered: list[PartResult], out: dict, **extra) -> None:
+def _store_answered(doc_type, answered: list[PartResult], out: dict, **extra) -> None:
     """
     What a parse or repair step stores as its output: the replies of the
     parts it answered (not the earlier parts' again), and whether the
@@ -415,16 +415,35 @@ def _store_answered(answered: list[PartResult], out: dict, **extra) -> None:
         "merged": out.get("parse") is not None if "parse_error" in out else None,
         **extra,
     })  # fmt: skip
-    errors = [r.error for r in answered if r.parse is None and r.error]
+    errors = [
+        _stored_error(doc_type, r) for r in answered if r.parse is None and r.error
+    ]
     if errors:
         step.fail("\n".join(errors))
 
 
-def schema_errors(error: ValidationError) -> str:
-    """Where and why a reply broke the schema, one line each, for the repair prompt."""
+def _stored_error(doc_type, result: PartResult) -> str:
+    """A refused part's error for its step, without the keys the model made up."""
+    try:
+        PARSE_MODELS[doc_type].model_validate_json(result.reply or "")
+    except ValidationError as e:
+        if result.reply:
+            return schema_errors(e, keys=False)
+    return result.error or ""
+
+
+def schema_errors(error: ValidationError, *, keys: bool = True) -> str:
+    """
+    Where and why a reply broke the schema, one line each: for the repair
+    prompt, or (keys=False) for the step's stored error, where a key off the
+    schema isn't named, since the model may have written anything as a key.
+    """
     lines = []
     for e in error.errors(include_url=False, include_input=False):
-        where = ".".join(str(part) for part in e["loc"]) or "(the reply)"
+        loc = e["loc"]
+        if not keys and e["type"] == "extra_forbidden":
+            loc = (*loc[:-1], "(unknown key)")
+        where = ".".join(str(part) for part in loc) or "(the reply)"
         lines.append(f"{where}: {e['msg']}")
     return "\n".join(lines)
 
@@ -587,7 +606,7 @@ def parse(state: GraphState) -> dict:
         out["parse"] = None  # a new round: no merged parse until it ends
     if len(results) == len(parse_parts(state)):
         out.update(_combined(state, results), **_stood_in(state, results))
-    _store_answered([result], out)
+    _store_answered(state["doc_type"], [result], out)
     return out
 
 
@@ -781,7 +800,12 @@ def repair(state: GraphState) -> dict:
         **_combined(state, results),
         **_stood_in(state, answered),
     }
-    _store_answered(answered, out, repair=[r.model_dump(mode="json") for r in log])
+    _store_answered(
+        state["doc_type"],
+        answered,
+        out,
+        repair=[r.model_dump(mode="json") for r in log],
+    )
     return out
 
 

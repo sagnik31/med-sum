@@ -340,13 +340,17 @@ TOOLS: dict[str, ServerTool] = {
 }
 
 
+UNKNOWN_TOOL = "unknown"
+
+
 async def call(api: ApiClient, name: str, arguments: Any) -> Answer:
     """Check a client's call against the tool's schema and run it."""
     tool = TOOLS.get(name)
     if tool is None:
         known = ", ".join(TOOLS)
+        # Not the name the client sent: it is logged, and may hold anything.
         return Answer(
-            str(name)[:64], error=ErrorAnswer("unknown_tool", f"tools: {known}")
+            UNKNOWN_TOOL, error=ErrorAnswer("unknown_tool", f"tools: {known}")
         )
     if not isinstance(arguments, dict):
         return Answer(

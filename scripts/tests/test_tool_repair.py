@@ -167,12 +167,29 @@ def test_a_tool_never_offered_to_repair_is_unknown():
 # What a tool step stores of the arguments
 # -------------------------------------------------------------------
 def test_numbers_are_stored_and_text_only_as_a_hash():
-    ref = tool_repair._argument_ref({"page": 1, "text": "Ms. Example Patient"})
+    ref = tool_repair._argument_ref(
+        "search_transcription", {"page": 1, "text": "Ms. Example Patient"}
+    )
     assert ref["page"] == 1
     assert set(ref["text"]) == {"sha256", "chars"}
     assert "Example" not in json.dumps(ref)
 
 
 def test_arguments_sent_as_text_are_stored_as_a_hash():
-    assert set(tool_repair._argument_ref("not json")["unparsed"]) == {"sha256", "chars"}
-    assert tool_repair._argument_ref([1, 2]) == {"type": "list"}
+    assert set(tool_repair._argument_ref("get_lines", "not json")["unparsed"]) == {
+        "sha256",
+        "chars",
+    }
+    assert tool_repair._argument_ref("get_lines", [1, 2]) == {"type": "list"}
+
+
+def test_a_made_up_tool_or_argument_name_is_not_stored():
+    made_up = {"Hemoglobin 7.2": "x", "page": 1}
+    assert tool_repair._argument_ref("get_lines", made_up) == {
+        "unknown_1": tool_repair._text_ref("x"),
+        "page": 1,
+    }
+    assert set(tool_repair._argument_ref("Avery Reed", made_up)) == {
+        "unknown_1",
+        "unknown_2",
+    }

@@ -116,8 +116,14 @@ def strip_fence(text: str) -> str:
     return m.group(1) if m else text
 
 
-def _argument_ref(arguments) -> dict:
-    """What a tool step stores of the arguments: numbers, text as hash and length."""
+def _argument_ref(name: str, arguments) -> dict:
+    """
+    What a tool step stores of the arguments: numbers, text as hash and
+    length, under the tool's own argument names only. The model may write
+    any name, and it isn't repeated.
+    """
+    tool = subset(*REPAIR_TOOLS).get(name)
+    known = tool.input_model.model_fields if tool is not None else {}
     if isinstance(arguments, str):
         try:
             arguments = json.loads(arguments)
@@ -126,8 +132,8 @@ def _argument_ref(arguments) -> dict:
     if not isinstance(arguments, dict):
         return {"type": type(arguments).__name__}
     out = {}
-    for name, value in list(arguments.items())[:8]:
-        key = str(name)[:40]
+    for n, (given, value) in enumerate(list(arguments.items())[:8], start=1):
+        key = given if given in known else f"unknown_{n}"
         if isinstance(value, bool) or value is None or isinstance(value, int | float):
             out[key] = value
         else:
@@ -148,12 +154,16 @@ def run_tool(name: str, arguments, source: ToolSource) -> ToolResult:
     if step is None:
         return invoke(subset(*REPAIR_TOOLS), name, arguments, source)
     with step.run.step(
-        "tool", input={"tool": str(name)[:64], "arguments": _argument_ref(arguments)}
+        "tool",
+        input={
+            "tool": name if name in REPAIR_TOOLS else "unknown",
+            "arguments": _argument_ref(name, arguments),
+        },
     ) as tool_step:
         result = invoke(subset(*REPAIR_TOOLS), name, arguments, source)
         tool_step.set_output({**result.log_fields(), "exact_types": result.exact_types})
         if not result.ok:
-            tool_step.fail(f"{result.error.kind}: {result.error.message}")
+            tool_step.fail(result.error.kind)  # its message can quote the call
     return result
 
 

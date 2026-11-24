@@ -1162,3 +1162,21 @@ def test_a_text_layer_that_prints_the_marker_marks_the_page(
     model_client.replies[llm.PRIMARY_MODEL] = ["Name: A"]
     out = nodes.transcribe(opened("d09"))
     assert out["marker_pages"] == [1]
+
+
+def test_a_key_the_model_made_up_is_not_stored_in_the_step_s_error(
+    db, run, model_client
+):
+    state = transcribed("d09")
+    state["doc_type"] = LAB
+    reply = json.loads(reply_for("d09"))
+    reply["results"][0]["Hemoglobin 7.2\ng/dL"] = 1
+    model_client.replies[llm.PRIMARY_MODEL] = [json.dumps(reply)]
+
+    out = nodes.parse(state)
+
+    assert "Hemoglobin" in out["parse_error"]  # the repair is told which key
+    with db.cursor() as cur:
+        cur.execute("SELECT error FROM pipeline_steps WHERE node = 'parse'")
+        ((error,),) = cur.fetchall()
+    assert error == "results.0.(unknown key): Extra inputs are not permitted"
