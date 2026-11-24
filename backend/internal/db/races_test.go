@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 	"time"
 
@@ -229,5 +230,34 @@ SELECT $1, $2, i, 'confirm', true, '2026-11-11' FROM unnest('{document,patient,o
 	}
 	if finish(0); err != nil {
 		t.Errorf("with no reprocess: %v", err)
+	}
+}
+
+// The commit can fail with the row made or not, so it has an error of its own;
+// a deferred constraint is a commit that fails for certain.
+func TestAnUploadWhoseCommitFailsSaysSo(t *testing.T) {
+	s := store(t)
+	ctx := context.Background()
+	me := mustUser(t, s, "a@hospital.test")
+	p, err := s.CreatePatient(ctx, me.OrgID, me.ID, PatientFields{MRN: "SYN-1", FullName: "A"}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.pool.Exec(ctx, `
+CREATE FUNCTION fail_commit() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'no'; END $$;
+CREATE CONSTRAINT TRIGGER fail_commit AFTER INSERT ON documents DEFERRABLE INITIALLY DEFERRED
+    FOR EACH ROW EXECUTE FUNCTION fail_commit();`); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _, _ = s.pool.Exec(ctx, `DROP FUNCTION fail_commit CASCADE`) })
+	nd := NewDocument{PatientID: p.ID, UploadedBy: me.ID, OriginalName: "a.pdf",
+		ContentType: "application/pdf", StoragePath: "/x/a.pdf", SHA256: strings.Repeat("a", 64)}
+
+	if _, err := s.CreateDocument(ctx, me.OrgID, nd, nil); !errors.Is(err, ErrCommitUnknown) {
+		t.Errorf("a failed commit: %v, want ErrCommitUnknown", err)
+	}
+	bad := &AuditEvent{Action: "NOT VALID", Outcome: OutcomeSuccess}
+	if _, err := s.CreateDocument(ctx, me.OrgID, nd, bad); err == nil || errors.Is(err, ErrCommitUnknown) {
+		t.Errorf("a failure before the commit: %v", err)
 	}
 }

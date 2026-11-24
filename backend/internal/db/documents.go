@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -76,13 +77,20 @@ type NewDocument struct {
 	SHA256       string // hex
 }
 
+// ErrCommitUnknown means a transaction's commit failed: whether it was made
+// isn't known (the connection or the request ended while it was).
+var ErrCommitUnknown = errors.New("the commit failed, so the change may or may not be made")
+
 // CreateDocument records an upload for a patient of the organisation, and
 // says which earlier document it duplicates. ev, with the new document as
-// its target, is written in the same transaction. It returns nil, writing
-// nothing, when the organisation has no such patient.
+// its target, is written in the same transaction, and the document is read
+// back in it. It returns nil, writing nothing, when the organisation has no
+// such patient. Any error but ErrCommitUnknown means nothing was written.
 func (s *Store) CreateDocument(ctx context.Context, orgID string, nd NewDocument, ev *AuditEvent) (*Document, error) {
-	var id string
+	var doc *Document
+	committing := false
 	err := pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
+		var id string
 		err := tx.QueryRow(ctx, `
 INSERT INTO documents (patient_id, uploaded_by, original_name, content_type, storage_path, sha256)
 SELECT p.id, $3, $4, $5, $6, $7 FROM patients p WHERE p.id = $1 AND p.org_id = $2
@@ -92,20 +100,37 @@ RETURNING id`,
 		if err != nil {
 			return err
 		}
-		return writeAudit(ctx, tx, ev.about(id, nd.PatientID))
+		if err := writeAudit(ctx, tx, ev.about(id, nd.PatientID)); err != nil {
+			return err
+		}
+		if doc, err = getDocument(ctx, tx, orgID, id); err != nil {
+			return err
+		}
+		committing = true
+		return nil
 	})
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, nil
 	}
+	if err != nil && committing {
+		return nil, fmt.Errorf("%w: %w", ErrCommitUnknown, err)
+	}
 	if err != nil {
 		return nil, err
 	}
-	return s.GetDocument(ctx, orgID, id)
+	return doc, nil
 }
 
 // GetDocument returns a live document of the organisation, or nil.
 func (s *Store) GetDocument(ctx context.Context, orgID, docID string) (*Document, error) {
-	return scanDocument(s.pool.QueryRow(ctx, `SELECT `+documentColumns+documentFrom+`
+	return getDocument(ctx, s.pool, orgID, docID)
+}
+
+// getDocument is GetDocument on the pool or inside a transaction.
+func getDocument(ctx context.Context, q interface {
+	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
+}, orgID, docID string) (*Document, error) {
+	return scanDocument(q.QueryRow(ctx, `SELECT `+documentColumns+documentFrom+`
 WHERE d.id = $1 AND p.org_id = $2 AND d.deleted_at IS NULL`, docID, orgID))
 }
 

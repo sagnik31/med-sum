@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -269,6 +270,37 @@ func TestUploadIsNotAMultipartForm(t *testing.T) {
 
 	if rec.Code != http.StatusBadRequest {
 		t.Errorf("status = %d, want 400", rec.Code)
+	}
+}
+
+func TestAFileOfExactlyTheLimitIsAccepted(t *testing.T) {
+	e := newTestEnv(t)
+	_, auth := e.login("me@hospital.test")
+	full := make([]byte, maxUploadSize)
+	copy(full, pdfBytes)
+	body, contentType := multipartFile(t, "file", "report.pdf", full)
+
+	rec := e.do(http.MethodPost, e.uploadPath(), auth, body, contentType)
+
+	if rec.Code != http.StatusCreated {
+		t.Fatalf("status = %d, want 201: %s", rec.Code, rec.Body)
+	}
+}
+
+func TestUploadKeepsTheFileWhenTheRowMayBeThere(t *testing.T) {
+	e := newTestEnv(t)
+	_, auth := e.login("me@hospital.test")
+	path := e.uploadPath()
+	e.store.failCreateDocument = fmt.Errorf("%w: %w", db.ErrCommitUnknown, io.ErrUnexpectedEOF)
+	body, contentType := multipartFile(t, "file", "cbc.pdf", pdfBytes)
+
+	rec := e.do(http.MethodPost, path, auth, body, contentType)
+
+	if rec.Code != http.StatusInternalServerError {
+		t.Fatalf("status = %d, want 500", rec.Code)
+	}
+	if entries, _ := os.ReadDir(e.uploads); len(entries) != 1 {
+		t.Errorf("%d files in uploads, want the one that may have a row", len(entries))
 	}
 }
 

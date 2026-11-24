@@ -261,8 +261,12 @@ func (s *Server) handleEnvironment(w http.ResponseWriter, r *http.Request) {
 
 // ----- Upload: POST /patients/{id}/documents -----
 
-// maxUploadSize caps a whole upload request (the file plus form overhead).
-const maxUploadSize = 20 << 20 // 20 MB
+const (
+	maxUploadSize = 20 << 20 // the file, 20 MB
+	// maxUploadOverhead is what the rest of the request may take: the form's
+	// boundaries and headers.
+	maxUploadOverhead = 1 << 20
+)
 
 // handleUploadDocument stores a file as a document of the patient, uploaded
 // by the caller, and starts its processing.
@@ -274,7 +278,7 @@ func (s *Server) handleUploadDocument(w http.ResponseWriter, r *http.Request, pa
 
 	// ParseMultipartForm's argument only limits memory and spills the rest
 	// to temp files; MaxBytesReader is what caps the request size.
-	r.Body = http.MaxBytesReader(w, r.Body, maxUploadSize)
+	r.Body = http.MaxBytesReader(w, r.Body, maxUploadSize+maxUploadOverhead)
 	if err := r.ParseMultipartForm(maxUploadSize); err != nil {
 		var tooLarge *http.MaxBytesError
 		if errors.As(err, &tooLarge) {
@@ -291,6 +295,10 @@ func (s *Server) handleUploadDocument(w http.ResponseWriter, r *http.Request, pa
 		return
 	}
 	defer file.Close()
+	if header.Size > maxUploadSize {
+		http.Error(w, "file too large (max 20 MB)", http.StatusRequestEntityTooLarge)
+		return
+	}
 
 	contentType, err := checkFileType(file, header.Filename)
 	if err != nil {
@@ -334,7 +342,11 @@ func (s *Server) handleUploadDocument(w http.ResponseWriter, r *http.Request, pa
 		SHA256:       hex.EncodeToString(hash.Sum(nil)),
 	}, forPatient(on(s.auditEvent(r, actDocumentUploaded), targetDocument, ""), patientID))
 	if err != nil || doc == nil {
-		_ = os.Remove(storagePath)
+		// Not when the row may be there: a file no row names is listed by
+		// medsumctl orphan-uploads, but a lost original is lost.
+		if !errors.Is(err, db.ErrCommitUnknown) {
+			_ = os.Remove(storagePath)
+		}
 		if err != nil {
 			log.Printf("CreateDocument error: %v", err)
 			http.Error(w, "internal error", http.StatusInternalServerError)
