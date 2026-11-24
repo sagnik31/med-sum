@@ -32,9 +32,9 @@ was checked and fixed on `main`, not pushed: 26 fixed, 4 in part, 4 skipped.
 The commits are `e9706d3` and the ones after it; the ADRs say what changed.
 - **Run `python -m reset_db --yes` first:** the schema has a new trigger that
   clears a patient's summary page when a document is deleted.
-- **Cassettes:** stricter checks send some recorded parses to repair, so a
-  replay can miss until the runs are re-recorded (no live run without the
-  owner's go-ahead).
+- **Cassettes:** `evals.run --replay` stops on a repair miss, as it did before
+  these fixes; whether the fixes add more misses was not measured. It passes
+  only after a re-recording live run (the owner's go-ahead). The demo replays.
 - **Not built:** a check for a unit cell that is printed but was left out of
   the record.
 - **For the owner:** should a page that went stale be open to sign-off; which

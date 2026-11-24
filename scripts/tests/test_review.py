@@ -5,6 +5,7 @@ Clinician review of a record (record.review) and the AI service's
 
 from datetime import date, datetime, timezone
 
+import json
 import pytest
 from bs4 import BeautifulSoup
 from fastapi.testclient import TestClient
@@ -503,7 +504,10 @@ def test_the_endpoint_logs_ids_and_counts_only(client, json_log):
         json=body(field="value_text", value="13.1"),
         headers={"X-Internal-Token": TOKEN},
     )
-    text = json_log.getvalue()
+    lines = [json.loads(line) for line in json_log.getvalue().splitlines()]
+    for line in lines:
+        line.pop("ts", None)  # its seconds can read "10.4" too
+    text = json.dumps(lines)
     assert '"review_applied"' in text and '"obs-1"' in text
     assert "13.1" not in text and "10.4" not in text and DR not in text
 
