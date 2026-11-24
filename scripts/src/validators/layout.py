@@ -12,7 +12,7 @@ from record.document import DocumentRecord, Observation
 from record.printed import DocumentType, RemarkScope
 from validators.fields import item_citations
 from validators.findings import Finding, Severity, Validator
-from validators.text import is_blank, is_heading
+from validators.text import cited_numbers, is_blank, is_heading, normalise
 
 
 def _position(c: Citation) -> tuple[int, int]:
@@ -159,14 +159,37 @@ def _is_table_row(lines: list[str], n: int) -> bool:
 
 
 def check_medicine_coverage(record: DocumentRecord) -> list[Finding]:
+    """
+    Every medicine line is cited by a medicine, and each medicine cites one
+    (with any lines that continue it). One that cites several is an error
+    and covers none, as a result citing several rows is: validators 1 and 2
+    look for its parts anywhere in the cited lines, so two medicines could
+    trade doses, or one hide another's line.
+    See docs/adr/0004-deterministic-checks-decide-routing.md.
+    """
     findings = []
     lines = medicine_lines(record)
-    cited = {
-        m.id: {(m.printed.citation.page, n) for n in range(
-            m.printed.citation.first_line, m.printed.citation.last_line + 1)}
+    medicine_line_set = set(lines)
+    spanned = {
+        m.id: [
+            (m.printed.citation.page, n)
+            for n in cited_numbers(record, m.printed.citation)
+            if (m.printed.citation.page, n) in medicine_line_set
+        ]
         for m in record.medications
-    }  # fmt: skip
-    all_cited = set().union(*cited.values()) if cited else set()
+    }
+    all_cited = set()
+    for m in record.medications:
+        on = spanned[m.id]
+        if len(on) > 1:
+            findings.append(Finding(
+                validator=Validator.MEDICINE_COVERAGE, severity=Severity.ERROR,
+                message=f"medicine {m.printed.name!r} cites {len(on)} lines that "
+                        "each hold a medicine; cite only its own",
+                item_id=m.id, field="citation", page=on[0][0],
+                lines=[n for _, n in on]))  # fmt: skip
+        else:
+            all_cited.update(on)
     for page, n in lines:
         if (page, n) not in all_cited:
             findings.append(Finding(
@@ -174,9 +197,8 @@ def check_medicine_coverage(record: DocumentRecord) -> list[Finding]:
                 message="this line holds a medicine that is not in the record",
                 page=page, lines=[n],
                 details={"line": record.pages[page - 1].lines[n - 1]}))  # fmt: skip
-    medicine_line_set = set(lines)
     for m in record.medications:
-        if not cited[m.id] & medicine_line_set:
+        if not spanned[m.id]:
             c = m.printed.citation
             findings.append(Finding(
                 validator=Validator.MEDICINE_COVERAGE, severity=Severity.ERROR,
@@ -251,9 +273,7 @@ def check_result_coverage(record: DocumentRecord) -> list[Finding]:
     for o in record.observations:
         c = o.printed.citation
         spanned = [
-            (c.page, n)
-            for n in range(c.first_line, c.last_line + 1)
-            if (c.page, n) in data_rows
+            (c.page, n) for n in cited_numbers(record, c) if (c.page, n) in data_rows
         ]
         if len(spanned) > 1:
             findings.append(Finding(
@@ -303,7 +323,7 @@ def unused_lines(record: DocumentRecord) -> list[tuple[int, int]]:
     """
     used = set()
     for _, _, c in item_citations(record):
-        used.update((c.page, n) for n in range(c.first_line, c.last_line + 1))
+        used.update((c.page, n) for n in cited_numbers(record, c))
     for o in record.observations:
         if o.printed.panel is not None:
             heading = _heading_above(record, o.printed.citation, o.printed.panel)
@@ -331,6 +351,60 @@ def _heading_above(record: DocumentRecord, c: Citation, panel: str):
             ):
                 return (p.page, n)
     return None
+
+
+# How deep a heading is when its line carries no "#".
+_BOLD_LEVEL, _ROW_LEVEL = 7, 8
+_BOLD_LINE = re.compile(r"^\s*\*\*[^*]+\*\*\s*:?\s*$")
+
+
+def _heading_level(lines: list[str], n: int) -> int | None:
+    """
+    How deep a heading line n is: its "#"s, a line all in bold, or a row
+    with nothing after its first cell inside a table. None for other lines.
+    """
+    line = lines[n - 1]
+    if is_heading(line):
+        text = line.lstrip()
+        return len(text) - len(text.lstrip("#"))
+    if _BOLD_LINE.match(line):
+        return _BOLD_LEVEL
+    if _is_table_row(lines, n):
+        cells = _cells(line)
+        if cells[0] and len(cells) > 1 and not any(cells[1:]):
+            return _ROW_LEVEL
+    return None
+
+
+def under_another_heading(record: DocumentRecord, c: Citation, panel: str) -> bool:
+    """
+    Whether another section's heading comes between the panel named for a
+    result and its row: then the row is under that heading, not the panel's
+    ("Serum" named for a row printed under "Urine"). A deeper heading is a
+    part of the panel, one that names the panel continues it, and one
+    printed before it too is a running header: none of these end it.
+    """
+    above = [
+        (p.lines, n)
+        for p in record.pages[: c.page]
+        for n in range(1, (c.first_line if p.page == c.page else len(p.lines) + 1))
+    ]
+    name = normalise(panel)
+    named = [k for k, (ls, n) in enumerate(above) if name in normalise(ls[n - 1])]
+    if not named:
+        return False  # not printed above at all: the caller's finding
+    headed = [k for k in named if _heading_level(*above[k]) is not None]
+    at = (headed or named)[-1]
+    level = _heading_level(*above[at]) or _ROW_LEVEL
+    before = {normalise(ls[n - 1]) for ls, n in above[:at]}
+    for ls, n in above[at + 1 :]:
+        line = normalise(ls[n - 1])
+        depth = _heading_level(ls, n)
+        if depth is None or depth > level or line in before:
+            continue
+        if not any(pattern.search(line) for pattern in _BOILERPLATE):
+            return True
+    return False
 
 
 def is_table_furniture(lines: list[str], n: int) -> bool:

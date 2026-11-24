@@ -86,8 +86,23 @@ def parse_range(text: str) -> ParsedRange:
         parsed = _bounds(m["range"])
         unit = m["unit"].strip()
     if parsed is None:
+        parsed, unit = _with_known_unit(body)
+    if parsed is None:
         return ParsedRange(text=text)
     return ParsedRange(text=text, label=label, unit=unit, parsed=True, **parsed)
+
+
+def _with_known_unit(body: str) -> tuple[dict | None, str | None]:
+    """
+    Bounds followed by a unit that starts with a number ("4 - 11 10^3/uL"):
+    only one the unit table knows, since any other could be part of the range.
+    """
+    for space in re.finditer(r"\s+", body):
+        unit = body[space.end() :].strip()
+        bounds = _bounds(body[: space.start()])
+        if bounds is not None and lookup_unit(unit) is not None:
+            return bounds, unit
+    return None, None
 
 
 def _bounds(body: str) -> dict | None:

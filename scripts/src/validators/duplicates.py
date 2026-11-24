@@ -14,6 +14,7 @@ See docs/adr/0004-deterministic-checks-decide-routing.md.
 
 from record.document import DocumentRecord
 from validators.findings import Finding, Severity, Validator
+from validators.text import cited_numbers
 
 _KINDS = (
     ("observations", "result"),
@@ -25,9 +26,9 @@ _KINDS = (
 )
 
 
-def _lines(item) -> set[tuple[int, int]]:
+def _lines(record: DocumentRecord, item) -> set[tuple[int, int]]:
     c = item.printed.citation
-    return {(c.page, n) for n in range(c.first_line, c.last_line + 1)}
+    return {(c.page, n) for n in cited_numbers(record, c)}
 
 
 def _identity(item) -> str:
@@ -41,7 +42,8 @@ def check_duplicates(record: DocumentRecord) -> list[Finding]:
         seen: dict[str, list] = {}
         for item in getattr(record, field):
             earlier = seen.setdefault(_identity(item), [])
-            first = next((e for e in earlier if _lines(e) & _lines(item)), None)
+            lines = _lines(record, item)
+            first = next((e for e in earlier if _lines(record, e) & lines), None)
             if first is not None:
                 c = item.printed.citation
                 findings.append(
@@ -53,7 +55,7 @@ def check_duplicates(record: DocumentRecord) -> list[Finding]:
                         item_id=item.id,
                         field="citation",
                         page=c.page,
-                        lines=list(range(c.first_line, c.last_line + 1)),
+                        lines=sorted(n for _, n in lines),
                         details={"same_as": first.id},
                     )
                 )

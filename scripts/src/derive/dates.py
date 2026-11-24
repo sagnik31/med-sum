@@ -1,7 +1,7 @@
 """
-Printed dates, and which one is the document's date: the report date, else
-the collection date, else the prescription date; with none, the document is
-undated. See docs/adr/0003-printed-and-derived-values.md.
+Printed dates, and which one is the document's date: a prescription's own
+date; otherwise the report date, else the collection date. With none, the
+document is undated. See docs/adr/0003-printed-and-derived-values.md.
 
 Dates are read day first, as Indian documents print them: 05/09/2024 is
 5 September. A two-digit year is not read, since its century would be a
@@ -12,7 +12,7 @@ import re
 from datetime import date
 
 from record.document import DateSource, DocumentDates
-from record.printed import PrintedDocumentDetails
+from record.printed import DocumentType, PrintedDocumentDetails
 
 MONTHS = {
     "jan": 1, "january": 1, "feb": 2, "february": 2, "mar": 3, "march": 3,
@@ -47,7 +47,8 @@ def parse_date(text: str | None) -> date | None:
     return None
 
 
-# The order the document date is picked in.
+# The order the document date is picked in, and the order for a prescription:
+# a report date on one is another document's ("Prior report: 11/04/2025").
 DATE_RULES = (
     DateSource.REPORT_DATE,
     DateSource.COLLECTION_DATE,
@@ -55,24 +56,35 @@ DATE_RULES = (
 )
 
 
+PRESCRIPTION_RULES = (DateSource.PRESCRIPTION_DATE, *DATE_RULES[:2])
+
+
 def document_dates(
-    details: PrintedDocumentDetails, entered: dict[str, str] | None = None
+    details: PrintedDocumentDetails,
+    entered: dict[str, str] | None = None,
+    *,
+    doc_type: DocumentType | None = None,
 ) -> DocumentDates:
     """
     Every printed date, and the document date: the report date, otherwise
-    the collection date, otherwise the prescription date; else undated.
+    the collection date, otherwise the prescription date; else undated. A
+    prescription's own date comes first; one dated by another date only is
+    flagged (validator 7).
     A printed date that can't be read is skipped (validator 7 reports it).
     `entered` holds dates a clinician added in review where none was
     printed (field -> text); they count as that field's date, by the same
     rule. See docs/adr/0003-printed-and-derived-values.md.
     """
     entered = entered or {}
+    rules = DATE_RULES
+    if doc_type is DocumentType.PRESCRIPTION:
+        rules = PRESCRIPTION_RULES
     found = {}
     for rule in DATE_RULES:
         printed = getattr(details, rule.value)
         text = printed.text if printed else entered.get(rule.value)
         found[rule] = parse_date(text) if text else None
-    chosen = next((rule for rule in DATE_RULES if found[rule] is not None), None)
+    chosen = next((rule for rule in rules if found[rule] is not None), None)
     return DocumentDates(
         report_date=found[DateSource.REPORT_DATE],
         collection_date=found[DateSource.COLLECTION_DATE],

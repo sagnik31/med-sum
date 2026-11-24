@@ -17,6 +17,7 @@ from derive.dates import parse_date
 from record.common import PrintedText
 from record.document import DocumentRecord
 from validators.findings import Finding, Severity, Validator
+from validators.text import cited_lines, normalise
 
 
 @dataclass(frozen=True)
@@ -64,7 +65,35 @@ def names_match(printed: str, expected: str) -> bool:
 _SEXES = {"m": "M", "male": "M", "f": "F", "female": "F", "o": "O", "other": "O"}
 _AGE = re.compile(r"(\d{1,3})\s*(?:y|yr|yrs|year|years)?\.?", re.IGNORECASE)
 # A printed ID is the hospital's own only under these labels; a lab's ID isn't.
+# The label is read on the cited lines: a quote may be the ID alone.
 _HOSPITAL_ID = re.compile(r"\b(?:uhid|mrn|hospital\s*(?:id|no))\b", re.IGNORECASE)
+
+
+_OTHER_ID = re.compile(
+    r"\b(?:lab|accession|sample|specimen|barcode|bill|invoice|visit|ref|"
+    r"registration|reg)\.?\s*(?:id|no|number|#)\b",
+    re.IGNORECASE,
+)
+
+
+def _other_hospital_id(record: DocumentRecord, pid: PrintedText, mrn: str) -> bool:
+    """
+    Whether the hospital ID printed for `pid` is another than `mrn`. The
+    label nearest before the ID says whose it is. Under another label (a
+    lab's number) the hospital's own ID is elsewhere on the lines, so the
+    MRN must be somewhere on them.
+    """
+    lines = cited_lines(record, pid.citation)
+    text = normalise("\n".join(lines) if lines else pid.citation.quote)
+    if not _HOSPITAL_ID.search(text):
+        return False
+    at = text.find(normalise(pid.text))
+    before = text[:at] if at >= 0 else ""
+    own = [m.end() for m in _HOSPITAL_ID.finditer(before)]
+    other = [m.end() for m in _OTHER_ID.finditer(before)]
+    if other and (not own or other[-1] > own[-1]):
+        return _id_key(mrn) not in _id_key(text)
+    return _id_key(pid.text) != _id_key(mrn)
 
 
 def read_sex(text: str) -> str | None:
@@ -151,10 +180,9 @@ def check_patient_match(
                  "patient's")  # fmt: skip
 
     pid = printed.patient_id
-    if pid and expected.mrn and _HOSPITAL_ID.search(pid.citation.quote):
-        if _id_key(pid.text) != _id_key(expected.mrn):
-            flag("patient_id", pid, f"printed hospital ID {pid.text!r} is not the "
-                 f"patient's {expected.mrn!r}")  # fmt: skip
+    if pid and expected.mrn and _other_hospital_id(record, pid, expected.mrn):
+        flag("patient_id", pid, f"printed hospital ID {pid.text!r} is not the "
+             f"patient's {expected.mrn!r}")  # fmt: skip
     return findings
 
 

@@ -50,6 +50,10 @@ _FLAG_AT_END = re.compile(
 )
 
 
+# The most lines a finding names: a citation may claim any last line.
+MAX_LINES = 50
+
+
 def _norm(text: str) -> str:
     return " ".join(unicodedata.normalize("NFKC", text).casefold().split())
 
@@ -63,7 +67,7 @@ def _finding(validator, message, item, field, **details) -> Finding:
         item_id=item.id,
         field=field,
         page=c.page,
-        lines=list(range(c.first_line, c.last_line + 1)),
+        lines=list(range(c.first_line, min(c.last_line, c.first_line + MAX_LINES) + 1)),
         details=details,
     )
 
@@ -117,7 +121,7 @@ def check_header_rows(record: DocumentRecord) -> list[Finding]:
             continue
         lines = record.pages[c.page - 1].lines
         cited = range(c.first_line, c.last_line + 1)
-        if all(1 <= n <= len(lines) for n in cited) and all(
+        if c.last_line <= len(lines) and all(
             is_table_furniture(lines, n) for n in cited
         ):
             findings.append(_finding(

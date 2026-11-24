@@ -17,7 +17,16 @@ See docs/adr/0004-deterministic-checks-decide-routing.md.
 from record.document import DocumentRecord
 from validators.fields import CitedField, Place, cited_fields, item_citations
 from validators.findings import Finding, Severity, Validator
-from validators.text import cited_lines, contains, lines_before, squash, squashed_in
+from validators.layout import is_table_furniture, under_another_heading
+from validators.text import (
+    cited_lines,
+    cited_numbers,
+    contains,
+    gaps,
+    lines_before,
+    squash,
+    squashed_in,
+)
 
 
 def check_source_text(record: DocumentRecord) -> list[Finding]:
@@ -26,8 +35,9 @@ def check_source_text(record: DocumentRecord) -> list[Finding]:
     for item_id, field, citation in item_citations(record):
         lines = cited_lines(record, citation)
         where = {"item_id": item_id, "field": field, "page": citation.page,
-                 "lines": list(range(citation.first_line, citation.last_line + 1))}  # fmt: skip
+                 "lines": list(cited_numbers(record, citation))}  # fmt: skip
         if lines is None:
+            where["lines"] = [citation.first_line]
             unresolved.add((item_id, field))
             findings.append(_error(
                 f"cites page {citation.page}, lines {citation.first_line}-"
@@ -50,12 +60,25 @@ def check_source_text(record: DocumentRecord) -> list[Finding]:
 
 def _found(record: DocumentRecord, f: CitedField) -> bool:
     lines = cited_lines(record, f.citation)
+    if f.field in _OWN_ROW and f.item_id.startswith("obs-"):
+        # A result's name, value and flag are on its row, never in the
+        # table's header, even when the citation takes the header in.
+        page = record.pages[f.citation.page - 1].lines
+        numbers = cited_numbers(record, f.citation)
+        lines = [page[n - 1] for n in numbers if not is_table_furniture(page, n)]
+        lines = lines or [page[n - 1] for n in numbers]  # validator 12's finding
     if contains("\n".join(lines), f.text):
         return True
     if f.place is Place.ON_OR_ABOVE:
+        if f.field == "panel" and f.item_id.startswith("obs-"):
+            if under_another_heading(record, f.citation, f.text):
+                return False
         above = lines_before(record, f.citation.page, f.citation.first_line)
         return any(contains(line, f.text) for line in above)
     return False
+
+
+_OWN_ROW = ("test_name", "value_text", "flag_printed")
 
 
 def _error(message: str, **kw) -> Finding:
@@ -95,6 +118,7 @@ def check_text_layer(record: DocumentRecord) -> list[Finding]:
     if not record.document.has_text_layer:
         return []
     layers = [squash(p.text_layer or "") for p in record.pages]
+    breaks = [gaps(p.text_layer or "") for p in record.pages]
     fields = list(cited_fields(record))
     anchors, ranges = {}, {}
     for f in fields:
@@ -109,17 +133,24 @@ def check_text_layer(record: DocumentRecord) -> list[Finding]:
             continue
         needle = squash(f.text)
         if f.place is not Place.ON_LINES:
-            found, where = squashed_in("".join(layers[: index + 1]), needle), "page"
+            pairs = zip(layers[: index + 1], breaks)
+            found = any(squashed_in(layer, needle, breaks=b) for layer, b in pairs)
+            where = "page"
         elif (windows := _row_windows(record, f, anchors.get(f.item_id),
                                       layers[index])) is not None:  # fmt: skip
             if f.field == "value_text":
                 # A range printed as the value itself ("Nil", reference
                 # "Nil") stays: taking it out would take the value too.
                 own = [r for r in ranges.get(f.item_id, []) if r != needle]
-                windows = [_without(w, own) for w in windows]
-            found, where = any(squashed_in(w, needle) for w in windows), "row"
+                windows = [(at, _without(w, own)) for at, w in windows]
+            found = any(
+                squashed_in(w, needle, layer=layers[index], at=at, breaks=breaks[index])
+                for at, w in windows
+            )
+            where = "row"
         else:
-            found, where = squashed_in(layers[index], needle), "page"
+            found = squashed_in(layers[index], needle, breaks=breaks[index])
+            where = "page"
         if not found:
             findings.append(Finding(
                 validator=Validator.TEXT_LAYER, severity=Severity.FLAG,
@@ -133,18 +164,18 @@ def check_text_layer(record: DocumentRecord) -> list[Finding]:
 
 
 def _without(text: str, parts: list[str]) -> str:
-    """`text` with every occurrence of each of `parts` taken out."""
+    """`text` with every occurrence of each of `parts` blanked, its length kept."""
     for part in parts:
-        text = text.replace(part, "\x00")
+        text = text.replace(part, "\x00" * len(part))
     return text
 
 
 def _row_windows(
     record: DocumentRecord, f: CitedField, anchor: CitedField | None, layer: str
-) -> list[str] | None:
+) -> list[tuple[int, str]] | None:
     """
-    The stretches of a page's squashed text layer that can be `f`'s row:
-    one per place the item's name is printed. None when the field has no
+    The stretches of a page's squashed text layer that can be `f`'s row,
+    each with where it starts: one per place the item's name is printed. None when the field has no
     row to be checked in (it is the name, the item has none, or the text
     layer lacks it).
     """
@@ -160,6 +191,6 @@ def _row_windows(
     windows, start = [], 0
     while (i := layer.find(name, start)) != -1:
         lo = max(0, i - before - _ROW_SLACK)
-        windows.append(layer[lo : i + len(name) + after + _ROW_SLACK])
+        windows.append((lo, layer[lo : i + len(name) + after + _ROW_SLACK]))
         start = i + 1
     return windows

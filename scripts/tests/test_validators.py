@@ -270,10 +270,22 @@ def test_a_panel_must_be_a_heading_above_its_row():
 
 
 def test_a_panel_on_an_earlier_page_is_above():
+    # A panel that goes on over the page, with no heading of its own there.
+    record = keyed_record("d01")
+    hba1c = obs(record, "HbA1c")
+    page = record.pages[hba1c.printed.citation.page - 1]
+    heading = page.lines.index("## GLYCATED HAEMOGLOBIN")
+    page.lines[heading] = ""
+    hba1c.printed.panel = "COMPLETE BLOOD COUNT"
+
+    assert not [f for f in check_source_text(record) if f.item_id == "obs-10"]
+
+
+def test_a_panel_is_not_one_whose_section_another_heading_ended():
     record = keyed_record("d01")
     obs(record, "HbA1c").printed.panel = "COMPLETE BLOOD COUNT"
 
-    assert check_source_text(record) == []
+    assert problems(check_source_text(record)) == {("source_text", "obs-10", "panel")}
 
 
 def test_header_values_are_checked_too():

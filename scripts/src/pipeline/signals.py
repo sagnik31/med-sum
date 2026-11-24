@@ -32,7 +32,7 @@ from record.document import DateSource, DocumentRecord
 from record.printed import PARSE_MODELS, DocumentType
 from validators import Finding, Severity, Validator
 from validators.fields import item_citations
-from validators.text import cited_lines
+from validators.text import cited_lines, cited_numbers
 
 UNREADABLE = "[unreadable]"
 
@@ -188,10 +188,7 @@ def unreadable(record: DocumentRecord) -> list[SignalHit]:
     cited: set[tuple[int, int]] = set()
     for item_id, field, citation in item_citations(record):
         lines = cited_lines(record, citation) or []
-        cited.update(
-            (citation.page, n)
-            for n in range(citation.first_line, citation.last_line + 1)
-        )
+        cited.update((citation.page, n) for n in cited_numbers(record, citation))
         if any(UNREADABLE in line for line in lines):
             item = None if item_id == "document" else item_id
             hits.append(SignalHit(signal="LC-01", item_id=item, field=field))

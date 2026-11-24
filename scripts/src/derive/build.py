@@ -74,7 +74,7 @@ def build_record(
         has_text_layer=has_text_layer,
         uploaded_by=uploaded_by,
         printed=details,
-        derived=document_dates(details),
+        derived=document_dates(details, doc_type=doc_type),
     )
     if parse is None:
         return DocumentRecord(document=document, pages=pages)

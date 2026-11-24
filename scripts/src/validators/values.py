@@ -19,7 +19,8 @@ from derive.numbers import (
     same_unit,
 )
 from derive.units import convertible, lookup_analyte
-from record.document import ComputedFlag, DocumentRecord
+from record.document import ComputedFlag, DateSource, DocumentRecord
+from record.printed import DocumentType
 from validators.findings import Finding, Severity, Validator
 from validators.text import cited_lines, contains, normalise
 
@@ -213,6 +214,19 @@ def check_dates(record: DocumentRecord, today: date | None = None) -> list[Findi
         elif on.year < 1900:
             add(f"{field} {printed.text!r} is before 1900", "document", field, printed)
         read[field] = on
+
+    # A prescription has its own date; another document's may be printed on
+    # it, and dating it by that would change which is the latest.
+    derived = record.document.derived
+    if (
+        record.document.type is DocumentType.PRESCRIPTION
+        and derived.document_date is not None
+        and derived.date_source is not DateSource.PRESCRIPTION_DATE
+        and getattr(details, derived.date_source.value) is not None
+    ):
+        field = derived.date_source.value
+        add(f"the prescription is dated by its {field}, with no date of its own "
+            "read", "document", field, getattr(details, field))  # fmt: skip
 
     collected, reported = read.get("collection_date"), read.get("report_date")
     if collected and reported and collected > reported:

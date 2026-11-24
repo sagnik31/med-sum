@@ -21,6 +21,43 @@ def squash(text: str) -> str:
     return re.sub(r"\s+", "", unicodedata.normalize("NFKC", text))
 
 
+def gaps(text: str) -> frozenset[int]:
+    """
+    The positions in squash(text) that whitespace was printed before: where
+    two numbers that squashing joined ("5.7" and "4.0 - 6.0") really end.
+    """
+    found, at = set(), 0
+    for word in unicodedata.normalize("NFKC", text).split():
+        found.add(at)
+        at += len(word)
+    return frozenset(found)
+
+
+def _inside_number(
+    layer: str, i: int, j: int, needle: str, breaks: frozenset[int]
+) -> bool:
+    """
+    Whether layer[i:j] is a number cut out of a longer one: "4.2" inside
+    "14.2" or "4.25". A break between them, where the layer had whitespace,
+    makes them two numbers.
+    """
+
+    def digit(n: int) -> bool:
+        return 0 <= n < len(layer) and layer[n].isdigit()
+
+    if needle[0].isdigit() and i not in breaks and i > 0:
+        if digit(i - 1):
+            return True
+        if layer[i - 1] in ".," and i - 1 not in breaks and digit(i - 2):
+            return True
+    if needle[-1].isdigit() and j not in breaks:
+        if digit(j):
+            return True
+        if j < len(layer) and layer[j] in ".," and j + 1 not in breaks and digit(j + 1):
+            return True
+    return False
+
+
 def contains(haystack: str, needle: str) -> bool:
     """
     `needle` is in `haystack` as a whole token: "10" is not found in
@@ -44,17 +81,30 @@ def contains(haystack: str, needle: str) -> bool:
     return False
 
 
-def squashed_in(haystack: str, needle: str) -> bool:
+def squashed_in(
+    haystack: str,
+    needle: str,
+    *,
+    layer: str | None = None,
+    at: int = 0,
+    breaks: frozenset[int] | None = None,
+) -> bool:
     """
     `needle` is in `haystack`, both already squashed (no spacing), at a
     place the printed text doesn't qualify it: the text layer's form of
-    `contains`, with no token edges to go by.
+    `contains`. With `breaks` (the layer's `gaps`), a number is not found
+    inside a longer one; `haystack` is then the part of `layer` that starts
+    at `at`.
     """
     if not needle:
         return False
+    whole = haystack if layer is None else layer
     start = 0
     while (i := haystack.find(needle, start)) != -1:
-        if not qualified(haystack[:i], needle, squashed=True):
+        cut = breaks is not None and _inside_number(
+            whole, at + i, at + i + len(needle), needle, breaks
+        )
+        if not cut and not qualified(haystack[:i], needle, squashed=True):
             return True
         start = i + 1
     return False
@@ -66,7 +116,9 @@ def squashed_in(haystack: str, needle: str) -> bool:
 # Detected" is not "Detected"). A value found only after one of these was
 # not read in full: it is an error for the parse to repair, never a match.
 # See docs/adr/0004-deterministic-checks-decide-routing.md.
-_COMPARATORS = "<>≤≥"
+_COMPARATORS = "<>≤≥≦≧"
+# One at the end of a text, whole: "<=" and ">=" too (and "</=").
+_COMPARATOR_AT_END = re.compile(rf"[{_COMPARATORS}]\s*/?\s*=?$|=\s*[<>]$")
 _SIGNS = "-+−"
 _NEGATIONS = ("non", "not", "no")
 
@@ -83,7 +135,7 @@ def qualified(before: str, needle: str, *, squashed: bool = False) -> bool:
     if not needle or needle[0] in _COMPARATORS or needle[0] in _SIGNS:
         return False
     rest = before.rstrip()
-    if rest and rest[-1] in _COMPARATORS:
+    if _COMPARATOR_AT_END.search(rest):
         return True
     if needle[0].isdigit():
         # A sign right before the number, not a dash between two numbers
@@ -130,6 +182,17 @@ def cited_lines(record: DocumentRecord, citation: Citation) -> list[str] | None:
     if citation.last_line > len(page.lines):
         return None
     return page.lines[citation.first_line - 1 : citation.last_line]
+
+
+def cited_numbers(record: DocumentRecord, citation: Citation) -> range:
+    """
+    The line numbers a citation points at that the page has. A citation may
+    claim any last line, so nothing counts up to it unchecked.
+    """
+    if not 1 <= citation.page <= len(record.pages):
+        return range(0)
+    last = min(citation.last_line, len(record.pages[citation.page - 1].lines))
+    return range(citation.first_line, last + 1)
 
 
 def lines_before(record: DocumentRecord, page: int, line: int) -> list[str]:

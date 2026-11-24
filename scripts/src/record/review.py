@@ -256,7 +256,10 @@ def reviewed_view(record: DocumentRecord) -> DocumentRecord:
         details = _corrected(document.printed, document.corrections)
         added = _entered(document.printed, document.corrections)
         document = document.model_copy(
-            update={"printed": details, "derived": document_dates(details, added)}
+            update={
+                "printed": details,
+                "derived": document_dates(details, added, doc_type=document.type),
+            }
         )
     patient = record.patient
     if patient is not None and patient.corrections:
