@@ -19,6 +19,8 @@ const (
 	idleTimeout     = 30 * time.Minute // without a request
 	absoluteTimeout = 12 * time.Hour   // from login: one shift
 	touchEvery      = time.Minute      // last_seen_at is written at most this often
+
+	userAgentMaxSize = 512
 )
 
 // Principal is the logged-in account behind a request.
@@ -93,7 +95,7 @@ func (s *Server) newSession(r *http.Request, userID string) (db.Session, string,
 		LastSeenAt: now,
 		ExpiresAt:  now.Add(absoluteTimeout),
 		IP:         s.clientIP(r),
-		UserAgent:  truncate(r.UserAgent(), 512),
+		UserAgent:  userAgent(r),
 	}, token, nil
 }
 
@@ -129,11 +131,16 @@ func (s *Server) clientIP(r *http.Request) string {
 	return host
 }
 
-func truncate(s string, n int) string {
-	if len(s) <= n {
-		return s
+// userAgent is the request's User-Agent as sessions and the audit log store
+// it: at most userAgentMaxSize bytes of valid UTF-8. A header can hold any
+// bytes, and the database refuses text that isn't UTF-8, which would fail
+// the login or the audit row the header came with.
+func userAgent(r *http.Request) string {
+	ua := strings.ToValidUTF8(r.UserAgent(), "")
+	if len(ua) > userAgentMaxSize {
+		ua = strings.ToValidUTF8(ua[:userAgentMaxSize], "") // drops a character cut in half
 	}
-	return s[:n]
+	return ua
 }
 
 // withSession requires a live session and puts its Principal in the

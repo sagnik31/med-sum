@@ -111,7 +111,7 @@ func TestLoginFailuresLockAfterTheLimit(t *testing.T) {
 	s := store(t)
 	ctx := context.Background()
 	u := mustUser(t, s, "asha@hospital.test")
-	lock := t0.Add(15 * time.Minute)
+	lock := t0.Add(15*time.Minute + 123456789) // finer than the database keeps
 
 	for i := 1; i <= 4; i++ {
 		locked, err := s.RecordLoginFailure(ctx, u.ID, 5, lock, nil)
@@ -120,7 +120,7 @@ func TestLoginFailuresLockAfterTheLimit(t *testing.T) {
 		}
 	}
 	locked, err := s.RecordLoginFailure(ctx, u.ID, 5, lock, nil)
-	if err != nil || locked == nil || !locked.Equal(lock) {
+	if err != nil || locked == nil || !locked.Equal(lock.Truncate(time.Microsecond)) {
 		t.Fatalf("5th failure: locked = %v, err = %v; want %v", locked, err, lock)
 	}
 	got, _ := s.GetUserByID(ctx, u.ID)

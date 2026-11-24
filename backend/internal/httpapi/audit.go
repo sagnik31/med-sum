@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"backend/internal/db"
@@ -27,27 +28,26 @@ const (
 	actAccessDenied    = "access_denied"
 	actRateLimited     = "rate_limited"
 
-	actPatientsListed     = "patients_listed"
-	actPatientCreated     = "patient_created"
-	actPatientViewed      = "patient_viewed"
-	actPatientUpdated     = "patient_updated"
-	actDocumentsListed    = "patient_documents_listed"
-	actDocumentUploaded   = "document_uploaded"
-	actDocumentViewed     = "document_viewed"
-	actDocumentDeleted    = "document_deleted"
-	actInsightViewed      = "insight_viewed"
-	actInsightRequested   = "insight_requested"
-	actDocumentReprocess  = "document_reprocessed"
-	actRecordViewed       = "record_viewed"
-	actSummaryViewed      = "summary_viewed"
-	actSummaryRequested   = "summary_requested"
-	actAuditViewed        = "audit_viewed"
-	targetPatient         = "patient"
-	targetDocument        = "document"
-	targetStaff           = "staff_user"
-	targetSession         = "session"
-	targetAudit           = "audit_log"
-	auditUserAgentMaxSize = 512
+	actPatientsListed    = "patients_listed"
+	actPatientCreated    = "patient_created"
+	actPatientViewed     = "patient_viewed"
+	actPatientUpdated    = "patient_updated"
+	actDocumentsListed   = "patient_documents_listed"
+	actDocumentUploaded  = "document_uploaded"
+	actDocumentViewed    = "document_viewed"
+	actDocumentDeleted   = "document_deleted"
+	actInsightViewed     = "insight_viewed"
+	actInsightRequested  = "insight_requested"
+	actDocumentReprocess = "document_reprocessed"
+	actRecordViewed      = "record_viewed"
+	actSummaryViewed     = "summary_viewed"
+	actSummaryRequested  = "summary_requested"
+	actAuditViewed       = "audit_viewed"
+	targetPatient        = "patient"
+	targetDocument       = "document"
+	targetStaff          = "staff_user"
+	targetSession        = "session"
+	targetAudit          = "audit_log"
 )
 
 func optStr(s string) *string {
@@ -63,19 +63,58 @@ func optStr(s string) *string {
 // still the session's account. See docs/adr/0012-shared-tool-layer.md.
 const toolHeader = "X-Medsum-Tool"
 
-// toolName is the request's tool label, or "" when it has none or the
-// header isn't a plain tool name (lower case and underscores).
+// mcpTools are the tools the MCP server has; a test keeps the list in step
+// with it (scripts/tests/test_mcp_audit_names.py).
+var mcpTools = map[string]bool{
+	"find_patients":        true,
+	"get_item":             true,
+	"get_lines":            true,
+	"get_text_layer":       true,
+	"list_documents":       true,
+	"list_items":           true,
+	"search_transcription": true,
+}
+
+// toolName is the request's tool label, or "" when it has none. A name that
+// isn't one of the tools is "unknown": a client can send anything there, and
+// audit details hold no text a client chose.
 func toolName(r *http.Request) string {
 	v := r.Header.Get(toolHeader)
-	if v == "" || len(v) > 40 {
-		return ""
-	}
-	for _, c := range v {
-		if (c < 'a' || c > 'z') && c != '_' {
-			return ""
-		}
+	if v != "" && !mcpTools[v] {
+		return "unknown"
 	}
 	return v
+}
+
+// auditedSegments are the words of the routes a permission guards.
+var auditedSegments = map[string]bool{
+	"admin": true, "users": true, "reset-link": true, "audit": true, "runs": true,
+	"patients": true, "documents": true, "summary": true, "insight": true, "record": true,
+	"reprocess": true, "file": true, "processing": true, "trace": true, "review": true,
+	"queue": true, "sign-off": true, "audit-complete": true,
+}
+
+// auditedPath is a refused request's path as the audit log keeps it: the
+// routes' own words and ids. Any other segment is text the client chose, so
+// it is stored as "unknown".
+func auditedPath(path string) string {
+	segments := strings.Split(strings.Trim(path, "/"), "/")
+	for i, v := range segments {
+		if !auditedSegments[v] && !validUUID(v) {
+			segments[i] = "unknown"
+		}
+	}
+	return "/" + strings.Join(segments, "/")
+}
+
+// auditedMethod is a request's method as the audit log keeps it; HTTP lets a
+// client send any word.
+func auditedMethod(method string) string {
+	switch method {
+	case http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete:
+		return method
+	}
+	return "unknown"
 }
 
 // auditEvent starts an event for the request: the caller (when logged in),
@@ -88,7 +127,7 @@ func (s *Server) auditEvent(r *http.Request, action string) *db.AuditEvent {
 		Action:    action,
 		Outcome:   db.OutcomeSuccess,
 		IP:        s.clientIP(r),
-		UserAgent: truncate(r.UserAgent(), auditUserAgentMaxSize),
+		UserAgent: userAgent(r),
 	}
 	if p, ok := principalFromContext(r.Context()); ok {
 		ev.ActorID = optStr(p.UserID)

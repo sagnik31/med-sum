@@ -139,7 +139,7 @@ func TestLoginEventsAndLockout(t *testing.T) {
 	ctx := context.Background()
 	org := mustOrg(t, s)
 	u := mustUser(t, s, "a@hospital.test")
-	lockUntil := time.Now().Add(time.Hour).Truncate(time.Microsecond)
+	lockUntil := time.Now().Truncate(time.Second).Add(time.Hour + 123456789) // finer than the database keeps
 	for range 2 {
 		if _, err := s.RecordLoginFailure(ctx, u.ID, 2, lockUntil, event(org, u.ID, "login_failed")); err != nil {
 			t.Fatal(err)

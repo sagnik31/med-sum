@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"unicode/utf8"
 
 	"backend/internal/auth"
 	"backend/internal/db"
@@ -733,6 +734,35 @@ func TestTheEnvironmentIsReportedToASessionOnly(t *testing.T) {
 		rec := e.do(http.MethodGet, "/environment", session, nil, "")
 		if got := decodeJSON[map[string]string](t, rec)["environment"]; rec.Code != http.StatusOK || got != c.want {
 			t.Errorf("MEDSUM_ENV=%q: %d %q, want %q", c.set, rec.Code, got, c.want)
+		}
+	}
+}
+
+func TestUserAgentIsStoredAsValidText(t *testing.T) {
+	for name, ua := range map[string]string{
+		"a character across the limit": strings.Repeat("a", userAgentMaxSize-1) + "\u0939",
+		"bytes that aren't UTF-8":      "agent\xff\xfe" + strings.Repeat("b", userAgentMaxSize),
+	} {
+		e := newTestEnv(t)
+		u := e.store.addUser("asha@hospital.test", db.StatusActive)
+		req := httptest.NewRequest(http.MethodPost, "/auth/login",
+			strings.NewReader(`{"email":"asha@hospital.test","password":"`+testPassword+`"}`))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("X-Requested-With", "med-sum")
+		req.Header.Set("User-Agent", ua)
+		rec := httptest.NewRecorder()
+		e.server.ServeHTTP(rec, req)
+		if rec.Code != http.StatusOK || e.store.sessionsOf(u.ID) != 1 {
+			t.Fatalf("%s: login = %d", name, rec.Code)
+		}
+		stored := []string{e.store.audit[0].UserAgent}
+		for _, sess := range e.store.sessions {
+			stored = append(stored, sess.UserAgent)
+		}
+		for _, v := range stored {
+			if v == "" || !utf8.ValidString(v) || len(v) > userAgentMaxSize {
+				t.Errorf("%s: stored %d bytes, valid = %v", name, len(v), utf8.ValidString(v))
+			}
 		}
 	}
 }

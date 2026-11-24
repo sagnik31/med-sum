@@ -53,13 +53,34 @@ func TestAToolLabelKeepsTheEventsOtherDetails(t *testing.T) {
 	}
 }
 
-func TestALabelThatIsNotAToolNameIsLeftOut(t *testing.T) {
+func TestALabelThatIsNotAToolIsUnknown(t *testing.T) {
 	re := newReviewEnv(t)
-	for _, bad := range []string{"Get-Lines", "get lines", "x<script>", "a_very_long_tool_name_that_goes_past_forty_chars"} {
+	for _, bad := range []string{"Get-Lines", "get lines", "x<script>", "synthetic_patient"} {
 		before := len(re.store.audit)
 		re.getAsTool("/documents/"+re.doc+"/record", re.auth, bad)
-		if _, ok := re.store.audit[before].Details["tool"]; ok {
-			t.Errorf("%q was kept: %v", bad, re.store.audit[before].Details)
+		if got := re.store.audit[before].Details["tool"]; got != "unknown" {
+			t.Errorf("%q: tool = %v, want unknown", bad, got)
+		}
+	}
+}
+
+func TestARefusedRequestKeepsNoTextTheClientChose(t *testing.T) {
+	e := newTestEnv(t)
+	_, session := e.login("me@hospital.test")
+	for path, want := range map[string]string{
+		"/admin/users/synthetic-patient":                                   "/admin/users/unknown",
+		"/admin/users/a%00b/reset-link":                                    "/admin/users/unknown/reset-link",
+		"/admin/users/00000000-0000-4000-8000-000000000009/reset-link":     "/admin/users/00000000-0000-4000-8000-000000000009/reset-link",
+		"/admin/runs/00000000-0000-4000-8000-000000000009/synthetic/value": "/admin/runs/00000000-0000-4000-8000-000000000009/unknown/unknown",
+	} {
+		before := len(e.store.audit)
+		rec := e.do("SYNTHETIC", path, session, nil, "")
+		if rec.Code != http.StatusForbidden {
+			t.Fatalf("%s: status = %d", path, rec.Code)
+		}
+		d := e.store.audit[before].Details
+		if d["path"] != want || d["method"] != "unknown" {
+			t.Errorf("%s: details = %v, want path %s", path, d, want)
 		}
 	}
 }

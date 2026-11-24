@@ -172,17 +172,20 @@ UPDATE staff_users SET
     failed_logins = CASE WHEN failed_logins + 1 >= $2 THEN 0 ELSE failed_logins + 1 END,
     locked_until  = CASE WHEN failed_logins + 1 >= $2 THEN $3 ELSE locked_until END
 WHERE id = $1
-RETURNING locked_until;
+RETURNING locked_until, failed_logins = 0;
 `
+	// Only the failure that locks leaves the count at 0. The times can't say
+	// so: the database keeps microseconds, the clock more.
 	var locked *time.Time
+	var locksNow bool
 	err := pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
-		if err := tx.QueryRow(ctx, q, userID, maxFailures, lockUntil).Scan(&locked); err != nil {
+		if err := tx.QueryRow(ctx, q, userID, maxFailures, lockUntil).Scan(&locked, &locksNow); err != nil {
 			return err
 		}
 		if err := writeAudit(ctx, tx, ev); err != nil {
 			return err
 		}
-		if ev != nil && locked != nil && locked.Equal(lockUntil) {
+		if ev != nil && locksNow {
 			lock := *ev
 			lock.Action = ActionAccountLocked
 			return writeAudit(ctx, tx, &lock)
