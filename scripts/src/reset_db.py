@@ -16,12 +16,13 @@ reset. Nothing it prints holds patient content: counts only.
 """
 
 import argparse
+import os
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from urllib.parse import urlsplit
 
 import psycopg
+from psycopg.conninfo import conninfo_to_dict
 
 import settings
 from pipeline import checkpoints
@@ -45,14 +46,35 @@ class NotLocal(Exception):
 
 
 def check_local(url: str) -> None:
-    """Refuse any database that isn't on this machine."""
-    host = urlsplit(url).hostname or ""
-    if host not in LOCAL_HOSTS:
-        raise NotLocal(f"refusing to reset a database on {host!r}: local only")
+    """
+    Refuse any database that isn't on this machine, by every host the driver
+    itself would connect to: a URL or a keyword string, a host in the query,
+    an address (hostaddr), several hosts, or the environment's default.
+    """
+    given = _parameters(url)
+    if given.get("service") or os.environ.get("PGSERVICE"):
+        raise NotLocal("refusing to reset a database named by a service: local only")
+    hosts = [
+        h.strip()
+        for name, default in (("host", "PGHOST"), ("hostaddr", "PGHOSTADDR"))
+        for h in str(given.get(name) or os.environ.get(default, "")).split(",")
+    ]
+    for host in hosts:
+        # A path is a Unix socket on this machine.
+        if host.lower() not in LOCAL_HOSTS and not host.startswith("/"):
+            raise NotLocal(f"refusing to reset a database on {host!r}: local only")
+
+
+def _parameters(url: str) -> dict:
+    try:
+        return conninfo_to_dict(url)
+    except psycopg.ProgrammingError:
+        # The driver's message can quote the string, password included.
+        raise NotLocal("the database URL can't be read: local only") from None
 
 
 def database_name(url: str) -> str:
-    return urlsplit(url).path.lstrip("/") or "(default)"
+    return _parameters(url).get("dbname") or "(default)"
 
 
 @dataclass

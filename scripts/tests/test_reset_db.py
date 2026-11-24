@@ -92,7 +92,13 @@ def test_a_reset_can_be_run_twice(db, database_url, tmp_path):
 @pytest.mark.parametrize(
     "url",
     ["postgres://u:p@db.example.com:5432/med_sum",
-     "postgres://u:p@10.0.0.5/med_sum"],
+     "postgres://u:p@10.0.0.5/med_sum",
+     "host=db.example.com dbname=med_sum",
+     "hostaddr=10.0.0.5 dbname=med_sum",
+     "host=localhost hostaddr=10.0.0.5 dbname=med_sum",
+     "host=localhost,db.example.com dbname=med_sum",
+     "service=remote",
+     "postgresql:///med_sum?host=db.example.com"],
 )  # fmt: skip
 def test_only_a_local_database_is_reset(url, capsys, tmp_path):
     with pytest.raises(reset_db.NotLocal):
@@ -110,6 +116,18 @@ def test_only_a_local_database_is_reset(url, capsys, tmp_path):
 )  # fmt: skip
 def test_local_databases_are_allowed(url):
     reset_db.check_local(url)
+
+
+def test_the_environment_s_default_host_counts(monkeypatch):
+    monkeypatch.setenv("PGHOST", "db.example.com")
+    with pytest.raises(reset_db.NotLocal):
+        reset_db.check_local("dbname=med_sum")
+
+
+def test_an_unreadable_url_is_refused_without_quoting_it():
+    with pytest.raises(reset_db.NotLocal) as e:
+        reset_db.check_local("password=hunter2 nonsense")
+    assert "hunter2" not in str(e.value)
 
 
 def test_the_default_paths_are_the_projects():
