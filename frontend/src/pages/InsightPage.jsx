@@ -107,8 +107,9 @@ function InsightPage() {
 
     // Every check after the first is a background poll: it doesn't keep
     // the session alive, comes less often as it goes on, and carries on
-    // through a transient error.
+    // through a transient error (the first check's is shown meanwhile).
     let polls = 0;
+    let requested = false;
     const again = () => {
       timer = setTimeout(() => check(false), pollDelay(polls));
       polls += 1;
@@ -118,6 +119,7 @@ function InsightPage() {
       try {
         const data = await getInsight(id, { background: !isFirstCheck });
         if (cancelled) return;
+        setError(null);
 
         if (pageStatus(data?.status) && data.insights_html) {
           setInsight(data.insights_html);
@@ -128,8 +130,9 @@ function InsightPage() {
         } else {
           // Processing normally starts at upload. If no job exists (for
           // example, the AI service was down then), request one once.
-          if (data?.status === "not_started" && isFirstCheck) {
+          if (data?.status === "not_started" && !requested) {
             await triggerInsightGeneration(id);
+            requested = true;
           }
           if (cancelled) return;
           setStatus("generating");
@@ -138,8 +141,8 @@ function InsightPage() {
       } catch (err) {
         console.error(err);
         if (cancelled) return;
-        if (!isFirstCheck && isTransient(err)) again();
-        else setError(err);
+        if (isTransient(err)) again();
+        if (isFirstCheck || !isTransient(err)) setError(err);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -450,8 +453,10 @@ function InsightPage() {
 
       {!loading && !error && status !== "checking" && (
         <>
-          <ProcessingPanel key={`${attempt}-${reviewed}`} documentId={id} />
-          <TracePanel key={`trace-${attempt}-${reviewed}`} documentId={id} />
+          {/* Keyed by the status too: what was loaded mid-run is out of date
+              when the run ends. */}
+          <ProcessingPanel key={`${attempt}-${reviewed}-${status === "generating"}`} documentId={id} />
+          <TracePanel key={`trace-${attempt}-${reviewed}-${status === "generating"}`} documentId={id} />
         </>
       )}
 

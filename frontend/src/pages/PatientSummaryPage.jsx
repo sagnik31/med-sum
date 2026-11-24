@@ -22,39 +22,47 @@ function PatientSummaryPage() {
   const [patient, setPatient] = useState(null);
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(null); // starting a build failed
+  const [loadError, setLoadError] = useState(null); // the summary couldn't be read
   const [starting, setStarting] = useState(false);
+
+  const showSummary = useCallback((data) => {
+    setSummary(data);
+    setLoadError(null);
+  }, []);
 
   const loadSummary = useCallback(async () => {
     try {
-      setSummary(await fetchPatientSummary(id));
+      showSummary(await fetchPatientSummary(id));
     } catch (err) {
-      setError(err);
+      setLoadError(err);
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, showSummary]);
 
   useEffect(() => {
     fetchPatient(id).then(setPatient).catch(() => {}); // loadSummary reports errors
     loadSummary();
   }, [id, loadSummary]);
 
-  // Keep checking while a summary is being generated: a background poll (it
+  // Keep checking while a summary is being generated, or couldn't be read
+  // (one may be being generated): a background poll (it
   // doesn't keep the session alive), less often as it goes on, and kept
   // going through a transient error.
   const [polls, setPolls] = useState(0);
   const building = summary?.status === "processing";
+  const checking = building || (loadError !== null && isTransient(loadError));
   useEffect(() => {
-    if (!building) return;
+    if (!checking) return;
     let cancelled = false;
     const timer = setTimeout(async () => {
       try {
         const data = await fetchPatientSummary(id, { background: true });
-        if (!cancelled) setSummary(data);
+        if (!cancelled) showSummary(data);
       } catch (err) {
         if (!isTransient(err)) {
-          if (!cancelled) setError(err);
+          if (!cancelled) setLoadError(err);
           return;
         }
       }
@@ -64,7 +72,7 @@ function PatientSummaryPage() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [id, building, polls]);
+  }, [id, checking, polls, showSummary]);
 
   async function handleGenerate() {
     setStarting(true);
@@ -72,6 +80,8 @@ function PatientSummaryPage() {
     try {
       await triggerPatientSummary(id);
       setPolls(0); // a new build: poll often again
+      // Accepted, so it is being generated whether or not the next read works.
+      setSummary((s) => ({ ...s, status: "processing" }));
       await loadSummary();
     } catch (err) {
       setError(err);
@@ -110,7 +120,7 @@ function PatientSummaryPage() {
             <button
               onClick={handleGenerate}
               hidden={!can(user, PERM.summaryGenerate)}
-              disabled={processing || starting}
+              disabled={processing || starting || !summary}
               className="px-4 py-1.5 text-sm rounded-md bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-60"
             >
               {processing
@@ -122,6 +132,7 @@ function PatientSummaryPage() {
           </div>
 
           <ApiErrorNotice error={error} backTo="/patients" />
+          <ApiErrorNotice error={loadError} backTo="/patients" />
 
           {processing && (
             <div className="mb-4 text-sm bg-yellow-50 border border-yellow-100 rounded-md px-3 py-2 text-yellow-800">
@@ -147,7 +158,7 @@ function PatientSummaryPage() {
               }}
             />
           ) : (
-            !processing && (
+            summary && !processing && (
               <div className="text-center py-12 bg-slate-50 rounded-lg border border-dashed border-slate-200">
                 <p className="text-slate-500">No patient summary generated yet.</p>
               </div>

@@ -4,7 +4,7 @@
 // each step read and wrote, the prompt it used and what the checks found.
 // It is patient data, so it loads only when opened, and each load is
 // audited. See docs/adr/0006-durable-traceable-runs.md.
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { fetchTrace } from "../api/client.js";
 import { stepRow } from "../record/processing.js";
 import { codeLine, findingLine, pretty, promptOf, runLine, tokenLine } from "../record/trace.js";
@@ -74,12 +74,16 @@ function TraceStep({ step, prompts }) {
 function TracePanel({ documentId }) {
   const [trace, setTrace] = useState(undefined); // undefined: not loaded
   const [error, setError] = useState(null);
+  // Only the last run asked for is shown, whichever answer comes last.
+  const request = useRef(0);
 
   function load(runId) {
+    request.current += 1;
+    const mine = request.current;
     setError(null);
     fetchTrace(documentId, runId)
-      .then(setTrace)
-      .catch((err) => setError(err.message || "Could not load the trace."));
+      .then((data) => mine === request.current && setTrace(data))
+      .catch((err) => mine === request.current && setError(err.message || "Could not load the trace."));
   }
 
   function onToggle(e) {

@@ -3,16 +3,22 @@
 // Opened from a setup or reset link: /set-password#token=...
 // The token is in the fragment, which browsers never send to a server.
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { fetchSetupInfo, setPasswordWithLink } from "../api/client.js";
 import { tokenFromHash } from "../auth/links.js";
 import { inputClass } from "./LoginPage.jsx";
 
 const MIN_LENGTH = 12;
 
-
+// The form is keyed by the token: a second link opened on this page starts
+// again, and nothing of the first account's stays.
 function SetPasswordPage() {
-  const [token] = useState(() => tokenFromHash(window.location.hash));
+  const { hash } = useLocation();
+  const token = tokenFromHash(hash);
+  return <SetPasswordForm key={token} token={token} />;
+}
+
+function SetPasswordForm({ token }) {
   const [info, setInfo] = useState(null); // { email, full_name, org }
   const [linkError, setLinkError] = useState("");
   const [password, setPassword] = useState("");

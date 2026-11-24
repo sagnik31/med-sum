@@ -1,8 +1,8 @@
 // src/components/ProcessingPanel.jsx
 //
 // "Processing details": the document's latest run, step by step. Loaded
-// when opened. See docs/adr/0006-durable-traceable-runs.md.
-import React, { useState } from "react";
+// each time it is opened. See docs/adr/0006-durable-traceable-runs.md.
+import React, { useRef, useState } from "react";
 import { fetchProcessing } from "../api/client.js";
 import { runSummary, stepRow } from "../record/processing.js";
 
@@ -10,11 +10,16 @@ function ProcessingPanel({ documentId }) {
   const [run, setRun] = useState(undefined); // undefined: not loaded; null: never ran
   const [error, setError] = useState(null);
 
+  const request = useRef(0);
+
   function load(e) {
-    if (!e.currentTarget.open || run !== undefined) return;
+    if (!e.currentTarget.open) return;
+    request.current += 1;
+    const mine = request.current;
+    setError(null);
     fetchProcessing(documentId)
-      .then((data) => setRun(data.run))
-      .catch((err) => setError(err.message || "Could not load the processing details."));
+      .then((data) => mine === request.current && setRun(data.run))
+      .catch((err) => mine === request.current && setError(err.message || "Could not load the processing details."));
   }
 
   return (

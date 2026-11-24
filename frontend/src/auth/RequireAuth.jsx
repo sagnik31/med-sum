@@ -1,6 +1,6 @@
 // src/auth/RequireAuth.jsx
 import React from "react";
-import { Link, Navigate, useLocation } from "react-router";
+import { Link, Navigate, useLocation, useParams } from "react-router";
 import { useAuth } from "./context.js";
 import { can, homePath } from "./permissions.js";
 
@@ -11,6 +11,7 @@ import { can, homePath } from "./permissions.js";
 function RequireAuth({ children, perm }) {
   const { status, user } = useAuth();
   const location = useLocation();
+  const { id } = useParams();
 
   if (status === "loading") {
     return <p className="text-sm text-slate-500">Loading...</p>;
@@ -30,9 +31,10 @@ function RequireAuth({ children, perm }) {
       </div>
     );
   }
-  // Keyed by the account: another one's login (in another tab) drops what
-  // was on screen.
-  return <React.Fragment key={user.id}>{children}</React.Fragment>;
+  // Keyed by the account and by the page's record (/patients/:id), so that
+  // another login (in another tab) or another record starts a new page:
+  // nothing loaded, chosen or on its way for the one before shows under it.
+  return <React.Fragment key={`${user.id} ${id ?? ""}`}>{children}</React.Fragment>;
 }
 
 export default RequireAuth;

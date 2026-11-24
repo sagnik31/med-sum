@@ -1,5 +1,5 @@
 // src/pages/PatientPage.jsx
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router";
 import {
   deleteDocument,
@@ -14,7 +14,7 @@ import { useAuth } from "../auth/context.js";
 import { PERM, can } from "../auth/permissions.js";
 import ApiErrorNotice from "../components/ApiErrorNotice.jsx";
 import PatientForm from "../components/PatientForm.jsx";
-import { describePatient } from "../patients.js";
+import { changedDetails, describePatient } from "../patients.js";
 
 const STATUS_BADGES = {
   not_started: { label: "Not started", className: "bg-slate-100 text-slate-600" },
@@ -35,7 +35,10 @@ function PatientPage() {
   const { id } = useParams();
   const { user } = useAuth();
   const [patient, setPatient] = useState(null);
-  const [documents, setDocuments] = useState([]);
+  const [documents, setDocuments] = useState(null); // null: not loaded yet
+  const [listError, setListError] = useState(null); // the documents couldn't be loaded
+  // Deleted here: a list the API answered before the delete may name them.
+  const deleted = useRef(new Set());
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null); // the patient couldn't be loaded
   const [error, setError] = useState(null); // an action failed
@@ -43,14 +46,18 @@ function PatientPage() {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
 
+  const showDocuments = useCallback((list) => {
+    setDocuments((list ?? []).filter((d) => !deleted.current.has(d.id)));
+    setListError(null);
+  }, []);
+
   const loadDocuments = useCallback(async () => {
     try {
-      const data = await fetchPatientDocuments(id);
-      setDocuments(Array.isArray(data) ? data : []);
+      showDocuments(await fetchPatientDocuments(id));
     } catch (err) {
-      setError(err);
+      setListError(err);
     }
-  }, [id]);
+  }, [id, showDocuments]);
 
   useEffect(() => {
     let cancelled = false;
@@ -69,21 +76,22 @@ function PatientPage() {
     };
   }, [id, loadDocuments]);
 
-  // Refresh quietly while any document is still being processed: a
+  // Refresh quietly while any document is still being processed, or while
+  // the list couldn't be read (an upload may be running unseen): a
   // background poll (it doesn't keep the session alive), less often as it
   // goes on, and kept going through a transient error.
   const [polls, setPolls] = useState(0);
-  const pending = documents.some(isPending);
+  const pending = (documents ?? []).some(isPending) || (listError !== null && isTransient(listError));
   useEffect(() => {
     if (!pending) return;
     let cancelled = false;
     const timer = setTimeout(async () => {
       try {
         const data = await fetchPatientDocuments(id, { background: true });
-        if (!cancelled) setDocuments(Array.isArray(data) ? data : []);
+        if (!cancelled) showDocuments(data);
       } catch (err) {
         if (!isTransient(err)) {
-          if (!cancelled) setError(err);
+          if (!cancelled) setListError(err);
           return;
         }
       }
@@ -93,10 +101,13 @@ function PatientPage() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [id, pending, polls]);
+  }, [id, pending, polls, showDocuments]);
 
   async function handleSave(details) {
-    setPatient(await updatePatient(id, details));
+    // Only what was changed here, so a colleague's edit of another field
+    // since this page loaded stays.
+    const changes = changedDetails(patient, details);
+    if (Object.keys(changes).length > 0) setPatient(await updatePatient(id, changes));
     setEditing(false);
   }
 
@@ -125,6 +136,7 @@ function PatientPage() {
     setError(null);
     try {
       await deleteDocument(doc.id);
+      deleted.current.add(doc.id);
       setDocuments((docs) => docs.filter((d) => d.id !== doc.id));
     } catch (err) {
       setError(err);
@@ -191,7 +203,10 @@ function PatientPage() {
       )}
 
       <h2 className="text-sm font-semibold text-slate-700 mb-2">Documents</h2>
-      {documents.length === 0 ? (
+      <ApiErrorNotice error={listError} />
+      {documents === null ? (
+        !listError && <p className="text-sm text-slate-500">Loading documents...</p>
+      ) : documents.length === 0 ? (
         <p className="text-sm text-slate-500">No documents for this patient yet.</p>
       ) : (
         <ul className="space-y-2">
