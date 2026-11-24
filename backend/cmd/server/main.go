@@ -68,6 +68,7 @@ func main() {
 
 	addr := cfg.httpAddress
 
+	// On shutdown, requests in flight get the write timeout to finish.
 	// Read/WriteTimeout cover the whole request body, so they must allow a
 	// 20 MB upload on a slow connection; slow clients are still cut off by
 	// ReadHeaderTimeout.
@@ -76,7 +77,7 @@ func main() {
 		Handler:           api,
 		ReadHeaderTimeout: 10 * time.Second,
 		ReadTimeout:       2 * time.Minute,
-		WriteTimeout:      2 * time.Minute,
+		WriteTimeout:      writeTimeout(cfg.reviewApplyTimeout),
 		IdleTimeout:       60 * time.Second,
 	}
 
@@ -91,15 +92,11 @@ func main() {
 		log.Fatalf("listen on %s: %v", addr, err)
 	}
 	log.Printf("server listening on %s", addr)
-	if err := serve(sigCtx, srv, l, shutdownGrace); err != nil {
+	if err := serve(sigCtx, srv, l, srv.WriteTimeout); err != nil {
 		log.Fatalf("server error: %v", err)
 	}
 	log.Print("server stopped")
 }
-
-// shutdownGrace is how long requests in flight get to finish on shutdown:
-// a 20 MB upload on a slow connection, within the write timeout.
-const shutdownGrace = 2 * time.Minute
 
 // serve runs srv on l until ctx ends, then shuts it down gracefully: no
 // new connections, and requests in flight get up to grace to finish.
@@ -118,4 +115,11 @@ func serve(ctx context.Context, srv *http.Server, l net.Listener, grace time.Dur
 		err = serveErr
 	}
 	return err
+}
+
+// writeTimeout is how long a request may take to be answered: 2 minutes, or
+// the review call's timeout and time to store the review after it, so a saved
+// review is never reported as failed.
+func writeTimeout(reviewApply time.Duration) time.Duration {
+	return max(2*time.Minute, reviewApply+30*time.Second)
 }

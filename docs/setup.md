@@ -136,7 +136,7 @@ The API stops gracefully on Ctrl+C or SIGTERM: it takes no new requests and give
 | `HTTP_ADDRESS` | Backend | `:8080` (`backend/.env.example` uses `127.0.0.1:8080`) |
 | `UPLOADS_DIR` | Backend | `./uploads` (resolved to an absolute path) |
 | `INSIGHTS_SERVICE_URL` | Backend | `http://localhost:9000` |
-| `REVIEW_APPLY_TIMEOUT` | Backend | `60s`; how long saving a clinician's review waits for the AI service (a Go duration, at most `10m`). The queue calls keep 10 s |
+| `REVIEW_APPLY_TIMEOUT` | Backend | `60s`; how long saving a clinician's review waits for the AI service (a Go duration, at most `10m`; the server's write timeout, 2 minutes, is lengthened when this needs it). The queue calls keep 10 s |
 | `ALLOWED_ORIGINS` | Backend | `http://localhost:5173`; comma-separated browser origins that may call the API |
 | `TRUSTED_PROXIES` | Backend | empty (`backend/.env.example` sets `127.0.0.1,::1`, the Vite proxy); comma-separated IP addresses of the proxies in front of the API. A request from one counts as coming from the last address in `X-Forwarded-For` that isn't a trusted proxy, for the login limit, sessions and the audit log; the header is ignored from anyone else. Without it, behind a proxy every user shares one login limit |
 | `COOKIE_SECURE` | Backend | `true`; set `false` only for a browser that won't keep a `Secure` cookie on plain-HTTP `localhost` |

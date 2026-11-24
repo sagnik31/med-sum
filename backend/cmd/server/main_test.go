@@ -48,3 +48,15 @@ func TestShutdownLetsARequestInFlightFinish(t *testing.T) {
 		t.Error("still accepting connections after shutdown")
 	}
 }
+
+func TestTheWriteTimeoutOutlastsAReview(t *testing.T) {
+	for review, want := range map[time.Duration]time.Duration{
+		time.Minute:       2 * time.Minute,
+		100 * time.Second: 130 * time.Second,
+		10 * time.Minute:  10*time.Minute + 30*time.Second,
+	} {
+		if got := writeTimeout(review); got != want {
+			t.Errorf("writeTimeout(%v) = %v, want %v", review, got, want)
+		}
+	}
+}

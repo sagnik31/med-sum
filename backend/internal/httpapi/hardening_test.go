@@ -241,3 +241,27 @@ func TestTheClientAddress(t *testing.T) {
 		}
 	}
 }
+
+func TestTheRateLimiterHoldsNoMoreThanItsKeys(t *testing.T) {
+	l := newRateLimiter(2, time.Minute)
+	now := time.Date(2026, 11, 24, 9, 0, 0, 0, time.UTC)
+	for i := range rateLimiterMaxKeys + 50 {
+		if ok, _ := l.allow(strconv.Itoa(i), now); !ok {
+			t.Fatalf("address %d's first attempt was refused", i)
+		}
+	}
+	if len(l.attempts) != rateLimiterMaxKeys {
+		t.Errorf("%d addresses kept, want %d", len(l.attempts), rateLimiterMaxKeys)
+	}
+	// The newest address is kept and still limited.
+	last := strconv.Itoa(rateLimiterMaxKeys + 49)
+	l.allow(last, now)
+	if ok, _ := l.allow(last, now); ok {
+		t.Error("a third attempt was allowed")
+	}
+	// A minute on, the idle ones are forgotten together.
+	l.allow("new", now.Add(2*time.Minute))
+	if len(l.attempts) != 1 {
+		t.Errorf("%d addresses kept after the window, want 1", len(l.attempts))
+	}
+}

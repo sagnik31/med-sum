@@ -42,8 +42,13 @@ const (
 	authAttemptsPerWindow = 10
 	authWindow            = time.Minute
 	// rateLimiterMaxKeys bounds the memory a flood of addresses can use;
-	// past it, addresses with no recent attempt are forgotten.
+	// past it, addresses with no recent attempt are forgotten, and when there
+	// are none, any one of them. A forgotten address gets its attempts back;
+	// the lockout of each account doesn't depend on it.
 	rateLimiterMaxKeys = 10000
+	// rateLimiterSweepEvery is how often, at most, a full map is searched for
+	// addresses to forget, so a flood doesn't cost a search per request.
+	rateLimiterSweepEvery = 10 * time.Second
 )
 
 // limitedAuthPaths are the routes that check a secret.
@@ -59,6 +64,7 @@ type rateLimiter struct {
 	limit    int
 	window   time.Duration
 	attempts map[string][]time.Time // address -> attempt times in the window, oldest first
+	swept    time.Time              // when forgetIdle last ran
 }
 
 func newRateLimiter(limit int, window time.Duration) *rateLimiter {
@@ -82,7 +88,16 @@ func (l *rateLimiter) allow(key string, now time.Time) (bool, time.Duration) {
 		return false, recent[0].Add(l.window).Sub(now)
 	}
 	if _, known := l.attempts[key]; !known && len(l.attempts) >= rateLimiterMaxKeys {
-		l.forgetIdle(cutoff)
+		if now.Sub(l.swept) >= rateLimiterSweepEvery {
+			l.forgetIdle(cutoff)
+			l.swept = now
+		}
+		for k := range l.attempts {
+			if len(l.attempts) < rateLimiterMaxKeys {
+				break
+			}
+			delete(l.attempts, k)
+		}
 	}
 	l.attempts[key] = append(recent, now)
 	return true, 0
