@@ -323,14 +323,31 @@ WHERE a.document_id = $1 AND a.completed_at IS NULL`, docID).Scan(&a.SampledAt, 
 // longer audit reviews, and the document leaves the queue: finishing the
 // audit signs a checks_passed document off, so it becomes verified. It returns
 // ErrNoOpenAudit, writing nothing, when there is no open sample of the
-// record's run (an older run's sample is dead, as in openAuditOfTheRecord).
+// record's run (an older run's sample is dead, as in openAuditOfTheRecord)
+// or the document is not checks_passed (it is being processed again).
 func (s *Store) CompleteAudit(ctx context.Context, orgID, docID, userID string, at time.Time, ev *AuditEvent) error {
 	return pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
-		// The sample is locked, so a review can't land between the count
-		// and the update unseen.
+		// The document's status is locked first and must still await its
+		// audit. While it is held no review lands between the count and the
+		// update, and no reprocess starts: one begins by setting the status
+		// to processing, and only then can the record become another run's.
+		var held bool
+		err := tx.QueryRow(ctx, `
+SELECT true FROM insights i
+JOIN documents d ON d.id = i.document_id
+JOIN patients p ON p.id = d.patient_id
+WHERE i.document_id = $1 AND p.org_id = $2 AND d.deleted_at IS NULL
+  AND i.status = 'checks_passed'
+FOR UPDATE OF i`, docID, orgID).Scan(&held)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrNoOpenAudit
+		}
+		if err != nil {
+			return err
+		}
 		var unreviewed int
 		var runID string
-		err := tx.QueryRow(ctx, `
+		err = tx.QueryRow(ctx, `
 SELECT COALESCE(`+unreviewedInAudit+`, 0), a.run_id::text
 FROM audit_samples a
 JOIN documents d ON d.id = a.document_id

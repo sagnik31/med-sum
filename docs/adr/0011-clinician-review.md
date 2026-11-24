@@ -46,7 +46,7 @@ The pipeline sends a document to `needs_review` when a deterministic signal fire
 
 ## Consequences
 
-- The summary is only as current as its last rebuild: it is rebuilt when a review or a sign-off leaves a document verified, not after every correction of a document still awaiting review (whose values are still marked awaiting review there).
+- The summary is only as current as its last rebuild: it is rebuilt when a review or a sign-off leaves a document verified and after a correction of a document that is `verified` or `checks_passed`, whose values it shows unmarked (2026-11-24), not after every correction of a document still awaiting review (whose values are still marked awaiting review there). The worker's idle check also finds a summary older than such a correction.
 - Correction text is clinical data inside the record; the audit row holds the item id and field name only (ADR 0008).
 - A correction of a test's name can move a remark off that test; the reviewed view links remarks again.
 - An audit costs a clinician a full check of a document that needed none; the rate is the dial between that time and how tightly the escape rate is known. At 10% of a few hundred documents that pass every check, the interval stays wide for a long time.

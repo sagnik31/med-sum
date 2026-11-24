@@ -432,8 +432,11 @@ def refresh_after_document(job) -> None:
 
 
 # Patients whose summary is older than what it is built from: a document that
-# finished, or was deleted, after the summary was last written, with no job
-# left open and no live build. The refresh after a job is not stored, so a
+# finished, was deleted, or had a value corrected after the summary was last
+# written, with no job left open and no live build. A correction counts once
+# its document is past review: until then the summary marks its values as
+# awaiting review. Its time is read from the record, since this service's
+# database role can't read record_reviews. The refresh after a job is not stored, so a
 # process that stopped (or lost its database) between the two would leave the
 # summary without the document for good.
 _STALE_SUMMARIES = """
@@ -444,9 +447,16 @@ WHERE (s.status <> 'processing' OR s.updated_at < NOW() - %(stale)s::interval)
       WHERE o.patient_id = s.patient_id AND j.status IN ('queued', 'running'))
   AND EXISTS (
       SELECT 1 FROM documents d LEFT JOIN insights i ON i.document_id = d.id
+      LEFT JOIN document_records r ON r.document_id = d.id
       WHERE d.patient_id = s.patient_id
         AND (d.deleted_at > s.updated_at
-             OR (d.deleted_at IS NULL AND i.updated_at > s.updated_at)))
+             OR (d.deleted_at IS NULL AND i.updated_at > s.updated_at)
+             OR (d.deleted_at IS NULL AND i.status IN ('checks_passed', 'verified')
+                 AND r.updated_at > s.updated_at
+                 AND EXISTS (
+                     SELECT 1 FROM jsonb_path_query(
+                         r.record, 'lax $.*.corrections[*].at') AS c(at)
+                     WHERE (c.at #>> '{}')::timestamptz > s.updated_at))))
 ORDER BY s.updated_at LIMIT 1
 """
 

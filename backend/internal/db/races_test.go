@@ -183,3 +183,51 @@ func TestANameEditDoesNotUndoASetup(t *testing.T) {
 		t.Errorf("status %q, name %q; want active and the new name", got.Status, got.FullName)
 	}
 }
+
+// A reprocess that began before the audit was finished: the audit of the old
+// run's record must not verify what the new run leaves.
+func TestAnAuditIsNotFinishedOnceAReprocessBegan(t *testing.T) {
+	s := store(t)
+	ctx := context.Background()
+	at := time.Date(2026, 11, 10, 9, 0, 0, 0, time.UTC)
+	me, d := reviewFixture(t, s, "checks_passed", at)
+	run := mustRun(t, s, d.ID)
+	for _, q := range []string{
+		`UPDATE document_records SET run_id = $2 WHERE document_id = $1`,
+		`INSERT INTO audit_samples (document_id, run_id, sampled_at) VALUES ($1, $2, '2026-11-10')`,
+		`INSERT INTO record_reviews (document_id, run_id, item_id, action, audit, reviewed_at)
+SELECT $1, $2, i, 'confirm', true, '2026-11-11' FROM unnest('{document,patient,obs-1,obs-2,med-1}'::text[]) i`,
+	} {
+		if _, err := s.pool.Exec(ctx, q, d.ID, run); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	var err error
+	finish := func(int) {
+		err = s.CompleteAudit(ctx, me.OrgID, d.ID, me.ID, at, ev(me.OrgID, me.ID, "audit_completed"))
+	}
+	during(t, s, func(tx pgx.Tx) error { // as document_jobs.enqueue does it
+		_, err := tx.Exec(ctx, `UPDATE insights SET status = 'processing' WHERE document_id = $1`, d.ID)
+		return err
+	}, 1, finish)
+	if !errors.Is(err, ErrNoOpenAudit) {
+		t.Errorf("as the reprocess began: err = %v, want ErrNoOpenAudit", err)
+	}
+	finish(0) // and while it runs, the old record still in place
+	if !errors.Is(err, ErrNoOpenAudit) {
+		t.Errorf("during the reprocess: err = %v, want ErrNoOpenAudit", err)
+	}
+	var open bool
+	if err := s.pool.QueryRow(ctx, `SELECT completed_at IS NULL FROM audit_samples WHERE run_id = $1`, run).Scan(&open); err != nil || !open {
+		t.Errorf("the sample was finished: open %v (%v)", open, err)
+	}
+
+	// The same audit can be finished while nothing is being processed.
+	if _, err := s.pool.Exec(ctx, `UPDATE insights SET status = 'checks_passed' WHERE document_id = $1`, d.ID); err != nil {
+		t.Fatal(err)
+	}
+	if finish(0); err != nil {
+		t.Errorf("with no reprocess: %v", err)
+	}
+}

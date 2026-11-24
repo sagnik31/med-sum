@@ -190,6 +190,9 @@ VALUES ($1, 1, '{"schema_version": 1}', $2)`, doc.ID, now); err != nil {
 		t.Fatal(err)
 	}
 	check("SignOff", s.SignOff(ctx, org, doc.ID, now.Add(time.Second), now, ev(org, u.ID, "document_signed_off")))
+	if _, err := owner.pool.Exec(ctx, `UPDATE insights SET status = 'checks_passed' WHERE document_id = $1`, doc.ID); err != nil {
+		t.Fatal(err)
+	}
 	// An audit sample of the record's run (the AI service adds them; the
 	// owner here), finished.
 	if _, err := owner.pool.Exec(ctx, `WITH r AS (INSERT INTO pipeline_runs (document_id, graph_version) VALUES ($1, 'test') RETURNING id),

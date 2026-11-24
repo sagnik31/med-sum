@@ -692,6 +692,46 @@ def test_a_summary_left_behind_a_finished_document_is_rebuilt(db, model_client):
     assert service.refresh_stale_summary() is False  # once
 
 
+@pytest.mark.parametrize(
+    "holder", ["{observations,0,corrections}", "{document,corrections}"]
+)
+@pytest.mark.parametrize(
+    ("status", "stale"),
+    [("verified", True), ("checks_passed", True), ("needs_review", False)],
+)
+def test_a_summary_left_behind_a_correction_is_rebuilt(
+    db, model_client, holder, status, stale
+):
+    user = add_user(db)
+    add_processed(db, user, "d09", "2024-09-06 10:00+05:30")
+    correction = {
+        "field": "value_text", "original": "1", "corrected": "2",
+        "clinician": "Dr Synthetic", "at": "", "note": None,
+    }  # fmt: skip
+    with db.cursor() as cur:
+        cur.execute(
+            "UPDATE insights SET status = %s, updated_at = now() - interval '1 hour'",
+            (status,),
+        )
+        cur.execute("UPDATE document_records SET updated_at = now()")
+        set_summary(db, user, "completed", minutes_ago=5)
+        # A confirmation moves the record on too, but changes no value.
+        assert find_stale(cur) is False
+        for minutes, want in ((10, False), (1, stale)):
+            cur.execute(
+                "UPDATE document_records SET record = jsonb_set(record, %s,"
+                " jsonb_build_array(%s || jsonb_build_object('at',"
+                " now() - make_interval(mins => %s))))",
+                (holder, Jsonb(correction), minutes),
+            )
+            assert find_stale(cur) is want
+
+
+def find_stale(cur) -> bool:
+    cur.execute(service._STALE_SUMMARIES, {"stale": service.STALE_PROCESSING_AFTER})
+    return cur.fetchone() is not None
+
+
 def test_a_live_build_or_an_open_job_is_not_a_summary_left_behind(db, model_client):
     user = add_user(db)
     add_processed(db, user, "d09", "2024-09-06 10:00+05:30")

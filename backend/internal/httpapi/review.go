@@ -237,8 +237,12 @@ func (s *Server) handleReviewDocument(w http.ResponseWriter, r *http.Request, do
 	newStatus := ins.Status
 	if verified {
 		newStatus = "verified"
-		// The summary still shows the values as they were read: rebuild
-		// it. The review stands if that fails.
+	}
+	// The summary shows the values as they were read before this: rebuild
+	// it. Not after every correction of a document still awaiting review,
+	// whose values it marks so. The review stands if that fails; the worker
+	// finds a summary left behind a correction.
+	if verified || (req.Action == "correct" && newStatus != "needs_review") {
 		if err := s.requestPatientSummary(r, doc.PatientID); err != nil {
 			log.Printf("could not rebuild the summary after reviewing document %s: %v", docID, err)
 		}

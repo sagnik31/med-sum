@@ -151,6 +151,24 @@ func TestAConfirmationThatLeavesNothingFlaggedVerifiesAndRebuildsTheSummary(t *t
 	}
 }
 
+// A value the summary shows unmarked: the summary follows its correction.
+func TestACorrectionOfADocumentPastReviewRebuildsTheSummary(t *testing.T) {
+	for status, want := range map[string]bool{"verified": true, "checks_passed": true, "needs_review": false} {
+		re := newReviewEnv(t)
+		re.store.insights[re.doc].Status = status
+		if rec := re.review(correction("value_text", "5.2")); rec.Code != http.StatusOK {
+			t.Fatalf("%s: status = %d: %s", status, rec.Code, rec.Body)
+		}
+		rebuilt := false
+		for _, c := range re.ai.received() {
+			rebuilt = rebuilt || (c.Path == "/internal/generate-patient-summary" && c.Body["patient_id"] == re.patient.ID)
+		}
+		if rebuilt != want {
+			t.Errorf("%s: rebuilt = %v, want %v", status, rebuilt, want)
+		}
+	}
+}
+
 func TestACorrectionThatFailsACheckIsSavedOnlyOnceAcknowledged(t *testing.T) {
 	re := newReviewEnv(t)
 	re.applied["findings"] = []map[string]any{{"validator": "flag_agreement", "severity": "flag",
