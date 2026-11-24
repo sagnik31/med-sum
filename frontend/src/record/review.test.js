@@ -21,7 +21,7 @@ import {
   reviewLink,
   reviewNote,
   reviewedCount,
-  reviewOutcome,
+  statusAfterReview,
 } from "./review.js";
 
 const record = JSON.parse(readFileSync(new URL("./fixtures/record.json", import.meta.url), "utf8"));
@@ -166,23 +166,13 @@ test("an open audit marks each value and counts what is left", () => {
   assert.equal(auditProgress(null), null);
 });
 
-test("a saved review gives the next one its record time, and verifies the page", () => {
+test("a saved review changes the status on the page", () => {
   const at = "2025-03-05T10:00:01.5Z";
-  assert.deepEqual(reviewOutcome({ status: "needs_review", record_updated_at: at, flagged: 1 }, "needs_review"), {
-    status: "needs_review",
-    recordUpdatedAt: at,
-  });
-  assert.deepEqual(reviewOutcome({ status: "verified", record_updated_at: at, flagged: 0 }, "needs_review"), {
-    status: "ready",
-    recordUpdatedAt: at,
-  });
+  assert.equal(statusAfterReview({ status: "needs_review", record_updated_at: at, flagged: 1 }, "needs_review"), "needs_review");
+  assert.equal(statusAfterReview({ status: "verified", record_updated_at: at, flagged: 0 }, "needs_review"), "ready");
   // A review of a document that passed its checks leaves it awaiting the sign-off.
-  assert.deepEqual(reviewOutcome({ status: "checks_passed", record_updated_at: at, flagged: 0 }, "checks_passed"), {
-    status: "checks_passed",
-    recordUpdatedAt: at,
-  });
-  // An answer without a time leaves the page to reload the record.
-  assert.deepEqual(reviewOutcome(null, "ready"), { status: "ready", recordUpdatedAt: null });
+  assert.equal(statusAfterReview({ status: "checks_passed", record_updated_at: at, flagged: 0 }, "checks_passed"), "checks_passed");
+  assert.equal(statusAfterReview(null, "ready"), "ready");
 });
 
 test("reprocessing asks first and says how many reviews it discards", () => {

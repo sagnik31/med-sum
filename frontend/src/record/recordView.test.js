@@ -177,13 +177,15 @@ test("a value's source is on screen only when one of its own citations is select
   const groups = recordGroups(record);
   const [a, b] = groups[0].items.map((i) => i.citation);
   assert.notEqual(citationKey(a), citationKey(b));
-  assert.equal(sourceShownFor([a], null), false);
-  assert.equal(sourceShownFor([a], b), false);
-  assert.equal(sourceShownFor([a], { ...a }), true);
+  assert.equal(sourceShownFor([a], null, 1), false);
+  assert.equal(sourceShownFor([a], b, b.page), false);
+  assert.equal(sourceShownFor([a], { ...a }, a.page), true);
+  // Still selected, but another page is on screen.
+  assert.equal(sourceShownFor([a], { ...a }, a.page + 1), false);
   // The patient's details: any of its header values' lines will do.
   const header = patientValues(record).map((v) => v.citation);
-  assert.equal(sourceShownFor(header, header.at(-1)), true);
+  assert.equal(sourceShownFor(header, header.at(-1), header.at(-1).page), true);
   // Nothing printed, nothing to show.
-  assert.equal(sourceShownFor([], null), true);
-  assert.equal(sourceShownFor([null], null), true);
+  assert.equal(sourceShownFor([], null, 1), true);
+  assert.equal(sourceShownFor([null], null, 1), true);
 });

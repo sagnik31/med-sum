@@ -4,11 +4,11 @@
 // header values): confirm the reading, or correct one field. A corrected
 // value that fails a check (its flag no longer agrees with its range, a
 // date that isn't one) is shown with what failed and saved only when the
-// clinician saves it again. Nothing is confirmed unless the value's source
+// clinician saves it again: that exact correction, never one edited since. Nothing is confirmed unless the value's source
 // (its lines and its page of the original) is on screen: the first press
 // of Confirm shows it, the next one confirms. Opening "Correct…" shows it
-// too. See docs/adr/0011-clinician-review.md.
-import React, { useState } from "react";
+// too, and a correction is sent only while it is on screen. See docs/adr/0011-clinician-review.md.
+import React, { useEffect, useState } from "react";
 import { ReviewFindings } from "../api/client.js";
 import { correctionsOf, currentValue, reviewNote } from "../record/review.js";
 
@@ -34,9 +34,11 @@ export function CorrectionList({ holder }) {
   );
 }
 
-// `locked` is true while any review of the document is being saved.
-// `sourceShown` says whether this value's source is the one on screen, and
-// `onShowSource` puts it there.
+// `locked` is true while any review of the document is being saved or the
+// record is being read again after one. `citations` are the holder's;
+// `isShown(citations)` says whether one of them is on screen, and
+// `onShow(citations)` puts the first there. A field that has a citation of
+// its own (a header value) is corrected beside that one.
 function ReviewControls({
   itemId,
   holder,
@@ -44,18 +46,21 @@ function ReviewControls({
   onReview,
   locked = false,
   confirmLabel = "Confirm",
-  sourceShown = false,
-  onShowSource = () => {},
+  citations = [],
+  isShown = () => false,
+  onShow = () => {},
   acknowledgements = [],
 }) {
   const [open, setOpen] = useState(false);
   const [field, setField] = useState(fields[0]?.field ?? "");
   const [value, setValue] = useState("");
   const [note, setNote] = useState("");
-  const [findings, setFindings] = useState(null);
+  // What the checks found on a correction, with the review they are about:
+  // { review, list }, or null.
+  const [found, setFound] = useState(null);
   const [error, setError] = useState(null);
-  // Set when Confirm was pressed without the source on screen.
-  const [askedToCheck, setAskedToCheck] = useState(false);
+  // What was pressed without the source on screen: "confirm", "save" or null.
+  const [askedToCheck, setAskedToCheck] = useState(null);
   const [saving, setSaving] = useState(false);
   // The signals ticked so far; every one of `acknowledgements` must be
   // before the item can be confirmed or corrected (ADR 0011).
@@ -64,8 +69,13 @@ function ReviewControls({
   const busy = saving || locked;
   const acknowledge = acknowledgements.map((a) => a.signal);
 
+  // The record was read again: what the checks found was about the old one.
+  useEffect(() => setFound(null), [holder]);
+
   const chosen = fields.find((f) => f.field === field);
   const shown = chosen ? currentValue(holder, chosen.field, chosen.value) : null;
+  const fieldCitations = chosen?.citation ? [chosen.citation] : citations;
+  const asked = askedToCheck === "save" ? fieldCitations : citations;
 
   async function send(review, acceptFindings = false) {
     setSaving(true);
@@ -73,29 +83,37 @@ function ReviewControls({
     try {
       await onReview(review, { acceptFindings });
       setOpen(false);
-      setFindings(null);
+      setFound(null);
       setValue("");
       setNote("");
     } catch (err) {
-      if (err instanceof ReviewFindings) setFindings(err.findings);
+      if (err instanceof ReviewFindings) setFound({ review, list: err.findings });
       else setError(err.message || "The review could not be saved.");
     } finally {
       setSaving(false);
     }
   }
 
+  // Whether the source is on screen; puts it there when it isn't, and
+  // whatever was pressed must be pressed again.
+  function sourceOnScreen(action, cited) {
+    const shown = isShown(cited);
+    setAskedToCheck(shown ? null : action);
+    if (!shown) onShow(cited);
+    return shown;
+  }
+
+  function saveCorrection(review, acceptFindings) {
+    if (sourceOnScreen("save", fieldCitations)) send(review, acceptFindings);
+  }
+
   function confirm() {
-    if (!sourceShown) {
-      onShowSource();
-      setAskedToCheck(true);
-      return;
-    }
-    setAskedToCheck(false);
+    if (!sourceOnScreen("confirm", citations)) return;
     send({ action: "confirm", item_id: itemId, acknowledge });
   }
 
   function toggleCorrect() {
-    if (!open) onShowSource();
+    if (!open && !isShown(fieldCitations)) onShow(fieldCitations);
     setOpen((o) => !o);
   }
 
@@ -143,9 +161,9 @@ function ReviewControls({
           </button>
         )}
       </div>
-      {askedToCheck && sourceShown && (
+      {askedToCheck && isShown(asked) && (
         <p className="mt-1 text-slate-700" role="status">
-          Its lines and the original are shown beside the list. Check them, then confirm.
+          Its lines and the original are shown beside the list. Check them, then {askedToCheck === "save" ? "save again" : "confirm"}.
         </p>
       )}
       {open && (
@@ -153,16 +171,20 @@ function ReviewControls({
           className="mt-2 space-y-1 rounded border border-slate-200 bg-slate-50 p-2"
           onSubmit={(e) => {
             e.preventDefault();
-            send(correction());
+            saveCorrection(correction());
           }}
         >
+          {/* Locked while a save is out: its answer is about what was sent. */}
+          <fieldset disabled={busy} className="space-y-1">
           <label className="block">
             <span className="text-slate-600">Field</span>
             <select
               value={field}
               onChange={(e) => {
                 setField(e.target.value);
-                setFindings(null);
+                setFound(null);
+                const next = fields.find((f) => f.field === e.target.value);
+                if (next?.citation && !isShown([next.citation])) onShow([next.citation]);
               }}
               className="ml-2 border rounded px-1"
             >
@@ -182,7 +204,7 @@ function ReviewControls({
               value={value}
               onChange={(e) => {
                 setValue(e.target.value);
-                setFindings(null);
+                setFound(null);
               }}
               maxLength={500}
               required
@@ -193,30 +215,33 @@ function ReviewControls({
             <span className="text-slate-600">Note (optional)</span>
             <input
               value={note}
-              onChange={(e) => setNote(e.target.value)}
+              onChange={(e) => {
+                setNote(e.target.value);
+                setFound(null);
+              }}
               maxLength={1000}
               className="mt-0.5 w-full border rounded px-1 py-0.5"
             />
           </label>
-          {findings && (
+          {found && (
             <div className="rounded border border-amber-200 bg-amber-50 p-2 text-amber-900">
               <p className="font-medium">This value fails a check. Check it against the original:</p>
               <ul className="list-disc list-inside">
-                {findings.map((f, i) => (
+                {found.list.map((f, i) => (
                   <li key={i}>{f.message}</li>
                 ))}
               </ul>
               <button
                 type="button"
                 disabled={busy || unacknowledged}
-                onClick={() => send(correction(), true)}
+                onClick={() => saveCorrection(found.review, true)}
                 className="mt-1 rounded border border-amber-400 bg-white px-2 py-0.5 hover:bg-amber-100"
               >
                 Save it anyway
               </button>
             </div>
           )}
-          {!findings && (
+          {!found && (
             <button
               type="submit"
               disabled={busy || unacknowledged || !value.trim()}
@@ -225,6 +250,7 @@ function ReviewControls({
               Save correction
             </button>
           )}
+          </fieldset>
         </form>
       )}
       {error && <p className="mt-1 text-red-600">{error}</p>}

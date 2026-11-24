@@ -56,14 +56,15 @@ export function citationKey(c) {
 }
 
 // Whether one of a holder's citations (an item's, or the patient's or the
-// document's header values) is the one selected, so its lines and its page
-// of the original are on screen. A value is confirmed only beside its
+// document's header values) is the one selected and `page`, the page on
+// screen, is its page, so its lines and its page of the original are on
+// screen: turning to another page takes them off it. A value is confirmed only beside its
 // source (docs/adr/0011-clinician-review.md). A holder with no citation
 // (a patient with nothing printed) has no lines to show: true.
-export function sourceShownFor(citations, selected) {
+export function sourceShownFor(citations, selected, page) {
   const cited = (citations || []).filter(Boolean);
   if (cited.length === 0) return true;
-  if (!selected) return false;
+  if (!selected || selected.page !== page) return false;
   const key = citationKey(selected);
   return cited.some((c) => citationKey(c) === key);
 }

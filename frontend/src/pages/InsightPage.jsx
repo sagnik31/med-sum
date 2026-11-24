@@ -1,5 +1,5 @@
 // src/pages/InsightPage.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, useSearchParams, Link } from "react-router";
 import {
   completeAudit,
@@ -21,7 +21,7 @@ import {
   isPdfName,
   pageStatus,
   reprocessQuestion,
-  reviewOutcome,
+  statusAfterReview,
 } from "../record/review.js";
 import OriginalFile from "../components/OriginalFile.jsx";
 import ProcessingPanel from "../components/ProcessingPanel.jsx";
@@ -55,9 +55,11 @@ function InsightPage() {
   const canReprocess = can(user, PERM.documentReprocess);
   const [reviewing, setReviewing] = useState(searchParamsHasReview());
   const [reviewed, setReviewed] = useState(0);
-  // True while a review is being saved: every review control waits, so a
-  // second save never goes out with the record's old updated_at.
+  // True while a review is being saved, and then while the values it
+  // changed are read again: every review control waits, so a clinician
+  // never reviews or signs off values older than the ones on record.
   const [saving, setSaving] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   // An audit sample: a verified document a clinician checks value by
   // value, then marks finished. Audit mode comes from the record's own
   // audit state (null when no audit is open), so it shows however the
@@ -65,8 +67,13 @@ function InsightPage() {
   const [audit, setAudit] = useState(null);
   const [auditError, setAuditError] = useState(null);
   const [auditDone, setAuditDone] = useState(false);
+  const [finishing, setFinishing] = useState(false);
   const [signingOff, setSigningOff] = useState(false);
   const [signOffError, setSignOffError] = useState(null);
+  const busy = saving || refreshing || finishing || signingOff;
+  // Counts the requests for the page's HTML after a review, so that only
+  // the latest one is shown.
+  const htmlRequest = useRef(0);
   const auditing = audit !== null && !auditDone;
   const auditLeft = audit?.unreviewed?.length ?? 0;
   // The original upload beside the transcription; always on in review mode.
@@ -91,6 +98,7 @@ function InsightPage() {
     let cancelled = false;
     let timer;
 
+    htmlRequest.current += 1;
     setLoading(true);
     setError(null);
     setFailure("");
@@ -148,14 +156,17 @@ function InsightPage() {
   // pipeline stored none (it can't happen for a finished document, but the
   // page then shows the insight alone).
   const processed = status === "ready" || status === "needs_review" || status === "checks_passed";
-  // Another document: drop the last one's record.
+  // Another document, or a new run of this one: drop the old record and
+  // its audit.
   useEffect(() => {
     setRecord(null);
     setRecordUpdatedAt(null);
     setAudit(null);
     setAuditDone(false);
+    setAuditError(null);
     setSignOffError(null);
-  }, [id]);
+    setRefreshing(false);
+  }, [id, attempt]);
   // A reload after a review keeps the list on screen until the new record
   // arrives, so the scroll position, the selected source and any open
   // correction stay where they were.
@@ -173,8 +184,9 @@ function InsightPage() {
         setRecord(view);
         setRecordUpdatedAt(data.updated_at);
         setAudit(data.audit ?? null);
+        setRefreshing(false);
       })
-      .catch((err) => !cancelled && err?.status !== 404 && setRecordError(err));
+      .catch((err) => !cancelled && (err?.status !== 404 || reviewed > 0) && setRecordError(err));
     return () => {
       cancelled = true;
     };
@@ -188,26 +200,32 @@ function InsightPage() {
     setSaving(true);
     try {
       const result = await reviewDocument(id, review, { recordUpdatedAt, acceptFindings });
-      const outcome = reviewOutcome(result, status);
-      setStatus(outcome.status);
-      if (outcome.recordUpdatedAt) setRecordUpdatedAt(outcome.recordUpdatedAt);
+      setStatus(statusAfterReview(result, status));
+      setRefreshing(true); // until the record loads again
     } finally {
       setSaving(false);
     }
     setReviewed((n) => n + 1);
+    htmlRequest.current += 1;
+    const request = htmlRequest.current;
     getInsight(id)
-      .then((data) => data?.insights_html && setInsight(data.insights_html))
+      .then((data) => {
+        if (data?.insights_html && request === htmlRequest.current) setInsight(data.insights_html);
+      })
       .catch((err) => console.error(err)); // the next load shows it
   }
 
   async function handleFinishAudit() {
     setAuditError(null);
+    setFinishing(true);
     try {
       await completeAudit(id);
       setAuditDone(true);
       setStatus("ready"); // finishing the audit signs the document off
     } catch (err) {
       setAuditError(err);
+    } finally {
+      setFinishing(false);
     }
   }
 
@@ -282,7 +300,7 @@ function InsightPage() {
               <button
                 type="button"
                 onClick={handleSignOff}
-                disabled={signingOff || saving}
+                disabled={busy}
                 className="rounded px-3 py-1 border font-medium bg-white text-emerald-700 border-emerald-300 disabled:opacity-50"
               >
                 Sign off as verified
@@ -315,7 +333,7 @@ function InsightPage() {
             <button
               type="button"
               onClick={handleFinishAudit}
-              disabled={auditLeft > 0 || saving}
+              disabled={auditLeft > 0 || busy}
               className="rounded px-3 py-1 border font-medium bg-white text-emerald-700 border-emerald-300 disabled:opacity-50"
             >
               Finish audit
@@ -353,7 +371,8 @@ function InsightPage() {
             <button
               type="button"
               onClick={handleReprocess}
-              className="mt-2 text-sm text-blue-600 hover:underline font-medium"
+              disabled={busy}
+              className="mt-2 text-sm text-blue-600 hover:underline font-medium disabled:opacity-50"
             >
               Reprocess
             </button>
@@ -377,6 +396,18 @@ function InsightPage() {
             )}
           </div>
           <ApiErrorNotice error={recordError} />
+          {recordError && refreshing && (
+            <p className="mb-2 text-sm text-amber-800">
+              The review was saved, but these values are from before it.{" "}
+              <button
+                type="button"
+                onClick={() => setReviewed((n) => n + 1)}
+                className="text-blue-600 hover:underline font-medium"
+              >
+                Load the values again
+              </button>
+            </p>
+          )}
           {!record && !recordError && <p className="text-sm text-slate-600">Loading the record…</p>}
           {record && (
             // Keyed by the link, so following another source link to this
@@ -386,7 +417,7 @@ function InsightPage() {
               record={record}
               initialCitation={linkedCitation}
               onReview={reviewing && canReview ? handleReview : undefined}
-              saving={saving}
+              saving={busy}
               audit={auditing ? audit : null}
               sourceSlot={
                 reviewing || showOriginal

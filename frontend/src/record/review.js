@@ -187,16 +187,12 @@ export function pageStatus(status) {
   return null;
 }
 
-// What a saved review changes on the page, from the API's answer
-// ({ status, record_updated_at, flagged }): the document's status as the
-// page names it and the record's new updated_at, which the next review
-// must send. Taken from the answer itself, so a second review needs no
-// reload of the record first.
-export function reviewOutcome(result, status) {
-  return {
-    status: pageStatus(result?.status) ?? status,
-    recordUpdatedAt: result?.record_updated_at ?? null,
-  };
+// The document's status as the page names it after a saved review, from the
+// API's answer ({ status, record_updated_at, flagged }). The answer's
+// record_updated_at is not taken: the next review sends the updated_at that
+// came with the values on screen, so it waits for the reloaded record.
+export function statusAfterReview(result, status) {
+  return pageStatus(result?.status) ?? status;
 }
 
 // How many values of the record a clinician has confirmed or corrected

@@ -105,7 +105,7 @@ function Fields({ fields, derived }) {
 // The header values of one holder (the patient or the document) as
 // correctable fields.
 function headerFields(values) {
-  return values.map((v) => ({ field: headerTarget(v.key).field, label: v.label, value: v.text }));
+  return values.map((v) => ({ field: headerTarget(v.key).field, label: v.label, value: v.text, citation: v.citation }));
 }
 
 // `onReview`, when given, shows the review controls: it is called with a
@@ -126,13 +126,13 @@ function RecordView({ record, initialCitation, onReview, saving = false, sourceS
     setPage(c.page);
   }
   const isSelected = (c) => selected !== null && citationKey(c) === citationKey(selected);
-  // The review controls of a holder show its source before a review: the
-  // first of its citations, unless one of them is already selected.
+  // The review controls show a value's source before a review of it.
   const sourceProps = (citations) => ({
-    sourceShown: sourceShownFor(citations, selected),
-    onShowSource: () => {
-      const first = citations.find(Boolean);
-      if (first && !sourceShownFor(citations, selected)) select(first);
+    citations,
+    isShown: (cited) => sourceShownFor(cited, selected, page),
+    onShow: (cited) => {
+      const first = cited.find(Boolean);
+      if (first) select(first);
     },
   });
 
