@@ -27,6 +27,22 @@ with the database required, gofmt, npm lint/test (54)/build, ruff, faultcheck
 1249/1275 (98.0%), gate pass. Open: the MCP eval (item 13), and the follow-ups
 under item 14.
 
+**Update 2026-11-24:** an outside code review (34 findings against `fe5baf5`)
+was checked and fixed on `main`, not pushed: 26 fixed, 4 in part, 4 skipped.
+The commits are `e9706d3` and the ones after it; the ADRs say what changed.
+- **Run `python -m reset_db --yes` first:** the schema has a new trigger that
+  clears a patient's summary page when a document is deleted.
+- **Cassettes:** stricter checks send some recorded parses to repair, so a
+  replay can miss until the runs are re-recorded (no live run without the
+  owner's go-ahead).
+- **Not built:** a check for a unit cell that is printed but was left out of
+  the record.
+- **For the owner:** should a page that went stale be open to sign-off; which
+  copy of a duplicate upload is the one reviewed; do missing values count in
+  the safety gate.
+- A resumed eval run started before this can't be resumed (its unit files were
+  named differently, and the commit changed anyway).
+
 ## 0. Start here
 
 14. **2026-11-23: ADR 0013 built (the recommendations from the eval run and its judging).** One commit per part, on `main`, pushed. Each part's commit is in ADR 0013's status, and the `docs/` pages whose behaviour changed were updated with it.

@@ -1,6 +1,6 @@
 # 0010. Staff access: admin-issued accounts, server-side sessions, permissions in code, scope in SQL
 
-- **Status:** Accepted, 2026-11-08; confirmed 2026-11-13, when a second factor was dropped from the scope. Built: accounts, passwords, sessions, CSRF protection, the permission layer, staff management, patient records with organisation scope in SQL, soft delete (by the uploader only; the patient summary is rebuilt without the document), and the audit log. Built since: the per-address login limit, security headers, the idle warning, secrets in untracked `.env.local` files with start-up refusing a missing or short internal token, the AI service's localhost bind, and the API's own database role (see [0008](0008-patient-data-protection.md)).
+- **Status:** Accepted, 2026-11-08; confirmed 2026-11-13, when a second factor was dropped from the scope. Built: accounts, passwords, sessions, CSRF protection, the permission layer, staff management, patient records with organisation scope in SQL, soft delete (by the uploader only; the patient summary is cleared in the same transaction, by a trigger, and rebuilt without the document), and the audit log. Built since: the per-address login limit, security headers, the idle warning, secrets in untracked `.env.local` files with start-up refusing a missing or short internal token, the AI service's localhost bind, and the API's own database role (see [0008](0008-patient-data-protection.md)).
 
 ## Context
 
