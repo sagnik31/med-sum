@@ -109,6 +109,9 @@ class GraphState(TypedDict):
     # parts, then one per repair).
     parse_attempts: NotRequired[int]
     model_role: NotRequired[ModelRole]
+    # Of the primary's attempts, those the fallback model answered alone (it
+    # stands in inside a call): they count toward its own budget.
+    fallback_attempts: NotRequired[int]
     # What produced the last merged parse: the first part's step (for the
     # document's and patient's details), each part's own (for its items),
     # and the role of the model, fallback if any part's was.

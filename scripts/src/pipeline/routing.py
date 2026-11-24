@@ -14,7 +14,8 @@ each returning the next node's name.
 
 retry: a repair while the model in use has attempts left (MAX_PARSE_ATTEMPTS:
 the first parse and two repairs); then the fallback model, once,
-with the same budget; then give up. Giving up keeps the last record that was
+with the same budget, less the attempts it already answered in the primary's
+place; then give up. Giving up keeps the last record that was
 validated; if there is none, validate builds a record of the pages alone,
 and the document goes to review (signal LC-08).
 
@@ -68,6 +69,9 @@ def retry(state: GraphState) -> str:
     """The next try at a parse, or where to go when there is none left."""
     if state.get("parse_attempts", 0) < MAX_PARSE_ATTEMPTS:
         return "repair"
-    if state.get("model_role", "primary") == "primary":
+    if (
+        state.get("model_role", "primary") == "primary"
+        and state.get("fallback_attempts", 0) < MAX_PARSE_ATTEMPTS
+    ):
         return "fallback"
     return "render" if state.get("record_parsed") else "validate"

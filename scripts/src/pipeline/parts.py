@@ -22,6 +22,7 @@ See docs/adr/0002-two-model-steps.md.
 import math
 import re
 import unicodedata
+from itertools import combinations
 
 from pydantic import Field
 
@@ -263,10 +264,31 @@ def header_conflicts(parses: list[Parse]) -> list[dict]:
             for i, p in enumerate(parses)
             if (value := getattr(getattr(p, holder), name, None)) is not None
         ]
-        if any(not same(printed[0][1], text) for _, text in printed[1:]):
+        # Every pair: "A. Rao" matches both "Asha Rao" and "Amit Rao".
+        if any(not same(a, b) for (_, a), (_, b) in combinations(printed, 2)):
             conflicts.append(
                 {"field": f"{holder}.{name}", "parts": [i for i, _ in printed]}
             )
+    return conflicts
+
+
+def kept_conflicts(earlier: list[dict], parses: list[Parse]) -> list[dict]:
+    """
+    The conflicts of `parses`, and those of an earlier round that these
+    parses don't settle. A conflict is settled only when every part that
+    printed the detail still prints it, and they now agree: a round that
+    leaves one of them out has read less, not better.
+    """
+    conflicts = header_conflicts(parses)
+    for old in earlier:
+        if any(c["field"] == old["field"] for c in conflicts):
+            continue
+        holder, name = old["field"].split(".")
+        if any(
+            i >= len(parses) or getattr(getattr(parses[i], holder), name) is None
+            for i in old["parts"]
+        ):
+            conflicts.append(old)
     return conflicts
 
 

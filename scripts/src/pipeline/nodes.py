@@ -522,13 +522,27 @@ def _combined(state: GraphState, results: list[PartResult]) -> dict:
     parses = [r.parse for r in results]
     return {
         "parse": parts.merge(parses),
-        "parse_conflicts": parts.header_conflicts(parses),
+        "parse_conflicts": parts.kept_conflicts(
+            state.get("parse_conflicts", []), parses
+        ),
         "parse_error": None,
         "parse_provenance": results[0].provenance,
         "part_provenance": [r.provenance for r in results],
         "parse_model_role": "fallback" if "fallback" in roles else "primary",
         "parse_truncated": any(r.truncated for r in results),
     }
+
+
+def _stood_in(state: GraphState, answered: list[PartResult]) -> dict:
+    """
+    An attempt of the primary's round that the fallback model answered alone
+    (the primary was down, or capped) counts toward the fallback's budget.
+    """
+    if state.get("model_role", "primary") != "primary" or not answered:
+        return {}
+    if any(r.model_role != "fallback" for r in answered):
+        return {}
+    return {"fallback_attempts": state.get("fallback_attempts", 0) + 1}
 
 
 def _where(part: ParsePart) -> str:
@@ -572,7 +586,7 @@ def parse(state: GraphState) -> dict:
     if part.index == 0:
         out["parse"] = None  # a new round: no merged parse until it ends
     if len(results) == len(parse_parts(state)):
-        out.update(_combined(state, results))
+        out.update(_combined(state, results), **_stood_in(state, results))
     _store_answered([result], out)
     return out
 
@@ -765,6 +779,7 @@ def repair(state: GraphState) -> dict:
         "repairs": state.get("repairs", 0) + 1,
         "repair_log": [*state.get("repair_log", []), *log],
         **_combined(state, results),
+        **_stood_in(state, answered),
     }
     _store_answered(answered, out, repair=[r.model_dump(mode="json") for r in log])
     return out
@@ -785,9 +800,14 @@ def _measure(record, calls: list, started: float) -> None:
 def use_fallback(state: GraphState) -> dict:
     """
     The primary model's attempts are used up: parse every part again from
-    the start with the fallback model, with a budget of its own.
+    the start with the fallback model, with a budget of its own, less the
+    attempts it already answered in the primary's place.
     """
-    return {"model_role": "fallback", "parse_attempts": 0, "part_results": []}
+    return {
+        "model_role": "fallback",
+        "parse_attempts": state.get("fallback_attempts", 0),
+        "part_results": [],
+    }
 
 
 # -------------------------------------------------------------------

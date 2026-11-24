@@ -535,3 +535,19 @@ def test_an_unreadable_file_fails_the_run(db, document, model_client, tmp_path):
 
     assert run_row(db, state["document_id"])["end_state"] == "failed"
     assert model_client.calls == []
+
+
+def test_the_fallback_gets_one_budget_when_the_primary_is_down(
+    db, document, model_client
+):
+    state = document("d09")
+    model_client.replies[PRIMARY] = [
+        *pages_of("d09"), classified("d09"),
+        *[ConnectionError("down")] * MAX_PARSE_ATTEMPTS,
+    ]  # fmt: skip
+    model_client.replies[FALLBACK] = [wrong_value("d09")] * MAX_PARSE_ATTEMPTS
+
+    final = run(state)  # a fourth fallback call would find no reply
+
+    assert final["end_state"] == "needs_review"
+    assert final["fallback_attempts"] == MAX_PARSE_ATTEMPTS

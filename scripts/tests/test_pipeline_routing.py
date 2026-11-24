@@ -138,3 +138,13 @@ def test_a_record_of_pages_alone_is_never_sent_back():
 
 def test_the_budget_is_the_first_parse_and_two_repairs():
     assert MAX_PARSE_ATTEMPTS == 3
+
+
+def test_no_fallback_round_when_it_already_answered_every_attempt():
+    # The primary was down throughout, so the fallback stood in for it.
+    state = {"parse_attempts": MAX_PARSE_ATTEMPTS, "record_parsed": False}
+    assert routing.retry(state) == "fallback"
+    assert routing.retry({**state, "fallback_attempts": 2}) == "fallback"
+    used_up = {**state, "fallback_attempts": MAX_PARSE_ATTEMPTS}
+    assert routing.retry(used_up) == "validate"
+    assert routing.retry({**used_up, "record_parsed": True}) == "render"

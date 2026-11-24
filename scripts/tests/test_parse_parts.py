@@ -233,3 +233,31 @@ def test_the_same_details_printed_another_way_are_no_conflict():
     second.details.report_date = None  # printed on one part only
 
     assert parts.header_conflicts([first, second]) == []
+
+
+def named(*names):
+    """One parse per name (None: the part prints none)."""
+    plan = parts.plan(key("d01").pages, LAB)
+    first = split_parse(parse_of(key("d01")), plan)[0]
+    out = []
+    for name in names:
+        p = first.model_copy(deep=True)
+        p.patient.name = text(name) if name else None
+        out.append(p)
+    return out
+
+
+def test_two_names_that_both_match_an_abbreviated_one_are_a_conflict():
+    conflicts = parts.header_conflicts(named("Avery R.", "Avery Reed", "Avery Ross"))
+    assert conflicts == [{"field": "patient.name", "parts": [0, 1, 2]}]
+
+
+def test_a_conflict_stays_when_a_later_round_leaves_the_detail_out():
+    old = parts.header_conflicts(named("Avery Reed", "Avery Reed", "Avery Ross"))
+    assert old
+    assert parts.kept_conflicts(old, named("Avery Reed", "Avery Reed", None)) == old
+
+
+def test_a_conflict_goes_when_every_part_is_read_again_and_agrees():
+    old = parts.header_conflicts(named("Avery Reed", "Avery Ross"))
+    assert parts.kept_conflicts(old, named("Avery Reed", "Avery Reed")) == []
