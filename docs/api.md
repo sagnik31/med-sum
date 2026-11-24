@@ -28,9 +28,9 @@ All backend routes except `/healthz`, `/auth/login`, `/auth/logout` and `/auth/s
 | `GET` | `/admin/runs?before=` | Your organisation's pipeline runs, newest first, 200 a page (`next_before` gives the next page): graph version, start and end, end state, models, code version, step counts. No document, patient or content (admins) |
 | `GET` | `/admin/runs/{id}` | One run and its steps: status, model and role, timings, tokens, prompt name, the checks that failed each (validator, severity, item and field, never the message) and a `replay_command` where it can be replayed (admins) |
 | `GET` | `/patients?q=` | Your organisation's patients (up to 200), by part of the name or the start of the MRN; no `q` lists them all |
-| `POST` | `/patients` | Add a patient `{mrn, full_name, date_of_birth?, age_years?, sex?}` (`date_of_birth` as `YYYY-MM-DD`, or `age_years` when it isn't known, not both; `sex` is `F`, `M` or `O`). 409 when the MRN is taken |
+| `POST` | `/patients` | Add a patient `{mrn, full_name, date_of_birth?, age_years?, sex?}` (`date_of_birth` as `YYYY-MM-DD`, or `age_years` when it isn't known, not both; `sex` is `F`, `M` or `O`). 409 when the MRN is taken, ignoring case and spaces |
 | `GET` | `/patients/{id}` | One patient |
-| `PATCH` | `/patients/{id}` | Change any of those fields; `null` clears an optional one |
+| `PATCH` | `/patients/{id}` | Change any of those fields; `null` clears an optional one. With `updated_at` as the page read it, 409 when the patient changed since (the edit form sends it); also 409 when another change lands while this one is saved |
 | `GET` | `/patients/{id}/documents` | The patient's documents, newest first, each with its `insight_status`, uploader and `duplicate_of` |
 | `POST` | `/patients/{id}/documents` | Upload a PDF, JPG or PNG (multipart field `file`, max 20 MB) and start processing it. The same file uploaded again for the same patient is accepted and names the first as `duplicate_of`; the patient summary counts it once |
 | `GET` | `/patients/{id}/summary` | The patient summary and its status (`none`, `processing`, `completed`, `failed`) |

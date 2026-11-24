@@ -141,6 +141,9 @@ type patientInput struct {
 	DateOfBirth optional[string] `json:"date_of_birth"`
 	AgeYears    optional[int]    `json:"age_years"`
 	Sex         optional[string] `json:"sex"`
+	// For an update, the patient's updated_at as the page read it: details
+	// that changed since answer 409. Not a detail itself.
+	UpdatedAt *time.Time `json:"updated_at"`
 }
 
 func decodePatientInput(w http.ResponseWriter, r *http.Request) (patientInput, error) {
@@ -158,7 +161,7 @@ func (in patientInput) apply(f *db.PatientFields) {
 	if in.MRN.Set {
 		f.MRN = ""
 		if in.MRN.Value != nil {
-			f.MRN = strings.TrimSpace(*in.MRN.Value)
+			f.MRN = strings.Join(strings.Fields(*in.MRN.Value), " ")
 		}
 	}
 	if in.FullName.Set {
@@ -248,6 +251,10 @@ func (s *Server) handleUpdatePatient(w http.ResponseWriter, r *http.Request, id 
 	if cur == nil {
 		return
 	}
+	if in.UpdatedAt != nil && !in.UpdatedAt.Equal(cur.UpdatedAt) {
+		http.Error(w, db.ErrPatientChanged.Error(), http.StatusConflict)
+		return
+	}
 	f := db.PatientFields{MRN: cur.MRN, FullName: cur.FullName, DateOfBirth: cur.DateOfBirth,
 		AgeYears: cur.AgeYears, Sex: cur.Sex}
 	in.apply(&f)
@@ -255,9 +262,9 @@ func (s *Server) handleUpdatePatient(w http.ResponseWriter, r *http.Request, id 
 		http.Error(w, msg, http.StatusBadRequest)
 		return
 	}
-	patient, err := s.db.UpdatePatient(r.Context(), p.OrgID, id, f,
+	patient, err := s.db.UpdatePatient(r.Context(), p.OrgID, id, cur.UpdatedAt, f,
 		with(s.patientEvent(r, actPatientUpdated, id), map[string]any{"fields": changedPatientFields(cur, f)}))
-	if errors.Is(err, db.ErrMRNTaken) {
+	if errors.Is(err, db.ErrMRNTaken) || errors.Is(err, db.ErrPatientChanged) {
 		http.Error(w, err.Error(), http.StatusConflict)
 		return
 	}

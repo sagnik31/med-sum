@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 	"testing"
+	"time"
 
 	"backend/internal/db"
 )
@@ -131,6 +132,48 @@ func TestUpdatePatientChangesOnlyTheGivenFields(t *testing.T) {
 	}
 	if rec := e.sendJSON(http.MethodPatch, "/patients/"+p.ID, auth, map[string]any{"mrn": nil}); rec.Code != http.StatusBadRequest {
 		t.Errorf("clearing the MRN: status = %d, want 400", rec.Code)
+	}
+}
+
+func TestAnMRNThatDiffersOnlyInCaseOrSpacingIsTaken(t *testing.T) {
+	e := newTestEnv(t)
+	_, session := e.login("me@hospital.test")
+	e.store.addPatient("org-1", "SYN-123")
+	for _, mrn := range []string{"syn-123", "SYN -123", " SYN\u00a0-123 "} {
+		rec := e.postJSON("/patients", session, map[string]any{"mrn": mrn, "full_name": "Other"})
+		if rec.Code != http.StatusConflict {
+			t.Errorf("%q: status = %d, want 409", mrn, rec.Code)
+		}
+	}
+}
+
+// A form left open sends every field, so saving it would undo a change made
+// since. So would an update that read the patient just before another wrote.
+func TestAPatientChangedMeanwhileIsNotSavedOver(t *testing.T) {
+	e := newTestEnv(t)
+	_, session := e.login("me@hospital.test")
+	p := e.store.addPatient("org-1", "SH-1")
+	patch := func(body string) int {
+		return e.do(http.MethodPatch, "/patients/"+p.ID, session, strings.NewReader(body), "application/json").Code
+	}
+	opened := `"updated_at":"` + p.UpdatedAt.Format(time.RFC3339Nano) + `"`
+
+	if code := patch(`{"mrn":"SH-2",` + opened + `}`); code != http.StatusOK {
+		t.Fatalf("first save = %d", code)
+	}
+	if code := patch(`{"mrn":"SH-1","full_name":"New Name",` + opened + `}`); code != http.StatusConflict {
+		t.Errorf("a save from the older page = %d, want 409", code)
+	}
+
+	e.store.beforeWrite = func() { // another update, after this one read the patient
+		e.store.beforeWrite = nil
+		e.store.patients[p.ID].UpdatedAt = p.UpdatedAt.Add(time.Hour)
+	}
+	if code := patch(`{"full_name":"New Name"}`); code != http.StatusConflict {
+		t.Errorf("a save another overtook = %d, want 409", code)
+	}
+	if got := e.store.patients[p.ID]; got.MRN != "SH-2" || got.FullName == "New Name" {
+		t.Errorf("patient = %+v", got)
 	}
 }
 

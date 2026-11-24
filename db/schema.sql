@@ -136,6 +136,12 @@ CREATE TABLE patients (
     UNIQUE (org_id, mrn),
     CHECK (date_of_birth IS NULL OR age_years IS NULL)
 );
+-- Two MRNs that differ only in case or spacing are one: the patient-match
+-- check reads them as the same ID, so a document of one patient would pass
+-- as the other's (scripts/src/validators/patient.py, _id_key).
+-- See docs/adr/0004-deterministic-checks-decide-routing.md.
+CREATE UNIQUE INDEX patients_org_id_mrn_key_idx
+    ON patients (org_id, lower(regexp_replace(mrn, '\s', '', 'g')));
 CREATE INDEX patients_org_id_name_idx ON patients (org_id, lower(full_name));
 
 -- A patient's cumulative summary, built by the AI service from the

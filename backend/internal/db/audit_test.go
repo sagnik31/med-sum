@@ -109,7 +109,7 @@ func TestMutationsWriteTheirEvent(t *testing.T) {
 		t.Fatal(err)
 	}
 	// Changes that find nothing write nothing.
-	if _, err := s.UpdatePatient(ctx, org, "00000000-0000-4000-8000-000000000000", PatientFields{MRN: "X", FullName: "X"},
+	if _, err := s.UpdatePatient(ctx, org, "00000000-0000-4000-8000-000000000000", time.Now(), PatientFields{MRN: "X", FullName: "X"},
 		event(org, u.ID, "patient_updated")); err != nil {
 		t.Fatal(err)
 	}

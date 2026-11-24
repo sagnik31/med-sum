@@ -63,7 +63,7 @@ type Store interface {
 	// Patients, documents and summaries. Every method that finds a patient
 	// or a document takes the caller's organisation and filters on it.
 	CreatePatient(ctx context.Context, orgID, createdBy string, f db.PatientFields, ev *db.AuditEvent) (*db.Patient, error)
-	UpdatePatient(ctx context.Context, orgID, patientID string, f db.PatientFields, ev *db.AuditEvent) (*db.Patient, error)
+	UpdatePatient(ctx context.Context, orgID, patientID string, readAt time.Time, f db.PatientFields, ev *db.AuditEvent) (*db.Patient, error)
 	GetPatient(ctx context.Context, orgID, patientID string) (*db.Patient, error)
 	ListPatients(ctx context.Context, orgID, query string) ([]db.Patient, error)
 	GetPatientSummary(ctx context.Context, patientID string) (*db.PatientSummary, error)

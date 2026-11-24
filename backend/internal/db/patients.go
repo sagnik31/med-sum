@@ -35,7 +35,12 @@ type PatientFields struct {
 	Sex         *string
 }
 
-// ErrMRNTaken means the organisation already has a patient with that MRN.
+// ErrPatientChanged means the patient's details changed since they were
+// read: saving over them would undo that change.
+var ErrPatientChanged = errors.New("the patient's details changed since you opened them; reload the page")
+
+// ErrMRNTaken means the organisation already has a patient with that MRN,
+// ignoring case and spaces.
 var ErrMRNTaken = errors.New("a patient with this MRN already exists")
 
 const patientColumns = `p.id, p.org_id, p.mrn, p.full_name, p.date_of_birth::text, p.age_years,
@@ -79,21 +84,30 @@ RETURNING ` + patientColumns
 	return p, nil
 }
 
-// UpdatePatient replaces a patient's details and writes ev in the same
-// transaction. It returns nil, writing nothing, when the organisation has
-// no such patient.
-func (s *Store) UpdatePatient(ctx context.Context, orgID, patientID string, f PatientFields, ev *AuditEvent) (*Patient, error) {
+// UpdatePatient replaces a patient's details, if they are still the ones
+// read at readAt (their updated_at), and writes ev in the same transaction.
+// It returns ErrPatientChanged when they are not, and nil when the
+// organisation has no such patient, writing nothing.
+func (s *Store) UpdatePatient(ctx context.Context, orgID, patientID string, readAt time.Time, f PatientFields, ev *AuditEvent) (*Patient, error) {
 	const q = `
 UPDATE patients AS p
 SET mrn = $3, full_name = $4, date_of_birth = $5::date, age_years = $6, sex = $7, updated_at = now()
-WHERE p.id = $1 AND p.org_id = $2
+WHERE p.id = $1 AND p.org_id = $2 AND p.updated_at = $8
 RETURNING ` + patientColumns
 	var p *Patient
 	err := pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
 		var err error
-		p, err = scanPatient(tx.QueryRow(ctx, q, patientID, orgID, f.MRN, f.FullName, f.DateOfBirth, f.AgeYears, f.Sex))
-		if err != nil || p == nil {
+		p, err = scanPatient(tx.QueryRow(ctx, q, patientID, orgID, f.MRN, f.FullName, f.DateOfBirth, f.AgeYears, f.Sex, readAt))
+		if err != nil {
 			return err
+		}
+		if p == nil {
+			var exists bool
+			if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM patients WHERE id = $1 AND org_id = $2)`,
+				patientID, orgID).Scan(&exists); err != nil || !exists {
+				return err
+			}
+			return ErrPatientChanged
 		}
 		return writeAudit(ctx, tx, ev)
 	})

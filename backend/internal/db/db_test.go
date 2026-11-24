@@ -11,6 +11,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/url"
 	"os"
@@ -231,15 +232,50 @@ func TestCreateAndUpdatePatient(t *testing.T) {
 		t.Errorf("same MRN in another organisation: %v", err)
 	}
 
-	up, err := s.UpdatePatient(ctx, me.OrgID, p.ID, PatientFields{MRN: "SH-1", FullName: "Meera R Iyer", AgeYears: &age}, nil)
+	up, err := s.UpdatePatient(ctx, me.OrgID, p.ID, p.UpdatedAt, PatientFields{MRN: "SH-1", FullName: "Meera R Iyer", AgeYears: &age}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if up.FullName != "Meera R Iyer" || up.DateOfBirth != nil || up.AgeYears == nil || *up.AgeYears != 54 || !up.UpdatedAt.After(p.UpdatedAt) {
 		t.Errorf("updated = %+v", up)
 	}
-	if got, err := s.UpdatePatient(ctx, otherOrg, p.ID, PatientFields{MRN: "X", FullName: "X"}, nil); err != nil || got != nil {
+	if got, err := s.UpdatePatient(ctx, otherOrg, p.ID, p.UpdatedAt, PatientFields{MRN: "X", FullName: "X"}, nil); err != nil || got != nil {
 		t.Errorf("update from another organisation = %+v, %v; want nil, nil", got, err)
+	}
+}
+
+func TestAPatientIsUpdatedOnlyAsItWasRead(t *testing.T) {
+	s := store(t)
+	ctx := context.Background()
+	me := mustUser(t, s, "a@hospital.test")
+	p, err := s.CreatePatient(ctx, me.OrgID, me.ID, PatientFields{MRN: "SYN-123", FullName: "A"}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.UpdatePatient(ctx, me.OrgID, p.ID, p.UpdatedAt, PatientFields{MRN: "SYN-124", FullName: "A"}, nil); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.UpdatePatient(ctx, me.OrgID, p.ID, p.UpdatedAt, PatientFields{MRN: "SYN-123", FullName: "B"}, nil); !errors.Is(err, ErrPatientChanged) {
+		t.Errorf("an update from the older read: %v, want ErrPatientChanged", err)
+	}
+	if got, _ := s.GetPatient(ctx, me.OrgID, p.ID); got.MRN != "SYN-124" || got.FullName != "A" {
+		t.Errorf("patient = %+v", got)
+	}
+}
+
+func TestAnMRNThatDiffersOnlyInCaseOrSpacingIsTaken(t *testing.T) {
+	s := store(t)
+	ctx := context.Background()
+	me := mustUser(t, s, "a@hospital.test")
+	for _, mrn := range []string{"SYN-123", "SYN-124"} {
+		if _, err := s.CreatePatient(ctx, me.OrgID, me.ID, PatientFields{MRN: mrn, FullName: "A"}, nil); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, mrn := range []string{"syn-123", "SYN -123", "Syn - 123"} {
+		if _, err := s.CreatePatient(ctx, me.OrgID, me.ID, PatientFields{MRN: mrn, FullName: "B"}, nil); !errors.Is(err, ErrMRNTaken) {
+			t.Errorf("%q: %v, want ErrMRNTaken", mrn, err)
+		}
 	}
 }
 

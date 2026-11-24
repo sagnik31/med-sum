@@ -144,7 +144,7 @@ func TestTheAPIRoleCanRunTheAPIsQueries(t *testing.T) {
 
 	p, err := s.CreatePatient(ctx, org, u.ID, PatientFields{MRN: "SH-1", FullName: "A"}, ev(org, u.ID, "patient_created"))
 	check("CreatePatient", err)
-	_, err = s.UpdatePatient(ctx, org, p.ID, PatientFields{MRN: "SH-1", FullName: "B"}, ev(org, u.ID, "patient_updated"))
+	_, err = s.UpdatePatient(ctx, org, p.ID, p.UpdatedAt, PatientFields{MRN: "SH-1", FullName: "B"}, ev(org, u.ID, "patient_updated"))
 	check("UpdatePatient", err)
 	_, err = s.GetPatient(ctx, org, p.ID)
 	check("GetPatient", err)

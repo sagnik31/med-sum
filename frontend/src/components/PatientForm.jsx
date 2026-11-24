@@ -7,7 +7,8 @@ const inputClass =
 // A patient's details. The MRN (the hospital's patient ID) is required:
 // the pipeline checks the ID printed on each document against it. Give a
 // date of birth, or an age when that is all that is known. onSubmit gets
-// every field (null for an empty one) and may throw an ApiError, whose
+// every field (null for an empty one), with the updated_at of the details the
+// form opened with when it edits a patient, and may throw an ApiError, whose
 // message is shown.
 function PatientForm({ initial = {}, submitLabel, onSubmit, onCancel }) {
   const [mrn, setMrn] = useState(initial.mrn || "");
@@ -15,6 +16,9 @@ function PatientForm({ initial = {}, submitLabel, onSubmit, onCancel }) {
   const [born, setBorn] = useState(initial.date_of_birth || "");
   const [age, setAge] = useState(initial.age_years != null ? String(initial.age_years) : "");
   const [sex, setSex] = useState(initial.sex || "");
+  // Kept from when the form opened: the API refuses to save over a change
+  // made since.
+  const [openedAt] = useState(initial.updated_at);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -37,6 +41,7 @@ function PatientForm({ initial = {}, submitLabel, onSubmit, onCancel }) {
         date_of_birth: born || null,
         age_years: age ? Number(age) : null,
         sex: sex || null,
+        updated_at: openedAt,
       });
     } catch (err) {
       setError(err.message || "Could not save the patient.");

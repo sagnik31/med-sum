@@ -559,6 +559,9 @@ func (f *fakeStore) patientIn(orgID, patientID string) *db.Patient {
 	return p
 }
 
+// mrnKey is what the schema's unique index compares.
+func mrnKey(mrn string) string { return strings.ToLower(strings.Join(strings.Fields(mrn), "")) }
+
 func (f *fakeStore) CreatePatient(_ context.Context, orgID, createdBy string, pf db.PatientFields, ev *db.AuditEvent) (*db.Patient, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
@@ -569,7 +572,7 @@ func (f *fakeStore) CreatePatient(_ context.Context, orgID, createdBy string, pf
 		return nil, f.failAudit
 	}
 	for _, p := range f.patients {
-		if p.OrgID == orgID && p.MRN == pf.MRN {
+		if p.OrgID == orgID && mrnKey(p.MRN) == mrnKey(pf.MRN) {
 			return nil, db.ErrMRNTaken
 		}
 	}
@@ -588,7 +591,10 @@ func (f *fakeStore) CreatePatient(_ context.Context, orgID, createdBy string, pf
 	return &copied, nil
 }
 
-func (f *fakeStore) UpdatePatient(_ context.Context, orgID, patientID string, pf db.PatientFields, ev *db.AuditEvent) (*db.Patient, error) {
+func (f *fakeStore) UpdatePatient(_ context.Context, orgID, patientID string, readAt time.Time, pf db.PatientFields, ev *db.AuditEvent) (*db.Patient, error) {
+	if f.beforeWrite != nil {
+		f.beforeWrite()
+	}
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
@@ -602,12 +608,15 @@ func (f *fakeStore) UpdatePatient(_ context.Context, orgID, patientID string, pf
 		return nil, nil
 	}
 	for _, o := range f.patients {
-		if o.ID != p.ID && o.OrgID == orgID && o.MRN == pf.MRN {
+		if o.ID != p.ID && o.OrgID == orgID && mrnKey(o.MRN) == mrnKey(pf.MRN) {
 			return nil, db.ErrMRNTaken
 		}
 	}
+	if !p.UpdatedAt.Equal(readAt) {
+		return nil, db.ErrPatientChanged
+	}
 	p.MRN, p.FullName, p.DateOfBirth, p.AgeYears, p.Sex = pf.MRN, pf.FullName, pf.DateOfBirth, pf.AgeYears, pf.Sex
-	p.UpdatedAt = time.Now()
+	p.UpdatedAt = p.UpdatedAt.Add(time.Second)
 	f.logAudit(ev)
 	copied := *p
 	return &copied, nil
