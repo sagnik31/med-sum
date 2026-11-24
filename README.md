@@ -98,7 +98,7 @@ The first live eval suite ran on both local models on 2026-11-21 and 2026-11-22.
 
 ## Quick start
 
-You need Go 1.25+, Node.js 18+, Python 3.10+, PostgreSQL 17+ and Ollama.
+You need Go 1.25+, Node.js 22+, Python 3.10+, PostgreSQL 17+ and Ollama.
 
 ```bash
 git clone https://github.com/sagnik31/med-sum.git && cd med-sum

@@ -9,7 +9,7 @@ How to run Med-Sum on your own machine, what each setting does, and the database
 | Tool | Version | Notes |
 |---|---|---|
 | [Go](https://go.dev/dl/) | 1.25+ | |
-| [Node.js](https://nodejs.org/) | 18+ | includes npm |
+| [Node.js](https://nodejs.org/) | 22+ | includes npm |
 | [Python](https://www.python.org/downloads/) | 3.10+ | |
 | [PostgreSQL](https://www.postgresql.org/download/) | 17+ | the examples assume user `postgres`, password `postgres` |
 | [Ollama](https://ollama.com/download) | 0.30.9+ | the two models need about 8 GB of disk; they run on a CPU, but a GPU is much faster |

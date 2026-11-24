@@ -67,6 +67,10 @@ export default {
     },
   },
   preview: {
+    // The dev server's port: the API's default ALLOWED_ORIGINS names it, and
+    // refuses a login from any other.
+    port: 5173,
+    strictPort: true,
     headers: PREVIEW_HEADERS,
   },
 };

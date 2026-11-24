@@ -130,6 +130,28 @@ test("a citation that doesn't fit the page is reported, not shown as found", () 
   assert.equal(src.matches, false);
 });
 
+test("a link's lines and a quote of part of a line are not a mismatch", () => {
+  const pages = [{ page: 1, lines: ["Haemoglobin  10.4 g/dL", "CRP  < 5 mg/L"] }];
+  const at = (quote, line = 1) => sourceLines(pages, { page: 1, first_line: line, last_line: line, quote }).matches;
+  assert.equal(at(undefined), true); // ?page=1&lines=1
+  for (const q of ["Haemoglobin  10.4 g/dL", "Haemoglobin 10.4 g/dL", "10.4", "10.4 g/dL", "Haemoglobin"]) {
+    assert.equal(at(q), true, q);
+  }
+  for (const q of ["10", "4 g/dL", "0.4", "Haemo", "11.4", ""]) assert.equal(at(q), false, q);
+  assert.equal(at("< 5 mg/L", 2), true);
+  assert.equal(at("10.4", 2), false);
+});
+
+test("a one-sided range's bound is not said to be in range", () => {
+  const obs = structuredClone(record.observations[0]);
+  obs.printed.reference_ranges = ["< 5"];
+  obs.derived = { value_num: 5, ranges: [{ text: "< 5", low: null, high: 5 }], flag_computed: "high" };
+  const fields = (d) => recordGroups({ ...record, observations: [{ ...obs, derived: d }] })[0].items[0].derived;
+  assert.equal(fields(obs.derived).find((f) => f.label === "Range").value, "upper limit 5");
+  const low = { ...obs.derived, ranges: [{ text: "> 5", low: 5, high: null }] };
+  assert.equal(fields(low).find((f) => f.label === "Range").value, "lower limit 5");
+});
+
 test("citations round-trip through a link's query", () => {
   for (const c of [
     { page: 1, first_line: 6, last_line: 6 },

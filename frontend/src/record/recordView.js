@@ -108,10 +108,32 @@ export function citeLink({ documentId, page, lines } = {}) {
   return c ? `/insights/${documentId}${citationQuery(c)}` : null;
 }
 
+function normalise(text) {
+  return text.normalize("NFKC").replace(/\s+/g, " ").trim();
+}
+
+// Whether the quote is all of the lines' text or a part of it, cut at whole
+// tokens: "10" is not in "10.4". The source check's rule for a quote
+// (docs/adr/0004-deterministic-checks-decide-routing.md).
+function quoteIn(text, quote) {
+  const t = normalise(text);
+  const q = normalise(quote);
+  if (!q) return false;
+  const word = (c) => c !== undefined && /[\p{L}\p{N}]/u.test(c);
+  const digit = (c) => c !== undefined && /\p{N}/u.test(c);
+  const joins = (edge, next, after) =>
+    word(edge) && (word(next) || (digit(edge) && /[.,]/.test(next ?? "") && digit(after)));
+  for (let i = t.indexOf(q); i !== -1; i = t.indexOf(q, i + 1)) {
+    const j = i + q.length;
+    if (!joins(q[0], t[i - 1], t[i - 2]) && !joins(q.at(-1), t[j], t[j + 1])) return true;
+  }
+  return false;
+}
+
 // One page's lines, numbered, with the cited ones marked. `matches` is false
-// when the citation's quote isn't the text of those lines (the pipeline
-// checks this, so it would mean a bug); `found` is false when the page or
-// the lines don't exist.
+// when the citation's quote isn't in those lines (the pipeline checks this,
+// so it would mean a bug); a link's citation has no quote to compare.
+// `found` is false when the page or the lines don't exist.
 export function sourceLines(pages, c) {
   const page = (pages || []).find((p) => p.page === c.page);
   if (!page) return { page: c.page, lines: [], found: false, matches: false };
@@ -122,7 +144,7 @@ export function sourceLines(pages, c) {
   }));
   const found = c.last_line <= page.lines.length;
   const quoted = page.lines.slice(c.first_line - 1, c.last_line).join("\n");
-  return { page: c.page, lines, found, matches: found && quoted === c.quote };
+  return { page: c.page, lines, found, matches: found && (c.quote == null || quoteIn(quoted, c.quote)) };
 }
 
 // ---------- Header values (patient and document) ----------
@@ -207,12 +229,15 @@ function withUnit(value, unit) {
   return unit ? `${value} ${unit}` : value;
 }
 
+// The bounds as numbers. Whether a bound itself is in range is in the
+// printed range, shown with it ("< 5" and "<= 5" both have the limit 5), so
+// the words here don't say.
 function rangeText(r) {
   if (r.low !== null && r.low !== undefined && r.high !== null && r.high !== undefined) {
     return `${r.low} to ${r.high}`;
   }
-  if (r.low !== null && r.low !== undefined) return `at least ${r.low}`;
-  if (r.high !== null && r.high !== undefined) return `at most ${r.high}`;
+  if (r.low !== null && r.low !== undefined) return `lower limit ${r.low}`;
+  if (r.high !== null && r.high !== undefined) return `upper limit ${r.high}`;
   return null;
 }
 

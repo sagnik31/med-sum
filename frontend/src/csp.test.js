@@ -33,6 +33,11 @@ test("the dev server keeps its headers but no script policy", () => {
   assert.equal(config.preview.headers["X-Frame-Options"], "DENY");
 });
 
+test("the built app is previewed at the origin the API allows by default", () => {
+  assert.equal(config.preview.port, config.server.port);
+  assert.equal(config.preview.strictPort, true);
+});
+
 test("the proxy names the browser's address to the API", () => {
   assert.equal(config.server.proxy["/api"].xfwd, true);
 });
