@@ -280,6 +280,11 @@ func (s *Server) handleCompleteAudit(w http.ResponseWriter, r *http.Request, doc
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
+	// As after a sign-off: the summary names each document's status, so
+	// rebuild it. The audit stands if that fails.
+	if err := s.requestPatientSummary(r, doc.PatientID); err != nil {
+		log.Printf("could not rebuild the summary after the audit of document %s: %v", docID, err)
+	}
 	writeJSON(w, http.StatusOK, map[string]any{"document_id": docID, "completed_at": now})
 }
 

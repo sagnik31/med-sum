@@ -33,6 +33,16 @@ func TestAnAuditSampleWaitsInTheQueueUntilItsAuditIsFinished(t *testing.T) {
 	if done := re.store.auditDone[re.doc]; !done.Equal(re.now()) {
 		t.Errorf("finished at %v, want the server's clock %v", done, re.now())
 	}
+	// It is the document's sign-off, so the summary is rebuilt as after one.
+	var rebuilt bool
+	for _, c := range re.ai.received() {
+		if c.Path == "/internal/generate-patient-summary" && c.Body["patient_id"] == re.patient.ID {
+			rebuilt = true
+		}
+	}
+	if !rebuilt {
+		t.Error("the patient summary was not rebuilt")
+	}
 	ev := re.store.audit[len(re.store.audit)-1]
 	if ev.Action != actAuditCompleted || ev.TargetID == nil || *ev.TargetID != re.doc {
 		t.Errorf("audit = %+v", ev)
