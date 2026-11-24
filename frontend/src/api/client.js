@@ -260,7 +260,8 @@ export function completeAudit(documentId) {
   return apiRequest(`/documents/${enc(documentId)}/audit-complete`, { method: "POST" });
 }
 
-// Sign off a document that passed every check: it becomes verified.
+// Sign off a document that passed every check, or whose flagged values are
+// all reviewed: it becomes verified.
 // recordUpdatedAt is the record's updated_at as the page showing it loaded
 // it. 409 when the record changed since, when the document is not waiting
 // for a sign-off, or is an audit sample (finish the audit instead). See docs/adr/0013-model-choice-after-the-first-live-evals.md.

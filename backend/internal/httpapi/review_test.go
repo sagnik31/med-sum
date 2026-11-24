@@ -106,7 +106,7 @@ func TestACorrectionIsAppliedByTheAIServiceAndStoredWithItsAuditRow(t *testing.T
 	}
 	rv := re.store.reviews[0]
 	if rv.ItemID != "obs-2" || *rv.Field != "value_text" || *rv.Corrected != "5.2" || *rv.Original != "4" ||
-		rv.ReviewerID != re.userID || rv.Action != "correct" || rv.Verified || len(rv.Signals) != 1 {
+		rv.ReviewerID != re.userID || rv.Action != "correct" || len(rv.Signals) != 1 {
 		t.Errorf("review row = %+v", rv)
 	}
 
@@ -122,7 +122,7 @@ func TestACorrectionIsAppliedByTheAIServiceAndStoredWithItsAuditRow(t *testing.T
 	}
 }
 
-func TestAConfirmationThatLeavesNothingFlaggedVerifiesAndRebuildsTheSummary(t *testing.T) {
+func TestAConfirmationThatLeavesNothingFlaggedRebuildsTheSummaryAndAwaitsTheSignOff(t *testing.T) {
 	re := newReviewEnv(t)
 	re.applied["flagged"] = 0
 	re.applied["original"] = nil
@@ -131,11 +131,11 @@ func TestAConfirmationThatLeavesNothingFlaggedVerifiesAndRebuildsTheSummary(t *t
 	if rec.Code != http.StatusOK {
 		t.Fatalf("status = %d: %s", rec.Code, rec.Body)
 	}
-	if resp := decodeJSON[reviewResponse](t, rec); resp.Status != "verified" {
-		t.Errorf("status = %s", resp.Status)
+	if resp := decodeJSON[reviewResponse](t, rec); resp.Status != "needs_review" || resp.Flagged != 0 {
+		t.Errorf("response = %+v", resp)
 	}
-	if re.store.insights[re.doc].Status != "verified" {
-		t.Error("the document was not verified")
+	if re.store.insights[re.doc].Status != "needs_review" {
+		t.Error("the review verified a document nobody signed off")
 	}
 	var rebuilt bool
 	for _, c := range re.ai.received() {
@@ -146,7 +146,7 @@ func TestAConfirmationThatLeavesNothingFlaggedVerifiesAndRebuildsTheSummary(t *t
 	if !rebuilt {
 		t.Error("the patient summary was not rebuilt")
 	}
-	if ev := re.store.audit[len(re.store.audit)-1]; ev.Action != actFieldConfirmed || ev.Details["verified"] != true {
+	if ev := re.store.audit[len(re.store.audit)-1]; ev.Action != actFieldConfirmed || ev.Details["flagged_left"] != 0 {
 		t.Errorf("audit = %+v", ev)
 	}
 }

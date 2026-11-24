@@ -547,7 +547,7 @@ func (s *Server) handleDocumentByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// /documents/{id}/sign-off: a clinician signs off a document that
-	// passed every check
+	// passed every check, or whose flagged values are all reviewed
 	if len(parts) == 2 && parts[1] == "sign-off" {
 		if r.Method != http.MethodPost {
 			w.WriteHeader(http.StatusMethodNotAllowed)

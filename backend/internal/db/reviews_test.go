@@ -89,7 +89,7 @@ func TestApplyReviewStoresTheRecordTheRowAndTheAuditEventTogether(t *testing.T) 
 
 	reviewed := at.Add(time.Minute)
 	updated, err := s.ApplyReview(ctx, me.OrgID, d.ID, at, RecordReview{
-		Record: []byte(`{"schema_version": 1, "reviewed": true}`), HTML: "<p>new</p>", Verified: true,
+		Record: []byte(`{"schema_version": 1, "reviewed": true}`), HTML: "<p>new</p>",
 		ItemID: "obs-1", Field: &field, Action: "correct", Original: &original, Corrected: &corrected,
 		Signals: []string{"LC-03"}, Findings: []string{"flag_agreement"}, ReviewerID: me.ID, At: reviewed,
 	}, ev(me.OrgID, me.ID, "field_corrected"))
@@ -101,7 +101,7 @@ func TestApplyReviewStoresTheRecordTheRowAndTheAuditEventTogether(t *testing.T) 
 	}
 	rec, _ := s.GetDocumentRecord(ctx, d.ID)
 	ins, _ := s.GetInsightByDocumentID(ctx, d.ID)
-	if string(rec.Record) != `{"reviewed": true, "schema_version": 1}` || ins.Status != "verified" ||
+	if string(rec.Record) != `{"reviewed": true, "schema_version": 1}` || ins.Status != "needs_review" ||
 		ins.HTMLInsights != "<p>new</p>" {
 		t.Errorf("record = %s, insight = %+v", rec.Record, ins)
 	}
@@ -159,6 +159,40 @@ func TestApplyReviewRefusesWhileProcessingAndAcrossOrganisations(t *testing.T) {
 	}
 }
 
+// A review never verifies: a needs_review document is signed off once
+// nothing in it is flagged, and stays in the queue until then.
+func TestAReviewedDocumentIsQueuedUntilSignedOff(t *testing.T) {
+	s := store(t)
+	ctx := context.Background()
+	at := time.Date(2026, 11, 10, 9, 0, 0, 0, time.UTC)
+	me, d := reviewFixture(t, s, "needs_review", at)
+	signOff := func(read time.Time) error {
+		return s.SignOff(ctx, me.OrgID, d.ID, read, at.Add(time.Hour), ev(me.OrgID, me.ID, "document_signed_off"))
+	}
+	if err := signOff(at); !errors.Is(err, ErrFlaggedBeforeSignOff) {
+		t.Fatalf("with values flagged: err = %v", err)
+	}
+	reviewed := at.Add(time.Minute)
+	if _, err := s.ApplyReview(ctx, me.OrgID, d.ID, at, RecordReview{Record: []byte(`{"schema_version": 1}`),
+		HTML: "<p></p>", ItemID: "obs-1", Action: "confirm", ReviewerID: me.ID, At: reviewed},
+		ev(me.OrgID, me.ID, "field_confirmed")); err != nil {
+		t.Fatal(err)
+	}
+	queue, _ := s.ListReviewQueue(ctx, me.OrgID)
+	if len(queue) != 1 || queue[0].Reason != "needs_review" || queue[0].Flagged != 0 {
+		t.Fatalf("queue = %+v", queue)
+	}
+	if err := signOff(at); !errors.Is(err, ErrReviewConflict) {
+		t.Errorf("a stale sign-off: err = %v", err)
+	}
+	if err := signOff(reviewed); err != nil {
+		t.Fatal(err)
+	}
+	if ins, _ := s.GetInsightByDocumentID(ctx, d.ID); ins.Status != "verified" {
+		t.Errorf("status = %s", ins.Status)
+	}
+}
+
 // No run ends verified: a document that passed every check is queued as
 // checks_passed and becomes verified only when a clinician signs it off.
 func TestADocumentThatPassedItsChecksIsQueuedUntilSignedOff(t *testing.T) {
@@ -173,7 +207,7 @@ func TestADocumentThatPassedItsChecksIsQueuedUntilSignedOff(t *testing.T) {
 	}
 	// A review with nothing left flagged doesn't verify it.
 	if _, err := s.ApplyReview(ctx, me.OrgID, d.ID, at, RecordReview{Record: []byte(`{"schema_version": 1}`),
-		HTML: "<p></p>", Verified: true, ItemID: "obs-1", Action: "confirm", ReviewerID: me.ID,
+		HTML: "<p></p>", ItemID: "obs-1", Action: "confirm", ReviewerID: me.ID,
 		At: at.Add(time.Minute)}, ev(me.OrgID, me.ID, "field_confirmed")); err != nil {
 		t.Fatal(err)
 	}

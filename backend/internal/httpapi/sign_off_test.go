@@ -81,7 +81,7 @@ func TestAReviewDoesNotVerifyADocumentThatPassedItsChecks(t *testing.T) {
 	if re.store.insights[re.doc].Status != "checks_passed" {
 		t.Errorf("status = %s, want checks_passed", re.store.insights[re.doc].Status)
 	}
-	if ev := re.store.audit[len(re.store.audit)-1]; ev.Details["verified"] != false {
+	if ev := re.store.audit[len(re.store.audit)-1]; ev.Details["flagged_left"] != 0 {
 		t.Errorf("audit = %+v", ev)
 	}
 }
@@ -107,8 +107,28 @@ func TestARecordThatChangedSinceItWasReadIsNotSignedOff(t *testing.T) {
 	}
 }
 
-func TestOnlyADocumentThatPassedItsChecksIsSignedOff(t *testing.T) {
-	for _, status := range []string{"needs_review", "verified", "processing", "failed"} {
+// A document whose flagged values are reviewed still needs the sign-off: the
+// others may be as wrong as those of one that passed its checks.
+func TestAReviewedDocumentIsSignedOffOnceNothingIsFlagged(t *testing.T) {
+	re := newReviewEnv(t)
+	re.store.flagged = map[string]int{re.doc: 1}
+	if rec := re.signOff(recordTime); rec.Code != http.StatusConflict {
+		t.Fatalf("with a flagged value left: status = %d", rec.Code)
+	}
+	if re.store.insights[re.doc].Status != "needs_review" {
+		t.Fatalf("status = %s", re.store.insights[re.doc].Status)
+	}
+	re.store.flagged[re.doc] = 0
+	if rec := re.signOff(recordTime); rec.Code != http.StatusOK {
+		t.Fatalf("with none left: status = %d: %s", rec.Code, rec.Body)
+	}
+	if re.store.insights[re.doc].Status != "verified" {
+		t.Errorf("status = %s", re.store.insights[re.doc].Status)
+	}
+}
+
+func TestOnlyAFinishedDocumentIsSignedOff(t *testing.T) {
+	for _, status := range []string{"verified", "processing", "failed"} {
 		re := newReviewEnv(t)
 		re.store.insights[re.doc].Status = status
 		if rec := re.signOff(recordTime); rec.Code != http.StatusConflict {

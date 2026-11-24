@@ -8,6 +8,7 @@ import {
   addableDates,
   auditMark,
   auditProgress,
+  awaitsSignOff,
   pageStatus,
   correctableFields,
   correctionsOf,
@@ -136,9 +137,20 @@ test("the flagged count is the values still awaiting review", () => {
   assert.equal(flaggedCount(reviewed), 0);
 });
 
+test("a document is signed off once it passed its checks or nothing flagged is left", () => {
+  const reviewed = structuredClone(record);
+  reviewed.observations[1].provenance.status = "clinician_confirmed";
+  assert.equal(awaitsSignOff("needs_review", record), false);
+  assert.equal(awaitsSignOff("needs_review", reviewed), true);
+  assert.equal(awaitsSignOff("checks_passed", reviewed), true);
+  assert.equal(awaitsSignOff("checks_passed", null), false);
+  assert.equal(awaitsSignOff("ready", reviewed), false);
+});
+
 test("queue entries say what waits", () => {
   assert.equal(queueLabel({ reason: "needs_review", flagged: 1 }), "1 value to review");
   assert.equal(queueLabel({ reason: "needs_review", flagged: 3 }), "3 values to review");
+  assert.equal(queueLabel({ reason: "needs_review", flagged: 0 }), "reviewed, awaiting sign-off");
   assert.match(queueLabel({ reason: "audit", flagged: 0 }), /audit/);
   assert.equal(queueLabel({ reason: "checks_passed", flagged: 0 }), "checks passed, awaiting sign-off");
 });
@@ -169,8 +181,8 @@ test("an open audit marks each value and counts what is left", () => {
 test("a saved review changes the status on the page", () => {
   const at = "2025-03-05T10:00:01.5Z";
   assert.equal(statusAfterReview({ status: "needs_review", record_updated_at: at, flagged: 1 }, "needs_review"), "needs_review");
-  assert.equal(statusAfterReview({ status: "verified", record_updated_at: at, flagged: 0 }, "needs_review"), "ready");
-  // A review of a document that passed its checks leaves it awaiting the sign-off.
+  // No review verifies: the document awaits the sign-off.
+  assert.equal(statusAfterReview({ status: "needs_review", record_updated_at: at, flagged: 0 }, "needs_review"), "needs_review");
   assert.equal(statusAfterReview({ status: "checks_passed", record_updated_at: at, flagged: 0 }, "checks_passed"), "checks_passed");
   assert.equal(statusAfterReview(null, "ready"), "ready");
 });

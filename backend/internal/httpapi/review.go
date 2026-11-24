@@ -203,10 +203,9 @@ func (s *Server) handleReviewDocument(w http.ResponseWriter, r *http.Request, do
 		v := strings.TrimSpace(*req.Value)
 		corrected = &v
 	}
-	// A review verifies a needs_review document once nothing flagged is
-	// left; a checks_passed one stays so until it is signed off.
-	verified := applied.Flagged == 0 && ins.Status == "needs_review"
-	details := map[string]any{"item_id": req.ItemID, "signals": applied.Signals, "verified": verified}
+	// A review never verifies: the document waits for its sign-off, as the
+	// values nothing flagged are unread.
+	details := map[string]any{"item_id": req.ItemID, "signals": applied.Signals, "flagged_left": applied.Flagged}
 	if req.Field != nil {
 		details["field"] = *req.Field
 	}
@@ -219,7 +218,7 @@ func (s *Server) handleReviewDocument(w http.ResponseWriter, r *http.Request, do
 	ev := with(s.documentEvent(r, action, doc), details)
 
 	updated, err := s.db.ApplyReview(ctx, p.OrgID, docID, rec.UpdatedAt, db.RecordReview{
-		Record: applied.Record, HTML: applied.HTML, Verified: verified,
+		Record: applied.Record, HTML: applied.HTML,
 		RunID: rec.RunID, ItemID: req.ItemID, Field: req.Field, Action: req.Action,
 		Original: applied.Original, Corrected: corrected, Note: trimmedOrNil(req.Note),
 		Signals: applied.Signals, Findings: findings, ReviewerID: p.UserID, At: now,
@@ -234,21 +233,18 @@ func (s *Server) handleReviewDocument(w http.ResponseWriter, r *http.Request, do
 		return
 	}
 
-	newStatus := ins.Status
-	if verified {
-		newStatus = "verified"
-	}
 	// The summary shows the values as they were read before this: rebuild
-	// it. Not after every correction of a document still awaiting review,
+	// it. Not after every review of a document with more still to review,
 	// whose values it marks so. The review stands if that fails; the worker
 	// finds a summary left behind a correction.
-	if verified || (req.Action == "correct" && newStatus != "needs_review") {
+	if (req.Action == "correct" && ins.Status != "needs_review") ||
+		(applied.Flagged == 0 && ins.Status == "needs_review") {
 		if err := s.requestPatientSummary(r, doc.PatientID); err != nil {
 			log.Printf("could not rebuild the summary after reviewing document %s: %v", docID, err)
 		}
 	}
 	writeJSON(w, http.StatusOK, reviewResponse{
-		DocumentID: docID, Status: newStatus, RecordUpdatedAt: updated,
+		DocumentID: docID, Status: ins.Status, RecordUpdatedAt: updated,
 		Flagged: applied.Flagged, Findings: applied.Findings,
 	})
 }
@@ -300,8 +296,8 @@ type signOffRequest struct {
 	RecordUpdatedAt time.Time `json:"record_updated_at"`
 }
 
-// handleSignOff makes a document that passed every check verified: a
-// clinician has read it and signs it off, and the sign-off is in the
+// handleSignOff makes a document that passed every check, or whose flagged
+// values have all been reviewed, verified: a clinician has read it and signs it off, and the sign-off is in the
 // audit log. The request names the record the clinician read, and another
 // one is refused. No run ends verified until an eval run passes the safety
 // gate. An audit sample is signed off by finishing its audit instead. See
@@ -325,6 +321,10 @@ func (s *Server) handleSignOff(w http.ResponseWriter, r *http.Request, docID str
 	err := s.db.SignOff(r.Context(), p.OrgID, docID, req.RecordUpdatedAt, now, s.documentEvent(r, actDocumentSignedOff, doc))
 	if errors.Is(err, db.ErrNotAwaitingSignOff) {
 		http.Error(w, "this document is not waiting for a sign-off", http.StatusConflict)
+		return
+	}
+	if errors.Is(err, db.ErrFlaggedBeforeSignOff) {
+		http.Error(w, "confirm or correct every flagged value before signing off", http.StatusConflict)
 		return
 	}
 	if errors.Is(err, db.ErrAuditBeforeSignOff) {

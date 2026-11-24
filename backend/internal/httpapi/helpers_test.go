@@ -866,7 +866,7 @@ func (f *fakeStore) CompleteAudit(_ context.Context, orgID, docID, _ string, at 
 }
 
 // SignOff follows the real method's rules: a checks_passed live document
-// of the organisation, not an open audit sample and with its record
+// of the organisation, or a needs_review one with nothing flagged, not an open audit sample and with its record
 // unchanged since recordUpdatedAt, becomes verified.
 func (f *fakeStore) SignOff(_ context.Context, orgID, docID string, recordUpdatedAt, at time.Time, ev *db.AuditEvent) error {
 	f.mu.Lock()
@@ -875,7 +875,8 @@ func (f *fakeStore) SignOff(_ context.Context, orgID, docID string, recordUpdate
 		return f.failWith
 	}
 	ins := f.insights[docID]
-	if f.documentIn(orgID, docID) == nil || ins == nil || ins.Status != "checks_passed" {
+	if f.documentIn(orgID, docID) == nil || ins == nil ||
+		(ins.Status != "checks_passed" && ins.Status != "needs_review") {
 		return db.ErrNotAwaitingSignOff
 	}
 	if f.auditOpen[docID] {
@@ -883,6 +884,9 @@ func (f *fakeStore) SignOff(_ context.Context, orgID, docID string, recordUpdate
 	}
 	if rec := f.records[docID]; rec == nil || !rec.UpdatedAt.Equal(recordUpdatedAt) {
 		return db.ErrReviewConflict
+	}
+	if f.flagged[docID] > 0 {
+		return db.ErrFlaggedBeforeSignOff
 	}
 	if f.failAudit != nil {
 		return f.failAudit
@@ -1024,9 +1028,6 @@ func (f *fakeStore) ApplyReview(_ context.Context, orgID, docID string, recordUp
 	rec.Record = rv.Record
 	rec.UpdatedAt = rv.At
 	ins.HTMLInsights = rv.HTML
-	if rv.Verified && ins.Status == "needs_review" {
-		ins.Status = "verified"
-	}
 	f.reviews = append(f.reviews, rv)
 	f.logAudit(ev)
 	return rv.At, nil

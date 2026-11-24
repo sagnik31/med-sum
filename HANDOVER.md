@@ -35,9 +35,11 @@ The commits are `e9706d3` and the ones after it; the ADRs say what changed.
 - **Cassettes:** `evals.run --replay` stops on a repair miss, as it did before
   these fixes; whether the fixes add more misses was not measured. It passes
   only after a re-recording live run (the owner's go-ahead). The demo replays.
-- **For the owner:** should a page that went stale be open to sign-off; which
-  copy of a duplicate upload is the one reviewed; do missing values count in
-  the safety gate.
+- **Answered by the owner the same day, and built:** a sign-off names the
+  record it read (`1dc54a4`); a verified copy of a duplicate upload stands for
+  the file; a model whose records leave out over 5% of the clinical values
+  fails the safety gate; a reviewed `needs_review` document needs a sign-off
+  too, since its unflagged values had not been read.
 - A resumed eval run started before this can't be resumed (its unit files were
   named differently, and the commit changed anyway).
 
@@ -51,7 +53,7 @@ The commits are `e9706d3` and the ones after it; the ADRs say what changed.
     - **5. No auto-verification until the safety gate passes, `18760ec`** (design proposed and approved before coding). No run ends `verified`: a document that passes every check ends `checks_passed`, waits in the review queue as "Checks passed, awaiting sign-off", and becomes `verified` only when a clinician signs it off (`POST /documents/{id}/sign-off`, permission `review.write`, audited as `document_signed_off`) or finishes its audit. An open audit sample can't be signed off without its audit. A rule in code, not a setting. Schema, Go API, AI service and frontend changed together. The evals count `checks_passed` where they counted `verified`, under the same report keys (`auto_verified`, `unsafe_in_verified`), so history and compare line up. ADR 0011 is marked amended by 0013.
     - **6. Judge severity, `a54ea83`.** The overview judge table counts omissions by their "[critical]"/"[major]"/"[minor]" prefix and unsupported sentences by their `severity` field (unrated is counted, never dropped). `2026-11-22-suite-overview` was regenerated from its verdicts, no model call: gemma 1 critical omission, qwen 3 minor.
     - **Test fix, `ea449de`.** `test_evals_repair.py` read the committed history, so its replay expected the real qwen digest and refused the fake model's; failing since the live repair results were committed. Its tests now get an empty history in a temporary folder, as the other eval tests do.
-    - **Follow-ups, not done.** (1) The repair eval's cassettes miss on the new and moved cases of `8beea24`, and the overview cassettes on part 1's wording, until live runs re-record them (no live run without the owner's go-ahead). (2) Not covered by the ADR: a `needs_review` document still becomes `verified` once its flagged values are reviewed, though its unflagged values could be as wrong as a `checks_passed` one's. Needs the owner's decision. (3) The sign-off was tested in Go and the frontend's module tests, not clicked through in a browser against a running stack. (4) Found 2026-11-23 in a docs pass: `python -m evals.run --replay` (so CI's eval-replay job) now exits 2 on a `qwen3.5:4b` repair whose findings changed since the recording, most likely from validators 11 and 12 (`89a8f50`); a live e2e run re-records it. `python -m demo` still replays. `docs/limitations.md` says so.
+    - **Follow-ups, not done.** (1) The repair eval's cassettes miss on the new and moved cases of `8beea24`, and the overview cassettes on part 1's wording, until live runs re-record them (no live run without the owner's go-ahead). (2) Done 2026-11-24: a reviewed `needs_review` document needs a sign-off as well. (3) The sign-off was tested in Go and the frontend's module tests, not clicked through in a browser against a running stack. (4) Found 2026-11-23 in a docs pass: `python -m evals.run --replay` (so CI's eval-replay job) now exits 2 on a `qwen3.5:4b` repair whose findings changed since the recording, most likely from validators 11 and 12 (`89a8f50`); a live e2e run re-records it. `python -m demo` still replays. `docs/limitations.md` says so.
 
 13. **2026-11-22/23: the live eval suite (everything but mcp_eval).** All runs exited 0 and are committed, one commit per run. Progress, timings and notes are in `scripts/evals/reports/SUITE-PROGRESS.md`.
     - **Commits.** vision `0e12b0a` (~2.5 h), reasoning `8a9bbd4` (~10.5 h), e2e `3c0bd89` (~9 h 47 min; paused after qwen's half at the owner's request, resumed for gemma's), overview `4bfe38f` (~6 min, not judged yet), repair core `7e7c8af` (~2 h 16 min), injection `cf73479` (~2 h), toolprobe `53a7849` (~3 min).
@@ -151,10 +153,6 @@ The commits are `e9706d3` and the ones after it; the ADRs say what changed.
 
 ## 11. Open questions for the owner
 
-- **2026-11-23: does a reviewed `needs_review` document still need a
-  sign-off?** Today it becomes `verified` once every flagged value is
-  confirmed or corrected; ADR 0013 only stops runs that pass every check from
-  ending `verified`. See item 14's follow-ups.
 - **E-c and the default repair variant are answered** by ADR 0013
   (`qwen3.5:4b` stays primary; the fixed re-parse stays the default repair).
 

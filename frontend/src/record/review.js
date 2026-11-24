@@ -187,6 +187,14 @@ export function pageStatus(status) {
   return null;
 }
 
+// Whether a clinician can sign the document off: it passed every check, or
+// every value flagged in it has been reviewed. Either way the values nothing
+// flagged are unread until then.
+export function awaitsSignOff(status, record) {
+  if (!record) return false;
+  return status === "checks_passed" || (status === "needs_review" && flaggedCount(record) === 0);
+}
+
 // The document's status as the page names it after a saved review, from the
 // API's answer ({ status, record_updated_at, flagged }). The answer's
 // record_updated_at is not taken: the next review sends the updated_at that
@@ -221,6 +229,7 @@ export function queueLabel(entry) {
   if (entry.reason === "audit") return "audit sample: check every value";
   if (entry.reason === "checks_passed") return "checks passed, awaiting sign-off";
   const n = entry.flagged;
+  if (n === 0) return "reviewed, awaiting sign-off";
   return n === 1 ? "1 value to review" : `${n} values to review`;
 }
 

@@ -45,7 +45,7 @@ func TestAnAuditSampleIsQueuedReviewedAsAnAuditAndFinished(t *testing.T) {
 	// A correction during the audit: an error the pipeline let through.
 	field, orig, corr := "value_text", "10.4", "11.4"
 	if _, err := s.ApplyReview(ctx, me.OrgID, d.ID, at, RecordReview{Record: []byte(flaggedRecord),
-		HTML: "<p></p>", Verified: true, RunID: &run, ItemID: "obs-2", Field: &field, Action: "correct",
+		HTML: "<p></p>", RunID: &run, ItemID: "obs-2", Field: &field, Action: "correct",
 		Original: &orig, Corrected: &corr, ReviewerID: me.ID, At: sampled.Add(time.Minute)},
 		ev(me.OrgID, me.ID, "field_corrected")); err != nil {
 		t.Fatal(err)
@@ -150,7 +150,7 @@ func TestAnAuditSampleOfAnOlderRunIsDead(t *testing.T) {
 	// The new run's flagged value is corrected: a caught error, not an escape.
 	field, orig, corr := "value_text", "10.4", "11.4"
 	if _, err := s.ApplyReview(ctx, me.OrgID, d.ID, at, RecordReview{Record: []byte(flaggedRecord),
-		HTML: "<p></p>", Verified: true, RunID: &current, ItemID: "obs-2", Field: &field, Action: "correct",
+		HTML: "<p></p>", RunID: &current, ItemID: "obs-2", Field: &field, Action: "correct",
 		Original: &orig, Corrected: &corr, Signals: []string{"LC-03"}, ReviewerID: me.ID, At: at.Add(time.Minute)},
 		ev(me.OrgID, me.ID, "field_corrected")); err != nil {
 		t.Fatal(err)

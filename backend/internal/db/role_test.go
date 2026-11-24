@@ -182,7 +182,7 @@ VALUES ($1, 1, '{"schema_version": 1}', $2)`, doc.ID, now); err != nil {
 	_, err = s.ListReviewQueue(ctx, org)
 	check("ListReviewQueue", err)
 	_, err = s.ApplyReview(ctx, org, doc.ID, now, RecordReview{Record: []byte(`{"schema_version": 1}`),
-		HTML: "<p></p>", Verified: true, ItemID: "obs-1", Action: "confirm", ReviewerID: u.ID, At: now.Add(time.Second)},
+		HTML: "<p></p>", ItemID: "obs-1", Action: "confirm", ReviewerID: u.ID, At: now.Add(time.Second)},
 		ev(org, u.ID, "field_confirmed"))
 	check("ApplyReview", err)
 	// A document that passed every check, signed off.

@@ -16,7 +16,7 @@
 
 - **`qwen3.5:4b` is primary for every step:** reading, parsing, the overview and repair.
 - **`gemma4:e2b` is the fallback for reading and parsing only.** Its output goes through the same checks and routing. For the overview there is no fallback: when the primary can't write it, the summary is shown without one.
-- **No document ends `verified` without a clinician** until one eval run passes the safety gate on both the model and the checks. Passing checks are still shown to the reviewer.
+- **No document ends `verified` without a clinician** until one eval run passes the safety gate on both the model and the checks. A `needs_review` document needs the same sign-off once its flagged values are reviewed (2026-11-24): its other values were read by the same model. Passing checks are still shown to the reviewer.
 - **Closing the gap starts with the checks.** First the deterministic checks are extended to catch the kinds of unsafe error `qwen3.5:4b` makes. If they can't close the gap, a larger local model is evaluated for the parse step only, which would amend ADR 0005.
 - **The fixed re-parse stays the default repair**, as the repair eval supports for both models.
 - **The overview check requires a recorded drug allergy and the latest prescription to be named**, and the overview's facts give older flagged values as "latest flagged value" with their date.

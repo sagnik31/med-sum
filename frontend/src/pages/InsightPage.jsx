@@ -17,6 +17,7 @@ import { useAuth } from "../auth/context.js";
 import { PERM, can } from "../auth/permissions.js";
 import {
   auditProgress,
+  awaitsSignOff,
   flaggedCount,
   isPdfName,
   pageStatus,
@@ -232,8 +233,8 @@ function InsightPage() {
     }
   }
 
-  // A document that passed every check is verified only by a clinician's
-  // sign-off (docs/adr/0013-model-choice-after-the-first-live-evals.md),
+  // A document is verified only by a clinician's sign-off, once it passed
+  // every check or its flagged values are reviewed (docs/adr/0013-model-choice-after-the-first-live-evals.md),
   // which is of the record on screen: the button waits for it to load.
   async function handleSignOff() {
     setSignOffError(null);
@@ -271,6 +272,19 @@ function InsightPage() {
     }
   }
 
+  const signOffButton = canReview && !auditing && awaitsSignOff(status, record) && (
+    <div className="mt-2">
+      <button
+        type="button"
+        onClick={handleSignOff}
+        disabled={busy}
+        className="rounded px-3 py-1 border font-medium bg-white text-emerald-700 border-emerald-300 disabled:opacity-50"
+      >
+        Sign off as verified
+      </button>
+    </div>
+  );
+
   return (
     <div className="bg-white rounded-xl shadow p-6">
       <h1 className="text-xl font-semibold mb-2">{doc?.original_name || "Document"}</h1>
@@ -290,6 +304,14 @@ function InsightPage() {
           Some values in this document were flagged for review by a clinician.
           Check them against the source document before relying on them.
           {record && <> {flaggedCount(record)} still await review.</>}
+          {awaitsSignOff(status, record) && (
+            <>
+              {" "}
+              It is not verified until a clinician signs it off: the values nothing flagged may be wrong
+              too, so read all of it against the source document first.
+            </>
+          )}
+          {signOffButton}
         </div>
       )}
 
@@ -298,18 +320,7 @@ function InsightPage() {
           Every value in this document passed its checks, but it is not verified until a clinician signs it
           off: the models have not yet passed the safety gate, and the first evaluations found wrong values
           that passed every check. Read it against the source document before relying on it.
-          {canReview && !auditing && record && (
-            <div className="mt-2">
-              <button
-                type="button"
-                onClick={handleSignOff}
-                disabled={busy}
-                className="rounded px-3 py-1 border font-medium bg-white text-emerald-700 border-emerald-300 disabled:opacity-50"
-              >
-                Sign off as verified
-              </button>
-            </div>
-          )}
+          {signOffButton}
         </div>
       )}
       <ApiErrorNotice error={signOffError} />

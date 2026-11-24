@@ -192,9 +192,9 @@ CREATE INDEX documents_patient_id_sha256_idx ON documents (patient_id, sha256, u
 -- Where a document's processing stands: at most one row per document, and
 -- its status is what the API reports; no row means not started. processing
 -- while a job is queued or running (see jobs), then the run's end state.
--- No run ends verified: a checks_passed document becomes verified only
--- when a clinician signs it off (or finishes its audit), and a
--- needs_review one when every flagged value was reviewed. See
+-- No run ends verified: a checks_passed document, and a needs_review one
+-- whose flagged values have all been reviewed, becomes verified only when
+-- a clinician signs it off (or finishes its audit). See
 -- docs/adr/0013-model-choice-after-the-first-live-evals.md.
 CREATE TABLE insights (
     id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),

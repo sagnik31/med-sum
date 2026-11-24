@@ -12,10 +12,12 @@ import (
 
 // ----- Clinician review. See docs/adr/0011-clinician-review.md. -----
 //
-// No run ends verified: a document that passed every check is
-// checks_passed and waits for a clinician's sign-off (SignOff, or
-// CompleteAudit for an audit sample), until an eval run passes the safety
-// gate. See docs/adr/0013-model-choice-after-the-first-live-evals.md.
+// No run ends verified, and no review verifies: a document that passed
+// every check, and one whose flagged values have all been reviewed, waits
+// for a clinician's sign-off (SignOff, or CompleteAudit for an audit
+// sample), until an eval run passes the safety gate. The values nothing
+// flagged may be wrong in either. See
+// docs/adr/0013-model-choice-after-the-first-live-evals.md.
 
 // ErrReviewConflict is returned by ApplyReview when the record changed
 // since the caller read it (another review, or a reprocess), or the
@@ -93,7 +95,6 @@ LIMIT $2`, orgID, MaxReviewQueue)
 type RecordReview struct {
 	Record     json.RawMessage
 	HTML       string
-	Verified   bool // nothing flagged awaits review: a needs_review document becomes verified
 	RunID      *string
 	ItemID     string
 	Field      *string
@@ -109,8 +110,7 @@ type RecordReview struct {
 
 // ApplyReview stores a review of a live document of the organisation in
 // one transaction: the record (only if its updated_at is still
-// recordUpdatedAt), the page and, when Verified, the verified status of
-// a needs_review document (a checks_passed one stays so until it is
+// recordUpdatedAt), the page (the status stays until the document is
 // signed off; a review is allowed only while the document's processing
 // has ended: insights is processing from the moment a job is queued
 // until its run ends),
@@ -123,13 +123,11 @@ func (s *Store) ApplyReview(ctx context.Context, orgID, docID string, recordUpda
 	err := pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
 		tag, err := tx.Exec(ctx, `
 UPDATE insights i
-SET html_insights = $3,
-    status = CASE WHEN $4 AND i.status = 'needs_review' THEN 'verified' ELSE i.status END,
-    updated_at = CASE WHEN $4 AND i.status = 'needs_review' THEN $5 ELSE i.updated_at END
+SET html_insights = $3
 FROM documents d JOIN patients p ON p.id = d.patient_id
 WHERE i.document_id = $1 AND d.id = i.document_id AND p.org_id = $2
   AND d.deleted_at IS NULL AND i.status IN ('checks_passed', 'verified', 'needs_review')`,
-			docID, orgID, rv.HTML, rv.Verified, rv.At)
+			docID, orgID, rv.HTML)
 		if err != nil {
 			return err
 		}
@@ -187,17 +185,21 @@ const openAuditOf = `EXISTS (SELECT 1 FROM audit_samples a
     WHERE a.document_id = i.document_id AND a.completed_at IS NULL)`
 
 // ErrNotAwaitingSignOff is returned by SignOff when the document is not
-// checks_passed (it needs a review, is verified already, or is being
+// checks_passed or needs_review (it is verified already, or is being
 // processed), or is not a live document of the organisation.
 var ErrNotAwaitingSignOff = errors.New("the document is not awaiting a sign-off")
+
+// ErrFlaggedBeforeSignOff is returned by SignOff while a flagged value of
+// the record awaits review.
+var ErrFlaggedBeforeSignOff = errors.New("flagged values await review")
 
 // ErrAuditBeforeSignOff is returned by SignOff while the document is an
 // open audit sample: finishing its audit, which checks every value, is
 // its sign-off.
 var ErrAuditBeforeSignOff = errors.New("the document is an open audit sample")
 
-// SignOff makes a checks_passed live document of the organisation
-// verified, with ev, in one transaction: a clinician has read it and
+// SignOff makes a checks_passed live document of the organisation, or a
+// needs_review one with no flagged value left, verified, with ev, in one transaction: a clinician has read it and
 // signs it off. recordUpdatedAt is the record's updated_at as the
 // clinician's page read it: when the record changed since (a reprocess, or
 // another clinician's review) it returns ErrReviewConflict, writing
@@ -215,7 +217,7 @@ FROM insights i
 JOIN documents d ON d.id = i.document_id
 JOIN patients p ON p.id = d.patient_id
 WHERE i.document_id = $1 AND p.org_id = $2 AND d.deleted_at IS NULL
-  AND i.status = 'checks_passed'
+  AND i.status IN ('checks_passed', 'needs_review')
 FOR UPDATE OF i`, docID, orgID).Scan(&locked)
 		if errors.Is(err, pgx.ErrNoRows) {
 			return ErrNotAwaitingSignOff
@@ -227,10 +229,10 @@ FOR UPDATE OF i`, docID, orgID).Scan(&locked)
 		// processing before it writes a record, so the record can't change
 		// from here on. It is read in a statement of its own: one that
 		// waited for the lock would still see the record as it was before.
-		var audit, current bool
+		var audit, current, flagged bool
 		err = tx.QueryRow(ctx, `
-SELECT `+openAuditOfTheRecord+`, r.updated_at = $2
-FROM document_records r WHERE r.document_id = $1`, docID, recordUpdatedAt).Scan(&audit, &current)
+SELECT `+openAuditOfTheRecord+`, r.updated_at = $2, `+flaggedCount+` > 0
+FROM document_records r WHERE r.document_id = $1`, docID, recordUpdatedAt).Scan(&audit, &current, &flagged)
 		if errors.Is(err, pgx.ErrNoRows) {
 			return ErrReviewConflict
 		}
@@ -243,9 +245,12 @@ FROM document_records r WHERE r.document_id = $1`, docID, recordUpdatedAt).Scan(
 		if !current {
 			return ErrReviewConflict
 		}
+		if flagged {
+			return ErrFlaggedBeforeSignOff
+		}
 		if _, err := tx.Exec(ctx, `
 UPDATE insights SET status = 'verified', updated_at = $2
-WHERE document_id = $1 AND status = 'checks_passed'`, docID, at); err != nil {
+WHERE document_id = $1 AND status IN ('checks_passed', 'needs_review')`, docID, at); err != nil {
 			return err
 		}
 		return writeAudit(ctx, tx, ev)
