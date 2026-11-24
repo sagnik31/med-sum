@@ -1,7 +1,9 @@
 // src/auth/context.js
 import { createContext, useContext } from "react";
 
-// { status: "loading" | "in" | "out", user, login, logout, refresh }
+// { status, user, login, logout, refresh }. status is "loading", "in", "out",
+// "leaving" (a logout was sent) or "leave_failed" (it failed: the session
+// may still be live).
 export const AuthContext = createContext(null);
 
 export function useAuth() {

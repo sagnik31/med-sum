@@ -30,7 +30,9 @@ function RequireAuth({ children, perm }) {
       </div>
     );
   }
-  return children;
+  // Keyed by the account: another one's login (in another tab) drops what
+  // was on screen.
+  return <React.Fragment key={user.id}>{children}</React.Fragment>;
 }
 
 export default RequireAuth;

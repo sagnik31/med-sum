@@ -8,9 +8,9 @@
 // protection).
 export const CSRF_HEADER = { "X-Requested-With": "med-sum" };
 
-// Sent on a poll the page makes on its own (a document or a summary being
-// processed): the API checks the session but doesn't count the poll as
-// activity, so an unattended screen still logs out after the idle timeout
+// Sent on a request the page makes on its own (a poll of a document or a
+// summary being processed, a check of the session): the API checks the
+// session but doesn't count the request as activity, so an unattended screen still logs out after the idle timeout
 // (docs/adr/0010-staff-access-and-security.md).
 export const BACKGROUND_HEADER = { "X-Medsum-Background": "1" };
 
@@ -59,6 +59,15 @@ export class ApiError extends Error {
   }
 }
 
+// A success answer whose body is cut short or isn't JSON. The API's only
+// empty answers are 204s, so this is never an empty result, and a change may
+// have been made. Not an ApiError: asking again may help (isTransient).
+export class UnreadableAnswer extends Error {
+  constructor() {
+    super("The server's answer could not be read. If you were saving something, reload the page to see whether it was saved.");
+  }
+}
+
 /**
  * Send a request to the API at baseUrl.
  * - json: a value to send as a JSON body
@@ -103,7 +112,7 @@ export async function apiRequest(
   try {
     return await response.json();
   } catch {
-    return null;
+    throw new UnreadableAnswer();
   }
 }
 

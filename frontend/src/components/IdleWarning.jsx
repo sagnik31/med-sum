@@ -7,14 +7,7 @@
 import React, { useEffect, useState } from "react";
 import { onSessionExpiry } from "../api/client.js";
 import { useAuth } from "../auth/context.js";
-
-const WARN_BEFORE_S = 120;
-
-function formatLeft(seconds) {
-  const m = Math.floor(seconds / 60);
-  const s = String(seconds % 60).padStart(2, "0");
-  return `${m}:${s}`;
-}
+import { WARN_BEFORE_S, formatLeft, isOver, nextLook, secondsLeft } from "../auth/idle.js";
 
 function IdleWarning() {
   const { status, refresh, logout } = useAuth();
@@ -29,25 +22,24 @@ function IdleWarning() {
     if (status !== "in") setEndsAt(null);
   }, [status]);
 
-  // Tick once a second only while the warning could be due or showing.
+  // Looks again when the warning is due, then every second: each look moves
+  // `now`, which sets the next one.
   useEffect(() => {
     if (endsAt === null) return undefined;
-    const untilWarning = endsAt - WARN_BEFORE_S * 1000 - Date.now();
-    if (untilWarning > 0) {
-      const timer = setTimeout(() => setNow(Date.now()), untilWarning);
-      return () => clearTimeout(timer);
-    }
-    const timer = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(timer);
-  }, [endsAt]);
+    const timer = setTimeout(() => setNow(Date.now()), nextLook(endsAt, Date.now()));
+    return () => clearTimeout(timer);
+  }, [endsAt, now]);
 
-  const left = endsAt === null ? null : Math.max(0, Math.ceil((endsAt - now) / 1000));
+  const left = endsAt === null ? null : secondsLeft(endsAt, now);
 
-  // At the end, ask the API: the session is gone, and the app goes to
-  // the login page, which returns here after logging in.
+  // Once it must be over, ask the API, as a background check so that asking
+  // can't keep a session alive that isn't over: the app goes to the login
+  // page, which returns here after logging in. An answer that it is still
+  // live (another tab was used) moves the end.
+  const over = endsAt !== null && isOver(endsAt, now);
   useEffect(() => {
-    if (status === "in" && left === 0) refresh();
-  }, [status, left, refresh]);
+    if (status === "in" && over) refresh({ background: true });
+  }, [status, over, refresh]);
 
   if (status !== "in" || left === null || left > WARN_BEFORE_S || left === 0) return null;
 

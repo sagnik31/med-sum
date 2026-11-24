@@ -5,6 +5,7 @@ import {
   ApiError,
   SESSION_EXPIRY_EVENT,
   UNAUTHORIZED_EVENT,
+  UnreadableAnswer,
   apiRequest,
   findingsOf,
   isTransient,
@@ -83,6 +84,15 @@ test("the session's time left is reported when the API sends it", async () => {
 test("an error answer keeps its status and the server's text", async () => {
   answer = () => new Response("no such patient\n", { status: 404 });
   await assert.rejects(apiRequest("/api", "/x"), (e) => e.status === 404 && e.message === "no such patient");
+});
+
+test("a success answer that can't be read is an error, never an empty result", async () => {
+  for (const [body, status] of [['{"id":', 201], ["<!doctype html>", 200], ["", 200]]) {
+    answer = () => new Response(body, { status });
+    await assert.rejects(apiRequest("/api", "/x"), (e) => e instanceof UnreadableAnswer && isTransient(e), body);
+  }
+  answer = () => new Response(null, { status: 204 });
+  assert.equal(await apiRequest("/api", "/x"), null);
 });
 
 test("findingsOf reads a 422 review answer's findings, and only those", () => {

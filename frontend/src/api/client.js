@@ -25,9 +25,10 @@ const apiRequest = (path, options) => requestAt(API_BASE_URL, path, options);
 // ---------- Auth API ----------
 
 // The logged-in account, or null when there is no live session.
-export async function fetchMe() {
+// `{ background: true }` for a check the app makes on its own.
+export async function fetchMe({ background = false } = {}) {
   try {
-    return await apiRequest("/auth/me", { signalUnauthorized: false });
+    return await apiRequest("/auth/me", { signalUnauthorized: false, background });
   } catch (err) {
     if (err.status === 401) return null;
     throw err;
