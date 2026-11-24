@@ -2,10 +2,18 @@ package httpapi
 
 import (
 	"net/http"
+	"net/http/httptest"
 	"testing"
+	"time"
 
 	"backend/internal/db"
 )
+
+// signOff signs the document off as a page that read the record at
+// recordUpdatedAt does.
+func (re *reviewEnv) signOff(recordUpdatedAt time.Time) *httptest.ResponseRecorder {
+	return re.postJSON("/documents/"+re.doc+"/sign-off", re.auth, map[string]any{"record_updated_at": recordUpdatedAt})
+}
 
 // No run ends verified: a document that passed every check waits in the
 // queue as checks_passed until a clinician signs it off. See
@@ -21,7 +29,7 @@ func TestADocumentThatPassedItsChecksWaitsForASignOff(t *testing.T) {
 		t.Fatalf("queue = %+v", resp.Documents)
 	}
 
-	rec := re.postJSON("/documents/"+re.doc+"/sign-off", re.auth, map[string]any{})
+	rec := re.signOff(recordTime)
 	if rec.Code != http.StatusOK {
 		t.Fatalf("status = %d: %s", rec.Code, rec.Body)
 	}
@@ -50,7 +58,7 @@ func TestADocumentThatPassedItsChecksWaitsForASignOff(t *testing.T) {
 	}
 
 	// Signed off already: nothing left to sign off.
-	if rec := re.postJSON("/documents/"+re.doc+"/sign-off", re.auth, map[string]any{}); rec.Code != http.StatusConflict {
+	if rec := re.signOff(recordTime); rec.Code != http.StatusConflict {
 		t.Errorf("second sign-off: status = %d", rec.Code)
 	}
 }
@@ -78,11 +86,32 @@ func TestAReviewDoesNotVerifyADocumentThatPassedItsChecks(t *testing.T) {
 	}
 }
 
+// The sign-off is of the record the clinician read: after a reprocess, or
+// another clinician's correction, the page they have open shows another.
+func TestARecordThatChangedSinceItWasReadIsNotSignedOff(t *testing.T) {
+	re := newReviewEnv(t)
+	re.store.insights[re.doc].Status = "checks_passed"
+	re.store.records[re.doc].UpdatedAt = recordTime.Add(time.Minute)
+	if rec := re.signOff(recordTime); rec.Code != http.StatusConflict {
+		t.Fatalf("stale sign-off: status = %d", rec.Code)
+	}
+	if re.store.insights[re.doc].Status != "checks_passed" {
+		t.Error("a record the clinician never saw was verified")
+	}
+	// A sign-off that doesn't say what was read is refused.
+	if rec := re.postJSON("/documents/"+re.doc+"/sign-off", re.auth, map[string]any{}); rec.Code != http.StatusBadRequest {
+		t.Errorf("without record_updated_at: status = %d", rec.Code)
+	}
+	if rec := re.signOff(recordTime.Add(time.Minute)); rec.Code != http.StatusOK {
+		t.Errorf("after reading it again: status = %d: %s", rec.Code, rec.Body)
+	}
+}
+
 func TestOnlyADocumentThatPassedItsChecksIsSignedOff(t *testing.T) {
 	for _, status := range []string{"needs_review", "verified", "processing", "failed"} {
 		re := newReviewEnv(t)
 		re.store.insights[re.doc].Status = status
-		if rec := re.postJSON("/documents/"+re.doc+"/sign-off", re.auth, map[string]any{}); rec.Code != http.StatusConflict {
+		if rec := re.signOff(recordTime); rec.Code != http.StatusConflict {
 			t.Errorf("%s: status = %d", status, rec.Code)
 		}
 		if re.store.insights[re.doc].Status != status {
@@ -97,7 +126,7 @@ func TestAnAuditSampleIsNotSignedOffWithoutItsAudit(t *testing.T) {
 	re := newReviewEnv(t)
 	re.store.insights[re.doc].Status = "checks_passed"
 	re.store.auditOpen[re.doc] = true
-	rec := re.postJSON("/documents/"+re.doc+"/sign-off", re.auth, map[string]any{})
+	rec := re.signOff(recordTime)
 	if rec.Code != http.StatusConflict {
 		t.Fatalf("status = %d", rec.Code)
 	}
@@ -110,7 +139,7 @@ func TestAnotherOrganisationsDocumentCantBeSignedOff(t *testing.T) {
 	re := newReviewEnv(t)
 	theirs := re.store.addDocument(re.store.addPatient("org-2", "OT-1"), re.userID, "b.pdf")
 	re.store.insights[theirs] = &db.Insight{DocumentID: theirs, Status: "checks_passed"}
-	if rec := re.postJSON("/documents/"+theirs+"/sign-off", re.auth, map[string]any{}); rec.Code != http.StatusNotFound {
+	if rec := re.postJSON("/documents/"+theirs+"/sign-off", re.auth, map[string]any{"record_updated_at": recordTime}); rec.Code != http.StatusNotFound {
 		t.Fatalf("status = %d", rec.Code)
 	}
 	if re.store.insights[theirs].Status != "checks_passed" {
@@ -122,7 +151,7 @@ func TestAnAdminCantSignOffADocument(t *testing.T) {
 	re := newReviewEnv(t)
 	re.store.insights[re.doc].Status = "checks_passed"
 	_, admin := re.loginWith("admin@hospital.test", "admin")
-	if rec := re.postJSON("/documents/"+re.doc+"/sign-off", admin, map[string]any{}); rec.Code != http.StatusForbidden {
+	if rec := re.postJSON("/documents/"+re.doc+"/sign-off", admin, map[string]any{"record_updated_at": recordTime}); rec.Code != http.StatusForbidden {
 		t.Fatalf("status = %d", rec.Code)
 	}
 }
@@ -131,7 +160,7 @@ func TestASignOffThatCantBeAuditedIsNotStored(t *testing.T) {
 	re := newReviewEnv(t)
 	re.store.insights[re.doc].Status = "checks_passed"
 	re.store.failAudit = errTest
-	if rec := re.postJSON("/documents/"+re.doc+"/sign-off", re.auth, map[string]any{}); rec.Code != http.StatusInternalServerError {
+	if rec := re.signOff(recordTime); rec.Code != http.StatusInternalServerError {
 		t.Fatalf("status = %d", rec.Code)
 	}
 	if re.store.insights[re.doc].Status != "checks_passed" {

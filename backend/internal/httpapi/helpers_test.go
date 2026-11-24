@@ -829,8 +829,9 @@ func (f *fakeStore) CompleteAudit(_ context.Context, orgID, docID, _ string, at 
 }
 
 // SignOff follows the real method's rules: a checks_passed live document
-// of the organisation, not an open audit sample, becomes verified.
-func (f *fakeStore) SignOff(_ context.Context, orgID, docID string, at time.Time, ev *db.AuditEvent) error {
+// of the organisation, not an open audit sample and with its record
+// unchanged since recordUpdatedAt, becomes verified.
+func (f *fakeStore) SignOff(_ context.Context, orgID, docID string, recordUpdatedAt, at time.Time, ev *db.AuditEvent) error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
@@ -842,6 +843,9 @@ func (f *fakeStore) SignOff(_ context.Context, orgID, docID string, at time.Time
 	}
 	if f.auditOpen[docID] {
 		return db.ErrAuditBeforeSignOff
+	}
+	if rec := f.records[docID]; rec == nil || !rec.UpdatedAt.Equal(recordUpdatedAt) {
+		return db.ErrReviewConflict
 	}
 	if f.failAudit != nil {
 		return f.failAudit

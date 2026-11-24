@@ -212,12 +212,13 @@ function InsightPage() {
   }
 
   // A document that passed every check is verified only by a clinician's
-  // sign-off (docs/adr/0013-model-choice-after-the-first-live-evals.md).
+  // sign-off (docs/adr/0013-model-choice-after-the-first-live-evals.md),
+  // which is of the record on screen: the button waits for it to load.
   async function handleSignOff() {
     setSignOffError(null);
     setSigningOff(true);
     try {
-      await signOffDocument(id);
+      await signOffDocument(id, { recordUpdatedAt });
       setStatus("ready");
     } catch (err) {
       setSignOffError(err);
@@ -276,7 +277,7 @@ function InsightPage() {
           Every value in this document passed its checks, but it is not verified until a clinician signs it
           off: the models have not yet passed the safety gate, and the first evaluations found wrong values
           that passed every check. Read it against the source document before relying on it.
-          {canReview && !auditing && (
+          {canReview && !auditing && record && (
             <div className="mt-2">
               <button
                 type="button"

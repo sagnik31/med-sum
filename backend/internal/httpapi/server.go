@@ -85,7 +85,7 @@ type Store interface {
 	ListReviewQueue(ctx context.Context, orgID string) ([]db.ReviewQueueEntry, error)
 	ApplyReview(ctx context.Context, orgID, docID string, recordUpdatedAt time.Time, rv db.RecordReview, ev *db.AuditEvent) (time.Time, error)
 	CompleteAudit(ctx context.Context, orgID, docID, userID string, at time.Time, ev *db.AuditEvent) error
-	SignOff(ctx context.Context, orgID, docID string, at time.Time, ev *db.AuditEvent) error
+	SignOff(ctx context.Context, orgID, docID string, recordUpdatedAt, at time.Time, ev *db.AuditEvent) error
 }
 
 // Config is what the server needs besides its store.

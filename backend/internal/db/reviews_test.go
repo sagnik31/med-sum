@@ -182,11 +182,19 @@ func TestADocumentThatPassedItsChecksIsQueuedUntilSignedOff(t *testing.T) {
 	}
 
 	otherOrg, them := mustOtherOrg(t, s)
-	if err := s.SignOff(ctx, otherOrg, d.ID, at, ev(otherOrg, them.ID, "document_signed_off")); !errors.Is(err, ErrNotAwaitingSignOff) {
+	if err := s.SignOff(ctx, otherOrg, d.ID, at, at, ev(otherOrg, them.ID, "document_signed_off")); !errors.Is(err, ErrNotAwaitingSignOff) {
 		t.Errorf("another organisation: err = %v", err)
 	}
 	done := at.Add(time.Hour)
-	if err := s.SignOff(ctx, me.OrgID, d.ID, done, ev(me.OrgID, me.ID, "document_signed_off")); err != nil {
+	// A clinician who read the record before that review, or before a
+	// reprocess, has not read what they would sign off.
+	if err := s.SignOff(ctx, me.OrgID, d.ID, at, done, ev(me.OrgID, me.ID, "document_signed_off")); !errors.Is(err, ErrReviewConflict) {
+		t.Errorf("a stale sign-off: err = %v", err)
+	}
+	if ins, _ := s.GetInsightByDocumentID(ctx, d.ID); ins.Status != "checks_passed" {
+		t.Fatalf("status after a stale sign-off = %s", ins.Status)
+	}
+	if err := s.SignOff(ctx, me.OrgID, d.ID, at.Add(time.Minute), done, ev(me.OrgID, me.ID, "document_signed_off")); err != nil {
 		t.Fatal(err)
 	}
 	ins, _ := s.GetInsightByDocumentID(ctx, d.ID)
@@ -196,7 +204,7 @@ func TestADocumentThatPassedItsChecksIsQueuedUntilSignedOff(t *testing.T) {
 	if queue, _ = s.ListReviewQueue(ctx, me.OrgID); len(queue) != 0 {
 		t.Errorf("a signed-off document is still queued: %+v", queue)
 	}
-	if err := s.SignOff(ctx, me.OrgID, d.ID, done, ev(me.OrgID, me.ID, "document_signed_off")); !errors.Is(err, ErrNotAwaitingSignOff) {
+	if err := s.SignOff(ctx, me.OrgID, d.ID, at.Add(time.Minute), done, ev(me.OrgID, me.ID, "document_signed_off")); !errors.Is(err, ErrNotAwaitingSignOff) {
 		t.Errorf("signed off twice: err = %v", err)
 	}
 	var n int

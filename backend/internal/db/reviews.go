@@ -198,29 +198,50 @@ var ErrAuditBeforeSignOff = errors.New("the document is an open audit sample")
 
 // SignOff makes a checks_passed live document of the organisation
 // verified, with ev, in one transaction: a clinician has read it and
-// signs it off. No run ends verified until an eval run passes the safety
+// signs it off. recordUpdatedAt is the record's updated_at as the
+// clinician's page read it: when the record changed since (a reprocess, or
+// another clinician's review) it returns ErrReviewConflict, writing
+// nothing, so nobody signs off a result they never saw. No run ends
+// verified until an eval run passes the safety
 // gate, so this and finishing an audit are the only ways such a document
 // becomes verified. See
 // docs/adr/0013-model-choice-after-the-first-live-evals.md.
-func (s *Store) SignOff(ctx context.Context, orgID, docID string, at time.Time, ev *AuditEvent) error {
+func (s *Store) SignOff(ctx context.Context, orgID, docID string, recordUpdatedAt, at time.Time, ev *AuditEvent) error {
 	return pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
-		var audit bool
+		var locked bool
 		err := tx.QueryRow(ctx, `
-SELECT `+openAuditOfTheRecord+`
+SELECT true
 FROM insights i
 JOIN documents d ON d.id = i.document_id
 JOIN patients p ON p.id = d.patient_id
 WHERE i.document_id = $1 AND p.org_id = $2 AND d.deleted_at IS NULL
   AND i.status = 'checks_passed'
-FOR UPDATE OF i`, docID, orgID).Scan(&audit)
+FOR UPDATE OF i`, docID, orgID).Scan(&locked)
 		if errors.Is(err, pgx.ErrNoRows) {
 			return ErrNotAwaitingSignOff
 		}
 		if err != nil {
 			return err
 		}
+		// A review writes the insights row locked above, and a run marks it
+		// processing before it writes a record, so the record can't change
+		// from here on. It is read in a statement of its own: one that
+		// waited for the lock would still see the record as it was before.
+		var audit, current bool
+		err = tx.QueryRow(ctx, `
+SELECT `+openAuditOfTheRecord+`, r.updated_at = $2
+FROM document_records r WHERE r.document_id = $1`, docID, recordUpdatedAt).Scan(&audit, &current)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrReviewConflict
+		}
+		if err != nil {
+			return err
+		}
 		if audit {
 			return ErrAuditBeforeSignOff
+		}
+		if !current {
+			return ErrReviewConflict
 		}
 		if _, err := tx.Exec(ctx, `
 UPDATE insights SET status = 'verified', updated_at = $2

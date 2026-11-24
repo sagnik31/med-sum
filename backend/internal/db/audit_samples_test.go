@@ -59,7 +59,7 @@ func TestAnAuditSampleIsQueuedReviewedAsAnAuditAndFinished(t *testing.T) {
 	if ins, _ := s.GetInsightByDocumentID(ctx, d.ID); ins == nil || ins.Status != "checks_passed" {
 		t.Errorf("insight after a review = %+v", ins)
 	}
-	if err := s.SignOff(ctx, me.OrgID, d.ID, sampled, ev(me.OrgID, me.ID, "document_signed_off")); !errors.Is(err, ErrAuditBeforeSignOff) {
+	if err := s.SignOff(ctx, me.OrgID, d.ID, sampled, sampled, ev(me.OrgID, me.ID, "document_signed_off")); !errors.Is(err, ErrAuditBeforeSignOff) {
 		t.Errorf("a sign-off during the audit: err = %v", err)
 	}
 

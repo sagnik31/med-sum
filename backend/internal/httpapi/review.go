@@ -285,25 +285,45 @@ func (s *Server) handleCompleteAudit(w http.ResponseWriter, r *http.Request, doc
 
 // ----- POST /documents/{id}/sign-off -----
 
+type signOffRequest struct {
+	// The record's updated_at as the clinician's page read it, as in
+	// reviewRequest: a record that changed since answers 409.
+	RecordUpdatedAt time.Time `json:"record_updated_at"`
+}
+
 // handleSignOff makes a document that passed every check verified: a
 // clinician has read it and signs it off, and the sign-off is in the
-// audit log. No run ends verified until an eval run passes the safety
+// audit log. The request names the record the clinician read, and another
+// one is refused. No run ends verified until an eval run passes the safety
 // gate. An audit sample is signed off by finishing its audit instead. See
 // docs/adr/0013-model-choice-after-the-first-live-evals.md.
 func (s *Server) handleSignOff(w http.ResponseWriter, r *http.Request, docID string) {
 	p, _ := principalFromContext(r.Context())
+	var req signOffRequest
+	if err := json.NewDecoder(io.LimitReader(r.Body, maxReviewBody)).Decode(&req); err != nil {
+		http.Error(w, "invalid JSON body", http.StatusBadRequest)
+		return
+	}
+	if req.RecordUpdatedAt.IsZero() {
+		http.Error(w, "record_updated_at is required", http.StatusBadRequest)
+		return
+	}
 	doc := s.loadDocument(w, r, docID)
 	if doc == nil {
 		return
 	}
 	now := s.now().UTC()
-	err := s.db.SignOff(r.Context(), p.OrgID, docID, now, s.documentEvent(r, actDocumentSignedOff, doc))
+	err := s.db.SignOff(r.Context(), p.OrgID, docID, req.RecordUpdatedAt, now, s.documentEvent(r, actDocumentSignedOff, doc))
 	if errors.Is(err, db.ErrNotAwaitingSignOff) {
 		http.Error(w, "this document is not waiting for a sign-off", http.StatusConflict)
 		return
 	}
 	if errors.Is(err, db.ErrAuditBeforeSignOff) {
 		http.Error(w, "this document is an audit sample: check every value, then finish the audit", http.StatusConflict)
+		return
+	}
+	if errors.Is(err, db.ErrReviewConflict) {
+		http.Error(w, "the record changed since you opened it; reload the page and read it again", http.StatusConflict)
 		return
 	}
 	if err != nil {
