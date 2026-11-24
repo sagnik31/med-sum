@@ -268,12 +268,14 @@ def _previous_reply(
 ) -> str | None:
     """
     The reply a repaired part had before: the latest earlier parse or
-    repair step's reply for that part, chosen as the repair node chose it
-    (the reply, else its parse as JSON), checked against the reference the
-    repair stored.
+    repair step's reply for that part (the reply, else its parse as JSON)
+    that the reference the repair stored matches. A later one that doesn't
+    match is skipped: a repair stopped before its checkpoint was saved left
+    its reply, and the resumed repair started again from the one before.
     """
     if ref is None:
         return None
+    found = False
     cur.execute(_EARLIER_REPLIES, (step["run_id"], step["seq"]))
     for (results,) in cur.fetchall():
         for r in results or []:
@@ -285,10 +287,12 @@ def _previous_reply(
                 reply = model.model_dump_json()
             if reply and content_ref(reply) == ref:
                 return reply
-            raise ReplayError(
-                f"part {index}'s previous reply in the run doesn't match the one"
-                " the repair sent"
-            )
+            found = True
+    if found:
+        raise ReplayError(
+            f"part {index}'s previous reply in the run doesn't match the one"
+            " the repair sent"
+        )
     raise ReplayError(f"the run stored no earlier reply for part {index}")
 
 

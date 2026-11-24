@@ -398,3 +398,24 @@ def test_a_previous_reply_that_changed_is_refused(db, repaired):
         )
     with pytest.raises(ReplayError, match="previous reply in the run doesn't match"):
         replay(step_id)
+
+
+def test_a_later_reply_the_repair_did_not_use_is_passed_over(
+    db, repaired, model_client
+):
+    # A repair stopped after its step was stored but before its checkpoint:
+    # the resumed repair sent the parse's reply again, not that one's.
+    step_id, original = repaired
+    with db.cursor() as cur:
+        cur.execute(
+            "INSERT INTO pipeline_steps (run_id, seq, node, attempt, status, ended_at,"
+            " output) SELECT run_id, 1000, 'repair', 9, 'ok', now(),"
+            " jsonb_build_object('part_results', '[{\"index\": 0,"
+            ' "reply": "another"}]\'::jsonb)'
+            " FROM pipeline_steps WHERE id = %s",
+            (step_id,),
+        )
+        cur.execute("UPDATE pipeline_steps SET seq = 1001 WHERE id = %s", (step_id,))
+    model_client.replies[PRIMARY] = [good_parse(DOC)]
+    assert replay(step_id).same
+    assert model_client.calls[-1]["messages"] == original["messages"]
