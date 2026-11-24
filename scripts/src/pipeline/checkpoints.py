@@ -55,11 +55,37 @@ def serializer() -> JsonPlusSerializer:
     return JsonPlusSerializer(allowed_msgpack_modules=checkpoint_types())
 
 
+class ClaimedSaver(PostgresSaver):
+    """
+    A saver whose writes check the run's job claim (`claim`, as Run.claim)
+    in their own transaction, so a worker that lost its job can't leave a
+    checkpoint the new owner would resume from. Without a claim it is the
+    package's saver. See docs/adr/0006-durable-traceable-runs.md.
+    """
+
+    claim = None
+
+    @contextmanager
+    def _cursor(self, *, pipeline: bool = False):
+        # The package asks for a pipeline exactly when it writes.
+        if self.claim is None or not pipeline:
+            with super()._cursor(pipeline=pipeline) as cur:
+                yield cur
+            return
+        with (
+            self.lock,
+            self.conn.transaction(),
+            self.conn.cursor(binary=True, row_factory=dict_row) as cur,
+        ):
+            self.claim.check(cur)
+            yield cur
+
+
 @contextmanager
-def open_checkpointer(url: str | None = None) -> Iterator[PostgresSaver]:
+def open_checkpointer(url: str | None = None) -> Iterator[ClaimedSaver]:
     """A checkpointer on its own connection, closed when the block ends."""
     with connect(url) as conn:
-        yield PostgresSaver(conn, serde=serializer())
+        yield ClaimedSaver(conn, serde=serializer())
 
 
 def setup(url: str | None = None) -> None:

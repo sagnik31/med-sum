@@ -334,7 +334,10 @@ def test_a_worker_that_loses_its_job_mid_run_stops_and_leaves_the_run_to_the_new
         assert "parse" not in [r[0] for r in cur.fetchall()]
     assert thread_rows(db, run_id) > 0
 
+    # The step that finished after the takeover is not checkpointed: B does it.
     model_client.chat = chat
+    replies_for(model_client)
+    model_client.replies[PRIMARY] = model_client.replies[PRIMARY][-2:]
     jobs.process(b, "B")
 
     assert insight_row(db, doc)[0] == "checks_passed"

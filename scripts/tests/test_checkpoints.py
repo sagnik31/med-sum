@@ -11,6 +11,7 @@ import pytest
 from langgraph.graph import END, START, StateGraph
 
 import reset_db
+from observability import ClaimLost
 from pipeline import checkpoints
 
 CHECKPOINT_TABLES = {
@@ -146,3 +147,30 @@ def test_the_reset_plan_lists_the_checkpoint_tables(db, database_url, tmp_path):
     # public first, so the application's tables lead the printed list
     assert list(plan.rows)[0].count(".") == 0
     assert list(plan.rows)[-1].startswith("langgraph.")
+
+
+def test_a_worker_that_lost_its_claim_saves_no_checkpoint(db, database_url):
+    class Claim:
+        held = True
+
+        def check(self, cur):
+            if not self.held:
+                raise ClaimLost("taken over")
+
+    claim = Claim()
+
+    def first(state):
+        return {"visited": ["first"]}
+
+    def second(state):
+        claim.held = False  # taken over while the node runs
+        return {"visited": ["second"]}
+
+    with checkpoints.open_checkpointer(database_url) as saver:
+        saver.claim = claim
+        graph = two_node_graph(first, second).compile(checkpointer=saver)
+        with pytest.raises(ClaimLost):
+            graph.invoke({"visited": []}, thread("lost"), durability="sync")
+        saver.claim = None
+        # The new owner resumes from what was saved while the claim was held.
+        assert graph.get_state(thread("lost")).next == ("second",)

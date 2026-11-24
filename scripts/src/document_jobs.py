@@ -378,7 +378,9 @@ class JobClaim:
     def check(self, cur) -> None:
         if not self.beat.lost.is_set():
             cur.execute(
-                "SELECT 1 FROM jobs WHERE id = %(job)s AND claimed_by = %(worker)s"
+                # Qualified: the checkpointer's connection sees only its schema.
+                "SELECT 1 FROM public.jobs"
+                " WHERE id = %(job)s AND claimed_by = %(worker)s"
                 " AND status = 'running' AND lease_until > now() FOR UPDATE",
                 {"job": self.job.id, "worker": self.worker},
             )
@@ -448,7 +450,9 @@ def _invoke(graph, run, state: dict) -> dict:
     run.add_identifiers(*nodes.state_identifiers(saved.values or state))
     if saved.values and not saved.next:
         return saved.values  # it finished before the worker died
-    return graph.invoke(None if saved.values else state, config)
+    # Each checkpoint is saved before the next node starts: one written later,
+    # in the background, could find the job already taken over.
+    return graph.invoke(None if saved.values else state, config, durability="sync")
 
 
 def _delete_thread(saver, run_id: str) -> None:
@@ -491,7 +495,7 @@ def process(job: Job, worker: str, *, build=None, heartbeat_s: float = HEARTBEAT
                     # A failure from here on is masked with every identifier
                     # the run has noted, the printed patient's included.
                     known = run.identifiers
-                    run.claim = JobClaim(job, worker, beat)
+                    run.claim = saver.claim = JobClaim(job, worker, beat)
                     with run:
                         run_id = run.id
                         final = _invoke(compiled, run, state)
