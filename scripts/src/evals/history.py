@@ -59,6 +59,8 @@ def metrics(model: dict) -> dict:
         "clinical_items": s["clinical_items"],
         "hallucinated": s["hallucinated"],
         "missed": s["missed"],
+        # Reports before 2026-11-24 have none.
+        "clinical_values": (s.get("clinical_values") or {}).get("value"),
         "value_recall": t["values"]["value"] if t else None,
         "cer": t["cer"] if t else None,
         "seconds_per_document": model["seconds_per_document"],

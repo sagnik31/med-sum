@@ -433,6 +433,7 @@ def _overview_rows(models: dict, names: list[str]) -> list[list[str]]:
                 wilson(s(m)["unsafe_items"], s(m)["checked_items"]).as_dict()
             ),
         ),
+        row("Clinical values given", lambda m: _ratio(s(m)["clinical_values"])),
         row("Invented items", lambda m: str(s(m)["hallucinated"])),
         row("Missed items", lambda m: str(s(m)["missed"])),
         row("Transcription CER", lambda m: _pct(t(m)["cer"]) if t(m) else "-"),

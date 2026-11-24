@@ -450,3 +450,25 @@ def test_unsafe_items_never_exceed_the_items_checked():
     assert s.unsafe_items == len(pred.medications) <= s.checked_items
     total = summarise([s])
     assert total.unsafe_items <= total.checked_items
+
+
+def test_a_clinical_value_left_out_is_counted_and_a_wrong_one_is_given():
+    full = score(key("d01"), "d01").clinical_values
+    assert full.correct == full.total > 0
+    pred = key("d01")
+    by_test(pred, "Haemoglobin").printed.value_text = "10.9"  # wrong, but given
+    by_test(pred, "Haemoglobin").printed.unit = None
+    by_test(pred, "RBC Count").printed.panel = None  # not a clinical field
+    s = score(pred, "d01").clinical_values
+    assert (s.total, s.total - s.correct) == (full.total, 1)
+    # A missed item leaves out every value of it, and a failed run all.
+    pred = key("d01")
+    gone = by_test(pred, "Haemoglobin")
+    pred.observations.remove(gone)
+    names = ("test_name", "value_text", "unit", "flag_printed")
+    held = sum(getattr(gone.printed, n) is not None for n in names)
+    s = score(pred, "d01").clinical_values
+    assert s.total - s.correct == held
+    assert score(None, "d01").clinical_values == Ratio(0, full.total)
+    total = summarise([score(pred, "d01"), score(key("d02"), "d02")])
+    assert total.clinical_values.total - total.clinical_values.correct == held

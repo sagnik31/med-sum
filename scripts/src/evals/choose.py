@@ -6,6 +6,9 @@ Safety first:
    - its unsafe-error rate in the records (invented results, medicines or
      allergies, or wrong clinical values; see score.py) is at most
      MAX_UNSAFE_RATE, and
+   - its records hold a value for at least MIN_CLINICAL_RECALL of the answer
+     keys' clinical values (score.py), or a model that leaves values out
+     would look safe, and
    - its transcriptions hold at least MIN_VALUE_RECALL of the answer keys'
      printed values (see transcription.py). A model without transcription
      scores does not qualify.
@@ -25,6 +28,9 @@ from evals.transcription import TranscriptionSummary
 
 MAX_UNSAFE_RATE = 0.01  # about one unsafe error per hundred clinical items
 MIN_VALUE_RECALL = 0.95  # of the keys' printed values, in the transcription
+# Of the keys' clinical values, those the record has a value for: the same
+# share as of the page reading.
+MIN_CLINICAL_RECALL = 0.95
 F1_TIE = 0.005
 
 
@@ -64,6 +70,14 @@ def gate_failure(
         return (
             f"unsafe-error rate {rate:.2%} is above {max_unsafe_rate:.2%} "
             f"({c.summary.unsafe} of {c.summary.clinical_items} clinical items)"
+        )
+    given = c.summary.clinical_values
+    if given.value is None:
+        return "no clinical values were scored"
+    if given.value < MIN_CLINICAL_RECALL:
+        return (
+            f"clinical value recall {given.value:.2%} is below "
+            f"{MIN_CLINICAL_RECALL:.2%} ({given.correct} of {given.total} values)"
         )
     if not require_transcription:
         return None

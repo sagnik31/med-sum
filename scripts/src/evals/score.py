@@ -35,7 +35,10 @@ allergy (UNSAFE_ITEMS), or a wrong or invented value in a clinical field
 of a paired item (UNSAFE_FIELDS: a result's test name, value, unit and
 flag, a medicine's name, strength, dose and frequency, an allergy's
 substance, and the document's printed dates). A missing value is not
-unsafe here; recall covers it. The rate is unsafe errors per clinical item
+unsafe here: clinical_values counts, of the key's values in those same
+fields (dates included), the ones the record has a value for, right or
+wrong, so a model can't pass the gate by leaving values out. An item that
+was missed leaves all its values out. The rate is unsafe errors per clinical item
 in the key. Its interval counts items instead (unsafe_items of
 checked_items): an item with two wrong fields is one item in doubt, and an
 invented item or the document's own dates count as items checked, so the
@@ -157,6 +160,7 @@ class DocumentScore:
     # Items an unsafe error could be in: the key's clinical items, the
     # invented ones, and the document's header (its dates).
     checked_items: int = 0
+    clinical_values: Ratio = field(default_factory=Ratio)  # given, of the key's
 
     @property
     def unsafe_rate(self) -> float | None:
@@ -205,6 +209,7 @@ class DocumentScore:
             "unsafe_items": self.unsafe_items,
             "checked_items": self.checked_items,
             "unsafe_rate": self.unsafe_rate,
+            "clinical_values": self.clinical_values.as_dict(),
         }
 
 
@@ -226,6 +231,7 @@ class Summary:
     clinical_items: int = 0
     unsafe_items: int = 0
     checked_items: int = 0
+    clinical_values: Ratio = field(default_factory=Ratio)
 
     @property
     def unsafe_rate(self) -> float | None:
@@ -263,6 +269,7 @@ class Summary:
             "unsafe_items": self.unsafe_items,
             "checked_items": self.checked_items,
             "unsafe_rate": self.unsafe_rate,
+            "clinical_values": self.clinical_values.as_dict(),
         }
 
 
@@ -284,6 +291,7 @@ def summarise(scores: Iterable[DocumentScore]) -> Summary:
         s.clinical_items += d.clinical_items
         s.unsafe_items += d.unsafe_items
         s.checked_items += d.checked_items
+        s.clinical_values += d.clinical_values
     return s
 
 
@@ -460,6 +468,12 @@ def score_document(pred: DocumentRecord | None, key: DocumentRecord) -> Document
     return score
 
 
+def _given(group: str, name: str, expected, got, score: DocumentScore) -> None:
+    """Count a clinical value of the key: whether the record has one there."""
+    if name in UNSAFE_FIELDS.get(group, ()) and expected is not None:
+        score.clinical_values.add(got is not None)
+
+
 def _score_group(group, pred_items, key_items, pairs, score: DocumentScore) -> None:
     spec = SPECS[group]
     fields, derived = Counts(), Counts()
@@ -476,6 +490,7 @@ def _score_group(group, pred_items, key_items, pairs, score: DocumentScore) -> N
         p, k = pred_items[i], key_items[j]
         for name in spec.fields:
             e, g = _value(getattr(k.printed, name)), _value(getattr(p.printed, name))
+            _given(group, name, e, g, score)
             if not _compare(e, g, fields):
                 error = FieldError(group, k.id, p.id, name, e, g)
                 score.errors.append(error)
@@ -489,7 +504,9 @@ def _score_group(group, pred_items, key_items, pairs, score: DocumentScore) -> N
         if j not in paired_k:
             score.missed.append(ItemRef(group, k.id, spec.identity(k.printed)))
             for name in spec.fields:
-                _compare(_value(getattr(k.printed, name)), None, fields)
+                e = _value(getattr(k.printed, name))
+                _given(group, name, e, None, score)
+                _compare(e, None, fields)
             _score_derived(group, None, getattr(k, "derived", None), spec, derived)
     for i, p in enumerate(pred_items):
         if i not in paired_p:
@@ -570,6 +587,7 @@ def _score_header(pred: DocumentRecord | None, key: DocumentRecord, score) -> No
 def _header_field(group, name, pred: PrintedText | None, key: PrintedText | None,
                   counts: Counts, score: DocumentScore) -> None:  # fmt: skip
     e, g = _value(key), _value(pred)
+    _given(group, name, e, g, score)
     if not _compare(e, g, counts):
         error = FieldError(group, group, group, name, e, g)
         score.errors.append(error)

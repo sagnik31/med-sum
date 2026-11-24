@@ -1,7 +1,7 @@
 """Choosing the primary model from eval summaries: safety gate, then F1, then speed."""
 
 from evals import Counts, Ratio, choose_primary
-from evals.choose import MAX_UNSAFE_RATE, MIN_VALUE_RECALL
+from evals.choose import MAX_UNSAFE_RATE, MIN_CLINICAL_RECALL, MIN_VALUE_RECALL
 from evals.choose import Candidate as RealCandidate
 from evals.score import Summary
 from evals.transcription import TranscriptionSummary
@@ -23,6 +23,7 @@ def Candidate(model, summary, transcription_=PASSING, **kw):
 def summary(f1_tp: int, errors: int, unsafe: int = 0, items: int = 100) -> Summary:
     """A summary whose field F1 is tp / (tp + errors), split as FP and FN."""
     s = Summary(documents=1, unsafe=unsafe, clinical_items=items)
+    s.clinical_values = Ratio(100, 100)
     s.fields["observations"] = Counts(tp=f1_tp, fp=errors, fn=errors)
     return s
 
@@ -126,3 +127,18 @@ def test_a_model_with_no_clinical_items_shows_no_safety():
     choice = choose_primary([Candidate("qwen", summary(90, 10, items=0))])
     assert choice.model is None
     assert choice.excluded["qwen"] == "no clinical items were scored"
+
+
+def test_a_model_that_leaves_clinical_values_out_is_excluded():
+    least = round(MIN_CLINICAL_RECALL * 100)
+    s = summary(90, 10)
+    s.clinical_values = Ratio(least, 100)
+    assert choose_primary([Candidate("qwen", s)]).model == "qwen"
+    s.clinical_values = Ratio(least - 1, 100)
+    for required in (True, False):  # a reasoning run's gate has it too
+        choice = choose_primary([Candidate("qwen", s)], require_transcription=required)
+        assert choice.model is None
+        assert f"{least - 1} of 100 values" in choice.excluded["qwen"]
+    s.clinical_values = Ratio()
+    choice = choose_primary([Candidate("qwen", s)])
+    assert choice.excluded["qwen"] == "no clinical values were scored"
