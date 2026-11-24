@@ -14,7 +14,7 @@ All backend routes except `/healthz`, `/auth/login`, `/auth/logout` and `/auth/s
 | `POST` | `/auth/logout` | End the session |
 | `GET` | `/auth/me` | The logged-in account: id, email, name, roles, permissions, organisation |
 | `GET` | `/environment` | `{environment}`: the API's `MEDSUM_ENV` (`dev`, or `unset`), to a logged-in caller. The MCP server serves only when it is `dev` |
-| `POST` | `/auth/password` | Change the password with `{current_password, new_password}`; ends the account's other sessions |
+| `POST` | `/auth/password` | Change the password with `{current_password, new_password}`; ends the account's other sessions. 409 when the password was changed meanwhile |
 | `POST` | `/auth/setup/info` | `{token}` from a setup or reset link: whose account it is for |
 | `POST` | `/auth/setup` | Set a password with `{token, password}` from a setup or reset link |
 | `GET` | `/auth/sessions` | Your live sessions, with the current one marked |

@@ -78,14 +78,15 @@ func sessionTokenHash(r *http.Request) []byte {
 	return hash
 }
 
-// startSession creates a session for the account and sets its cookie.
-func (s *Server) startSession(ctx context.Context, w http.ResponseWriter, r *http.Request, userID string) error {
+// newSession is a session for the account, to store, and the token its
+// cookie carries.
+func (s *Server) newSession(r *http.Request, userID string) (db.Session, string, error) {
 	token, hash, err := auth.NewToken()
 	if err != nil {
-		return err
+		return db.Session{}, "", err
 	}
 	now := s.now()
-	err = s.db.CreateSession(ctx, db.Session{
+	return db.Session{
 		TokenHash:  hash,
 		UserID:     userID,
 		CreatedAt:  now,
@@ -93,12 +94,7 @@ func (s *Server) startSession(ctx context.Context, w http.ResponseWriter, r *htt
 		ExpiresAt:  now.Add(absoluteTimeout),
 		IP:         s.clientIP(r),
 		UserAgent:  truncate(r.UserAgent(), 512),
-	})
-	if err != nil {
-		return err
-	}
-	s.setSessionCookie(w, token)
-	return nil
+	}, token, nil
 }
 
 // clientIP is the address the request came from. Forwarding headers are

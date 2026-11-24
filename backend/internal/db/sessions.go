@@ -27,9 +27,9 @@ type SessionWithUser struct {
 	User User
 }
 
-// CreateSession inserts a session.
-func (s *Store) CreateSession(ctx context.Context, sess Session) error {
-	_, err := s.pool.Exec(ctx, `
+// insertSession inserts a session, in RecordLogin's transaction.
+func insertSession(ctx context.Context, tx pgx.Tx, sess Session) error {
+	_, err := tx.Exec(ctx, `
 INSERT INTO sessions (token_hash, user_id, created_at, last_seen_at, expires_at, ip, user_agent)
 VALUES ($1, $2, $3, $4, $5, $6, $7)`,
 		sess.TokenHash, sess.UserID, sess.CreatedAt, sess.LastSeenAt, sess.ExpiresAt, sess.IP, sess.UserAgent)
@@ -96,12 +96,19 @@ RETURNING u.id::text, u.org_id::text`, tokenHash).Scan(&userID, &orgID)
 // transaction.
 func (s *Store) DeleteUserSessions(ctx context.Context, userID string, keep []byte, ev *AuditEvent) error {
 	return pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
-		if _, err := tx.Exec(ctx,
-			`DELETE FROM sessions WHERE user_id = $1 AND ($2::bytea IS NULL OR token_hash <> $2)`, userID, keep); err != nil {
+		if err := deleteOtherSessions(ctx, tx, userID, keep); err != nil {
 			return err
 		}
 		return writeAudit(ctx, tx, ev)
 	})
+}
+
+// deleteOtherSessions removes the account's sessions except the one whose
+// hash is keep (nil keeps none).
+func deleteOtherSessions(ctx context.Context, tx pgx.Tx, userID string, keep []byte) error {
+	_, err := tx.Exec(ctx,
+		`DELETE FROM sessions WHERE user_id = $1 AND ($2::bytea IS NULL OR token_hash <> $2)`, userID, keep)
+	return err
 }
 
 // ListUserSessions returns the account's sessions, most recently used
@@ -172,9 +179,13 @@ type OneTimeToken struct {
 
 // CreateOneTimeToken stores a setup or reset token for an account and
 // removes the account's earlier unused ones, so only the newest link
-// works. ev is written in the same transaction.
+// works: the account's row is locked first, so of two requests at once the
+// second removes the first's link. ev is written in the same transaction.
 func (s *Store) CreateOneTimeToken(ctx context.Context, t OneTimeToken, ev *AuditEvent) error {
 	return pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
+		if _, err := tx.Exec(ctx, `SELECT 1 FROM staff_users WHERE id = $1 FOR UPDATE`, t.UserID); err != nil {
+			return err
+		}
 		if _, err := tx.Exec(ctx,
 			`DELETE FROM one_time_tokens WHERE user_id = $1 AND used_at IS NULL`, t.UserID); err != nil {
 			return err
@@ -212,6 +223,14 @@ var ErrTokenUnusable = errors.New("this link is invalid or has expired")
 func (s *Store) CompletePasswordSetup(ctx context.Context, tokenHash []byte, passwordHash string, now time.Time, ev *AuditEvent) (string, error) {
 	var userID string
 	err := pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
+		// The account before the token, the order every other method that
+		// touches both takes them in, so they can't deadlock.
+		if _, err := tx.Exec(ctx, `
+SELECT 1 FROM staff_users u
+WHERE u.id = (SELECT t.user_id FROM one_time_tokens t WHERE t.token_hash = $1)
+FOR UPDATE`, tokenHash); err != nil {
+			return err
+		}
 		err := tx.QueryRow(ctx, `
 UPDATE one_time_tokens SET used_at = $2
 WHERE token_hash = $1 AND used_at IS NULL AND expires_at > $2

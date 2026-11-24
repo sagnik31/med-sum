@@ -128,7 +128,10 @@ func TestLoginFailuresLockAfterTheLimit(t *testing.T) {
 		t.Errorf("failed_logins = %d after the lock, want 0 (counting starts again)", got.FailedLogins)
 	}
 
-	if err := s.RecordLoginSuccess(ctx, u.ID, t0.Add(time.Hour), nil); err != nil {
+	activate(t, s, u.ID)
+	got, _ = s.GetUserByID(ctx, u.ID)
+	if err := s.RecordLogin(ctx, Login{UserID: u.ID, VerifiedHash: *got.PasswordHash, At: t0.Add(time.Hour),
+		Session: sessionFor(u.ID, "login")}, nil); err != nil {
 		t.Fatal(err)
 	}
 	got, _ = s.GetUserByID(ctx, u.ID)
@@ -145,7 +148,7 @@ func TestSessionLifecycle(t *testing.T) {
 	sess := Session{TokenHash: hashOf("a"), UserID: u.ID, CreatedAt: t0, LastSeenAt: t0,
 		ExpiresAt: t0.Add(12 * time.Hour), IP: "10.0.0.1", UserAgent: "browser"}
 
-	if err := s.CreateSession(ctx, sess); err != nil {
+	if err := createSession(s, sess); err != nil {
 		t.Fatal(err)
 	}
 	got, err := s.GetSession(ctx, sess.TokenHash)
@@ -179,7 +182,7 @@ func TestDeleteUserSessionsKeepsOne(t *testing.T) {
 	me := mustUser(t, s, "asha@hospital.test")
 	other := mustUser(t, s, "ravi@hospital.test")
 	for _, x := range []struct{ token, user string }{{"a", me.ID}, {"b", me.ID}, {"c", me.ID}, {"d", other.ID}} {
-		if err := s.CreateSession(ctx, Session{TokenHash: hashOf(x.token), UserID: x.user, CreatedAt: t0,
+		if err := createSession(s, Session{TokenHash: hashOf(x.token), UserID: x.user, CreatedAt: t0,
 			LastSeenAt: t0, ExpiresAt: t0.Add(time.Hour)}); err != nil {
 			t.Fatal(err)
 		}
@@ -208,7 +211,7 @@ func TestDisablingAnAccountRemovesItsSessions(t *testing.T) {
 	ctx := context.Background()
 	u := mustUser(t, s, "asha@hospital.test")
 	activate(t, s, u.ID)
-	_ = s.CreateSession(ctx, Session{TokenHash: hashOf("a"), UserID: u.ID, CreatedAt: t0, LastSeenAt: t0,
+	_ = createSession(s, Session{TokenHash: hashOf("a"), UserID: u.ID, CreatedAt: t0, LastSeenAt: t0,
 		ExpiresAt: t0.Add(time.Hour)})
 
 	if err := s.SetUserStatus(ctx, u.ID, StatusDisabled, nil); err != nil {
@@ -232,7 +235,7 @@ func TestDeleteExpiredSessions(t *testing.T) {
 	}
 	for token, sess := range rows {
 		sess.TokenHash, sess.UserID = hashOf(token), u.ID
-		if err := s.CreateSession(ctx, sess); err != nil {
+		if err := createSession(s, sess); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -250,7 +253,7 @@ func TestDeleteExpiredSessions(t *testing.T) {
 func TestSessionTokenHashMustBe32Bytes(t *testing.T) {
 	s := store(t)
 	u := mustUser(t, s, "asha@hospital.test")
-	err := s.CreateSession(context.Background(), Session{TokenHash: []byte("raw token"), UserID: u.ID,
+	err := createSession(s, Session{TokenHash: []byte("raw token"), UserID: u.ID,
 		CreatedAt: t0, LastSeenAt: t0, ExpiresAt: t0.Add(time.Hour)})
 	if err == nil {
 		t.Error("a session keyed by something other than a SHA-256 was accepted")
@@ -261,7 +264,7 @@ func TestOneTimeTokenSetsThePasswordOnce(t *testing.T) {
 	s := store(t)
 	ctx := context.Background()
 	u := mustUser(t, s, "asha@hospital.test")
-	_ = s.CreateSession(ctx, Session{TokenHash: hashOf("old"), UserID: u.ID, CreatedAt: t0, LastSeenAt: t0,
+	_ = createSession(s, Session{TokenHash: hashOf("old"), UserID: u.ID, CreatedAt: t0, LastSeenAt: t0,
 		ExpiresAt: t0.Add(time.Hour)})
 	tok := OneTimeToken{TokenHash: hashOf("setup"), UserID: u.ID, Purpose: PurposeSetup, CreatedAt: t0,
 		ExpiresAt: t0.Add(72 * time.Hour)}

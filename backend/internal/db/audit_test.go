@@ -166,7 +166,7 @@ func TestLogoutAndPasswordSetupNameTheAccount(t *testing.T) {
 		t.Fatal(err)
 	}
 	session := []byte(strings.Repeat("s", 32))
-	if err := s.CreateSession(ctx, Session{TokenHash: session, UserID: u.ID, CreatedAt: now, LastSeenAt: now,
+	if err := createSession(s, Session{TokenHash: session, UserID: u.ID, CreatedAt: now, LastSeenAt: now,
 		ExpiresAt: now.Add(time.Hour)}); err != nil {
 		t.Fatal(err)
 	}

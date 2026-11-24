@@ -113,13 +113,16 @@ func TestTheAPIRoleCanRunTheAPIsQueries(t *testing.T) {
 	check("GetUserByID", err)
 	_, err = s.RecordLoginFailure(ctx, u.ID, 5, now.Add(time.Minute), ev(org, u.ID, "login_failed"))
 	check("RecordLoginFailure", err)
-	check("RecordLoginSuccess", s.RecordLoginSuccess(ctx, u.ID, now, ev(org, u.ID, "login_succeeded")))
+	check("RecordLogin", s.RecordLogin(ctx, Login{UserID: u.ID, VerifiedHash: "hash", At: now, Session: Session{
+		TokenHash: []byte(strings.Repeat("l", 32)), UserID: u.ID, CreatedAt: now, LastSeenAt: now,
+		ExpiresAt: now.Add(time.Hour)}}, ev(org, u.ID, "login_succeeded")))
+	check("ChangePassword", s.ChangePassword(ctx, u.ID, "hash", "hash1", nil, now, ev(org, u.ID, "password_changed")))
 	check("SetPasswordHash", s.SetPasswordHash(ctx, u.ID, "hash2", now, ev(org, u.ID, "password_changed")))
 
 	session := []byte(strings.Repeat("s", 32))
 	other := []byte(strings.Repeat("o", 32))
 	for _, h := range [][]byte{session, other} {
-		check("CreateSession", s.CreateSession(ctx, Session{TokenHash: h, UserID: u.ID, CreatedAt: now,
+		check("insertSession", createSession(s, Session{TokenHash: h, UserID: u.ID, CreatedAt: now,
 			LastSeenAt: now, ExpiresAt: now.Add(time.Hour), IP: "192.0.2.1"}))
 	}
 	_, err = s.GetSession(ctx, session)

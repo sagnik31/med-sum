@@ -210,6 +210,46 @@ func TestLoginRehashesAnOldHash(t *testing.T) {
 	e.loginAs("asha@hospital.test", testPassword) // and the new hash works
 }
 
+func TestALoginThatAResetOvertakesFails(t *testing.T) {
+	e := newTestEnv(t)
+	u := e.store.addUser("asha@hospital.test", db.StatusActive)
+	e.store.beforeWrite = func() { // the reset, after the old password was checked
+		_ = e.store.SetPasswordHash(context.Background(), u.ID, "the new password's hash", e.now(), nil)
+	}
+
+	rec := e.postJSON("/auth/login", "", map[string]string{"email": "asha@hospital.test", "password": testPassword})
+
+	if rec.Code != http.StatusUnauthorized || e.store.sessionsOf(u.ID) != 0 {
+		t.Errorf("status = %d with %d sessions, want 401 and none", rec.Code, e.store.sessionsOf(u.ID))
+	}
+	for _, c := range rec.Result().Cookies() {
+		if c.Name == sessionCookie && c.MaxAge >= 0 {
+			t.Error("a session cookie was set")
+		}
+	}
+	if got := e.store.auditActions(); len(got) != 1 || got[0] != actLoginFailed {
+		t.Errorf("audit = %v, want one login_failed", got)
+	}
+}
+
+func TestAPasswordChangeThatAResetOvertakesFails(t *testing.T) {
+	e := newTestEnv(t)
+	id, session := e.login("asha@hospital.test")
+	e.store.beforeWrite = func() {
+		_ = e.store.SetPasswordHash(context.Background(), id, "the new password's hash", e.now(), nil)
+	}
+
+	rec := e.postJSON("/auth/password", session, map[string]string{
+		"current_password": testPassword, "new_password": "a different long passphrase"})
+
+	if rec.Code != http.StatusConflict {
+		t.Errorf("status = %d, want 409: %s", rec.Code, rec.Body)
+	}
+	if got := *e.store.user(id).PasswordHash; got != "the new password's hash" {
+		t.Errorf("hash = %q: the change replaced the reset", got)
+	}
+}
+
 // ----- Sessions -----
 
 func TestMeReturnsTheLoggedInAccount(t *testing.T) {

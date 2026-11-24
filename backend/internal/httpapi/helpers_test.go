@@ -82,6 +82,9 @@ type fakeStore struct {
 	// failCreateDocument is returned by CreateDocument alone, so an upload
 	// gets as far as writing its file before the database fails.
 	failCreateDocument error
+	// beforeWrite runs just before a write that depends on what the
+	// handler read earlier, to change it in between.
+	beforeWrite func()
 }
 
 type fakeToken struct {
@@ -234,7 +237,38 @@ func (f *fakeStore) RecordLoginFailure(_ context.Context, userID string, maxFail
 	return u.LockedUntil, nil
 }
 
-func (f *fakeStore) RecordLoginSuccess(_ context.Context, userID string, now time.Time, ev *db.AuditEvent) error {
+func (f *fakeStore) RecordLogin(_ context.Context, l db.Login, ev *db.AuditEvent) error {
+	if f.beforeWrite != nil {
+		f.beforeWrite()
+	}
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.failWith != nil {
+		return f.failWith
+	}
+	if ev != nil && f.failAudit != nil {
+		return f.failAudit
+	}
+	u := f.users[l.UserID]
+	if u.PasswordHash == nil || *u.PasswordHash != l.VerifiedHash || u.Status != db.StatusActive {
+		return db.ErrCredentialsChanged
+	}
+	u.FailedLogins, u.LockedUntil, u.LastLoginAt = 0, nil, &l.At
+	if l.NewHash != nil {
+		u.PasswordHash = l.NewHash
+	}
+	if l.Session.ID == "" {
+		l.Session.ID = f.newID()
+	}
+	f.sessions[string(l.Session.TokenHash)] = &l.Session
+	f.logAudit(ev)
+	return nil
+}
+
+func (f *fakeStore) ChangePassword(_ context.Context, userID, verified, hash string, keep []byte, _ time.Time, ev *db.AuditEvent) error {
+	if f.beforeWrite != nil {
+		f.beforeWrite()
+	}
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.failWith != nil {
@@ -244,7 +278,15 @@ func (f *fakeStore) RecordLoginSuccess(_ context.Context, userID string, now tim
 		return f.failAudit
 	}
 	u := f.users[userID]
-	u.FailedLogins, u.LockedUntil, u.LastLoginAt = 0, nil, &now
+	if u.PasswordHash == nil || *u.PasswordHash != verified || u.Status != db.StatusActive {
+		return db.ErrCredentialsChanged
+	}
+	u.PasswordHash = &hash
+	for k, sess := range f.sessions {
+		if sess.UserID == userID && (keep == nil || k != string(keep)) {
+			delete(f.sessions, k)
+		}
+	}
 	f.logAudit(ev)
 	return nil
 }
@@ -264,20 +306,6 @@ func (f *fakeStore) SetPasswordHash(_ context.Context, userID, hash string, _ ti
 }
 
 // ----- sessions -----
-
-func (f *fakeStore) CreateSession(_ context.Context, sess db.Session) error {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	if f.failWith != nil {
-		return f.failWith
-	}
-	copied := sess
-	if copied.ID == "" {
-		copied.ID = f.newID()
-	}
-	f.sessions[string(sess.TokenHash)] = &copied
-	return nil
-}
 
 func (f *fakeStore) GetSession(_ context.Context, tokenHash []byte) (*db.SessionWithUser, error) {
 	f.mu.Lock()

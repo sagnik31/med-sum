@@ -71,9 +71,12 @@ func (s *Store) UpdateUser(ctx context.Context, upd UserUpdate, ev *AuditEvent) 
 			staffChangeLock, upd.OrgID); err != nil {
 			return err
 		}
+		// The account's row is locked too, so the status written back below
+		// can't undo a setup that finishes in between.
 		cur, err := scanUser(tx.QueryRow(ctx, `SELECT `+userColumns+`
 FROM staff_users u JOIN organizations o ON o.id = u.org_id
-WHERE u.id::text = $1 AND u.org_id = $2`, upd.UserID, upd.OrgID))
+WHERE u.id::text = $1 AND u.org_id = $2
+FOR UPDATE OF u`, upd.UserID, upd.OrgID))
 		if err != nil || cur == nil {
 			return err
 		}

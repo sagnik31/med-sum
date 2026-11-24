@@ -195,13 +195,63 @@ RETURNING locked_until;
 	return locked, nil
 }
 
-// RecordLoginSuccess clears the failure count and lock and sets
-// last_login_at, and writes ev in the same transaction.
-func (s *Store) RecordLoginSuccess(ctx context.Context, userID string, now time.Time, ev *AuditEvent) error {
+// ErrCredentialsChanged means the password a request was checked against is
+// no longer the account's, or the account is no longer active: it was
+// reset, changed or disabled while the request was being answered.
+var ErrCredentialsChanged = errors.New("the account's credentials changed meanwhile")
+
+// Login is a password check that passed, to record.
+type Login struct {
+	UserID       string
+	VerifiedHash string  // the stored hash the password was checked against
+	NewHash      *string // the same password hashed again with current settings, or nil
+	Session      Session
+	At           time.Time
+}
+
+// RecordLogin clears the failure count and lock, sets last_login_at,
+// stores the rehash if there is one, creates the session and writes ev, in
+// one transaction. It does so only while VerifiedHash is still the
+// account's hash and the account is active, and holds the account's row: a
+// reset that finished first makes it ErrCredentialsChanged, and one that
+// comes after ends the session.
+// See docs/adr/0010-staff-access-and-security.md.
+func (s *Store) RecordLogin(ctx context.Context, l Login, ev *AuditEvent) error {
 	return pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
-		if _, err := tx.Exec(ctx,
-			`UPDATE staff_users SET failed_logins = 0, locked_until = NULL, last_login_at = $2 WHERE id = $1`,
-			userID, now); err != nil {
+		tag, err := tx.Exec(ctx, `
+UPDATE staff_users
+SET failed_logins = 0, locked_until = NULL, last_login_at = $2, password_hash = COALESCE($4, password_hash)
+WHERE id = $1 AND password_hash = $3 AND status = 'active'`, l.UserID, l.At, l.VerifiedHash, l.NewHash)
+		if err != nil {
+			return err
+		}
+		if tag.RowsAffected() != 1 {
+			return ErrCredentialsChanged
+		}
+		if err := insertSession(ctx, tx, l.Session); err != nil {
+			return err
+		}
+		return writeAudit(ctx, tx, ev)
+	})
+}
+
+// ChangePassword replaces the account's password hash, ends its sessions
+// except the one whose hash is keep, and writes ev, in one transaction. It
+// returns ErrCredentialsChanged, changing nothing, when verifiedHash (the
+// hash the current password was checked against) is no longer the
+// account's or the account is not active.
+func (s *Store) ChangePassword(ctx context.Context, userID, verifiedHash, newHash string, keep []byte, now time.Time, ev *AuditEvent) error {
+	return pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
+		tag, err := tx.Exec(ctx, `
+UPDATE staff_users SET password_hash = $3, password_changed_at = $4
+WHERE id = $1 AND password_hash = $2 AND status = 'active'`, userID, verifiedHash, newHash, now)
+		if err != nil {
+			return err
+		}
+		if tag.RowsAffected() != 1 {
+			return ErrCredentialsChanged
+		}
+		if err := deleteOtherSessions(ctx, tx, userID, keep); err != nil {
 			return err
 		}
 		return writeAudit(ctx, tx, ev)
@@ -209,8 +259,8 @@ func (s *Store) RecordLoginSuccess(ctx context.Context, userID string, now time.
 }
 
 // SetPasswordHash replaces the account's password hash and writes ev in
-// the same transaction (nil for a rehash at login, which changes nothing
-// the owner chose).
+// the same transaction. It is for medsumctl; a user's own change is
+// ChangePassword.
 func (s *Store) SetPasswordHash(ctx context.Context, userID, hash string, now time.Time, ev *AuditEvent) error {
 	return pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
 		if _, err := tx.Exec(ctx,

@@ -23,7 +23,7 @@ func mustAdmin(t *testing.T, s *Store, email string) *User {
 
 func mustSession(t *testing.T, s *Store, token, userID string, lastSeen time.Time) {
 	t.Helper()
-	if err := s.CreateSession(context.Background(), Session{TokenHash: hashOf(token), UserID: userID,
+	if err := createSession(s, Session{TokenHash: hashOf(token), UserID: userID,
 		CreatedAt: t0, LastSeenAt: lastSeen, ExpiresAt: t0.Add(12 * time.Hour)}); err != nil {
 		t.Fatal(err)
 	}

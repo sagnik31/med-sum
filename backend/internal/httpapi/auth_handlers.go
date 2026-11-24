@@ -143,23 +143,33 @@ func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := s.db.RecordLoginSuccess(ctx, user.ID, now, accountEvent(actLoginSucceeded, db.OutcomeSuccess, nil)); err != nil {
-		log.Printf("RecordLoginSuccess error: %v", err)
+	sess, token, err := s.newSession(r, user.ID)
+	if err != nil {
+		log.Printf("newSession error: %v", err)
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
+	login := db.Login{UserID: user.ID, VerifiedHash: *user.PasswordHash, Session: sess, At: now}
 	if s.hasher.NeedsRehash(*user.PasswordHash) {
 		if hash, err := s.hasher.Hash(req.Password); err == nil {
-			if err := s.db.SetPasswordHash(ctx, user.ID, hash, now, nil); err != nil {
-				log.Printf("SetPasswordHash (rehash) error: %v", err)
-			}
+			login.NewHash = &hash
 		}
 	}
-	if err := s.startSession(ctx, w, r, user.ID); err != nil {
-		log.Printf("startSession error: %v", err)
+	err = s.db.RecordLogin(ctx, login, accountEvent(actLoginSucceeded, db.OutcomeSuccess, nil))
+	if errors.Is(err, db.ErrCredentialsChanged) {
+		// Reset or disabled since the password was checked.
+		if s.recordAudit(w, r, accountEvent(actLoginFailed, db.OutcomeFailure,
+			map[string]any{"reason": "credentials_changed"})) {
+			fail()
+		}
+		return
+	}
+	if err != nil {
+		log.Printf("RecordLogin error: %v", err)
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
+	s.setSessionCookie(w, token)
 	writeJSON(w, http.StatusOK, meFromUser(user))
 }
 
@@ -254,14 +264,16 @@ func (s *Server) handleChangePassword(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
-	if err := s.db.SetPasswordHash(ctx, user.ID, hash, now,
-		on(s.auditEvent(r, actPasswordChanged), targetStaff, user.ID)); err != nil {
-		log.Printf("SetPasswordHash error: %v", err)
-		http.Error(w, "internal error", http.StatusInternalServerError)
+	err = s.db.ChangePassword(ctx, user.ID, *user.PasswordHash, hash, p.tokenHash, now,
+		on(s.auditEvent(r, actPasswordChanged), targetStaff, user.ID))
+	if errors.Is(err, db.ErrCredentialsChanged) {
+		http.Error(w, "the password was changed meanwhile; log in again", http.StatusConflict)
 		return
 	}
-	if err := s.db.DeleteUserSessions(ctx, user.ID, p.tokenHash, nil); err != nil { // part of the change above
-		log.Printf("DeleteUserSessions error: %v", err)
+	if err != nil {
+		log.Printf("ChangePassword error: %v", err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
