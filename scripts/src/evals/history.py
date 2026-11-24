@@ -85,6 +85,43 @@ def metrics(model: dict) -> dict:
     return out
 
 
+def restricted(model: dict, ids: list[str]) -> dict:
+    """The numbers `evals.compare` reads, of one model's part of a report, over
+    only these of its documents: worked out from its per-document scores."""
+    docs = [d for d in model["documents"] if _document_id(d) in ids]
+    records = [d["record"] for d in docs]
+
+    def rate(counts: list[dict], name: str) -> float | None:
+        tp, fp, fn = (sum(c[k] for c in counts) for k in ("tp", "fp", "fn"))
+        top, bottom = (tp, tp + fn) if name == "recall" else (2 * tp, 2 * tp + fp + fn)
+        return top / bottom if bottom else None
+
+    values = [d["transcription"]["values"] for d in docs if d["transcription"]]
+    read = sum(v["total"] for v in values)
+    rows = [r for r in model["routing"]["documents"] if r["document"] in ids]
+    # "verified" in a report from before no run ended so.
+    ended = {r["document"]: r["end_state"] in ("checks_passed", "verified")
+             for r in rows}  # fmt: skip
+    passed = [d["record"] for d in docs if ended.get(_document_id(d))]
+    return {
+        "field_f1": rate([r["all_fields"] for r in records], "f1"),
+        "derived_f1": rate([r["all_derived"] for r in records], "f1"),
+        "medicine_recall": rate([r["items"]["medications"] for r in records], "recall"),
+        "value_recall": sum(v["correct"] for v in values) / read if read else None,
+        "unsafe": sum(len(r["unsafe"]) for r in records),
+        "routing": {
+            "end_state_right": {
+                "hits": sum(r["end_state_right"] for r in rows),
+                "total": len(rows),
+            },
+            "unsafe_in_verified": {
+                "hits": sum(r["unsafe_items"] for r in passed),
+                "total": sum(r["checked_items"] for r in passed),
+            },
+        },
+    }
+
+
 def document_ids(report: dict) -> dict[str, list[str]]:
     """The documents each model of a report ran, sorted."""
     return {

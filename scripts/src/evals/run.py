@@ -31,7 +31,9 @@ same graph from those cassettes without Ollama, in seconds, and fails with
 "re-record" when a prompt, page, option or schema has changed since the
 recording (evals/cassettes.py), or when a cassette was recorded with
 another model build than the latest live run's history entry names or
-than the one installed (replay_digests).
+than the one installed (replay_digests). With --known-stale it leaves out
+the units listed in scripts/evals/stale_recordings.json (evals/stale.py) and
+fails when one of them replays after all; CI runs it so.
 
 Each model runs as the primary with the other as its fallback, as the
 service runs; a record the fallback produced is counted (OP-1) so the
@@ -70,7 +72,7 @@ import model_health
 import reset_db
 import settings
 from dataset.build import DATASET_DIR
-from evals import history, progress
+from evals import history, progress, stale
 from evals.cassettes import (
     Cassette,
     CassetteMiss,
@@ -466,6 +468,15 @@ def replay_digests(models: list[str], installed: dict) -> dict | None:
     return expected
 
 
+def no_longer_stale(model: str, units: list[str]) -> int:
+    print(
+        f"FAIL replay: {model}: {', '.join(units)} replay again; take them off "
+        "scripts/evals/stale_recordings.json",
+        file=sys.stderr,
+    )
+    return 2
+
+
 def stopped(e: progress.RunStopped, label: str) -> int:
     print(
         f"STOPPED: {e}. Finished units are kept; carry on with --resume {label}",
@@ -487,8 +498,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out", type=Path)
     parser.add_argument("--cassettes", type=Path, default=CASSETTE_DIR)
     parser.add_argument("--no-history", action="store_true")
+    parser.add_argument("--known-stale", action="store_true",
+                        help="a replay leaves out the listed stale recordings")  # fmt: skip
     args = parser.parse_args(argv)
     stage = args.stage
+    if args.known_stale and (args.live or stage != "e2e"):
+        parser.error("--known-stale is for an end-to-end --replay")
 
     models = args.models or [llm.PRIMARY_MODEL, llm.FALLBACK_MODEL]
     doc_ids = select(args.docs, args.split)
@@ -504,7 +519,10 @@ def main(argv: list[str] | None = None) -> int:
     expect = {} if args.live else replay_digests(models, installed)
     if expect is None:
         return 2
-    units = [progress.unit_id(m, d) for m in models for d in doc_ids]
+    listed = stale.load("e2e") if args.known_stale else {}
+    skipped = {m: [d for d in doc_ids if d in listed.get(m, ())] for m in models}
+    measured = {m: stale.without(doc_ids, listed, m) for m in models}
+    units = [progress.unit_id(m, d) for m in models for d in measured[m]]
     run_progress = open_progress(
         "run", label, args.resume is not None, models=models, units=units,
         dataset=progress.json_hash(manifest()),
@@ -559,7 +577,7 @@ def main(argv: list[str] | None = None) -> int:
                 )
 
             todo = [
-                d for d in doc_ids
+                d for d in measured[model]
                 if run_progress.load(progress.unit_id(model, d)) is None
             ]  # fmt: skip
             try:
@@ -573,19 +591,27 @@ def main(argv: list[str] | None = None) -> int:
                     stage=stage,
                     extra_seconds=earlier,
                 )
+                fresh = stale.replaying(
+                    skipped[model],
+                    lambda d, model=model, client_for=client_for: run_model(
+                        model, [d], user_id=db.user_id, client_for=client_for
+                    ),
+                )
             except CassetteMiss as e:
                 print(f"FAIL replay: {e}", file=sys.stderr)
                 return 2
             except progress.RunStopped as e:
                 return stopped(e, label)
-            print(f"{model}: {len(doc_ids)} documents")
+            if fresh:
+                return no_longer_stale(model, fresh)
+            print(f"{model}: {len(measured[model])} documents")
 
     # The report is built from the progress files, so a resumed run's report
     # is the one an uninterrupted run would have written.
     runs, outcomes, digests = [], {}, {}
     for model in models:
         run, out = ModelRun(model), {}
-        for doc_id in doc_ids:
+        for doc_id in measured[model]:
             data = run_progress.load(progress.unit_id(model, doc_id))
             result, out[doc_id] = result_of(doc_id, data, stage=stage)
             run.documents.append(result)
@@ -595,6 +621,9 @@ def main(argv: list[str] | None = None) -> int:
     report = build_report(
         label, runs, manifest(), outcomes=_as_dicts(outcomes), stage=stage
     )
+    if any(skipped.values()):
+        report["not_measured"] = skipped
+        print(stale.notice("e2e", skipped))
     kept = args.live and not args.no_history
     name = history.run_name(label, report["generated_at"])
     out_dir = args.out or (history.REPORTS_DIR / name if kept else RESULTS_DIR / label)

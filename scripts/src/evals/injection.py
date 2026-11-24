@@ -49,7 +49,7 @@ from pathlib import Path
 
 import llm
 from dataset.injection import INJECTION_DIR, SPLIT
-from evals import history, progress
+from evals import history, progress, stale
 from evals import run as runner
 from evals.cassettes import Cassette, CassetteMiss, RecordingClient, ReplayClient
 from evals.keys import answer_key
@@ -224,6 +224,9 @@ def render_markdown(report: dict) -> str:
     out = [f"# Prompt-injection eval: {report['label']}", "",
            f"Split `{report['split']}`, generated {report['generated_at']}. "
            "Each document is scored against its clean document's answer key.", ""]  # fmt: skip
+    for model, left_out in report.get("not_measured", {}).items():
+        out += [f"Not measured (stale recordings), `{model}`: "
+                f"{', '.join(left_out) or 'none'}.", ""]  # fmt: skip
     for model, data in report["models"].items():
         s = data["summary"]
 
@@ -339,7 +342,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--cassettes", type=Path, default=CASSETTE_DIR)
     parser.add_argument("--no-keep", action="store_true",
                         help="a live run writes to results/, not reports/")  # fmt: skip
+    parser.add_argument("--known-stale", action="store_true",
+                        help="a replay leaves out the listed stale recordings")  # fmt: skip
     args = parser.parse_args(argv)
+    if args.known_stale and args.live:
+        parser.error("--known-stale is for a --replay")
 
     models = args.models or [llm.PRIMARY_MODEL, llm.FALLBACK_MODEL]
     ids = select(args.ids)
@@ -356,9 +363,12 @@ def main(argv: list[str] | None = None) -> int:
     expect = {} if args.live else runner.replay_digests(models, installed)
     if expect is None:
         return 2
+    listed = stale.load("injection") if args.known_stale else {}
+    skipped = {m: [i for i in ids if i in listed.get(m, ())] for m in models}
+    measured = {m: stale.without(ids, listed, m) for m in models}
     run_progress = runner.open_progress(
         "injection", label, args.resume is not None, models=models,
-        units=[progress.unit_id(m, i) for m in models for i in ids],
+        units=[progress.unit_id(m, i) for m in models for i in measured[m]],
         dataset=progress.json_hash(manifest()), digests=installed,
         selection={"mode": mode_name},
     )  # fmt: skip
@@ -388,23 +398,39 @@ def main(argv: list[str] | None = None) -> int:
                                   end=data["outcome"]["end_state"])  # fmt: skip
 
             todo = [
-                i for i in ids if run_progress.load(progress.unit_id(model, i)) is None
+                i
+                for i in measured[model]
+                if run_progress.load(progress.unit_id(model, i)) is None
             ]
             try:
                 run_model(model, todo, user_id=db.user_id, client_for=client_for,
                           after_document=save, on_unit=keep)  # fmt: skip
+                fresh = stale.replaying(
+                    skipped[model],
+                    lambda i, model=model, client_for=client_for: run_model(
+                        model, [i], user_id=db.user_id, client_for=client_for
+                    ),
+                )
             except CassetteMiss as e:
                 print(f"FAIL replay: {e}", file=sys.stderr)
                 return 2
             except progress.RunStopped as e:
                 return runner.stopped(e, label)
-            print(f"{model}: {len(ids)} documents")
+            if fresh:
+                return runner.no_longer_stale(model, fresh)
+            print(f"{model}: {len(measured[model])} documents")
 
     results = {
-        model: [row_of(i, run_progress.load(progress.unit_id(model, i))) for i in ids]
+        model: [
+            row_of(i, run_progress.load(progress.unit_id(model, i)))
+            for i in measured[model]
+        ]
         for model in models
     }
     report = build_report(label, results)
+    if any(skipped.values()):
+        report["not_measured"] = skipped
+        print(stale.notice("injection", skipped))
     kept = args.live and not args.no_keep
     name = history.run_name(label, report["generated_at"])
     out_dir = args.out or (history.REPORTS_DIR / name if kept else RESULTS_DIR / label)

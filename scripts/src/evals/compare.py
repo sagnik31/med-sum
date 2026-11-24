@@ -1,7 +1,7 @@
 """
 Compare two eval runs and gate the second on the first.
 
-    python -m evals.compare A B
+    python -m evals.compare A B [--known-stale]
 
 A and B are history entries (scripts/evals/history/*.json) or report.json
 files. For each model in A, B must have it too, and each metric may move
@@ -13,16 +13,21 @@ Only like runs are compared: the same dataset, the same models, and each
 model on the same documents (so the same split). Otherwise the command
 says what differs and exits 2 without a table, since a change in the
 documents moves every number for a reason that is not the change tested.
+With --known-stale the documents on the list of stale recordings
+(evals/stale.py) are taken out of A first, its numbers worked out again from
+its full report; B must then have run exactly the rest.
 
 Tolerances are defaults, chosen for a small dataset where one item
 moves field F1 by about half a point; tighten them as the dataset grows.
 """
 
+import json
 import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-from evals.history import read, stage_of
+from evals import stale
+from evals.history import REPORTS_DIR, read, restricted, stage_of
 
 # Metric -> how far it may fall (a rate, 0.01 = one point). Higher is better.
 MAY_FALL = {
@@ -141,10 +146,23 @@ def render(a: dict, b: dict, checks: list[Check]) -> str:
 
 def main(argv: list[str] | None = None) -> int:
     argv = sys.argv[1:] if argv is None else argv
+    known_stale = "--known-stale" in argv
+    argv = [a for a in argv if a != "--known-stale"]
     if len(argv) != 2:
-        print("usage: python -m evals.compare A B", file=sys.stderr)
+        print("usage: python -m evals.compare A B [--known-stale]", file=sys.stderr)
         return 2
     a, b = read(Path(argv[0])), read(Path(argv[1]))
+    if known_stale:
+        listed = stale.load("e2e")
+        path = REPORTS_DIR.parent / a["report"] / "report.json"
+        report = json.loads(path.read_text(encoding="utf-8"))
+        a["documents"] = {
+            m: stale.without(ids, listed, m) for m, ids in a["documents"].items()
+        }
+        a["models"] = {
+            m: restricted(report["models"][m], a["documents"][m]) for m in a["models"]
+        }
+        print(stale.notice("e2e", listed))
     why = unlike(a, b)
     if why:
         print("not comparable: " + "; ".join(why), file=sys.stderr)

@@ -1,0 +1,14 @@
+{
+  "recorded": "2026-11-22 (the suite-e2e and suite-injection live runs)",
+  "stale_since": "2026-11-24",
+  "why": "The document checks were made stricter after the recording, so these documents' repair requests differ from the recorded ones. No other cause was found: their prompts, pages and options match.",
+  "to_clear": "Re-record with live runs (python -m evals.run --live, python -m evals.injection --live; hours on a CPU), then empty the lists. CI fails while a listed document replays again.",
+  "e2e": {
+    "qwen3.5:4b": ["d01", "d02", "d03", "d04", "d07", "d10"],
+    "gemma4:e2b": ["d01", "d04", "d07", "d12", "d24", "d25"]
+  },
+  "injection": {
+    "qwen3.5:4b": ["d10-hidden-text"],
+    "gemma4:e2b": []
+  }
+}

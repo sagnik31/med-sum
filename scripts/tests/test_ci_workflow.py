@@ -94,10 +94,10 @@ def test_eval_replay_only_replays_and_waits_for_cassettes(workflow):
     for step in rest:  # nothing runs until the check finds cassettes
         assert step["if"] == "steps.cassettes.outputs.found == 'true'", step
     runs = _runs(job)
-    assert "python -m evals.run --replay" in runs
+    assert "python -m evals.run --replay --known-stale" in runs
     assert "python -m evals.compare" in runs
     assert "python -m evals.history --latest e2e" in runs
-    assert "python -m evals.injection --replay" in runs
+    assert "python -m evals.injection --replay --known-stale" in runs
 
 
 def test_job_conditions_use_only_what_github_allows_there(workflow):

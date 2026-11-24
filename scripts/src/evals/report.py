@@ -238,6 +238,10 @@ def render_markdown(report: dict) -> str:
         f"{report['dataset'] or 'unnamed'}; stage {stage} ({STAGE_TEXT[stage]}); "
         "models: " + (", ".join(f"`{m}`" for m in names) or "none") + "."
     )
+    for model, left_out in report.get("not_measured", {}).items():
+        if left_out:
+            out += ["", f"**Not measured** (stale recordings), `{model}`: "
+                    f"{', '.join(left_out)}."]  # fmt: skip
     out += ["", "## Model choice", ""]
     if stage == "vision":
         out += _gate_lines(report.get("value_recall_gate") or {})

@@ -32,9 +32,12 @@ was checked and fixed on `main`, not pushed: 26 fixed, 4 in part, 4 skipped.
 The commits are `e9706d3` and the ones after it; the ADRs say what changed.
 - **Run `python -m reset_db --yes` first:** the schema has a new trigger that
   clears a patient's summary page when a document is deleted.
-- **Cassettes:** `evals.run --replay` stops on a repair miss, as it did before
-  these fixes; whether the fixes add more misses was not measured. It passes
-  only after a re-recording live run (the owner's go-ahead). The demo replays.
+- **To pick up, stale recordings (13):** 12 end-to-end and 1 injection
+  document no longer replay, because the checks changed what their repairs are
+  sent. Listed in `scripts/evals/stale_recordings.json`, with how to clear it.
+  CI leaves them out with a warning and fails on any new one (or a listed one
+  that replays again). Re-record in the next live run (the owner's go-ahead;
+  hours), then empty the list. The demo replays.
 - **Answered by the owner the same day, and built:** a sign-off names the
   record it read (`1dc54a4`); a verified copy of a duplicate upload stands for
   the file; a model whose records leave out over 5% of the clinical values
