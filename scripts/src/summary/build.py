@@ -19,6 +19,10 @@ OVERVIEW_PROMPT_FILE = (
     Path(config.SCRIPTS_DIR) / "prompt" / "txt" / "summary_overview.txt"
 )
 
+# The holders of a record whose value a clinician corrected (lax mode reads
+# a group's items and a header alike).
+_CORRECTED = 'lax $.*.provenance.status ? (@ == "clinician_corrected")'
+
 
 class NoDocumentsError(ValueError):
     """The patient has no document with a finished record yet."""
@@ -36,9 +40,11 @@ def load_inputs(conn, patient_id: str) -> list[SummaryInput]:
     Every live document of the patient, with its processing status and
     record (if any). A deleted document is left out. A file uploaded again
     (the same SHA-256) is left out too, so its values don't count twice in
-    trends: one copy stands for the file, the earliest that finished
-    processing (checks_passed, verified or needs_review), else the earliest. So a copy
-    that failed doesn't hide a later one that worked.
+    trends: one copy stands for the file. A verified copy comes before one
+    that only finished processing (checks_passed or needs_review), and that
+    before one that didn't; among equals, one whose record holds a
+    clinician's correction, then the earliest. So neither a copy that failed
+    nor an unread one hides what a clinician did to another.
     See docs/adr/0008-patient-data-protection.md.
     """
     with conn.cursor() as cur:
@@ -49,9 +55,13 @@ def load_inputs(conn, patient_id: str) -> list[SummaryInput]:
                        i.status, r.record,
                        row_number() OVER (
                            PARTITION BY coalesce(d.sha256, d.id::text)
-                           ORDER BY coalesce(i.status IN ('checks_passed', 'verified',
-                                                         'needs_review'),
-                                             false) DESC,
+                           ORDER BY CASE i.status
+                                        WHEN 'verified' THEN 0
+                                        WHEN 'checks_passed' THEN 1
+                                        WHEN 'needs_review' THEN 1
+                                        ELSE 2
+                                    END,
+                                    coalesce(r.record @? %s, false) DESC,
                                     d.uploaded_at, d.id
                        ) AS copy
                 FROM documents d
@@ -62,7 +72,7 @@ def load_inputs(conn, patient_id: str) -> list[SummaryInput]:
             WHERE copy = 1
             ORDER BY uploaded_at, id
             """,
-            (patient_id,),
+            (_CORRECTED, patient_id),
         )
         rows = cur.fetchall()
     return [

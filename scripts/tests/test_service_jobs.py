@@ -4,6 +4,7 @@ recording, with generation stubbed. Document jobs are in
 test_document_jobs.py.
 """
 
+import json
 import time
 
 import pytest
@@ -223,6 +224,47 @@ def test_a_finished_copy_stands_in_for_one_that_did_not_finish(
                     (first, again))  # fmt: skip
         inputs = load_inputs(db, user)
     assert [(i.document_id, i.status) for i in inputs] == [(again, "verified")]
+
+
+@pytest.mark.parametrize("later", ["verified", "needs_review"])
+def test_a_verified_copy_stands_for_the_file_before_an_earlier_unread_one(
+    db, model_client, later
+):
+    user = add_user(db)
+    first = add_processed(db, user, "d01", "2025-06-01 10:00+05:30", "checks_passed")
+    again = add_processed(db, user, "d01", "2025-06-05 10:00+05:30", later)
+    with db.cursor() as cur:
+        cur.execute("UPDATE documents SET sha256 = repeat('a', 64) WHERE id IN (%s, %s)",
+                    (first, again))  # fmt: skip
+        inputs = load_inputs(db, user)
+    wanted = again if later == "verified" else first
+    assert [i.document_id for i in inputs] == [wanted]
+
+
+@pytest.mark.parametrize(
+    "first_status, wanted", [("checks_passed", 1), ("verified", 0), ("failed", 1)]
+)
+def test_a_corrected_copy_stands_for_the_file_unless_another_is_verified(
+    db, model_client, first_status, wanted
+):
+    user = add_user(db)
+    first = add_processed(db, user, "d01", "2025-06-01 10:00+05:30", first_status)
+    again = add_processed(db, user, "d01", "2025-06-05 10:00+05:30", "needs_review")
+    corrected = {
+        "run_id": "r", "node": "parse", "status": "clinician_corrected",
+        "reviewed_by": "Dr Rao", "reviewed_at": "2025-06-06T10:00:00Z",
+    }  # fmt: skip
+    with db.cursor() as cur:
+        cur.execute("UPDATE documents SET sha256 = repeat('a', 64) WHERE id IN (%s, %s)",
+                    (first, again))  # fmt: skip
+        cur.execute(
+            "UPDATE document_records SET record = jsonb_set(record,"
+            " '{observations,0,provenance}', %s) WHERE document_id = %s",
+            (json.dumps(corrected), again),
+        )
+        assert cur.rowcount == 1
+        inputs = load_inputs(db, user)
+    assert [i.document_id for i in inputs] == [(first, again)[wanted]]
 
 
 def test_with_no_finished_copy_the_earliest_stands_in(db, model_client):
