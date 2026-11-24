@@ -98,7 +98,9 @@ async def lifespan(app: FastAPI):
     worker = None
     if worker_enabled():
         checkpoints.setup()  # the checkpoint tables, created or migrated
-        worker = document_jobs.Worker(after_job=refresh_after_document)
+        worker = document_jobs.Worker(
+            after_job=refresh_after_document, idle=refresh_stale_summary
+        )
         worker.start()
     app.state.worker = worker
     try:
@@ -429,6 +431,50 @@ def refresh_after_document(job) -> None:
     run_patient_summary(patient_id, claim)
 
 
+# Patients whose summary is older than what it is built from: a document that
+# finished, or was deleted, after the summary was last written, with no job
+# left open and no live build. The refresh after a job is not stored, so a
+# process that stopped (or lost its database) between the two would leave the
+# summary without the document for good.
+_STALE_SUMMARIES = """
+SELECT s.patient_id FROM patient_summaries s
+WHERE (s.status <> 'processing' OR s.updated_at < NOW() - %(stale)s::interval)
+  AND NOT EXISTS (
+      SELECT 1 FROM jobs j JOIN documents o ON o.id = j.document_id
+      WHERE o.patient_id = s.patient_id AND j.status IN ('queued', 'running'))
+  AND EXISTS (
+      SELECT 1 FROM documents d LEFT JOIN insights i ON i.document_id = d.id
+      WHERE d.patient_id = s.patient_id
+        AND (d.deleted_at > s.updated_at
+             OR (d.deleted_at IS NULL AND i.updated_at > s.updated_at)))
+ORDER BY s.updated_at LIMIT 1
+"""
+
+
+def refresh_stale_summary() -> bool:
+    """
+    Rebuild one summary left behind its documents, if there is one: the
+    worker's idle work. A build that fails moves updated_at on, so it is
+    not tried again until something changes.
+    """
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(_STALE_SUMMARIES, {"stale": STALE_PROCESSING_AFTER})
+            row = cur.fetchone()
+    finally:
+        conn.close()
+    claim = claim_patient_summary(str(row[0])) if row is not None else None
+    if claim is None:
+        return False
+    logger.info(
+        "patient summary refresh of one left behind its documents",
+        extra=_obs("summary_refresh_stale", patient_id=str(row[0])),
+    )
+    run_patient_summary(str(row[0]), claim)
+    return True
+
+
 # The summary's result and failure are written only while the run still holds
 # its claim: a run that went quiet for STALE_PROCESSING_AFTER and was taken
 # over must not overwrite the newer run's summary or mark it failed. Same
@@ -437,11 +483,13 @@ def refresh_after_document(job) -> None:
 # If a request came in during the run (rerun_requested), the write keeps the
 # row processing under a new claim (clock_timestamp: NOW() is when this
 # run's transaction began) and the run builds again from fresh inputs; the
-# html written meanwhile is shown until then. RETURNING gives the row after
+# html written meanwhile is shown until then, unless a document deleted
+# during the run cleared the page (db/schema.sql): what this run read may
+# hold its values, so the page stays empty until the next build. RETURNING gives the row after
 # the write: status 'processing' means build again under that updated_at.
 _FINISH_SUMMARY = """
 UPDATE patient_summaries
-SET html = %(html)s,
+SET html = CASE WHEN rerun_requested AND html IS NULL THEN NULL ELSE %(html)s END,
     status = CASE WHEN rerun_requested THEN 'processing' ELSE 'completed' END,
     rerun_requested = false,
     updated_at = clock_timestamp()

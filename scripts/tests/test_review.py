@@ -23,7 +23,7 @@ from record.review import (
 )
 from record_examples import cbc_record, provenance
 from summary.facts import SummaryInput, build_facts
-from summary.overview import Overview
+from summary.overview import Overview, check, facts_text
 from validators.findings import Validator
 from views.document import document_html, review_note
 from views.summary import summary_html
@@ -549,3 +549,31 @@ def test_the_view_endpoint_refuses_an_invalid_record_and_needs_the_token(client)
     assert bad.status_code == 422
     anon = client.post("/internal/reviewed-view", json={"record": data})
     assert anon.status_code == 401
+
+
+def test_a_corrected_allergy_substance_replaces_the_text_that_holds_the_old_one():
+    data = flagged_record().model_dump(mode="json")
+    data["allergies"][0]["printed"].update(
+        text="Penicillin - hives", substance="Penicillin", reaction="hives"
+    )
+    data["allergies"][0]["derived"]["no_known_allergies"] = False
+    data["allergies"][0]["provenance"] = provenance(
+        status="low_confidence", low_confidence_reasons=["LC-03: differs"]
+    )
+    record = apply_review(
+        DocumentRecord.model_validate(data),
+        req(item_id="alg-1", field="substance", value="Cephalexin"),
+    ).record
+    ins = [SummaryInput("id-1", "cbc.pdf", AT, "verified", reviewed_view(record))]
+    facts = build_facts(ins)
+    html = summary_html(facts, Overview(None, "no_model"), generated_at=AT)
+    item = BeautifulSoup(html, "html.parser").select_one(
+        '[data-section="allergies"] li'
+    )
+    text = item.get_text()
+    assert text.startswith("Cephalexin - hives (read as Penicillin - hives)")
+    assert f"corrected by {DR}" in text
+    lines = facts_text(facts)
+    said = "An allergy to Cephalexin is recorded."
+    assert check(said, lines).ok
+    assert not check(said.replace("Cephalexin", "Penicillin"), lines).ok

@@ -58,6 +58,8 @@ LEASE = os.environ.get("MEDSUM_JOB_LEASE", "5 minutes")
 HEARTBEAT_S = float(os.environ.get("MEDSUM_JOB_HEARTBEAT_S", "60"))
 MAX_ATTEMPTS = int(os.environ.get("MEDSUM_JOB_MAX_ATTEMPTS", "3"))
 POLL_S = 5.0
+# How often, at most, a worker with no job does its idle work.
+IDLE_S = 60.0
 
 
 def _sample_rate(raw: str) -> float:
@@ -535,12 +537,16 @@ class Worker:
     `after_job(job)`, if given, runs in the same thread after each job
     (whatever its outcome), so work it starts doesn't compete with the next
     document for the model; an error in it is logged, never raised.
+    `idle()`, if given, runs in it when no job waits, at the start and then
+    at most every IDLE_S.
     """
 
-    def __init__(self, *, poll_s: float = POLL_S, after_job=None):
+    def __init__(self, *, poll_s: float = POLL_S, after_job=None, idle=None):
         self.name = worker_id()
         self.poll_s = poll_s
         self.after_job = after_job
+        self.idle = idle
+        self._idle_at = float("-inf")  # time.monotonic() of the last idle()
         self.wake = threading.Event()
         self._stop = threading.Event()
         self._thread = threading.Thread(target=self._loop, name="document-jobs",
@@ -564,6 +570,16 @@ class Worker:
                              extra=_obs("after_job_error", job_id=job.id,
                                         document_id=job.document_id))  # fmt: skip
 
+    def _idle(self) -> None:
+        if self.idle is None or time.monotonic() - self._idle_at < IDLE_S:
+            return
+        self._idle_at = time.monotonic()
+        try:
+            self.idle()
+        except Exception:
+            logger.exception("the worker's idle work failed",
+                             extra=_obs("idle_work_error"))  # fmt: skip
+
     def _loop(self) -> None:
         while not self._stop.is_set():
             try:
@@ -573,6 +589,7 @@ class Worker:
                     process(job, self.name)
                     self._after(job)
                     continue
+                self._idle()
             except Exception:
                 logger.exception("the job worker hit an error",
                                  extra=_obs("worker_error"))  # fmt: skip

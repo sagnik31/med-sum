@@ -506,6 +506,9 @@ func TestSoftDeleteDocument(t *testing.T) {
 	p := mustPatient(t, s, me.OrgID, me.ID, "SH-1")
 	d := mustDocument(t, s, p, me, "alone.pdf")
 	setInsight(t, s, d.ID, "verified", nil)
+	if _, err := s.pool.Exec(ctx, "INSERT INTO patient_summaries (patient_id, html, status) VALUES ($1, 'its values', 'completed')", p.ID); err != nil {
+		t.Fatal(err)
+	}
 	otherOrg, them := mustOtherOrg(t, s)
 	now := time.Now().Truncate(time.Microsecond)
 
@@ -520,6 +523,10 @@ func TestSoftDeleteDocument(t *testing.T) {
 	}
 	if docs, _ := s.ListPatientDocuments(ctx, me.OrgID, p.ID); len(docs) != 0 {
 		t.Errorf("a deleted document is still listed: %v", ids(docs))
+	}
+	// The summary page showed its values: it goes in the same transaction.
+	if sum, err := s.GetPatientSummary(ctx, p.ID); err != nil || sum.HTML != nil {
+		t.Errorf("summary after the delete = %+v, %v; want no page", sum, err)
 	}
 	// Soft: the row, its insight and who deleted it stay.
 	var at time.Time

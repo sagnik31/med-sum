@@ -17,7 +17,7 @@ from pipeline import signals
 from pipeline.signals import SIGNALS, SignalHit
 from record.common import Provenance
 from record.document import DateSource
-from summary.facts import SummaryInput, build_facts, trend
+from summary.facts import SummaryInput, _specimen, build_facts, trend
 from summary.overview import Overview, check, facts_text, write_overview
 from views.summary import summary_html
 
@@ -937,3 +937,62 @@ def test_the_judged_overviews_pass_or_fail_as_the_judge_found():
         ("the recorded allergy to Penicillin",),
     )
     assert set(outcomes.values()) == {(True, ())}
+
+
+# -------------------------------------------------------------------
+# What the overview may not say, and which values a trend may join
+# -------------------------------------------------------------------
+def test_an_allergy_from_another_patients_document_is_not_in_the_overview():
+    record = marked("d07", [SignalHit(signal="LC-13")])
+    facts = build_facts(
+        inputs("d09") + inputs("d07", records={"d07": record}, status="needs_review")
+    )
+    assert facts.allergies and facts.allergies[0].doc.in_doubt
+    lines = facts_text(facts)
+    assert not [what for what, _ in lines.required if "allergy" in what]
+    assert "Sulfa" not in lines
+    assert not check("An allergy to Sulfa drugs is recorded.", lines).ok
+    # Nor do the facts say there is none: it awaits review.
+    assert "Allergies recorded: none" not in lines
+    assert not check("No allergies are recorded.", lines).ok
+
+
+def test_the_overview_keeps_a_qualified_value_qualified():
+    record = key("d09").model_copy(deep=True)
+    o = next(o for o in record.observations if o.printed.flag_printed)
+    name = o.printed.test_name
+    for printed in ("< 1.6", "<= 1.6", "≤1.6"):
+        o.printed.value_text = printed
+        lines = facts_text(build_facts(inputs("d09", records={"d09": record})))
+        assert not check(f"{name} is 1.6.", lines).follows_facts
+        assert check(f"{name} {printed}.", lines).follows_facts
+    assert not check(f"{name} < 1.6.", lines).follows_facts  # it is ≤
+
+
+@pytest.mark.parametrize(
+    "a, b, same",
+    [
+        ("SPOT URINE", "24 HOUR URINE", False),
+        ("24 HR URINE", "24-hours Urine", True),
+        ("URINE BIOCHEMISTRY", "Urine", True),
+        ("SERUM", "CSF", False),
+    ],
+)
+def test_a_collection_method_is_part_of_the_test(a, b, same):
+    assert (_specimen(a) == _specimen(b)) is same
+
+
+def test_values_of_a_test_with_a_unit_need_it_printed_for_a_trend():
+    assert tsh_trend(tsh_records(2.0, 4.5, units=[None, None])) is None
+
+
+def test_values_of_a_test_without_a_unit_can_have_a_trend():
+    records = tsh_records(2.0, 4.5, units=[None, None])
+    for r in records.values():
+        for o in r.observations:
+            if o.derived.analyte == "tsh":
+                o.printed.test_name = "INR"
+                o.derived = o.derived.model_copy(update={"analyte": None})
+    facts = build_facts(inputs(*records, records=records))
+    [inr] = [s for s in facts.labs if s.key == "name:inr"]
+    assert inr.trend.direction == "rising"

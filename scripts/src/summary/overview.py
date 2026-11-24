@@ -49,7 +49,7 @@ import re
 import unicodedata
 from dataclasses import dataclass
 
-from summary.facts import Facts, medicine_line
+from summary.facts import Facts, allergy_text, medicine_line
 
 MAX_TOKENS = 400
 
@@ -116,7 +116,7 @@ RETRIES = 1  # a rejected reply is sent back once with what failed
 
 # A token: letters and digits, joined by . , ' or - inside it ("8.9",
 # "2024-09-05", "Uprise-D3", "TSH's"). One with a digit is a number.
-_TOKEN = re.compile(r"[^\W_]+(?:[.,'’\-][^\W_]+)*", re.UNICODE)
+_TOKEN = re.compile(r"(?:[<>≤≥](?=\d))?[^\W_]+(?:[.,'’\-][^\W_]+)*", re.UNICODE)
 # Where an overview sentence ends (a full stop inside "8.9" doesn't).
 _SENTENCE_END = re.compile(r"[.!?;]+(?:\s+|$)|\n+")
 # Tokens of the facts a number stands near, either side.
@@ -135,8 +135,16 @@ def _norm(text: str) -> str:
     return unicodedata.normalize("NFKC", text)
 
 
+# A comparator is part of the number it qualifies: "< 1.6" is not 1.6.
+_COMPARED = re.compile(r"([<>≤≥])\s*/?\s*(=?)\s*(?=\d)")
+
+
 def _tokens(text: str) -> list[str]:
-    return [re.sub(r"['’]s$", "", t) for t in _TOKEN.findall(_norm(text).casefold())]
+    text = _COMPARED.sub(
+        lambda m: f" {m[1]}" if not m[2] else f" {'≤' if m[1] in '<≤' else '≥'}",
+        _norm(text).casefold(),
+    )
+    return [re.sub(r"['’]s$", "", t) for t in _TOKEN.findall(text)]
 
 
 def _is_number(token: str) -> bool:
@@ -390,7 +398,13 @@ def facts_text(facts: Facts) -> FactLines:
             w.require(f"the medicine {name} on the latest prescription", _named(name))
     else:
         w.none_of("Prescriptions: none.", "prescriptions prescription medicines")
+    # A document printed for another patient (LC-13) may say nothing of this
+    # one: its conditions and allergies are on the page, marked so, and not
+    # in the overview, which can't mark them. The facts then don't say there
+    # are none either.
     for c in facts.conditions:
+        if c.doc.in_doubt:
+            continue
         kind = c.item.printed.kind.value.replace("_", " ")
         text, when = c.item.printed.text, _when(c.doc)
         w.add(
@@ -402,7 +416,9 @@ def facts_text(facts: Facts) -> FactLines:
     if not facts.conditions:
         w.none_of("Stated diagnoses: none.", "diagnoses diagnosis conditions")
     for a in facts.allergies:
-        text, when = a.item.printed.text, _when(a.doc)
+        if a.doc.in_doubt:
+            continue
+        (text, _), when = allergy_text(a.item), _when(a.doc)
         w.add(
             f"Allergy recorded: {text} ({when}).",
             (text, text),

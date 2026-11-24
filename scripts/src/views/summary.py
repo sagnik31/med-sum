@@ -24,6 +24,7 @@ from datetime import datetime
 from record.common import ItemStatus
 
 from summary.facts import (
+    allergy_text,
     DocEntry,
     Fact,
     Facts,
@@ -259,7 +260,7 @@ def _attention(facts: Facts) -> str:
         body = f"<p>{_t('no_attention')}</p>"
     if facts.allergies:
         items = "".join(
-            f"<li>{_v(a.item.printed.text)} ({_date(a.doc)}, {_cite(a)}){_awaiting(a)}</li>"
+            f"<li>{_allergy(a)} ({_date(a.doc)}, {_cite(a)}){_awaiting(a)}</li>"
             for a in facts.allergies
         )
         body += f'<h3>{_t("allergies")}</h3><ul data-section="allergies">{items}</ul>'
@@ -268,6 +269,13 @@ def _attention(facts: Facts) -> str:
     return (
         f'<section data-section="attention"><h2>{_t("attention")}</h2>{body}</section>'
     )
+
+
+def _allergy(a: Fact) -> str:
+    text, read = allergy_text(a.item)
+    if read is None:
+        return _v(text)
+    return f'{_v(text)} <span class="muted">(read as {_v(read)})</span>'
 
 
 def _prescription(rx: Prescription) -> str:

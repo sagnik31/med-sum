@@ -34,11 +34,13 @@ from datetime import date, datetime
 
 from record.common import Citation, ItemStatus, Provenance
 from record.document import (
+    Allergy,
     DocumentRecord,
     MedicationRequest,
     Observation,
     RecordItem,
     Vital,
+    VitalKind,
 )
 from record.printed import DocumentType, PrintedText, RemarkScope
 from record.review import signal_ids
@@ -245,13 +247,17 @@ def _fact(doc: DocEntry, item: RecordItem) -> Fact:
 # A panel naming a specimen other than blood makes its tests other tests:
 # a bare "Creatinine" under "Urine Biochemistry" is not serum creatinine,
 # and the two never share a trend or a "latest" value.
+# Every such word counts: a spot and a 24-hour urine are two tests as well.
 _SPECIMENS = ("urine", "urinary", "urinalysis", "csf", "stool", "fluid", "ascitic", "pleural",
-              "synovial", "24 hr", "24 hour", "24hr", "spot")  # fmt: skip
+              "synovial", "24 hour", "spot")  # fmt: skip
+_DAY_LONG = re.compile(r"\b24\s*-?\s*(?:hours?|hrs?|h)\b")
 
 
 def _specimen(panel: str | None) -> str | None:
     words = " ".join(panel.casefold().split()) if panel else ""
-    return next((w for w in _SPECIMENS if re.search(rf"\b{w}\b", words)), None)
+    words = _DAY_LONG.sub("24 hour", words)
+    found = [w for w in _SPECIMENS if re.search(rf"\b{w}\b", words)]
+    return "+".join(found) or None
 
 
 def _series_key(o: Observation) -> str:
@@ -284,6 +290,22 @@ def _number(fact: Fact) -> float | None:
     return fact.item.derived.value_num
 
 
+# Vitals printed in more than one unit: without one, two aren't comparable.
+_VITALS_WITH_UNITS = (VitalKind.TEMPERATURE, VitalKind.WEIGHT, VitalKind.HEIGHT)
+
+
+def _needs_unit(fact: Fact) -> bool:
+    """
+    Whether a value says nothing without its unit: a test of the analyte
+    table (each is measured in one) or such a vital. Others may have none
+    (INR, a ratio, a pulse).
+    """
+    derived = fact.item.derived
+    if isinstance(fact.item, Vital):
+        return derived.kind in _VITALS_WITH_UNITS
+    return derived.analyte is not None
+
+
 def trend(values: list[Fact]) -> Trend | None:
     """
     "rising" or "falling", or None. Uses dated values with a number that
@@ -298,6 +320,8 @@ def trend(values: list[Fact]) -> Trend | None:
     if len(usable) < 2:
         return None
     unit = _unit(usable[-1])
+    if unit is None and _needs_unit(usable[-1]):
+        return None
     same = [v for v in usable if _unit(v) == unit]
     dates = [v.date for v in same]
     if len(same) < 2 or len(set(dates)) != len(dates):
@@ -401,6 +425,27 @@ def build_facts(inputs: list[SummaryInput]) -> Facts:
         vitals=vitals,
         remarks=[_fact(d, r) for d in parsed for r in d.record.remarks],
     )
+
+
+def allergy_text(item: Allergy) -> tuple[str, str | None]:
+    """
+    An allergy's statement, and what was read when a clinician corrected a
+    part of it: the printed text still holds the old substance or reaction,
+    so the corrected parts are given in its place.
+    """
+    p = item.printed
+    read = " ".join(p.text.casefold().split())
+    changed = {c.field for c in item.corrections}
+    stale = [
+        part
+        for field in ("substance", "reaction")
+        if field in changed
+        and (part := getattr(p, field))
+        and " ".join(part.casefold().split()) not in read
+    ]
+    if not stale:
+        return p.text, None
+    return " - ".join(v for v in (p.substance, p.reaction) if v), p.text
 
 
 def remark_target(fact: Fact) -> tuple[str, str | None]:

@@ -623,3 +623,102 @@ def test_the_worker_runs_its_after_job_once_per_job_and_survives_its_errors(
 @pytest.mark.parametrize("path", ["/docs", "/redoc", "/openapi.json"])
 def test_the_service_publishes_no_api_docs(client, path):
     assert client.get(path).status_code == 404
+
+
+# -------------------------------------------------------------------
+# A summary whose documents changed
+# -------------------------------------------------------------------
+def delete(db, doc):
+    with db.cursor() as cur:
+        cur.execute("UPDATE documents SET deleted_at = now() WHERE id = %s", (doc,))
+
+
+def test_deleting_the_last_document_takes_its_values_off_the_summary(db, model_client):
+    user, other = add_user(db), add_user(db)
+    doc = add_processed(db, user, "d09", "2024-09-06 10:00+05:30")
+    for u in (user, other):
+        set_summary(db, u, "completed")
+
+    delete(db, doc)
+
+    assert summary_row(db, user)[0] is None  # at once, with no rebuild
+    assert summary_row(db, other)[0] == "old summary"
+    run_summary(user)
+    html, status, _ = summary_row(db, user)
+    assert (html, status) == (None, "failed")
+
+
+def test_a_document_deleted_during_a_build_is_not_shown_by_it(
+    db, model_client, monkeypatch
+):
+    user = add_user(db)
+    add_processed(db, user, "d09", "2024-09-06 10:00+05:30")
+    doc = add_processed(db, user, "d11", "2024-10-06 10:00+05:30")
+    set_summary(db, user, "completed")
+    claim = service.claim_patient_summary(user)
+    model_client.replies[llm.PRIMARY_MODEL] = ["", ""]
+    import summary.build as build_module
+
+    real, shown = build_module.build_summary, []
+
+    def slow(inputs, **kw):
+        shown.append(len(inputs))
+        if len(shown) == 1:
+            result = real(inputs, **kw)
+            delete(db, doc)
+            return result
+        assert summary_row(db, user)[0] is None  # nothing of the first build
+        return real(inputs, **kw)
+
+    monkeypatch.setattr(build_module, "build_summary", slow)
+    service.run_patient_summary(user, claim)
+
+    html, status, _ = summary_row(db, user)
+    assert shown == [2, 1] and status == "completed"
+    assert html is not None and doc not in html
+
+
+def test_a_summary_left_behind_a_finished_document_is_rebuilt(db, model_client):
+    # The process stopped between the job's commit and the refresh after it.
+    user = add_user(db)
+    set_summary(db, user, "completed", minutes_ago=5)
+    add_processed(db, user, "d09", "2024-09-06 10:00+05:30")
+    with db.cursor() as cur:
+        cur.execute("UPDATE insights SET updated_at = now()")
+    model_client.replies[llm.PRIMARY_MODEL] = [""]
+
+    assert service.refresh_stale_summary() is True
+    assert summary_row(db, user)[0] != "old summary"
+    assert service.refresh_stale_summary() is False  # once
+
+
+def test_a_live_build_or_an_open_job_is_not_a_summary_left_behind(db, model_client):
+    user = add_user(db)
+    add_processed(db, user, "d09", "2024-09-06 10:00+05:30")
+    with db.cursor() as cur:
+        cur.execute("UPDATE insights SET updated_at = now()")
+    set_summary(db, user, "processing", minutes_ago=5)
+    assert service.refresh_stale_summary() is False
+    set_summary(db, user, "completed", minutes_ago=5)
+    jobs.enqueue(db, add_document(db, user, "/x/open"))
+    assert service.refresh_stale_summary() is False
+
+
+def test_the_worker_does_its_idle_work_and_survives_its_errors(db, monkeypatch):
+    seen = []
+
+    def idle():
+        seen.append(1)
+        raise RuntimeError("idle bug")
+
+    monkeypatch.setattr(jobs, "IDLE_S", 0.0)
+    worker = jobs.Worker(poll_s=0.02, idle=idle)
+    worker.start()
+    try:
+        for _ in range(100):
+            if len(seen) >= 2:
+                break
+            time.sleep(0.05)
+    finally:
+        worker.stop(timeout=5)
+    assert len(seen) >= 2

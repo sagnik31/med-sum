@@ -203,6 +203,25 @@ CREATE TABLE insights (
 );
 CREATE INDEX insights_status_idx ON insights (status);
 
+-- Deleting a document takes the patient's summary page with it: the page
+-- shows the document's values, and a rebuild may fail or find no document
+-- left. A build under way read the document, so it builds once more. The
+-- API may not write patient_summaries, so the owner's function does.
+-- See docs/adr/0010-staff-access-and-security.md.
+CREATE FUNCTION clear_summary_of_deleted_document() RETURNS trigger
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = pg_catalog, public, pg_temp AS $$
+BEGIN
+    UPDATE public.patient_summaries
+    SET html = NULL, rerun_requested = (status = 'processing')
+    WHERE patient_id = NEW.patient_id;
+    RETURN NULL;
+END;
+$$;
+CREATE TRIGGER documents_deleted_clear_summary
+    AFTER UPDATE OF deleted_at ON documents
+    FOR EACH ROW WHEN (OLD.deleted_at IS NULL AND NEW.deleted_at IS NOT NULL)
+    EXECUTE FUNCTION clear_summary_of_deleted_document();
+
 -- -------------------------------------------------------------------
 -- Pipeline runs and steps: what produced what. See docs/adr/0006-durable-traceable-runs.md.
 -- Field names follow OpenTelemetry (trace, span, parent span), so a real
