@@ -11,11 +11,12 @@ from evals import overview as ov
 from evals.keys import documents, manifest
 
 MODEL = llm.PRIMARY_MODEL
-SHOWN = (
-    "Stated diagnosis: Vitamin D deficiency (2025-03-15). "
-    "Allergy recorded: Penicillin - hives (2025-03-15). "
-    "The latest prescription lists Thyronorm and Uprise-D3."
+SENTENCES = (
+    "Stated diagnosis: Vitamin D deficiency (2025-03-15).",
+    "Allergy recorded: Penicillin - hives (2025-03-15).",
+    "The latest prescription lists Thyronorm and Uprise-D3.",
 )
+SHOWN = " ".join(SENTENCES)
 
 
 def test_a_patients_inputs_are_their_keys_in_upload_order():
@@ -118,10 +119,14 @@ def test_a_live_run_replays_and_writes_the_judge_packet(places, model_client):
     assert "Not judged yet" in (places / "live" / "report.md").read_text("utf-8")
 
 
-def verdict(id_, supported=(True, True), misleading=False, omissions=()):
+def judged(text, supported=True):
+    return {"text": text, "supported": supported, "why": ""}
+
+
+def verdict(id_, supported=(True, True, True), misleading=False, omissions=()):
     return {
         "id": id_,
-        "sentences": [{"text": "s", "supported": s, "why": ""} for s in supported],
+        "sentences": [judged(t, s) for t, s in zip(SENTENCES, supported, strict=False)],
         "omissions": list(omissions),
         "misleading": misleading,
     }
@@ -144,7 +149,7 @@ def write_verdicts(places, data) -> str:
 
 def test_the_judges_verdicts_are_counted_in_the_report(judged_run, places):
     data = {"judge": "a review session", "verdicts": [
-        verdict(f"{MODEL}/fatima", (True, False), omissions=["TSH trend"])
+        verdict(f"{MODEL}/fatima", (True, True, False), omissions=["TSH trend"])
     ]}  # fmt: skip
     path = write_verdicts(places, data)
     assert ov.main(["--verdicts", path, "--report", str(judged_run)]) == 0
@@ -154,8 +159,8 @@ def test_the_judges_verdicts_are_counted_in_the_report(judged_run, places):
         row["sentences_supported"]["hits"],
         row["sentences_supported"]["total"],
     ) == (
-        1,
         2,
+        3,
     )
     assert row["all_supported"]["hits"] == 0 and row["omissions"] == 1
     assert row["misleading"]["hits"] == 0
@@ -178,9 +183,9 @@ def test_a_judges_severity_is_read_from_its_prefix_or_field(item, severity):
 
 def test_the_judge_table_counts_omissions_and_errors_by_severity(judged_run, places):
     sentences = [
-        {"text": "a", "supported": True, "why": "", "severity": ""},
-        {"text": "b", "supported": False, "why": "x", "severity": "major"},
-        {"text": "c", "supported": False, "why": "y", "severity": "critical"},
+        {"text": SENTENCES[0], "supported": True, "why": "", "severity": ""},
+        {"text": SENTENCES[1], "supported": False, "why": "x", "severity": "major"},
+        {"text": SENTENCES[2], "supported": False, "why": "y", "severity": "critical"},
     ]
     data = {"judge": "a review session", "verdicts": [
         {**verdict(f"{MODEL}/fatima"), "sentences": sentences,
@@ -243,6 +248,11 @@ def test_a_report_judged_before_the_severity_counts_still_renders():
         ({"judge": "j", "verdicts": [verdict(f"{MODEL}/fatima", ())]}, "no sentences"),
         ({"judge": "j", "verdicts": [{**verdict(f"{MODEL}/fatima"),
                                       "misleading": "no"}]}, "misleading"),
+        *(({"judge": "j", "verdicts": [{**verdict(f"{MODEL}/fatima"),
+                                        "sentences": [judged(t) for t in texts]}]},
+           "not the overview's")
+          for texts in (SENTENCES[:2], (*SENTENCES, SENTENCES[0]),
+                        (*SENTENCES[:2], "Something else."), (*SENTENCES, ""))),
     ],
 )  # fmt: skip
 def test_verdicts_that_dont_answer_the_packet_are_refused(

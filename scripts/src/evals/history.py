@@ -8,8 +8,11 @@ and field errors), which a live run writes to the committed
 scripts/evals/reports/<name>/ under the same name.
 
     python -m evals.history     # the scoreboard of every entry, as Markdown
+    python -m evals.history --latest STAGE   # the path of the stage's latest
+                                             # live entry; nothing if none
 """
 
+import argparse
 import hashlib
 import json
 import re
@@ -152,6 +155,17 @@ def load(directory: Path = HISTORY_DIR) -> list[dict]:
     return sorted(entries, key=lambda e: e["generated_at"])
 
 
+def latest(stage: str, directory: Path = HISTORY_DIR) -> Path | None:
+    """The latest live entry of a stage, by when it was generated."""
+    entries = [
+        (e["generated_at"], path)
+        for path in directory.glob("*.json")
+        if (e := json.loads(path.read_text(encoding="utf-8"))).get("mode") == "live"
+        and stage_of(e) == stage
+    ]
+    return max(entries)[1] if entries else None
+
+
 def read(path: Path) -> dict:
     """A history entry, or the entry of a report.json."""
     data = json.loads(Path(path).read_text(encoding="utf-8"))
@@ -207,7 +221,15 @@ def scoreboard(entries: list[dict]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(description="The history of eval results.")
+    parser.add_argument("--latest", metavar="STAGE")
+    args = parser.parse_args(argv)
+    if args.latest:
+        path = latest(args.latest)
+        if path is not None:
+            print(path.as_posix())
+        return
     entries = load()
     if not entries:
         print(f"no history yet in {HISTORY_DIR}")

@@ -47,7 +47,8 @@ def test_a_unit_file_is_written_whole(tmp_path):
     p = progress.Progress.open("x", run(), resume=False, root=tmp_path)
     p.save("m/d01", {"a": 1}, seconds=1, end=None)
     files = sorted(f.name for f in (p.directory / "units").iterdir())
-    assert files == ["m_d01.json"]  # no temporary file left behind
+    assert len(files) == 1  # no temporary file left behind
+    assert files[0].startswith("m_d01-") and files[0].endswith(".json")
     with pytest.raises(ValueError):
         p.save("m/d99", {}, seconds=1, end=None)
 
@@ -124,3 +125,17 @@ def test_a_bad_request_on_one_model_is_not_an_outage(model_client):
     with pytest.raises(llm.ModelOutputError) as info:
         llm.chat([{"role": "user", "content": "x"}], max_tokens=5)
     assert not isinstance(info.value, llm.ModelsDownError)
+
+
+def test_units_whose_names_make_one_file_name_are_two_units(tmp_path):
+    units = ["m:1/d01", "m_1/d01", "M_1/d01"]
+    p = progress.Progress.open("x", run(units=units), resume=False, root=tmp_path)
+    p.save(units[0], {"a": 1}, seconds=1, end=None)
+    assert p.finished() == units[:1]
+    assert p.load(units[1]) is None and p.load(units[2]) is None
+
+
+def test_a_file_kept_for_another_unit_is_not_loaded(tmp_path):
+    p = progress.Progress.open("x", run(), resume=False, root=tmp_path)
+    progress.write_atomic(p._path("m/d01"), {"unit": "m/d02", "data": {"a": 1}})
+    assert p.load("m/d01") is None and p.finished() == []

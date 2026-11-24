@@ -183,3 +183,25 @@ def test_runs_of_another_stage_are_not_comparable(entry):
     old = copy.deepcopy(entry)
     del old["stage"]
     assert compare.unlike(entry, old) == []
+
+
+def test_the_latest_entry_of_a_stage_is_not_another_stage_s_of_the_same_day(
+    tmp_path, entry
+):
+    for name, at, changes in (
+        ("2026-11-22-suite-e2e", "2026-11-22T10:00:00+00:00", {}),
+        ("2026-11-22-a-later-e2e", "2026-11-22T12:00:00+00:00", {}),
+        ("2026-11-22-suite-reasoning", "2026-11-22T11:00:00+00:00",
+         {"stage": "reasoning"}),
+        ("2026-11-23-replayed", "2026-11-23T11:00:00+00:00", {"mode": "replay"}),
+    ):  # fmt: skip
+        data = {**entry, "stage": "e2e", "generated_at": at, **changes}
+        (tmp_path / f"{name}.json").write_text(json.dumps(data), encoding="utf-8")
+    assert history.latest("e2e", tmp_path).stem == "2026-11-22-a-later-e2e"
+    assert history.latest("reasoning", tmp_path).stem == "2026-11-22-suite-reasoning"
+    assert history.latest("vision", tmp_path) is None
+
+
+def test_the_committed_baseline_is_an_end_to_end_run():
+    path = history.latest("e2e")
+    assert path is not None and history.stage_of(history.read(path)) == "e2e"

@@ -273,16 +273,20 @@ class Progress:
         return progress
 
     def _path(self, unit: str) -> Path:
-        return self.directory / "units" / f"{_slug(unit)}.json"
+        # The hash keeps two units whose names differ only in case, or in
+        # characters a file name can't hold, in two files.
+        digest = hashlib.sha256(unit.encode("utf-8")).hexdigest()[:8]
+        return self.directory / "units" / f"{_slug(unit)}-{digest}.json"
 
     def load(self, unit: str) -> dict | None:
         path = self._path(unit)
         if not path.exists():
             return None
-        return json.loads(path.read_text(encoding="utf-8"))["data"]
+        kept = json.loads(path.read_text(encoding="utf-8"))
+        return kept["data"] if kept["unit"] == unit else None
 
     def finished(self) -> list[str]:
-        return [u for u in self.units if self._path(u).exists()]
+        return [u for u in self.units if self.load(u) is not None]
 
     def finish(self) -> None:
         """The report is written: the progress is no longer needed."""

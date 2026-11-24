@@ -509,7 +509,8 @@ def main(argv: list[str] | None = None) -> int:
         "run", label, args.resume is not None, models=models, units=units,
         dataset=progress.json_hash(manifest()),
         digests=installed,
-        selection={"mode": mode, "split": args.split, "stage": stage},
+        selection={"mode": mode, "split": args.split, "stage": stage,
+                   "cassettes": str(args.cassettes.resolve())},
     )  # fmt: skip
     if run_progress is None:
         return 2

@@ -292,7 +292,8 @@ def test_a_killed_run_resumes_to_the_report_of_an_uninterrupted_one(
     with pytest.raises(Killed):
         runner.main(live_args(tmp_path, "cut", "--label", "cut"))
     units = progress.RESULTS_DIR / "cut" / "progress" / "units"
-    assert [p.name for p in units.iterdir()] == [f"{MODEL.replace(':', '_')}_d09.json"]
+    (kept,) = units.iterdir()
+    assert kept.name.startswith(f"{MODEL.replace(':', '_')}_d09-")
     out = capsys.readouterr().out
     assert "d09: " in out and "1 units left" in out
 

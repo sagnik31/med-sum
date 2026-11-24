@@ -82,7 +82,8 @@ against what you know of medicine or of the patient.
 
 For each item of judge.json:
 
-1. Split the overview into its sentences. For each sentence, `supported`
+1. Split the overview into its sentences, each copied as it is, all of
+   them, once and in order. For each sentence, `supported`
    is true when everything it says follows from the facts: the values,
    the tests or medicines they belong to, dates and their order, flags
    and trends as the facts give them. Otherwise false, with `why` saying
@@ -316,12 +317,24 @@ def by_severity(items) -> dict[str, int]:
     return counts
 
 
-def _check_verdict(v: dict) -> None:
+def _plain(text: str) -> str:
+    """Text without case, spaces and punctuation, which a judge may change."""
+    return re.sub(r"\W+", "", text).casefold()
+
+
+def _check_verdict(v: dict, overview: str) -> None:
     if not isinstance(v.get("sentences"), list) or not v["sentences"]:
         raise VerdictError(f"{v.get('id')}: no sentences judged")
     for s in v["sentences"]:
         if not isinstance(s, dict) or not isinstance(s.get("supported"), bool):
             raise VerdictError(f"{v['id']}: a sentence without a true/false verdict")
+    # Every sentence of the overview, once and in order: one left out or
+    # judged twice would move the rate of supported sentences.
+    texts = [s.get("text") for s in v["sentences"]]
+    if not all(isinstance(t, str) and _plain(t) for t in texts) or _plain(
+        "".join(texts)
+    ) != _plain(overview):
+        raise VerdictError(f"{v['id']}: the sentences are not the overview's")
     if not isinstance(v.get("omissions"), list):
         raise VerdictError(f"{v['id']}: omissions is not a list")
     if not isinstance(v.get("misleading"), bool):
@@ -335,16 +348,16 @@ def apply_verdicts(report: dict, packet: dict, verdicts: dict) -> dict:
     """
     if not isinstance(verdicts.get("judge"), str) or not verdicts["judge"].strip():
         raise VerdictError("the verdicts don't say who judged")
-    wanted = {i["id"] for i in packet["items"]}
+    wanted = {i["id"]: i["overview"] for i in packet["items"]}
     got: dict[str, dict] = {}
     for v in verdicts.get("verdicts", []):
         if v.get("id") not in wanted:
             raise VerdictError(f"a verdict for {v.get('id')!r}, which is not an item")
         if v["id"] in got:
             raise VerdictError(f"{v['id']}: judged twice")
-        _check_verdict(v)
+        _check_verdict(v, wanted[v["id"]])
         got[v["id"]] = v
-    missing = sorted(wanted - set(got))
+    missing = sorted(set(wanted) - set(got))
     if missing:
         raise VerdictError(f"not judged: {', '.join(missing)}")
     per_model = {}

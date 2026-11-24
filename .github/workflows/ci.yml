@@ -192,8 +192,8 @@ jobs:
         # Fails when unsafe errors rise or the routing or recall measures
         # fall beyond the tolerances in evals/compare.py.
         run: |
-          latest="$(ls ../evals/history/*.json 2>/dev/null | sort | tail -n 1)"
+          latest="$(python -m evals.history --latest e2e)"
           if [ -z "$latest" ]; then
-            echo "No committed history entry to compare with."; exit 0
+            echo "No committed end-to-end live run to compare with."; exit 0
           fi
           python -m evals.compare "$latest" "$RUNNER_TEMP/replay/report.json"

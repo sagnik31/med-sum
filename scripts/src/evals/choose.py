@@ -58,7 +58,9 @@ def gate_failure(
     if c.summary.all_fields.f1 is None:
         return "nothing was scored"
     rate = c.summary.unsafe_rate
-    if rate is not None and rate > max_unsafe_rate:
+    if rate is None:
+        return "no clinical items were scored"
+    if rate > max_unsafe_rate:
         return (
             f"unsafe-error rate {rate:.2%} is above {max_unsafe_rate:.2%} "
             f"({c.summary.unsafe} of {c.summary.clinical_items} clinical items)"

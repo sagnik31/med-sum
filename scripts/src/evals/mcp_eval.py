@@ -316,11 +316,28 @@ class Score:
         )
 
 
+def _supported(question: Question, quoted: list[Cite], session: Session) -> set[str]:
+    """
+    The numbers an answer may give: those of the entries it cites and of the
+    question. A number read elsewhere in the session is not shown by the
+    lines cited for it. An answer that cites nothing is held to what the
+    tools returned; only an abstention can pass so.
+    """
+    if not quoted:
+        texts = session.text
+    else:
+        texts = [question.text] + [
+            text
+            for cite, text in session.entries
+            if any(q == cite or _overlaps(q, cite) for q in quoted)
+        ]
+    return set().union(*(numbers(t) for t in texts))
+
+
 def score(question: Question, answer: str, session: Session) -> Score:
     quoted = citations_in(answer)
     bare = CITATION.sub(" ", answer)
-    seen = set().union(*(numbers(t) for t in session.text)) if session.text else set()
-    unknown = sorted(numbers(bare) - seen)
+    unknown = sorted(numbers(bare) - _supported(question, quoted, session))
     s = Score(
         cited=bool(quoted),
         grounded=bool(quoted)

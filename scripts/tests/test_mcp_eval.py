@@ -331,3 +331,18 @@ def test_a_killed_mcp_run_resumes_from_the_next_question(
     saved = json.loads((tmp_path / "out" / "results.json").read_text("utf-8"))
     assert [o["question"] for o in saved["outcomes"]] == asked
     assert saved["outcomes"][0]["score"]["cited"] is True
+
+
+def test_a_number_read_elsewhere_is_not_shown_by_the_lines_cited():
+    other = f"document:{DOC}#p1:20"
+    s = session(LINE)
+    s.add({"citations": [other], "result": {"cite": other, "line": "MCV 81"}}, "MCV 81")
+    said = f"Haemoglobin was 10.4 and MCV 81 ({LINE})."
+    got = score(HB, said, s)
+    assert not got.numbers and got.unknown_numbers == ["81"]
+    assert not got.passed("value")
+    both = f"Haemoglobin was 10.4 ({LINE}) and MCV 81 ({other})."
+    assert score(HB, both, s).numbers
+    # A citation of the whole document shows none of its numbers.
+    whole = f"Haemoglobin was 10.4 ({LINE}); MCV 81 (document:{DOC})."
+    assert not score(HB, whole, s).numbers

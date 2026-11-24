@@ -120,3 +120,9 @@ def test_the_unsafe_gate_is_checked_before_the_transcription_gate():
         [Candidate("qwen", summary(90, 10, unsafe=5), transcription(50))]
     )
     assert choice.excluded["qwen"].startswith("unsafe-error rate")
+
+
+def test_a_model_with_no_clinical_items_shows_no_safety():
+    choice = choose_primary([Candidate("qwen", summary(90, 10, items=0))])
+    assert choice.model is None
+    assert choice.excluded["qwen"] == "no clinical items were scored"
