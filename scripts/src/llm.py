@@ -34,6 +34,7 @@ with tool calls (Ollama's `tools`), which the caller runs and sends back.
 import base64
 import binascii
 import ipaddress
+import json
 import logging
 import os
 import struct
@@ -45,6 +46,7 @@ from typing import Any, Literal
 
 import httpx
 import ollama
+from pydantic import ValidationError
 
 import model_health
 from config import FALLBACK_MODEL, NUM_CTX, PRIMARY_MODEL
@@ -62,7 +64,12 @@ logger = logging.getLogger("llm")
 # streamed reply). Generous because on a CPU a page image can take minutes
 # before the first token; it stops a stalled server from hanging a job.
 MODEL_TIMEOUT_SECONDS = 600
-_client = ollama.Client(timeout=MODEL_TIMEOUT_SECONDS)
+# The host check (require_local_host) covers only where a request is addressed,
+# so nothing may send it elsewhere: no proxy from the environment, and no
+# redirect followed. See docs/adr/0005-local-models-with-fallback.md.
+_client = ollama.Client(
+    timeout=MODEL_TIMEOUT_SECONDS, trust_env=False, follow_redirects=False
+)
 
 # Deterministic output: these calls copy and condense clinical text, so there
 # is nothing to gain from sampling. presence_penalty is reset because Qwen's
@@ -84,6 +91,10 @@ MODEL_ERRORS = (ollama.ResponseError, ConnectionError, httpx.TransportError)
 
 class IncompleteReplyError(ConnectionError):
     """The stream ended without Ollama's final chunk: the reply may be cut short."""
+
+
+class MalformedReplyError(ConnectionError):
+    """A chunk of the stream was not one Ollama sends (bad JSON or fields)."""
 
 
 def is_outage(error: BaseException) -> bool:
@@ -178,9 +189,15 @@ def cloud_refusal(messages: list[dict]) -> str | None:
     return None
 
 
-# Model digests, looked up at most once per model per process (a tag can
-# point to new weights after a re-pull). None when the lookup failed.
-_digests: dict[str, str | None] = {}
+# Model digests, looked up once per model until forget_digests(), which each
+# document run and summary build calls at its start: a tag can point to new
+# weights after a re-pull. A failed lookup is not kept.
+_digests: dict[str, str] = {}
+
+
+def forget_digests() -> None:
+    """Look each model's digest up again at its next use."""
+    _digests.clear()
 
 
 class ModelOutputError(RuntimeError):
@@ -466,14 +483,17 @@ def _stream(attempt, model, messages, options, format, tools=None):
     extra = {"format": format} if format is not None else {}
     if tools is not None:
         extra["tools"] = tools
-    for chunk in _client.chat(
-        model=model,
-        messages=messages,
-        stream=True,
-        think=False,
-        options=options,
-        **extra,
-    ):
+    chunks = _chunks(
+        _client.chat(
+            model=model,
+            messages=messages,
+            stream=True,
+            think=False,
+            options=options,
+            **extra,
+        )
+    )
+    for chunk in chunks:
         token = chunk.message.content or ""
         calls = getattr(chunk.message, "tool_calls", None) or []
         if (token or calls) and attempt.first_token_ms is None:
@@ -488,6 +508,25 @@ def _stream(attempt, model, messages, options, format, tools=None):
     if attempt.done is None:
         # A stream that just stops is never taken as a whole reply.
         raise IncompleteReplyError("the reply ended without its final chunk")
+
+
+def _chunks(stream):
+    """
+    The stream's chunks. One the client can't decode is a server failure,
+    so the request can fall back; its text (which may quote the document)
+    stays out of the error.
+    """
+    stream = iter(stream)
+    while True:
+        try:
+            chunk = next(stream)
+        except StopIteration:
+            return
+        except (json.JSONDecodeError, UnicodeDecodeError, ValidationError) as e:
+            raise MalformedReplyError(
+                f"a chunk of the reply can't be read ({type(e).__name__})"
+            ) from None
+        yield chunk
 
 
 def _breaker_switched(event: str, model: str, role: str) -> None:
@@ -577,8 +616,8 @@ def prompt_truncated(
 def model_digest(model: str) -> str | None:
     """
     The digest of the weights a model tag points to, from Ollama's model
-    list, looked up once per model per process. Never fails a model call:
-    any error leaves it None.
+    list, looked up once per model per run (see forget_digests). Never fails
+    a model call: any error leaves it None.
     """
     if model in _digests:
         return _digests[model]
@@ -597,7 +636,8 @@ def model_digest(model: str) -> str | None:
             extra={"obs": {"event": "model_digest_failed", "model": model,
                            "error_type": type(e).__name__}},
         )  # fmt: skip
-    _digests[model] = digest
+    if digest is not None:
+        _digests[model] = digest
     return digest
 
 

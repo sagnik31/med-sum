@@ -1,5 +1,7 @@
 """llm.chat: the primary model, the fallback, token caps and stop markers."""
 
+import importlib.util
+import sys
 from types import SimpleNamespace
 
 import httpx
@@ -290,3 +292,52 @@ def test_a_stream_that_ends_without_its_final_chunk_is_not_a_reply(
 )
 def test_only_server_trouble_is_an_outage(error, outage):
     assert llm.is_outage(error) is outage
+
+
+# -------------------------------------------------------------------
+# The transport: local only, and a stream that can't be decoded
+# -------------------------------------------------------------------
+def test_the_client_uses_no_proxy_and_follows_no_redirect(monkeypatch):
+    # A proxy or a redirect would send a page image off this machine though
+    # OLLAMA_HOST is local.
+    monkeypatch.setenv("HTTP_PROXY", "http://proxy.invalid:8080")
+    monkeypatch.setenv("ALL_PROXY", "http://proxy.invalid:8080")
+    spec = importlib.util.spec_from_file_location("llm_fresh", llm.__file__)
+    fresh = importlib.util.module_from_spec(spec)
+    monkeypatch.setitem(sys.modules, "llm_fresh", fresh)
+    spec.loader.exec_module(fresh)
+    http = fresh._client._client
+    assert http.follow_redirects is False
+    assert not http.trust_env
+    assert not any(http._mounts.values())
+
+
+def _over_http(monkeypatch, bodies):
+    """llm's client over an offline transport answering `bodies` in order."""
+    answers = iter(bodies)
+
+    def handler(request):
+        if request.url.path == "/api/tags":
+            return httpx.Response(200, json={"models": []})
+        return httpx.Response(200, content=next(answers))
+
+    client = ollama.Client(
+        host="http://127.0.0.1:11434", transport=httpx.MockTransport(handler)
+    )
+    monkeypatch.setattr(llm, "_client", client)
+
+
+GOOD = b'{"message": {"role": "assistant", "content": "fine"}, "done": true}'
+
+
+@pytest.mark.parametrize("bad", [b'{"message": {"cont', b'{"message": 5}'])
+def test_a_malformed_stream_falls_back(monkeypatch, bad):
+    _over_http(monkeypatch, [bad, GOOD])
+    assert llm.chat(MESSAGES, max_tokens=10) == "fine"
+
+
+def test_a_malformed_chunk_s_text_is_not_in_the_error(monkeypatch):
+    _over_http(monkeypatch, [b'{"message": "Haemoglobin 7.2'] * 2)
+    with pytest.raises(llm.ModelsDownError) as e:
+        llm.chat(MESSAGES, max_tokens=10)
+    assert "Haemoglobin" not in str(e.value)

@@ -596,6 +596,7 @@ def _build_patient_summary(patient_id: str, claim: datetime) -> datetime | None:
     logger.info(
         "patient summary started", extra=_obs("summary_started", patient_id=patient_id)
     )
+    llm.forget_digests()  # a model may have been pulled again since the last run
     next_claim = None
     beat = SummaryHeartbeat(patient_id, claim)
     conn = get_db_connection()

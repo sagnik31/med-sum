@@ -43,6 +43,7 @@ from dataclasses import dataclass
 
 import psycopg
 
+import llm
 from observability import ClaimLost, resume_run, start_run
 from observability.redact import redact
 from pipeline import checkpoints, nodes
@@ -470,6 +471,7 @@ def process(job: Job, worker: str, *, build=None, heartbeat_s: float = HEARTBEAT
     Run one claimed job to its end. Errors are stored, not raised. `build`
     makes the graph from a checkpointer (default: pipeline.graph.build).
     """
+    llm.forget_digests()  # a model may have been pulled again since the last run
     known: list[str] = []  # the patient's identifiers, once known
     with connect() as conn:
         try:

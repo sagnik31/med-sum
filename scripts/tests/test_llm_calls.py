@@ -363,3 +363,21 @@ def test_a_model_missing_from_the_list_has_no_digest(model_client, recorded):
     llm.chat(MESSAGES, max_tokens=10)
 
     assert recorded[0].model_digest is None
+
+
+def test_a_digest_is_looked_up_again_for_the_next_run(model_client):
+    # A tag pulled again points at other weights: the next run must not
+    # reuse the old weights' transcriptions, or name them.
+    model_client.digests = {llm.PRIMARY_MODEL: "build-1"}
+    assert llm.model_digest(llm.PRIMARY_MODEL) == "build-1"
+    model_client.digests = {llm.PRIMARY_MODEL: "build-2"}
+    llm.forget_digests()
+    assert llm.model_digest(llm.PRIMARY_MODEL) == "build-2"
+
+
+def test_a_failed_digest_lookup_is_not_kept(model_client):
+    model_client.list_error = ConnectionError("refused")
+    assert llm.model_digest(llm.PRIMARY_MODEL) is None
+    model_client.list_error = None
+    model_client.digests = {llm.PRIMARY_MODEL: "build-1"}
+    assert llm.model_digest(llm.PRIMARY_MODEL) == "build-1"
