@@ -13,10 +13,10 @@
    "done": {
     "prompt_eval_count": 1499,
     "eval_count": 284,
-    "total_duration": 73867030500,
-    "load_duration": 11557700,
-    "prompt_eval_duration": 43501555000,
-    "eval_duration": 30282182000
+    "total_duration": 77925319200,
+    "load_duration": 21038800,
+    "prompt_eval_duration": 46175224000,
+    "eval_duration": 31553838000
    },
    "tool_calls": [],
    "seed": 0
@@ -33,10 +33,10 @@
    "done": {
     "prompt_eval_count": 467,
     "eval_count": 14,
-    "total_duration": 9626597900,
-    "load_duration": 7247000,
-    "prompt_eval_duration": 8231549999,
-    "eval_duration": 1327994000
+    "total_duration": 9870027000,
+    "load_duration": 10216600,
+    "prompt_eval_duration": 8441512000,
+    "eval_duration": 1355019000
    },
    "tool_calls": [],
    "seed": 0
@@ -52,11 +52,31 @@
    "done_reason": "stop",
    "done": {
     "prompt_eval_count": 1244,
-    "eval_count": 1532,
-    "total_duration": 187117352100,
-    "load_duration": 11464700,
-    "prompt_eval_duration": 20914378000,
-    "eval_duration": 166154207000
+    "eval_count": 1547,
+    "total_duration": 195084486300,
+    "load_duration": 7854200,
+    "prompt_eval_duration": 16064131000,
+    "eval_duration": 178931906000
+   },
+   "tool_calls": [],
+   "seed": 0
+  },
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "846142d3c08656bb8e764227c4a00bdb2e8e49d9b3282df6cb3e8391335668d2",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "e5fa8ec868056b1bc1011b438029946a59c95a8f48c9877818c75b626f33dcad",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\n  \"patient\": {\n    \"name\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 6,\n        \"last_line\": 6,\n        \"quote\": \"Patient: Fatima Shaikh\"\n      },\n      \"text\": \"Fatima Shaikh\"\n    },\n    \"age\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age / Sex: 31 Y / F\"\n      },\n      \"text\": \"31 Y\"\n    },\n    \"sex\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 7,\n        \"last_line\": 7,\n        \"quote\": \"Age / Sex: 31 Y / F\"\n      },\n      \"text\": \"F\"\n    },\n    \"date_of_birth\": null,\n    \"patient_id\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 8,\n        \"last_line\": 8,\n        \"quote\": \"UHIID: SH-100233\"\n      },\n      \"text\": \"SH-100233\"\n    }\n  },\n  \"details\": {\n    \"facility\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 4,\n        \"last_line\": 4,\n        \"quote\": \"Sahaj Multispeciality Hospital, Karve Road, Pune\"\n      },\n      \"text\": \"Sahaj Multispeciality Hospital\"\n    },\n    \"clinicians\": [\n      {\n        \"citation\": {\n          \"page\": 1,\n          \"first_line\": 1,\n          \"last_line\": 3,\n          \"quote\": \"Dr. Kavita Rao\\nMBBS, DM (Endocrinology)\\nReg. No.: MMC-2012/07/0002\"\n        },\n        \"text\": \"Dr. Kavita Rao\"\n      }\n    ],\n    \"report_date\": null,\n    \"collection_date\": null,\n    \"prescription_date\": {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 5,\n        \"last_line\": 5,\n        \"quote\": \"Date: 09/09/2024\"\n      },\n      \"text\": \"09/09/2024\"\n    }\n  },\n  \"medicines\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 17,\n        \"last_line\": 17,\n        \"quote\": \"| 1 | Tab. Thyronorm | 50 mcg | 1-0-0 | 6 weeks | Empty stomach, 30 min before breakfast |\"\n      },\n      \"form\": \"Tab.\",\n      \"name\": \"Thyronorm\",\n      \"strength\": \"50 mcg\",\n      \"dose\": \"50 mcg\",\n      \"frequency\": \"1-0-0\",\n      \"route\": null,\n      \"duration\": \"6 weeks\",\n      \"instructions\": \"Empty stomach, 30 min before breakfast\"\n    }\n  ],\n  \"conditions\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 11,\n        \"last_line\": 11,\n        \"quote\": \"Diagnosis: Hypothyroidism\"\n      },\n      \"text\": \"Hypothyroidism\",\n      \"kind\": \"history\"\n    }\n  ],\n  \"remarks\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 19,\n        \"last_line\": 19,\n        \"quote\": \"Advice: Repeat TSH after 6 weeks.\"\n      },\n      \"text\": \"Repeat TSH after 6 weeks.\",\n      \"kind\": \"advice\",\n      \"scope\": \"document\",\"test_name\": null,\n      \"panel\": null\n    }\n  ],\n  \"vitals\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"BP\",\n      \"value_text\": \"118/76\",\n      \"unit\": \"mmHg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"Pulse\",\n      \"value_text\": \"72\",\n      \"unit\": \"/min\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"Weight\",\n      \"value_text\": \"61\",\n      \"unit\": \"kg\"\n    },\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 9,\n        \"last_line\": 9,\n        \"quote\": \"Vitals: BP 118/76 mmHg, Pulse 72 /min, Weight 61 kg, Temp 98.4 °F\"\n      },\n      \"name\": \"Temp\",\n      \"value_text\": \"98.4\",\n      \"unit\": \"°F\"\n    }\n  ],\n  \"allergies\": [\n    {\n      \"citation\": {\n        \"page\": 1,\n        \"first_line\": 10,\n        \"last_line\": 10,\n        \"quote\": \"Allergies: Penicillin - hives\"\n      },\n      \"text\": \"Penicillin - hives\",\"substance\": \"Penicillin\",\n      \"reaction\": \"hives\"\n    }\n  ]\n}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 3095,
+    "eval_count": 1534,
+    "total_duration": 218537093000,
+    "load_duration": 13978700,
+    "prompt_eval_duration": 36375308000,
+    "eval_duration": 182058564000
    },
    "tool_calls": [],
    "seed": 0

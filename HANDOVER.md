@@ -32,12 +32,15 @@ was checked and fixed on `main`, not pushed: 26 fixed, 4 in part, 4 skipped.
 The commits are `e9706d3` and the ones after it; the ADRs say what changed.
 - **Run `python -m reset_db --yes` first:** the schema has a new trigger that
   clears a patient's summary page when a document is deleted.
-- **To pick up, stale recordings (13):** 12 end-to-end and 1 injection
-  document no longer replay, because the checks changed what their repairs are
-  sent. Listed in `scripts/evals/stale_recordings.json`, with how to clear it.
+- **To pick up, stale recordings (6 left):** gemma4:e2b's d01, d04, d07, d12,
+  d24 and d25 no longer replay, because the checks changed what their repairs
+  are sent. qwen3.5:4b's 6 and the injection document were re-recorded on
+  2026-11-27 (live, `--no-history`; the 2026-11-22 entry stays the baseline).
+  Listed in `scripts/evals/stale_recordings.json`, with how to clear it.
   CI leaves them out with a warning and fails on any new one (or a listed one
-  that replays again). Re-record in the next live run (the owner's go-ahead;
-  hours), then empty the list. The demo replays.
+  that replays again). Re-record with
+  `python -m evals.run --live --no-history --model gemma4:e2b --docs d01,d04,d07,d12,d24,d25`
+  (the owner's go-ahead; about 3.5 h), then empty the list. The demo replays.
 - **Answered by the owner the same day, and built:** a sign-off names the
   record it read (`1dc54a4`); a verified copy of a duplicate upload stands for
   the file; a model whose records leave out over 5% of the clinical values
