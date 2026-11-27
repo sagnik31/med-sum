@@ -130,9 +130,13 @@ def test_the_numbers_over_every_document_are_the_report_s_own():
         )
 
 
-def test_the_baseline_is_compared_without_the_stale_documents(tmp_path, capsys):
+def test_the_baseline_is_compared_without_the_stale_documents(
+    tmp_path, capsys, monkeypatch
+):
     entry, report = committed()
-    listed = stale.load("e2e")
+    # Its own list, so the test holds when the committed one is empty.
+    listed = {MODEL: entry["documents"][MODEL][:2]}
+    monkeypatch.setattr(stale, "load", lambda kind: listed)
     b = {**entry, "documents": {}, "models": {}}
     for model, m in report["models"].items():
         b["documents"][model] = stale.without(entry["documents"][model], listed, model)

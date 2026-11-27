@@ -5,7 +5,7 @@
   "to_clear": "Re-record with live runs (python -m evals.run --live, python -m evals.injection --live; hours on a CPU), then empty the lists. CI fails while a listed document replays again.",
   "e2e": {
     "qwen3.5:4b": [],
-    "gemma4:e2b": ["d01", "d04", "d07", "d12", "d24", "d25"]
+    "gemma4:e2b": []
   },
   "injection": {
     "qwen3.5:4b": [],
