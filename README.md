@@ -71,13 +71,14 @@ The first live eval suite ran on both local models on 2026-11-21 and 2026-11-22.
 | Transcription value recall (gate: 95%) | 99.9% / 98.3% |
 | Unsafe errors, whole pipeline (gate: 1%) | 10/204 / 27/204: **neither passes** |
 | Unsafe errors inside auto-verified documents | 8/149 / 9/78 |
+| The same two, under the current checks (replay, 2026-11-27) | 3/204 (1.47%) / 14/204; 1/143 / 4/74: **neither passes** |
 | Records the other model had to finish as fallback | 2/25 / 23/25 |
 | Prompt-injection attacks followed | 0/6 / 1/6 |
 | Overviews the check showed | 5/6 / 1/6 |
 | Shown overviews with a false sentence, by the judge | 0/5 / 0/1 |
 | Judge's outcome for the overview | primary / not usable (left out a drug allergy) |
 
-**The decision** ([ADR 0013](docs/adr/0013-model-choice-after-the-first-live-evals.md), accepted 2026-11-23): keep `qwen3.5:4b` as primary, keep `gemma4:e2b` as the fallback for reading and parsing only, and send every document to a clinician until the safety gate passes. To close the gap, extend the checks first, then try a larger local model for parsing if needed. All of it is built: two new checks catch the kinds of misplaced field 7 of `qwen3.5:4b`'s 8 unsafe items in auto-verified documents came from, and the overview check now rejects an overview that leaves out an allergy or the latest prescription. No live run has measured those changes yet; the numbers above are from before them. The numbers are on [Live eval results](docs/eval-results.md), the judging on [Overview judge](docs/eval-judge.md), the reasoning on [Model recommendation](docs/model-recommendation.md), and the full reports in [`scripts/evals/reports/`](scripts/evals/reports/README.md). The MCP client eval hasn't been run yet. What each eval measures is in [Development](docs/development.md#evals).
+**The decision** ([ADR 0013](docs/adr/0013-model-choice-after-the-first-live-evals.md), accepted 2026-11-23): keep `qwen3.5:4b` as primary, keep `gemma4:e2b` as the fallback for reading and parsing only, and send every document to a clinician until the safety gate passes. To close the gap, extend the checks first, then try a larger local model for parsing if needed. All of it is built: two new checks catch the kinds of misplaced field 7 of `qwen3.5:4b`'s 8 unsafe items in auto-verified documents came from, and the overview check now rejects an overview that leaves out an allergy or the latest prescription. The numbers above are from before those changes, except the row measured under the current checks: they cut `qwen3.5:4b`'s unsafe errors from 10 to 3 of 204, still above the gate. The numbers are on [Live eval results](docs/eval-results.md), the judging on [Overview judge](docs/eval-judge.md), the reasoning on [Model recommendation](docs/model-recommendation.md), and the full reports in [`scripts/evals/reports/`](scripts/evals/reports/README.md). The MCP client eval hasn't been run yet. What each eval measures is in [Development](docs/development.md#evals).
 
 ## Design trade-offs
 

@@ -108,22 +108,22 @@ All of these run from `scripts/src`.
 
 ### What the evals report
 
-The README shows the headline results. These tables are from the first live suite (2026-11-21 and 2026-11-22), which ran before [ADR 0013](adr/0013-model-choice-after-the-first-live-evals.md)'s changes: then a document that passed every check ended `verified`, and validators 11 and 12 didn't exist. No live run has measured the new checks yet; the fault check below has. The other evals, the overview judge and what the results recommend are on [Live eval results](eval-results.md), [Overview judge](eval-judge.md) and [Model recommendation](model-recommendation.md).
+The README shows the headline results. These tables are from the first live suite (2026-11-21 and 2026-11-22), which ran before [ADR 0013](adr/0013-model-choice-after-the-first-live-evals.md)'s changes: then a document that passed every check ended `verified`, and validators 11 and 12 didn't exist. The new checks have been measured since by a replay of the end-to-end eval, after its stale recordings were recorded again (2026-11-27); the last column of the table below has it, and the fault check below measures them too. The other evals, the overview judge and what the results recommend are on [Live eval results](eval-results.md), [Overview judge](eval-judge.md) and [Model recommendation](model-recommendation.md).
 
 **The document pipeline, per model** (`python -m evals.run --live`, the whole pipeline, [report](../scripts/evals/reports/2026-11-22-suite-e2e/report.md))
 
-| Measure | `qwen3.5:4b` | `gemma4:e2b` |
-|---|---|---|
-| Printed-field precision | 92.5% | 88.3% |
-| Printed-field recall | 90.3% | 90.4% |
-| Printed-field F1 | 91.4% | 89.3% |
-| Unsafe errors over clinical items (gate: 1%) | 10/204 (4.90%) | 27/204 (13.24%) |
-| Documents auto-verified (every check passed) | 18/25 (72%) | 12/25 (48%) |
-| Items with an unsafe error inside auto-verified documents | 8/149 (5.4%, 95% CI 2.7%-10.2%) | 9/78 (11.5%, 95% CI 6.2%-20.5%) |
-| End state as the manifest expects | 21/25 (84%) | 15/25 (60%) |
-| Records the other model finished as fallback | 2 | 23 |
-| Transcription value recall | 1443/1445 (99.9%) | 1420/1445 (98.3%) |
-| Transcription character error rate | 11.0% | 11.3% |
+| Measure | `qwen3.5:4b` | `gemma4:e2b` | Replay under the current checks (`qwen3.5:4b` / `gemma4:e2b`) |
+|---|---|---|---|
+| Printed-field precision | 92.5% | 88.3% | 95.0% / 92.2% |
+| Printed-field recall | 90.3% | 90.4% | 93.0% / 91.8% |
+| Printed-field F1 | 91.4% | 89.3% | 94.0% / 92.0% |
+| Unsafe errors over clinical items (gate: 1%) | 10/204 (4.90%) | 27/204 (13.24%) | 3/204 (1.47%, 95% CI 0.5%-4.2%) / 14/204 (6.86%) |
+| Documents auto-verified (every check passed) | 18/25 (72%) | 12/25 (48%) | 18/25 / 12/25, now `checks_passed` |
+| Items with an unsafe error inside auto-verified documents | 8/149 (5.4%, 95% CI 2.7%-10.2%) | 9/78 (11.5%, 95% CI 6.2%-20.5%) | 1/143 (0.7%, 95% CI 0.1%-3.9%) / 4/74 (5.4%, 95% CI 2.1%-13.1%) |
+| End state as the manifest expects | 21/25 (84%) | 15/25 (60%) | 21/25 / 15/25 |
+| Records the other model finished as fallback | 2 | 23 | 2 / 23 |
+| Transcription value recall | 1443/1445 (99.9%) | 1420/1445 (98.3%) | unchanged |
+| Transcription character error rate | 11.0% | 11.3% | unchanged |
 | Median seconds per document (CPU) | 633 s | 637 s |
 
 **Repair** (`python -m evals.repair --live --subset core`, 15 injected-fault cases, [report](../scripts/evals/reports/2026-11-22-suite-repair/report.md))

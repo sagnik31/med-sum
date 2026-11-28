@@ -2,7 +2,9 @@
 
 This page gives the recommendations of `claude-opus-5-5`, which judged the overview eval and reviewed the whole suite. The question was which of the two local models should be primary, and whether a better model is needed. The evidence is on [Live eval results](eval-results.md) and [Overview judge](eval-judge.md). The owner accepted them on 2026-11-23, and the decision is recorded in [ADR 0013](adr/0013-model-choice-after-the-first-live-evals.md).
 
-All of recommendations 1 to 6 are built; ADR 0013's status names each commit. A larger parse model (4.2) waits on a live run that measures the new checks, and the stronger judging (7) on the next judging.
+All of recommendations 1 to 6 are built; ADR 0013's status names each commit. The stronger judging (7) waits on the next judging.
+
+**Measured since (2026-11-27).** The end-to-end eval, replayed under the new checks after its stale recordings were recorded again, puts `qwen3.5:4b` at 3 unsafe errors in 204 clinical items (1.47%, 95% CI 0.5%-4.2%; it was 10) and `gemma4:e2b` at 14 (it was 27). `qwen3.5:4b`'s documents that pass every check hold 1 unsafe item in 143 (it was 8 in 149). So the checks of 4.1 closed most of the gap but not all of it: `qwen3.5:4b` is still above the 1% gate, and 25 documents are too few to show it under 1% even if it were. Whether that calls for the larger parse model of 4.2, or for more documents first, is open. The numbers are on [Live eval results](eval-results.md#under-the-current-code). The tables below keep the 2026-11-22 numbers the recommendations were made on.
 
 These are recommendations, not measurements. Each one names the numbers it rests on, and most of those numbers come from 25 documents or 6 patients.
 
