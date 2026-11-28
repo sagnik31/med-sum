@@ -220,8 +220,12 @@ def test_a_vision_report_scores_pages_only_and_chooses_no_model():
     model = report["models"]["qwen"]
     assert model["transcription"]["values"]["value"] == 1.0
     assert model["summary"]["documents"] == 0  # no record was scored
+    assert model["document_count"] == len(DOC_IDS)
+    assert sum(r["documents"] for r in model["splits"].values()) == len(DOC_IDS)
+    assert all(r["documents"] > 0 for r in model["cases"].values())
     assert model["routing"] is None
     md = render_markdown(report)
+    assert f"| Documents | {len(DOC_IDS)} |" in md
     assert "stage vision" in md and "`qwen`: passes" in md
     assert "Field F1 |" not in md.split("## By split")[0]
     assert "| Doc | CER | Line F1 |" in md

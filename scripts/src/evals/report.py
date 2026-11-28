@@ -89,6 +89,9 @@ def build_report(
         recall = trans.values.value if trans else None
         gate[run.model] = recall is not None and recall >= MIN_VALUE_RECALL
         models[run.model] = {
+            # Every document the run went through. The summary's own count is
+            # of scored records, so it is 0 in a vision run, which has none.
+            "document_count": len(run.documents),
             "seconds_per_document": run.seconds_per_document,
             "summary": total.as_dict(),
             "transcription": trans.as_dict() if trans else None,
@@ -162,7 +165,7 @@ def _splits(run: ModelRun, entries: dict[str, dict]) -> dict[str, dict]:
         transcribed = [d.transcription for d in docs if d.transcription]
         trans = summarise_transcriptions(transcribed) if transcribed else None
         out[split] = {
-            "documents": total.documents,
+            "documents": len(docs),
             "field_f1": total.all_fields.f1,
             "unsafe": _unsafe(total),
             "value_recall": trans.values.value if trans else None,
@@ -214,7 +217,7 @@ def _case_row(run: ModelRun, ids: set[str]) -> dict:
     transcribed = [d.transcription for d in docs if d.transcription]
     trans = summarise_transcriptions(transcribed) if transcribed else None
     return {
-        "documents": total.documents,
+        "documents": len(docs),
         "field_f1": total.all_fields.f1,
         "unsafe": total.unsafe,
         "hallucinated": total.hallucinated,
@@ -421,7 +424,8 @@ def _overview_rows(models: dict, names: list[str]) -> list[list[str]]:
     s = lambda m: m["summary"]  # noqa: E731
     t = lambda m: m["transcription"]  # noqa: E731
     return [
-        row("Documents", lambda m: str(s(m)["documents"])),
+        # A report from before document_count counted scored records only.
+        row("Documents", lambda m: str(m.get("document_count", s(m)["documents"]))),
         row("Type right", lambda m: _ratio(s(m)["types"])),
         row("Field precision", lambda m: _pct(s(m)["all_fields"]["precision"])),
         row("Field recall", lambda m: _pct(s(m)["all_fields"]["recall"])),
