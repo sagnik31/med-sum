@@ -1,0 +1,275 @@
+{
+  "version": 1,
+  "kind": "repair",
+  "label": "repair-new-faults",
+  "generated_at": "2026-11-28T00:51:54+00:00",
+  "cases": [
+    "d04-strength_in_name-1",
+    "d07-allergy_text_cut-1",
+    "d08-flag_in_value-1",
+    "d11-header_row_as_result-1",
+    "d12-frequency_as_dose-1"
+  ],
+  "models": {
+    "qwen3.5:4b": {
+      "rows": {
+        "fixed": {
+          "cases": 5,
+          "repaired": {
+            "hits": 4,
+            "total": 5,
+            "low": 0.375534627029995,
+            "high": 0.9637758917743693
+          },
+          "repaired_first_try": 4,
+          "failed_runs": 0,
+          "repairs": 6,
+          "repairs_per_case": 1.2,
+          "model_calls_per_repair": 1.0,
+          "tokens_per_repair": 3797,
+          "seconds_per_repair": 158.2,
+          "median_seconds_per_case": 193.8,
+          "unsafe_before": 5,
+          "unsafe_after": 1,
+          "cases_with_unsafe_after": 1
+        }
+      },
+      "by_fault": {
+        "fixed": {
+          "allergy_text_cut": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "flag_in_value": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "frequency_as_dose": {
+            "cases": 1,
+            "repaired": 1
+          },
+          "header_row_as_result": {
+            "cases": 1,
+            "repaired": 0
+          },
+          "strength_in_name": {
+            "cases": 1,
+            "repaired": 1
+          }
+        }
+      },
+      "verdict": {
+        "supports": "fixed",
+        "why": [
+          "both variants are needed to compare"
+        ]
+      }
+    }
+  },
+  "results": [
+    {
+      "case": "d04-strength_in_name-1",
+      "fault": "strength_in_name",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 193.8,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2928,
+          "completion_tokens": 1220,
+          "seconds": 193.61
+        }
+      ]
+    },
+    {
+      "case": "d12-frequency_as_dose-1",
+      "fault": "frequency_as_dose",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 135.4,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2440,
+          "completion_tokens": 844,
+          "seconds": 135.243
+        }
+      ]
+    },
+    {
+      "case": "d07-allergy_text_cut-1",
+      "fault": "allergy_text_cut",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 197.4,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2964,
+          "completion_tokens": 1281,
+          "seconds": 197.316
+        }
+      ]
+    },
+    {
+      "case": "d08-flag_in_value-1",
+      "fault": "flag_in_value",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "fixed",
+      "repaired": true,
+      "repairs": 1,
+      "errors_before": 1,
+      "errors_after": 0,
+      "unsafe_before": 1,
+      "unsafe_after": 0,
+      "stopped_at": "render",
+      "seconds": 185.7,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 3113,
+          "completion_tokens": 1185,
+          "seconds": 185.497
+        }
+      ]
+    },
+    {
+      "case": "d11-header_row_as_result-1",
+      "fault": "header_row_as_result",
+      "split": "test",
+      "model": "qwen3.5:4b",
+      "variant": "fixed",
+      "repaired": false,
+      "repairs": 2,
+      "errors_before": 1,
+      "errors_after": 10,
+      "unsafe_before": 1,
+      "unsafe_after": 1,
+      "stopped_at": "fallback",
+      "seconds": 237.8,
+      "error": null,
+      "log": [
+        {
+          "attempt": 2,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2517,
+          "completion_tokens": 760,
+          "seconds": 127.631
+        },
+        {
+          "attempt": 3,
+          "part": 0,
+          "model_role": "primary",
+          "variant": "fixed",
+          "turns": 1,
+          "tool_calls": 0,
+          "malformed": 0,
+          "unknown_tool": 0,
+          "not_found": 0,
+          "inexact_types": 0,
+          "over_limit": 0,
+          "by_tool": {},
+          "fix_turn": null,
+          "model_calls": 1,
+          "prompt_tokens": 2769,
+          "completion_tokens": 761,
+          "seconds": 110.024
+        }
+      ]
+    }
+  ]
+}

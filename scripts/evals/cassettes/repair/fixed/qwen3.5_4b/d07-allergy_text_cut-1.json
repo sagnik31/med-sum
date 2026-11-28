@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "model": "qwen3.5:4b",
+   "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+   "request": "9fa65ade07c7eda3be3c25c253da2f305bdbbc5d1a11011112d41092b6769075",
+   "prompt": "45989918140447fb8d698fd1af98ef7e3ce9d35bd4518e89a446c7b26be315db",
+   "input": "7a516a635669134655952e9795094d91222ed034f5c8e57ed28e836e4566aa1b",
+   "options": "890fa5d1e4bb56c0b288306d93a963fa424269d54431e7a8a23f25a34af466e0",
+   "reply": "{\"patient\":{\"name\":{\"citation\":{\"page\":1,\"first_line\":11,\"last_line\":11,\"quote\":\"Patient: Rohan Kulkarni\"},\"text\":\"Rohan Kulkarni\"},\"age\":{\"citation\":{\"page\":1,\"first_line\":13,\"last_line\":13,\"quote\":\"Age / Sex: 44 Y / M\"},\"text\":\"44 Y\"},\"sex\":{\"citation\":{\"page\":1,\"first_line\":13,\"last_line\":13,\"quote\":\"Age / Sex: 44 Y / M\"},\"text\":\"M\"},\"date_of_birth\":null,\"patient_id\":{\"citation\":{\"page\":1,\"first_line\":15,\"last_line\":15,\"quote\":\"UHID: SH-100232\"},\"text\":\"SH-100232\"}},\"details\":{\"facility\":{\"citation\":{\"page\":1,\"first_line\":7,\"last_line\":7,\"quote\":\"Sahaj Multispeciality Hospital, Karve Road, Pune\"},\"text\":\"Sahaj Multispeciality Hospital\"},\"clinicians\":[{\"citation\":{\"page\":1,\"first_line\":1,\"last_line\":1,\"quote\":\"# Dr. Anil Deshpande\"},\"text\":\"Dr. Anil Deshpande\"}],\"report_date\":null,\"collection_date\":null,\"prescription_date\":{\"citation\":{\"page\":1,\"first_line\":9,\"last_line\":9,\"quote\":\"Date: 10/02/2025\"},\"text\":\"10/02/2025\"}},\"medicines\":[{\"citation\":{\"page\":1,\"first_line\":31,\"last_line\":31,\"quote\":\"| 1 | Tab. Amlong 5 mg | 1 tab | 1-0-0 | 1 month |  |\"},\"form\":\"Tab.\",\"name\":\"Amlong\",\"strength\":\"5 mg\",\"dose\":\"1 tab\",\"frequency\":\"1-0-0\",\"route\":null,\"duration\":\"1 month\",\"instructions\":null},{\"citation\":{\"page\":1,\"first_line\":32,\"last_line\":32,\"quote\":\"| 2 | Tab. Atorva 20 mg | 1 tab | 0-0-1 | 1 month | At bedtime |\"},\"form\":\"Tab.\",\"name\":\"Atorva\",\"strength\":\"20 mg\",\"dose\":\"1 tab\",\"frequency\":\"0-0-1\",\"route\":null,\"duration\":\"1 month\",\"instructions\":\"At bedtime\"},{\"citation\":{\"page\":1,\"first_line\":33,\"last_line\":33,\"quote\":\"| 3 | Tab. Pantocid 40 mg | 1 tab | 1-0-0 | 14 days | Before breakfast |\"},\"form\":\"Tab.\",\"name\":\"Pantocid\",\"strength\":\"40 mg\",\"dose\":\"1 tab\",\"frequency\":\"1-0-0\",\"route\":null,\"duration\":\"14 days\",\"instructions\":\"Before breakfast\"}],\"conditions\":[{\"citation\":{\"page\":1,\"first_line\":23,\"last_line\":23,\"quote\":\"Diagnosis: Hypertension\"},\"text\":\"Hypertension\",\"kind\":\"diagnosis\"},{\"citation\":{\"page\":1,\"first_line\":25,\"last_line\":25,\"quote\":\"Provisional Diagnosis: Chronic kidney disease, to be evaluated\"},\"text\":\"Chronic kidney disease, to be evaluated\",\"kind\":\"provisional_diagnosis\"}],\"remarks\":[{\"citation\":{\"page\":1,\"first_line\":35,\"last_line\":35,\"quote\":\"Advice: Low salt diet.\"},\"text\":\"Low salt diet.\",\"kind\":\"advice\",\"scope\":\"document\",\"test_name\":null,\"panel\":null},{\"citation\":{\"page\":1,\"first_line\":37,\"last_line\":37,\"quote\":\"Repeat KFT after 4 weeks.\"},\"text\":\"Repeat KFT after 4 weeks.\",\"kind\":\"advice\",\"scope\":\"document\",\"test_name\":null,\"panel\":null}],\"vitals\":[{\"citation\":{\"page\":1,\"first_line\":17,\"last_line\":17,\"quote\":\"Vitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²\"},\"name\":\"BP\",\"value_text\":\"148/94\",\"unit\":\"mmHg\"},{\"citation\":{\"page\":1,\"first_line\":17,\"last_line\":17,\"quote\":\"Vitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²\"},\"name\":\"Pulse\",\"value_text\":\"88\",\"unit\":\"/min\"},{\"citation\":{\"page\":1,\"first_line\":17,\"last_line\":17,\"quote\":\"Vitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²\"},\"name\":\"Weight\",\"value_text\":\"84\",\"unit\":\"kg\"},{\"citation\":{\"page\":1,\"first_line\":17,\"last_line\":17,\"quote\":\"Vitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²\"},\"name\":\"Height\",\"value_text\":\"172\",\"unit\":\"cm\"},{\"citation\":{\"page\":1,\"first_line\":17,\"last_line\":17,\"quote\":\"Vitals: BP 148/94 mmHg, Pulse 88 /min, Weight 84 kg, Height 172 cm, BMI 28.4 kg/m²\"},\"name\":\"BMI\",\"value_text\":\"28.4\",\"unit\":\"kg/m²\"}],\"allergies\":[{\"citation\":{\"page\":1,\"first_line\":19,\"last_line\":19,\"quote\":\"Drug Allergy: Sulfa drugs (rash)\"},\"text\":\"Sulfa drugs (rash)\",\"substance\":\"Sulfa drugs\",\"reaction\":\"rash\"}]}",
+   "done_reason": "stop",
+   "done": {
+    "prompt_eval_count": 2964,
+    "eval_count": 1281,
+    "total_duration": 197172318600,
+    "load_duration": 9079900,
+    "prompt_eval_duration": 47663998000,
+    "eval_duration": 149419624000
+   },
+   "tool_calls": [],
+   "seed": 0
+  }
+ ]
+}
