@@ -32,7 +32,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
-from evals.choose import MIN_VALUE_RECALL, Candidate, choose_primary
+from evals.choose import MAX_UNSAFE_RATE, MIN_VALUE_RECALL, Candidate, choose_primary
 from evals.score import DocumentScore, summarise
 from evals.stats import wilson
 from evals.transcription import TranscriptionScore, summarise_transcriptions
@@ -261,6 +261,8 @@ def render_markdown(report: dict) -> str:
         rows = [r for r in rows if not r[0].startswith(("Transcription", "Layout",
                                                          "Unreadable"))]  # fmt: skip
     out += _table(["Metric", *names], rows)
+    if stage != "vision":
+        out += ["", UNSAFE_NOTE]
 
     if any(models[n]["routing"] for n in names):
         out += ["", "## Routing and risk coverage", ""]
@@ -436,6 +438,10 @@ def _overview_rows(models: dict, names: list[str]) -> list[list[str]]:
         row("Remark attribution", lambda m: _ratio(s(m)["remark_attribution"])),
         row("Frequency exactness", lambda m: _ratio(s(m)["frequency"])),
         row(
+            f"Unsafe errors per clinical item (gate: {MAX_UNSAFE_RATE:.0%})",
+            lambda m: _per_item(s(m)),
+        ),
+        row(
             "Items with an unsafe error",
             lambda m: _interval(
                 wilson(s(m)["unsafe_items"], s(m)["checked_items"]).as_dict()
@@ -478,6 +484,24 @@ def _routing_rows(models: dict, names: list[str]) -> list[list[str]]:
         row("Records by the fallback", lambda r: str(r["fallback_records"])),
         row("Failed runs", lambda r: str(r["failed"])),
     ]
+
+
+UNSAFE_NOTE = (
+    "The gate counts unsafe errors per clinical item in the answer keys (an "
+    "item with two wrong fields counts twice). The row below it counts items "
+    "with at least one unsafe error, of every item checked: invented items and "
+    "each document's dates count as checked too, so its share can't pass 100%."
+)
+
+
+def _per_item(summary: dict) -> str:
+    """The gate's rate: unsafe errors of clinical items, as choose.py reads it."""
+    if not summary["clinical_items"]:
+        return "-"
+    return (
+        f"{summary['unsafe']}/{summary['clinical_items']} "
+        f"({summary['unsafe'] / summary['clinical_items']:.2%})"
+    )
 
 
 def _interval(d: dict) -> str:

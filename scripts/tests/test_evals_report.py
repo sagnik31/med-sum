@@ -135,6 +135,22 @@ def test_markdown_has_every_section_and_column():
     assert "- `gemma` excluded: unsafe-error rate" in md
 
 
+def test_the_overview_shows_the_gates_own_rate_next_to_the_item_share():
+    r = report(perfect_run("qwen"), flawed_run("gemma"))
+    s = r["models"]["gemma"]["summary"]
+    md = render_markdown(r)
+    gate_row = next(
+        line for line in md.splitlines()
+        if line.startswith("| Unsafe errors per clinical item (gate: 1%)")
+    )  # fmt: skip
+    rate = s["unsafe"] / s["clinical_items"]
+    assert f"{s['unsafe']}/{s['clinical_items']} ({rate:.2%})" in gate_row
+    # The same numbers as the model choice's exclusion line.
+    assert f"({s['unsafe']} of {s['clinical_items']} clinical items)" in md
+    assert "| Items with an unsafe error |" in md
+    assert "The gate counts unsafe errors per clinical item" in md
+
+
 def test_markdown_lists_unsafe_missed_and_invented_items():
     md = render_markdown(report(flawed_run()))
     assert (
