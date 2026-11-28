@@ -8,7 +8,7 @@ import json
 
 import pytest
 
-from evals import compare, history, selfcheck
+from evals import compare, history, progress, selfcheck
 from evals.keys import manifest
 from evals.report import build_report, write_report
 
@@ -39,6 +39,37 @@ def test_an_entry_records_what_produced_it(entry):
     assert set(entry["prompts"]) >= {"extract_page", "parse_lab_report"}
     assert all(len(h) == 64 for h in entry["prompts"].values())
     assert entry["code"] is None or len(entry["code"]["commit"]) == 40
+
+
+def _fake_git(status: str):
+    def git(*args):
+        if args[:1] == ("status",):
+            return status
+        if args == ("rev-parse", "HEAD"):
+            return "a" * 40 + "\n"
+        return ""  # the top level and the diff
+
+    return git
+
+
+@pytest.mark.parametrize(
+    "status, dirty",
+    [
+        ("", False),
+        # A live run writes its own outputs before its entry.
+        (" M scripts/evals/cassettes/qwen3.5_4b/d01.json\n"
+         "?? scripts/evals/reports/2026-11-28-x/report.md\n"
+         " M scripts/evals/history/2026-11-28-x.json\n", False),
+        (" M scripts/src/evals/score.py\n", True),
+        ("?? scripts/prompt/new.md\n", True),
+    ],
+)  # fmt: skip
+def test_an_entry_is_dirty_only_for_changes_outside_the_eval_outputs(
+    report, monkeypatch, status, dirty
+):
+    monkeypatch.setattr(progress, "_git", _fake_git(status))
+    code = history.entry(report, mode="live")["code"]
+    assert code == {"commit": "a" * 40, "dirty": dirty}
 
 
 def test_an_entry_holds_counts_not_content(entry):

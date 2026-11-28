@@ -21,7 +21,7 @@ from pathlib import Path
 
 import llm
 from dataset.build import DATASET_DIR
-from observability.versions import code_version
+from evals import progress
 from evals.model_texts import model_texts, text_files
 
 HISTORY_DIR = DATASET_DIR.parent / "history"
@@ -140,6 +140,16 @@ def stage_of(entry: dict) -> str:
     return entry.get("stage") or "e2e"
 
 
+def _code() -> dict | None:
+    """The commit, and whether the tree has changes outside the eval outputs.
+    A run writes its own cassettes, reports and results before its entry, so
+    counting those would call every live run's code dirty."""
+    found = progress.code_fingerprint()
+    if found is None:
+        return None
+    return {"commit": found["commit"], "dirty": found["dirty"]}
+
+
 def entry(
     report: dict,
     *,
@@ -156,7 +166,7 @@ def entry(
         "mode": mode,
         "stage": stage_of(report),
         "dataset": report["dataset"],
-        "code": code_version(),
+        "code": _code(),
         "prompts": prompt_hashes(),
         "digests": dict(sorted((digests or {}).items())),
         "generation_options": dict(llm.GENERATION_OPTIONS),
