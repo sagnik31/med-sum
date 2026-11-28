@@ -224,6 +224,12 @@ def _slug(unit: str) -> str:
     return "".join(c if c.isalnum() or c in "-." else "_" for c in unit)
 
 
+def say(text: str) -> None:
+    """Print a progress line now: when stdout is a file, Python buffers it in
+    blocks, and a long run's log would show nothing for hours."""
+    print(text, flush=True)
+
+
 def unit_id(*parts: str) -> str:
     return "/".join(parts)
 
@@ -235,7 +241,7 @@ class Progress:
     unit; `load` gives a finished unit's data, or None.
     """
 
-    def __init__(self, directory: Path, run: dict, *, out: Callable = print):
+    def __init__(self, directory: Path, run: dict, *, out: Callable = say):
         self.directory, self.run, self.out = directory, run, out
         self.units: list[str] = run["units"]
         self.started = time.monotonic()
@@ -244,7 +250,7 @@ class Progress:
     @classmethod
     def open(
         cls, name: str, run: dict, *, resume: bool, root: Path | None = None,
-        out: Callable = print,
+        out: Callable = say,
     ) -> "Progress":  # fmt: skip
         directory = (root or RESULTS_DIR) / name / "progress"
         path = directory / "run.json"

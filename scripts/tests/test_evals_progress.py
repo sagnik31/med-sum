@@ -59,6 +59,28 @@ def test_the_progress_line_gives_the_time_left():
     assert "left," not in progress.progress_line("m/d02", 5, None, 0, [5])
 
 
+class _FileLike:
+    """A stdout redirected to a file: it holds what it is given until flushed."""
+
+    def __init__(self):
+        self.pending, self.flushed = "", ""
+
+    def write(self, text):
+        self.pending += text
+
+    def flush(self):
+        self.flushed, self.pending = self.flushed + self.pending, ""
+
+
+def test_a_progress_line_reaches_a_redirected_stdout_at_once(tmp_path, monkeypatch):
+    out = _FileLike()
+    monkeypatch.setattr("sys.stdout", out)
+    p = progress.Progress.open("x", run(), resume=False, root=tmp_path)
+    p.save("m/d01", {"a": 1}, seconds=3, end="verified")
+    assert out.flushed.startswith("m/d01: 3 s, verified; 1 units left")
+    assert out.pending == ""
+
+
 @pytest.mark.parametrize(
     "error, stops",
     [
